@@ -1,6 +1,8 @@
 #ifndef _midge_link_hh_
 #define _midge_link_hh_
 
+#include "error.hh"
+
 #include <string>
 using std::string;
 

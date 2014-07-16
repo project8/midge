@@ -28,7 +28,7 @@ namespace midge
         link_it t_it = f_input_map.find( p_label );
         if( f_input_map.find( p_label ) == f_input_map.end() )
         {
-            //todo: throw here
+            throw error() << "component named <" << get_name() << "> has no input named <" << p_label << ">";
             return NULL;
         }
         return t_it->second;
@@ -38,7 +38,7 @@ namespace midge
         link_it t_it = f_output_map.find( p_label );
         if( f_output_map.find( p_label ) == f_output_map.end() )
         {
-            //todo: throw here
+            throw error() << "component named <" << get_name() << "> has no output named <" << p_label << ">";
             return NULL;
         }
         return t_it->second;

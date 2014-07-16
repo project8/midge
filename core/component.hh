@@ -44,7 +44,7 @@ namespace midge
         link_it t_it = f_input_map.find( p_label );
         if( t_it != f_input_map.end() )
         {
-            //todo: throw here
+            throw error() << "component named <" << get_name() << "> already has input named <" << p_label << ">";
         }
 
         f_input_map.insert( link_entry( p_label, new member< x_parent*, void (x_parent::*)( x_child* ), x_child* >( p_parent, p_member ) ) );
@@ -58,7 +58,7 @@ namespace midge
         link_it t_it = f_output_map.find( p_label );
         if( t_it != f_output_map.end() )
         {
-            //todo: throw here
+            throw error() << "component named <" << get_name() << "> already has output named <" << p_label << ">";
         }
 
         f_output_map.insert( link_entry( p_label, new member< x_parent*, void (x_parent::*)( x_child* ), x_child* >( p_parent, p_member ) ) );

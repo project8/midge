@@ -38,16 +38,11 @@ namespace midge
     template< class x_parent, class x_member, class x_child >
     void member< x_parent, x_member, x_child >::connect( node* p_node )
     {
-        if( f_child != NULL )
-        {
-            //todo: throw here
-        }
-
         f_child = dynamic_cast< x_child >( p_node );
 
         if( f_child == NULL )
         {
-            //todo: throw here
+            throw error() << "member named <" << get_name() << "> could not cast <" << p_node->get_name() << "> to type <" << typeid(x_child).name() << ">";
         }
 
         (f_parent->*f_member)( f_child );

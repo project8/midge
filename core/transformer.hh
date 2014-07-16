@@ -44,15 +44,14 @@ namespace midge
             //******
 
         public:
-            void initialize( node* p_node );
-            void deinitialize( node* p_node );
-            void update( node* p_node );
-            void deupdate( node* p_node );
+            void initialize();
+            void execute();
+            void finalize();
 
         protected:
             typedef enum
             {
-                e_idle = 0, e_initialized = 1, e_updated = 2
+                e_idle = 0, e_initialized = 1
             } state;
             state f_state;
             uint64_t f_count;
@@ -60,9 +59,8 @@ namespace midge
             node* f_outputs[ typelength< x_output_list >::result ];
 
             virtual void initialize_transformer();
-            virtual void deinitialize_transformer();
-            virtual void update_transformer();
-            virtual void deupdate_transformer();
+            virtual void execute_transformer();
+            virtual void finalize_transformer();
     };
 
     template< class x_type, class x_input_list, class x_output_list >
@@ -93,7 +91,7 @@ namespace midge
     //******
 
     template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::initialize( node* p_node )
+    inline void transformer< x_type, x_input_list, x_output_list >::initialize()
     {
         if( f_state == e_idle )
         {
@@ -108,7 +106,7 @@ namespace midge
             {
                 if( f_inputs[ t_index ] == NULL )
                 {
-                    //todo: throw here
+                    throw error() << "transformer named <" << this->get_name() << "> cannot initialize with input <" << t_index << "> unset";
                 }
             }
 
@@ -116,7 +114,7 @@ namespace midge
             {
                 if( f_outputs[ t_index ] == NULL )
                 {
-                    //todo: throw here
+                    throw error() << "transformer named <" << this->get_name() << "> cannot initialize with output <" << t_index << "> unset";
                 }
             }
 
@@ -124,19 +122,43 @@ namespace midge
 
             for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
             {
-                f_outputs[ t_index ]->initialize( this );
+                f_outputs[ t_index ]->initialize();
             }
         }
 
         if( f_state != e_initialized )
         {
-            //todo: throw here
+            throw error() << "transformer named <" << this->get_name() << "> cannot initialize from state <" << f_state << ">";
         }
 
         return;
     }
     template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::deinitialize( node* p_node )
+    inline void transformer< x_type, x_input_list, x_output_list >::execute()
+    {
+        if( f_state == e_initialized )
+        {
+            if( ++f_count != typelength< x_input_list >::result )
+            {
+                return;
+            }
+
+            execute_transformer();
+
+            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
+            {
+                f_outputs[ t_index ]->execute();
+            }
+        }
+        else
+        {
+            throw error() << "transformer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
+        }
+
+        return;
+    }
+    template< class x_type, class x_input_list, class x_output_list >
+    inline void transformer< x_type, x_input_list, x_output_list >::finalize()
     {
         if( f_state == e_initialized )
         {
@@ -147,71 +169,17 @@ namespace midge
 
             f_state = e_idle;
 
-            deinitialize_transformer();
+            finalize_transformer();
 
             for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
             {
-                f_outputs[ t_index ]->deinitialize( this );
+                f_outputs[ t_index ]->finalize();
             }
         }
 
         if( f_state != e_idle )
         {
-            //todo: throw here
-        }
-
-        return;
-    }
-    template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::update( node* p_node )
-    {
-        if( f_state == e_initialized )
-        {
-            if( ++f_count != typelength< x_input_list >::result )
-            {
-                return;
-            }
-
-            f_state = e_updated;
-
-            update_transformer();
-
-            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
-            {
-                f_outputs[ t_index ]->update( this );
-            }
-        }
-
-        if( f_state != e_updated )
-        {
-            //todo: throw here
-        }
-
-        return;
-    }
-    template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::deupdate( node* p_node )
-    {
-        if( f_state == e_updated )
-        {
-            if( ++f_count != typelength< x_input_list >::result )
-            {
-                return;
-            }
-
-            f_state = e_initialized;
-
-            deupdate_transformer();
-
-            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
-            {
-                f_outputs[ t_index ]->deupdate( this );
-            }
-        }
-
-        if( f_state != e_initialized )
-        {
-            //todo: throw here
+            throw error() << "transformer named <" << this->get_name() << "> cannot finalize from state <" << f_state << ">";
         }
 
         return;
@@ -223,20 +191,16 @@ namespace midge
         return;
     }
     template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::deinitialize_transformer()
+    inline void transformer< x_type, x_input_list, x_output_list >::execute_transformer()
     {
         return;
     }
     template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::update_transformer()
+    inline void transformer< x_type, x_input_list, x_output_list >::finalize_transformer()
     {
         return;
     }
-    template< class x_type, class x_input_list, class x_output_list >
-    inline void transformer< x_type, x_input_list, x_output_list >::deupdate_transformer()
-    {
-        return;
-    }
+
 
 }
 

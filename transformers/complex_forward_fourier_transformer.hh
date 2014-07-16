@@ -19,8 +19,8 @@ namespace midge
 
         protected:
             void initialize_transformer();
-            void deinitialize_transformer();
-            void update_transformer();
+            void execute_transformer();
+            void finalize_transformer();
 
         private:
             fftw_plan f_plan;

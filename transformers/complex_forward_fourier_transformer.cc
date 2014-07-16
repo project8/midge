@@ -32,15 +32,15 @@ namespace midge
 
         return;
     }
-    void complex_forward_fourier_transformer::deinitialize_transformer()
+    void complex_forward_fourier_transformer::execute_transformer()
     {
-        fftw_destroy_plan( f_plan );
+        fftw_execute( f_plan );
 
         return;
     }
-    void complex_forward_fourier_transformer::update_transformer()
+    void complex_forward_fourier_transformer::finalize_transformer()
     {
-        fftw_execute( f_plan );
+        fftw_destroy_plan( f_plan );
 
         return;
     }

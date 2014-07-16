@@ -49,22 +49,20 @@ namespace midge
             //******
 
         public:
-            void initialize( node* p_node );
-            void deinitialize( node* p_node );
-            void update( node* p_node );
-            void deupdate( node* p_node );
+            void initialize();
+            void finalize();
+            void execute();
 
         protected:
             typedef enum
             {
-                e_idle = 0, e_initialized = 1, e_updated = 2
+                e_idle = 0, e_initialized = 1
             } state;
             state f_state;
 
             virtual void initialize_operand();
-            virtual void deinitialize_operand();
-            virtual void update_operand();
-            virtual void deupdate_operand();
+            virtual void execute_operand();
+            virtual void finalize_operand();
     };
 
     template< class x_type, class x_data >
@@ -128,13 +126,8 @@ namespace midge
     //******
 
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::initialize( node* p_node )
+    inline void operand< x_type, x_data >::initialize()
     {
-        if( p_node != f_parent )
-        {
-            //todo: throw here
-        }
-
         if( f_state == e_idle )
         {
             f_state = e_initialized;
@@ -145,96 +138,56 @@ namespace midge
 
             for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
             {
-                (*t_it)->initialize( this );
+                (*t_it)->initialize();
             }
         }
 
         if( f_state != e_initialized )
         {
-            //todo: throw here
+            throw error() << "operand named <" << get_name() << "> cannot initialize from state <" << f_state << ">";
         }
 
         return;
     }
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::deinitialize( node* p_node )
+    inline void operand< x_type, x_data >::execute()
     {
-        if( p_node != f_parent )
+        if( f_state == e_initialized )
         {
-            //todo: throw here
+            execute_operand();
+
+            for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
+            {
+                (*t_it)->execute();
+            }
+        }
+        else
+        {
+            throw error() << "operand named <" << get_name() << "> cannot execute from state <" << f_state << ">";
         }
 
+        return;
+    }
+    template< class x_type, class x_data >
+    inline void operand< x_type, x_data >::finalize()
+    {
         if( f_state == e_initialized )
         {
             f_state = e_idle;
 
-            deinitialize_operand();
+            finalize_operand();
 
             delete[] f_data;
 
             for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
             {
-                (*t_it)->deinitialize( this );
+                (*t_it)->finalize();
             }
         }
 
         if( f_state != e_idle )
         {
-            //todo: throw here
-        }
-
-        return;
-    }
-    template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::update( node* p_node )
-    {
-        if( p_node != f_parent )
-        {
-            //todo: throw here
-        }
-
-        if( f_state == e_initialized )
-        {
-            f_state = e_updated;
-
-            update_operand();
-
-            for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
-            {
-                (*t_it)->update( this );
-            }
-        }
-
-        if( f_state != e_updated )
-        {
-            //todo: throw here
-        }
-
-        return;
-    }
-    template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::deupdate( node* p_node )
-    {
-        if( p_node != f_parent )
-        {
-            //todo: throw here
-        }
-
-        if( f_state == e_updated )
-        {
-            f_state = e_initialized;
-
-            deupdate_operand();
-
-            for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
-            {
-                (*t_it)->deupdate( this );
-            }
-        }
-
-        if( f_state != e_initialized )
-        {
-            //todo: throw here
+            throw error() << "operand named <" << get_name() << "> cannot finalize from state <" << f_state << ">";
         }
 
         return;
@@ -246,17 +199,12 @@ namespace midge
         return;
     }
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::deinitialize_operand()
+    inline void operand< x_type, x_data >::execute_operand()
     {
         return;
     }
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::update_operand()
-    {
-        return;
-    }
-    template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::deupdate_operand()
+    inline void operand< x_type, x_data >::finalize_operand()
     {
         return;
     }
