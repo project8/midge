@@ -1,4 +1,3 @@
 midge
-=====
 
-Midge finds peaks in power spectra
+nothing to see here...
