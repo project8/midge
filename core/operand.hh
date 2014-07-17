@@ -37,12 +37,12 @@ namespace midge
             //***********
 
         public:
-            void set_parent( node* p_parent );
-            void add_child( node* p_child );
+            void set_input( node* p_input );
+            void add_output( node* p_output );
 
         protected:
-            node* f_parent;
-            vector< node* > f_children;
+            node* f_input;
+            vector< node* > f_outputs;
 
             //******
             //action
@@ -69,12 +69,12 @@ namespace midge
     inline operand< x_type, x_data >::operand() :
             f_size( 0 ),
             f_data( NULL ),
-            f_parent( NULL ),
-            f_children(),
+            f_input( NULL ),
+            f_outputs(),
             f_state( e_idle )
     {
-        input( this, &operand< x_type, x_data >::set_parent, "set_parent" );
-        output( this, &operand< x_type, x_data >::add_child, "add_child" );
+        input( this, &operand< x_type, x_data >::set_input, "set_input" );
+        output( this, &operand< x_type, x_data >::add_output, "add_output" );
     }
     template< class x_type, class x_data >
     inline operand< x_type, x_data >::~operand()
@@ -108,16 +108,16 @@ namespace midge
     //***********
 
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::set_parent( node* p_parent )
+    inline void operand< x_type, x_data >::set_input( node* p_input )
     {
-        f_parent = p_parent;
+        f_input = p_input;
         return;
     }
 
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::add_child( node* p_child )
+    inline void operand< x_type, x_data >::add_output( node* p_output )
     {
-        f_children.push_back( p_child );
+        f_outputs.push_back( p_output );
         return;
     }
 
@@ -136,7 +136,7 @@ namespace midge
 
             initialize_operand();
 
-            for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
+            for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
                 (*t_it)->initialize();
             }
@@ -156,7 +156,7 @@ namespace midge
         {
             execute_operand();
 
-            for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
+            for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
                 (*t_it)->execute();
             }
@@ -179,7 +179,7 @@ namespace midge
 
             delete[] f_data;
 
-            for( typename vector< node* >::iterator t_it = f_children.begin(); t_it != f_children.end(); t_it++ )
+            for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
                 (*t_it)->finalize();
             }

@@ -17,6 +17,9 @@ namespace midge
         public typechain< x_output_list, out >
     {
         public:
+            using node::output;
+
+        public:
             producer();
             virtual ~producer();
 

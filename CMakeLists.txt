@@ -93,6 +93,8 @@ set( midge_core_headers
 	operand.hh
 	in.hh
 	out.hh
+	producer.hh
+	consumer.hh
 	transformer.hh
 )
 set( midge_core_sources
@@ -187,6 +189,41 @@ target_link_libraries( ${midge_producers_name} ${midge_producers_dependencies} $
 install( FILES ${midge_producers_header_files} DESTINATION include )
 install( TARGETS ${midge_producers_name} DESTINATION lib )
 
+#############
+# consumers #
+#############
+
+set( midge_consumers_name
+	consumers
+)
+set( midge_consumers_dependencies
+	core
+	operands
+)
+set( midge_consumers_directory
+	consumers
+)
+set( midge_consumers_headers
+	ascii_real_consumer.hh
+)
+set( midge_consumers_sources
+	ascii_real_consumer.cc
+)
+
+foreach( base ${midge_consumers_headers} )
+	list( APPEND midge_consumers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_consumers_sources} )
+	list( APPEND midge_consumers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory} )
+add_library( ${midge_consumers_name} SHARED ${midge_consumers_header_files} ${midge_consumers_source_files} )
+target_link_libraries( ${midge_consumers_name} ${midge_consumers_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_consumers_header_files} DESTINATION include )
+install( TARGETS ${midge_consumers_name} DESTINATION lib )
+
 ################
 # transformers #
 ################
@@ -231,6 +268,8 @@ install( TARGETS ${midge_transformers_name} DESTINATION lib )
 set( midge_test_dependencies
 	core
 	operands
+	producers
+	consumers
 	transformers
 )
 set( midge_test_directory
@@ -241,6 +280,7 @@ set( midge_test_programs
 	test_typeat
 	test_real
 	test_complex
+	test_basic
 )
 
 foreach( program ${midge_test_programs} )

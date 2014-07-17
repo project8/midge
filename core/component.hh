@@ -21,7 +21,7 @@ namespace midge
             link* input( const string& p_label );
             link* output( const string& p_label );
 
-        public:
+        private:
             template< class x_parent, class x_child >
             void input( x_parent* p_parent, void (x_parent::*p_member)( x_child* ), const string& p_label );
 

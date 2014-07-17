@@ -6,10 +6,10 @@ namespace midge
 {
 
     harmonic_real_producer::harmonic_real_producer() :
-        f_amplitude( 1. ),
-        f_frequency( .1 ),
-        f_phase( 0. ),
-        f_internal( 0. )
+            f_amplitude( 1. ),
+            f_frequency( .1 ),
+            f_phase( 0. ),
+            f_internal( 0. )
     {
     }
     harmonic_real_producer::~harmonic_real_producer()
@@ -53,10 +53,11 @@ namespace midge
 
         for( uint64_t t_index = 0; t_index < t_size; t_index++ )
         {
-            t_data[t_index] = f_amplitude * cos( f_frequency * t_index + f_phase + f_internal );
+            t_data[ t_index ] = f_amplitude * cos( 2. * M_PI * f_frequency * t_index + f_phase + f_internal );
         }
 
-        f_internal = f_frequency * t_size;
+        f_internal += 2. * M_PI * f_frequency * t_size;
+        //todo: maybe it is: f_internal = fmod( f_internal, 2. * M_PI );
 
         return;
     }

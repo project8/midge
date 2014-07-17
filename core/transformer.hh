@@ -100,6 +100,7 @@ namespace midge
                 return;
             }
 
+            f_count = 0;
             f_state = e_initialized;
 
             for( uint64_t t_index = 0; t_index < typelength< x_input_list >::result; t_index++ )
@@ -143,6 +144,8 @@ namespace midge
                 return;
             }
 
+            f_count = 0;
+
             execute_transformer();
 
             for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
@@ -167,6 +170,7 @@ namespace midge
                 return;
             }
 
+            f_count = 0;
             f_state = e_idle;
 
             finalize_transformer();
