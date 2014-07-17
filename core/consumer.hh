@@ -14,6 +14,7 @@ namespace midge
 
     template< class x_type, class x_input_list >
     class consumer :
+        virtual public component,
         public typechain< x_input_list, in >
     {
         public:

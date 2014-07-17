@@ -1,15 +1,27 @@
 #include "error.hh"
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace midge
 {
 
     error::error() :
-            f_message()
+            exception(),
+            f_message( "" )
     {
     }
     error::error( const error& p_copy ) :
-            f_message( p_copy.f_message.str() )
+            exception( p_copy ),
+            f_message( p_copy.f_message )
     {
+    }
+    error& error::operator=( const error& p_copy )
+    {
+        exception::operator=( p_copy );
+        f_message = p_copy.f_message;
+        return *this;
     }
     error::~error() throw()
     {
@@ -17,7 +29,7 @@ namespace midge
 
     const char* error::what() const throw()
     {
-        return f_message.str().c_str();
+        return f_message.c_str();
     }
 
 }

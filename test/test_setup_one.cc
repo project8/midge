@@ -1,6 +1,6 @@
 #include "real.hh"
-#include "harmonic_real_producer.hh"
-#include "ascii_real_consumer.hh"
+#include "real_harmonic_producer.hh"
+#include "real_ascii_consumer.hh"
 using namespace midge;
 
 #include <iostream>
@@ -13,17 +13,17 @@ int main()
 {
     real t_real;
     t_real.set_name( "test_real" );
-    t_real.set_size( 128 );
+    t_real.allocate( 128 );
 
-    harmonic_real_producer t_producer;
+    real_harmonic_producer t_producer;
     t_producer.set_name( "test_producer" );
     t_producer.set_amplitude( 1.5 );
-    t_producer.set_frequency( 0.05 );
+    t_producer.set_frequency( 1. / 256. );
     t_producer.set_phase( M_PI / 4. );
 
-    ascii_real_consumer t_consumer;
+    real_ascii_consumer t_consumer;
     t_consumer.set_name( "test_consumer" );
-    t_consumer.set_filename( "test_basic.txt" );
+    t_consumer.set_filename( "test_setup_one.txt" );
 
     t_real.input( "set_input" )->connect( &t_producer );
     t_producer.output( "set_output_0" )->connect( &t_real );
@@ -32,6 +32,8 @@ int main()
     t_consumer.input( "set_input_0" )->connect( &t_real );
 
     t_producer.initialize();
+    t_producer.execute();
+    t_producer.execute();
     t_producer.execute();
     t_producer.execute();
     t_producer.finalize();

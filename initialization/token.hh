@@ -1,25 +1,43 @@
-#ifndef TOKEN_HH_
-#define TOKEN_HH_
+#ifndef _midge_token_hh_
+#define _midge_token_hh_
 
 #include <string>
 using std::string;
 
+#include <sstream>
+using std::stringstream;
+
 namespace midge
 {
-    namespace initialization
+
+    class token
     {
+        public:
+            token();
+            token( const string& p_value );
+            token( const token& p_copy );
+            virtual ~token();
 
-        class token
-        {
-            public:
-                token();
-                virtual ~token();
+            string& str();
+            const string& str() const;
 
-            private:
-                std::string f_value;
-        };
+            template< class x_type >
+            x_type as() const;
 
+        private:
+            string f_value;
+    };
+
+    template< class x_type >
+    x_type token::as() const
+    {
+        stringstream t_stringstream;
+        x_type t_value;
+        t_stringstream << f_value;
+        t_stringstream >> t_value;
+        return t_value;
     }
+
 }
 
 #endif

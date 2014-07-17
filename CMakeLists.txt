@@ -72,6 +72,65 @@ target_link_libraries( ${midge_utility_name} ${midge_utility_dependencies} ${mid
 install( FILES ${midge_utility_header_files} DESTINATION include )
 install( TARGETS ${midge_utility_name} DESTINATION lib )
 
+##################
+# initialization #
+##################
+
+set( midge_initialization_name
+	initialization
+)
+set( midge_initialization_dependencies
+	utility
+)
+set( midge_initialization_directory
+	initialization
+)
+set( midge_initialization_headers
+	token.hh
+	processor.hh
+	processor_terminal.hh
+	processor_file.hh
+	lexer.hh
+)
+set( midge_initialization_sources
+	token.cc
+	processor.cc
+	processor_terminal.cc
+	processor_file.cc
+	lexer.cc
+)
+
+foreach( base ${midge_initialization_headers} )
+	list( APPEND midge_initialization_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_initialization_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_initialization_sources} )
+	list( APPEND midge_initialization_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_initialization_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_initialization_directory} )
+add_library( ${midge_initialization_name} SHARED ${midge_initialization_header_files} ${midge_initialization_source_files} )
+target_link_libraries( ${midge_initialization_name} ${midge_initialization_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_initialization_header_files} DESTINATION include )
+install( TARGETS ${midge_initialization_name} DESTINATION lib )
+
+########
+# json #
+########
+
+set( midge_json_directory
+	json
+)
+set( midge_json_files
+	test_setup_one.json
+)
+
+foreach( base ${midge_json_files} )
+	list( APPEND midge_json_file_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_json_directory}/${base} )
+endforeach( base )
+
+install( FILES ${midge_json_file_files} DESTINATION config )
+
 ########
 # core #
 ########
@@ -169,10 +228,10 @@ set( midge_producers_directory
 	producers
 )
 set( midge_producers_headers
-	harmonic_real_producer.hh
+	real_harmonic_producer.hh
 )
 set( midge_producers_sources
-	harmonic_real_producer.cc
+	real_harmonic_producer.cc
 )
 
 foreach( base ${midge_producers_headers} )
@@ -204,10 +263,10 @@ set( midge_consumers_directory
 	consumers
 )
 set( midge_consumers_headers
-	ascii_real_consumer.hh
+	real_ascii_consumer.hh
 )
 set( midge_consumers_sources
-	ascii_real_consumer.cc
+	real_ascii_consumer.cc
 )
 
 foreach( base ${midge_consumers_headers} )
@@ -239,10 +298,14 @@ set( midge_transformers_directory
 	transformers
 )
 set( midge_transformers_headers
+	real_complex_transformer.hh
+	complex_real_transformer.hh
 	complex_forward_fourier_transformer.hh
 	complex_backward_fourier_transformer.hh
 )
 set( midge_transformers_sources
+	real_complex_transformer.cc
+	complex_real_transformer.cc
 	complex_forward_fourier_transformer.cc
 	complex_backward_fourier_transformer.cc
 )
@@ -271,16 +334,19 @@ set( midge_test_dependencies
 	producers
 	consumers
 	transformers
+	initialization
 )
 set( midge_test_directory
 	test
 )
 set( midge_test_programs
+	test_lexer
 	test_typelength
 	test_typeat
 	test_real
 	test_complex
-	test_basic
+	test_setup_one
+	test_setup_two
 )
 
 foreach( program ${midge_test_programs} )

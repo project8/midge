@@ -13,22 +13,12 @@ namespace midge
 
     void complex_backward_fourier_transformer::initialize_transformer()
     {
-        if( input< 0 >() == NULL )
+        if( input< 0 >()->size() != output< 0 >()->size() )
         {
-            //todo: throw here
+            throw error() << "complex backward fourier transformer named <" << this->get_name() << "> must have matching input and output sizes";
         }
 
-        if( output< 0 >() == NULL )
-        {
-            //todo: throw here
-        }
-
-        if( input< 0 >()->get_size() != output< 0 >()->get_size() )
-        {
-            //todo: throw here
-        }
-
-        fftw_plan_dft_1d( input< 0 >()->get_size(), input< 0 >()->data(), output< 0 >()->data(), FFTW_BACKWARD, FFTW_MEASURE );
+        fftw_plan_dft_1d( input< 0 >()->size(), input< 0 >()->data(), output< 0 >()->data(), FFTW_BACKWARD, FFTW_MEASURE );
 
         return;
     }

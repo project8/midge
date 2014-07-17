@@ -1,5 +1,5 @@
-#ifndef _midge_harmonic_real_producer_hh_
-#define _midge_harmonic_real_producer_hh_
+#ifndef _midge_real_harmonic_producer_hh_
+#define _midge_real_harmonic_producer_hh_
 
 #include "producer.hh"
 #include "real.hh"
@@ -8,12 +8,12 @@
 namespace midge
 {
 
-    class harmonic_real_producer :
-        public producer< harmonic_real_producer, typelist_1( real ) >
+    class real_harmonic_producer :
+        public producer< real_harmonic_producer, typelist_1( real ) >
     {
         public:
-            harmonic_real_producer();
-            virtual ~harmonic_real_producer();
+            real_harmonic_producer();
+            virtual ~real_harmonic_producer();
 
         public:
             void set_amplitude( const real_t& p_amplitude );
@@ -30,8 +30,11 @@ namespace midge
             real_t f_frequency;
             real_t f_phase;
             real_t f_internal;
+            real_t* f_data;
+            uint64_t f_size;
 
         protected:
+            void initialize_producer();
             void execute_producer();
     };
 }

@@ -14,6 +14,7 @@ namespace midge
 
     template< class x_type, class x_output_list >
     class producer :
+        virtual public component,
         public typechain< x_output_list, out >
     {
         public:

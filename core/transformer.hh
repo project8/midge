@@ -10,14 +10,23 @@
 #include <vector>
 using std::vector;
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace midge
 {
 
     template< class x_type, class x_input_list, class x_output_list >
     class transformer :
+        virtual public component,
         public typechain< x_input_list, in >,
         public typechain< x_output_list, out >
     {
+        public:
+            using node::input;
+            using node::output;
+
         public:
             transformer();
             virtual ~transformer();
@@ -204,7 +213,6 @@ namespace midge
     {
         return;
     }
-
 
 }
 

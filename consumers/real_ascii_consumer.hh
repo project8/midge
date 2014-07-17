@@ -1,5 +1,5 @@
-#ifndef _midge_ascii_real_consumer_hh_
-#define _midge_ascii_real_consumer_hh_
+#ifndef _midge_real_ascii_consumer_hh_
+#define _midge_real_ascii_consumer_hh_
 
 #include "consumer.hh"
 #include "real.hh"
@@ -11,12 +11,12 @@ using std::ofstream;
 namespace midge
 {
 
-    class ascii_real_consumer :
-        public consumer< ascii_real_consumer, typelist_1( real )>
+    class real_ascii_consumer :
+        public consumer< real_ascii_consumer, typelist_1( real )>
     {
         public:
-            ascii_real_consumer();
-            virtual ~ascii_real_consumer();
+            real_ascii_consumer();
+            virtual ~real_ascii_consumer();
 
         public:
             void set_filename( const string& p_filename );
@@ -26,6 +26,8 @@ namespace midge
             string f_filename;
             ofstream f_filestream;
             uint64_t f_internal;
+            real_t* f_data;
+            uint64_t f_size;
 
         protected:
             void initialize_consumer();

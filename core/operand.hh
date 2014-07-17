@@ -22,15 +22,15 @@ namespace midge
             //****
 
         public:
-            void set_size( const uint64_t& p_size );
-            const uint64_t& get_size() const;
+            void allocate( const uint64_t& p_size );
 
             x_data* data();
             const x_data* data() const;
+            uint64_t size() const;
 
         protected:
-            uint64_t f_size;
             x_data* f_data;
+            uint64_t f_size;
 
             //***********
             //composition
@@ -67,8 +67,8 @@ namespace midge
 
     template< class x_type, class x_data >
     inline operand< x_type, x_data >::operand() :
-            f_size( 0 ),
             f_data( NULL ),
+            f_size( 0 ),
             f_input( NULL ),
             f_outputs(),
             f_state( e_idle )
@@ -86,21 +86,40 @@ namespace midge
     //****
 
     template< class x_type, class x_data >
-    inline void operand< x_type, x_data >::set_size( const uint64_t& p_size )
+    inline void operand< x_type, x_data >::allocate( const uint64_t& p_size )
     {
         f_size = p_size;
+
+        if( f_data != NULL )
+        {
+            free( f_data );
+            f_data = NULL;
+        }
+
+        if( f_data == NULL )
+        {
+            f_data = (x_data*) (malloc( sizeof(x_data) * f_size ));
+        }
+
         return;
-    }
-    template< class x_type, class x_data >
-    inline const uint64_t& operand< x_type, x_data >::get_size() const
-    {
-        return f_size;
     }
 
     template< class x_type, class x_data >
     inline x_data* operand< x_type, x_data >::data()
     {
         return f_data;
+    }
+
+    template< class x_type, class x_data >
+    inline const x_data* operand< x_type, x_data >::data() const
+    {
+        return f_data;
+    }
+
+    template< class x_type, class x_data >
+    inline uint64_t operand< x_type, x_data >::size() const
+    {
+        return f_size;
     }
 
     //***********
@@ -132,7 +151,10 @@ namespace midge
         {
             f_state = e_initialized;
 
-            f_data = new x_data[ f_size ];
+            if( f_data == NULL )
+            {
+                f_data = (x_data*) (malloc( sizeof(x_data) * f_size ));
+            }
 
             initialize_operand();
 
@@ -177,7 +199,10 @@ namespace midge
 
             finalize_operand();
 
-            delete[] f_data;
+            if( f_data != NULL )
+            {
+                free( f_data );
+            }
 
             for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
