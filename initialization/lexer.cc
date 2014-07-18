@@ -184,38 +184,28 @@ namespace midge
 #if _midge_debug_lexer_==1
         cout << "in parse_value at <" << f_char << ">" << endl;
 #endif
-
-        //if at end, then check that stack is empty
-        if( at_end() == true )
-        {
-            f_states.pop();
-            if( f_states.empty() == false )
-            {
-                parse_error( error() << "lexer reached premature end" );
-                return;
-            }
-        }
-
-        //if at whitespace, then recurse
+        //if at whitespace, then increment, then recurse
         if( at_one_of( s_whitespace_set ) == true )
         {
             increment();
+
             return;
         }
 
-        //if at open brace, then object start
-        if( at_exactly( s_object_start ) == true )
+        //if at open brace, then process object start, then increment, then parse object head
+        else if( at_exactly( s_object_start ) == true )
         {
             process_object_start();
 
             increment();
+
             f_states.pop();
             f_states.push( &lexer::parse_object_head );
             return;
         }
 
-        //if at open bracket, then array start
-        if( at_exactly( s_array_start ) == true )
+        //if at open bracket, then process array start, then increment, then parse array head
+        else if( at_exactly( s_array_start ) == true )
         {
             process_array_start();
 
@@ -225,70 +215,122 @@ namespace midge
             return;
         }
 
-        //if at quote, then parse string
-        if( at_exactly( s_quote ) == true )
+        //if at quote, then clear token, then increment, then parse string
+        else if( at_exactly( s_quote ) == true )
         {
             f_token.str().clear();
 
             increment();
+
             f_states.pop();
             f_states.push( &lexer::parse_string );
             return;
         }
 
-        //if at true or false, then parse boolean
-        if( (at_exactly( s_true ) == true) || (at_exactly( s_false ) == true) )
-        {
-            f_token.str().clear();
-
-            //no increment for this type
-            f_states.pop();
-            f_states.push( &lexer::parse_boolean );
-            return;
-        }
-
-        //if at minus sign or numeral, then parse numerical
-        if( (at_exactly( s_minus ) == true) || (at_one_of( s_numeral_set ) == true) )
+        //if at minus, then clear token, then parse numerical mantissa sign
+        else if( at_exactly( s_minus ) == true )
         {
             f_token.str().clear();
 
             f_states.pop();
-            f_states.push( &lexer::parse_numerical );
+            f_states.push( &lexer::parse_numerical_mantissa_sign );
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_value" );
-        return;
+        //if at numeral, then clear token, then parse numerical mantissa pre
+        else if( at_one_of( s_numeral_set ) == true )
+        {
+            f_token.str().clear();
+
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_mantissa_pre );
+            return;
+        }
+
+        //if at true, then assign token, then process boolean, then increment, then previous
+        else if( at_exactly( s_true ) == true )
+        {
+            f_token.str().assign( 1, '1' );
+
+            process_boolean( &f_token );
+
+            for( size_t t_index = 0; t_index < s_true.size(); t_index++ )
+            {
+                increment();
+            }
+            f_states.pop();
+            return;
+        }
+
+        //if at false, then assign token, then process boolean, then increment, then previous
+        else if( at_exactly( s_false ) == true )
+        {
+            f_token.str().assign( 1, '0' );
+
+            process_boolean( &f_token );
+
+            for( size_t t_index = 0; t_index < s_false.size(); t_index++ )
+            {
+                increment();
+            }
+            f_states.pop();
+            return;
+        }
+
+        //if at null, then process null, then increment, then previous
+        else if( at_exactly( s_null ) == true )
+        {
+            process_null();
+
+            for( size_t t_index = 0; t_index < s_null.size(); t_index++ )
+            {
+                increment();
+            }
+            f_states.pop();
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_value" );
+            return;
+        }
     }
+
     void lexer::parse_key()
     {
 #if _midge_debug_lexer_==1
         cout << "in parse_key at <" << f_char << ">" << endl;
 #endif
 
-        //if at string, then update token and recurse
+        //if at string, then append token, then increment, then recurse
         if( at_one_of( s_string_set ) == true )
         {
             f_token.str().append( 1, f_char );
 
             increment();
+
             return;
         }
 
-        //if at quote, then issue token and previous
-        if( at_exactly( s_quote ) == true )
+        //if at quote, then process key, then increment, then previous
+        else if( at_exactly( s_quote ) == true )
         {
             process_key( &f_token );
 
             increment();
+
             f_states.pop();
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_key" );
-        return;
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_key" );
+            return;
+        }
     }
     void lexer::parse_string()
     {
@@ -296,97 +338,286 @@ namespace midge
         cout << "in parse_string at <" << f_char << ">" << endl;
 #endif
 
-        //if at string, then update token and recurse
+        //if at string, then append token, then increment, then recurse
         if( at_one_of( s_string_set ) == true )
         {
             f_token.str().append( 1, f_char );
 
             increment();
+
             return;
         }
 
-        //if at quote, then issue token and previous
-        if( at_exactly( s_quote ) == true )
+        //if at quote, then process string, then increment, then previous
+        else if( at_exactly( s_quote ) == true )
         {
             process_string( &f_token );
 
             increment();
+
             f_states.pop();
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_string" );
-        return;
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_string" );
+
+            return;
+        }
     }
-    void lexer::parse_boolean()
-    {
-    }
-    void lexer::parse_numerical()
+
+    void lexer::parse_numerical_mantissa_sign()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical at <" << f_char << ">" << endl;
+        cout << "in parse_numerical_mantissa_sign at <" << f_char << ">" << endl;
 #endif
 
-        //if at whitespace, then issue token and previous
-        if( at_one_of( s_whitespace_set ) == true )
-        {
-            process_numerical( &f_token );
-
-            f_states.pop();
-            return;
-        }
-
-        //if at comma, then issue token and previous
-        if( at_exactly( s_comma ) == true )
-        {
-            process_numerical( &f_token );
-
-            f_states.pop();
-            return;
-        }
-
-        //if at close brace, then issue token and previous
-        if( at_exactly( s_object_stop ) == true )
-        {
-            process_numerical( &f_token );
-
-            f_states.pop();
-            return;
-        }
-
-        //if at close bracket, then issue token and previous
-        if( at_exactly( s_array_stop ) == true )
-        {
-            process_numerical( &f_token );
-
-            f_states.pop();
-            return;
-        }
-
+        //update token and increment
         f_token.str().append( 1, f_char );
         increment();
-        return;
+
+        //if at numeral, then parse numerical mantissa pre
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_mantissa_pre );
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_mantissa_sign" );
+            return;
+        }
     }
+    void lexer::parse_numerical_mantissa_pre()
+    {
+#if _midge_debug_lexer_==1
+        cout << "in parse_numerical_mantissa_pre at <" << f_char << ">" << endl;
+#endif
+
+        //update token and increment
+        f_token.str().append( 1, f_char );
+        increment();
+
+        //if at numeral, then recurse
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            return;
+        }
+
+        //if at decimal, then parse numerical mantissa decimal
+        else if( at_exactly( s_decimal ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_decimal );
+            return;
+        }
+
+        //if at power, then parse numerical power
+        else if( at_one_of( s_power_set ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_power );
+            return;
+        }
+
+        //if at whitespace, comma, close brace or close bracket, then process numerical, then previous
+        else if( (at_one_of( s_whitespace_set ) == true) || (at_exactly( s_comma ) == true) || (at_exactly( s_object_stop ) == true) || (at_exactly( s_array_stop ) == true) )
+        {
+            process_numerical( &f_token );
+
+            f_states.pop();
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_mantissa_pre" );
+            return;
+        }
+    }
+    void lexer::parse_numerical_decimal()
+    {
+#if _midge_debug_lexer_==1
+        cout << "in parse_numerical_decimal at <" << f_char << ">" << endl;
+#endif
+
+        //update token and increment
+        f_token.str().append( 1, f_char );
+        increment();
+
+        //if at numeral, then parse numerical mantissa post
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_mantissa_post );
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_decimal" );
+            return;
+        }
+    }
+    void lexer::parse_numerical_mantissa_post()
+    {
+#if _midge_debug_lexer_==1
+        cout << "in parse_numerical_mantissa_post at <" << f_char << ">" << endl;
+#endif
+
+        //update token and increment
+        f_token.str().append( 1, f_char );
+        increment();
+
+        //if at numeral, then recurse
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            return;
+        }
+
+        //if at power, then parse numerical power
+        else if( at_one_of( s_power_set ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_power );
+            return;
+        }
+
+        //if at whitespace, comma, close brace or close bracket, then process numerical, then previous
+        else if( (at_one_of( s_whitespace_set ) == true) || (at_exactly( s_comma ) == true) || (at_exactly( s_object_stop ) == true) || (at_exactly( s_array_stop ) == true) )
+        {
+            process_numerical( &f_token );
+
+            f_states.pop();
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_mantissa_post" );
+            return;
+        }
+    }
+    void lexer::parse_numerical_power()
+    {
+#if _midge_debug_lexer_==1
+        cout << "in parse_numerical_power at <" << f_char << ">" << endl;
+#endif
+
+        //update token and increment
+        f_token.str().append( 1, f_char );
+        increment();
+
+        //if at minus, then parse numerical exponent value
+        if( at_exactly( s_minus ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_exponent_sign );
+            return;
+        }
+
+        //if at numeral, then parse numerical exponent value
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_exponent_value );
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_power" );
+            return;
+        }
+    }
+    void lexer::parse_numerical_exponent_sign()
+    {
+#if _midge_debug_lexer_==1
+        cout << "in parse_numerical_exponent_sign at <" << f_char << ">" << endl;
+#endif
+
+        //update token and increment
+        f_token.str().append( 1, f_char );
+        increment();
+
+        //if at numeral, then parse numerical exponent value
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_numerical_exponent_value );
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_exponent_sign" );
+            return;
+        }
+    }
+    void lexer::parse_numerical_exponent_value()
+    {
+#if _midge_debug_lexer_==1
+        cout << "in parse_numerical_exponent_value at <" << f_char << ">" << endl;
+#endif
+
+        //update token and increment
+        f_token.str().append( 1, f_char );
+        increment();
+
+        //if at numeral, then recurse
+        if( at_one_of( s_numeral_set ) == true )
+        {
+            return;
+        }
+
+        //if at whitespace, comma, close brace or close bracket, then process numerical, then previous
+        else if( (at_one_of( s_whitespace_set ) == true) || (at_exactly( s_comma ) == true) || (at_exactly( s_object_stop ) == true) || (at_exactly( s_array_stop ) == true) )
+        {
+            process_numerical( &f_token );
+
+            f_states.pop();
+            return;
+        }
+
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_exponent_value" );
+            return;
+        }
+    }
+
     void lexer::parse_object_head()
     {
 #if _midge_debug_lexer_==1
         cout << "in parse_object_head at <" << f_char << ">" << endl;
 #endif
 
-        //if at whitespace, then recurse
+        //if at whitespace, then increment, then recurse
         if( at_one_of( s_whitespace_set ) == true )
         {
             increment();
+
             return;
         }
 
-        //if at quote, then parse key, then parse mid
-        if( at_exactly( s_quote ) == true )
+        //if at quote, then clear token, then increment, then parse key, then parse object mid
+        else if( at_exactly( s_quote ) == true )
         {
             f_token.str().clear();
 
             increment();
+
             f_states.pop();
             f_states.push( &lexer::parse_object_mid );
             f_states.push( &lexer::parse_key );
@@ -394,7 +625,7 @@ namespace midge
         }
 
         //if at close brace, then previous
-        if( at_exactly( s_object_stop ) == true )
+        else if( at_exactly( s_object_stop ) == true )
         {
             process_object_stop();
 
@@ -403,14 +634,17 @@ namespace midge
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_head" );
-        return;
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_head" );
+            return;
+        }
     }
-    void lexer::parse_object_start()
+    void lexer::parse_object_next()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_object_start at <" << f_char << ">" << endl;
+        cout << "in parse_object_next at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then recurse
@@ -420,8 +654,8 @@ namespace midge
             return;
         }
 
-        //if at quote, then parse key, then parse object mid
-        if( at_exactly( s_quote ) == true )
+        //if at quote, then clear token, then increment, then parse key, then parse object mid
+        else if( at_exactly( s_quote ) == true )
         {
             f_token.str().clear();
 
@@ -432,9 +666,12 @@ namespace midge
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_start" );
-        return;
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_next" );
+            return;
+        }
     }
     void lexer::parse_object_mid()
     {
@@ -449,19 +686,23 @@ namespace midge
             return;
         }
 
-        //if at colon, then parse value, then parse object stop
-        if( at_exactly( s_colon ) == true )
+        //if at colon, then increment, then parse value, then parse object stop
+        else if( at_exactly( s_colon ) == true )
         {
             increment();
+
             f_states.pop();
             f_states.push( &lexer::parse_object_stop );
             f_states.push( &lexer::parse_value );
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_mid" );
-        return;
+        //if at anything else, then error
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_mid" );
+            return;
+        }
     }
     void lexer::parse_object_stop()
     {
@@ -469,24 +710,26 @@ namespace midge
         cout << "in parse_object_stop at <" << f_char << ">" << endl;
 #endif
 
-        //if at whitespace, then recurse
+        //if at whitespace, then increment, then recurse
         if( at_one_of( s_whitespace_set ) == true )
         {
             increment();
+
             return;
         }
 
-        //if at comma, then parse object start
-        if( at_exactly( s_comma ) == true )
+        //if at comma, then increment, then parse object next
+        else if( at_exactly( s_comma ) == true )
         {
             increment();
+
             f_states.pop();
-            f_states.push( &lexer::parse_object_start );
+            f_states.push( &lexer::parse_object_next );
             return;
         }
 
         //if at close brace, then previous
-        if( at_exactly( s_object_stop ) == true )
+        else if( at_exactly( s_object_stop ) == true )
         {
             process_object_stop();
 
@@ -499,14 +742,103 @@ namespace midge
         parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_stop" );
         return;
     }
+
     void lexer::parse_array_head()
     {
+#if _midge_debug_lexer_==1
+        cout << "in parse_array_head at <" << f_char << ">" << endl;
+#endif
+
+        //if at whitespace, then increment, then recurse
+        if( at_one_of( s_whitespace_set ) == true )
+        {
+            increment();
+            return;
+        }
+
+        //if at close brace, then process array stop, then increment, then previous
+        else if( at_exactly( s_array_stop ) == true )
+        {
+            process_array_stop();
+
+            increment();
+
+            f_states.pop();
+            return;
+        }
+
+        //if at anything else, then parse value, then parse array stop
+        else
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_array_stop );
+            f_states.push( &lexer::parse_value );
+            return;
+        }
     }
-    void lexer::parse_array_start()
+    void lexer::parse_array_next()
     {
+#if _midge_debug_lexer_==1
+        cout << "in parse_array_next at <" << f_char << ">" << endl;
+#endif
+
+        //if at whitespace, then increment, then recurse
+        if( at_one_of( s_whitespace_set ) == true )
+        {
+            increment();
+            return;
+        }
+
+        //if at anything else, then parse value, then parse array stop
+        else
+        {
+            f_states.pop();
+            f_states.push( &lexer::parse_array_stop );
+            f_states.push( &lexer::parse_value );
+            return;
+        }
     }
     void lexer::parse_array_stop()
     {
+#if _midge_debug_lexer_==1
+        cout << "in parse_array_stop at <" << f_char << ">" << endl;
+#endif
+
+        //if at whitespace, then increment, then recurse
+        if( at_one_of( s_whitespace_set ) == true )
+        {
+            increment();
+
+            return;
+        }
+
+        //if at comma, then increment, then parse array next
+        else if( at_exactly( s_comma ) == true )
+        {
+            increment();
+
+            f_states.pop();
+            f_states.push( &lexer::parse_array_next );
+            return;
+        }
+
+        //if at close bracket, then process array stop, then increment, then previous
+        else if( at_exactly( s_array_stop ) == true )
+        {
+            process_array_stop();
+
+            increment();
+
+            f_states.pop();
+            return;
+        }
+
+        //if at anything else, then parse value, then parse array stop
+        else
+        {
+            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_array_stop" );
+            return;
+        }
     }
 
     void lexer::parse_error( error p_error )
@@ -532,13 +864,16 @@ namespace midge
     const string lexer::s_colon = string( ":" );
     const string lexer::s_comma = string( "," );
     const string lexer::s_minus = string( "-" );
+    const string lexer::s_decimal = string( "." );
     const string lexer::s_true = string( "true" );
     const string lexer::s_false = string( "false" );
+    const string lexer::s_null = string( "null" );
     const string lexer::s_object_start = string( "{" );
     const string lexer::s_object_stop = string( "}" );
     const string lexer::s_array_start = string( "[" );
     const string lexer::s_array_stop = string( "]" );
 
+    const string lexer::s_power_set = string( "eE" );
     const string lexer::s_whitespace_set = lexer::s_space + lexer::s_tab + lexer::s_new_line + lexer::s_carriage_return;
     const string lexer::s_uppercase_set = string( "ABCDEFGHIJKLMNOPQRSTUVWXYZ" );
     const string lexer::s_lowercase_set = string( "abcdefghijklmnopqrstuvwxyz" );

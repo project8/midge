@@ -123,6 +123,9 @@ set( midge_json_directory
 )
 set( midge_json_files
 	test_setup_one.json
+	test_objects.json
+	test_arrays.json
+	test_types.json
 )
 
 foreach( base ${midge_json_files} )

@@ -14,6 +14,7 @@ namespace midge
             virtual ~processor_terminal();
 
         public:
+            virtual void process_null();
             virtual void process_key( token* p_token );
             virtual void process_string( token* p_token );
             virtual void process_boolean( token* p_token );

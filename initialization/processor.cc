@@ -137,6 +137,18 @@ namespace midge
         return f_child;
     }
 
+    void processor::process_null()
+    {
+        if( f_child == NULL )
+        {
+            return;
+        }
+        else
+        {
+            f_child->process_null();
+            return;
+        }
+    }
     void processor::process_key( token* p_token )
     {
         if( f_child == NULL )

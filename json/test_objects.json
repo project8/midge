@@ -1,0 +1,10 @@
+{
+    "name" : "outer",
+    "value" :
+    {
+        "name" : "inner",
+        "value" :
+        {
+        }
+    }
+}

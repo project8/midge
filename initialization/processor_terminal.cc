@@ -14,44 +14,49 @@ namespace midge
     {
     }
 
+    void processor_terminal::process_null()
+    {
+        cout << "<null>" << endl;
+        return;
+    }
     void processor_terminal::process_key( token* p_token )
     {
-        cout << "[key] " << p_token->str() << endl;
+        cout << "<key> <" << p_token->str() << ">" << endl;
         return;
     }
     void processor_terminal::process_string( token* p_token )
     {
-        cout << "[string] " << p_token->str() << endl;
+        cout << "<string> <" << p_token->str() << ">" << endl;
         return;
     }
     void processor_terminal::process_boolean( token* p_token )
     {
-        cout << "[bool] " << p_token->str() << endl;
+        cout << "<bool> <" << p_token->str() << ">" << endl;
         return;
     }
     void processor_terminal::process_numerical( token* p_token )
     {
-        cout << "[double] " << p_token->str() << endl;
+        cout << "<double> <" << p_token->str() << ">" << endl;
         return;
     }
     void processor_terminal::process_object_start()
     {
-        cout << "[object start]" << endl;
+        cout << "<object start>" << endl;
         return;
     }
     void processor_terminal::process_object_stop()
     {
-        cout << "[object stop]" << endl;
+        cout << "<object stop>" << endl;
         return;
     }
     void processor_terminal::process_array_start()
     {
-        cout << "[array start]" << endl;
+        cout << "<array start>" << endl;
         return;
     }
     void processor_terminal::process_array_stop()
     {
-        cout << "[array stop]" << endl;
+        cout << "<array stop>" << endl;
         return;
     }
     void processor_terminal::process_start()
