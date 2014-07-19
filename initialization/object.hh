@@ -1,122 +1,53 @@
 #ifndef _midge_object_hh_
 #define _midge_object_hh_
 
-#include <cstddef>
+#include "value.hh"
+
+#include <utility>
+using std::pair;
+
+#include <map>
+using std::multimap;
+
+#include <vector>
+using std::vector;
 
 namespace midge
 {
 
-    class object
+    class object :
+        public value
     {
-        private:
-            class holder
-            {
-                public:
-                    holder();
-                    virtual ~holder();
-
-                public:
-                    virtual void type() = 0;
-            };
-
-        private:
-            template< class x_type >
-            class holder_template :
-                public holder
-            {
-                public:
-                    holder_template( x_type* p_object );
-                    virtual ~holder_template();
-
-                public:
-                    void type();
-
-                private:
-                    x_type* f_object;
-            };
-
         public:
             object();
             virtual ~object();
+            object* clone() const;
 
         public:
-            template< class x_type >
-            void set( x_type* p_object );
+            uint64_t size() const;
+            void add( const string& p_key, value* p_value );
 
-            template< class x_type >
-            x_type* as();
+            pair< string, value* > at( const uint64_t& p_index );
+            pair< string, const value* > at( const uint64_t& p_index ) const;
 
-            template< class x_type >
-            const x_type* as() const;
+            value* at( const string& p_key, const uint64_t& p_index = 0 );
+            const value* at( const string& p_key, const uint64_t& p_index = 0 ) const;
 
         private:
-            holder* f_holder;
+            typedef vector< pair< string, value* > > vector_t;
+            typedef vector_t::iterator vector_it_t;
+            typedef vector_t::const_iterator vector_cit_t;
+            typedef vector_t::value_type vector_entry_t;
+
+            vector_t f_vector;
+
+            typedef multimap< string, value* > multimap_t;
+            typedef multimap_t::iterator multimap_it_t;
+            typedef multimap_t::const_iterator multimap_cit_t;
+            typedef multimap_t::value_type multimap_entry_t;
+
+            multimap_t f_multimap;
     };
-
-    object::holder::holder()
-    {
-    }
-    object::holder::~holder()
-    {
-    }
-
-    template< class x_type >
-    object::holder_template< x_type >::holder_template( x_type* p_object ) :
-            f_object( p_object )
-    {
-    }
-    template< class x_type >
-    object::holder_template< x_type >::~holder_template()
-    {
-    }
-    template< class x_type >
-    void object::holder_template< x_type >::type()
-    {
-        throw f_object;
-        return;
-    }
-
-    template< class x_type >
-    void object::set( x_type* p_object )
-    {
-        delete f_holder;
-        f_holder = new holder_template< x_type >( p_object );
-        return;
-    }
-
-    template< class x_type >
-    x_type* object::as()
-    {
-        if( f_holder != NULL )
-        {
-            try
-            {
-                f_holder->type();
-            }
-            catch( x_type* t_object )
-            {
-                return t_object;
-            }
-        }
-        return NULL;
-    }
-
-    template< class x_type >
-    const x_type* object::as() const
-    {
-        if( f_holder != NULL )
-        {
-            try
-            {
-                f_holder->type();
-            }
-            catch( x_type* t_object )
-            {
-                return t_object;
-            }
-        }
-        return NULL;
-    }
 
 }
 

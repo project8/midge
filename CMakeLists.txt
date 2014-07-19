@@ -86,18 +86,32 @@ set( midge_initialization_directory
 	initialization
 )
 set( midge_initialization_headers
-	token.hh
+	value.hh
+	object.hh
+	array.hh
+	lingual.hh
+	numerical.hh
+	boolean.hh
+	null.hh
 	processor.hh
-	processor_terminal.hh
-	processor_file.hh
 	lexer.hh
+	reporter.hh
+	serializer.hh
+	compiler.hh
 )
 set( midge_initialization_sources
-	token.cc
+	value.cc
+	object.cc
+	array.cc
+	lingual.cc
+	numerical.cc
+	boolean.cc
+	null.cc
 	processor.cc
-	processor_terminal.cc
-	processor_file.cc
 	lexer.cc
+	reporter.cc
+	serializer.cc
+	compiler.cc
 )
 
 foreach( base ${midge_initialization_headers} )
@@ -344,6 +358,8 @@ set( midge_test_directory
 )
 set( midge_test_programs
 	test_lexer
+	test_compiler
+	test_serializer
 	test_typelength
 	test_typeat
 	test_real

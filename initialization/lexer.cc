@@ -18,7 +18,7 @@ namespace midge
             f_column( 0 ),
             f_char( '\0' ),
             f_states(),
-            f_token()
+            f_buffer()
     {
     }
     lexer::~lexer()
@@ -29,7 +29,7 @@ namespace midge
     //control
     //*******
 
-    void lexer::execute( const string& p_file )
+    void lexer::input( const string& p_file )
     {
         f_stream.open( p_file, std::ios_base::in );
         f_file = p_file;
@@ -218,19 +218,19 @@ namespace midge
         //if at quote, then clear token, then increment, then parse string
         else if( at_exactly( s_quote ) == true )
         {
-            f_token.str().clear();
+            f_buffer.clear();
 
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_string );
+            f_states.push( &lexer::parse_lingual );
             return;
         }
 
         //if at minus, then clear token, then parse numerical mantissa sign
         else if( at_exactly( s_minus ) == true )
         {
-            f_token.str().clear();
+            f_buffer.clear();
 
             f_states.pop();
             f_states.push( &lexer::parse_numerical_mantissa_sign );
@@ -240,7 +240,7 @@ namespace midge
         //if at numeral, then clear token, then parse numerical mantissa pre
         else if( at_one_of( s_numeral_set ) == true )
         {
-            f_token.str().clear();
+            f_buffer.clear();
 
             f_states.pop();
             f_states.push( &lexer::parse_numerical_mantissa_pre );
@@ -250,9 +250,9 @@ namespace midge
         //if at true, then assign token, then process boolean, then increment, then previous
         else if( at_exactly( s_true ) == true )
         {
-            f_token.str().assign( 1, '1' );
+            f_buffer.assign( 1, '1' );
 
-            process_boolean( &f_token );
+            process_boolean( f_buffer );
 
             for( size_t t_index = 0; t_index < s_true.size(); t_index++ )
             {
@@ -265,9 +265,9 @@ namespace midge
         //if at false, then assign token, then process boolean, then increment, then previous
         else if( at_exactly( s_false ) == true )
         {
-            f_token.str().assign( 1, '0' );
+            f_buffer.assign( 1, '0' );
 
-            process_boolean( &f_token );
+            process_boolean( f_buffer );
 
             for( size_t t_index = 0; t_index < s_false.size(); t_index++ )
             {
@@ -307,7 +307,7 @@ namespace midge
         //if at string, then append token, then increment, then recurse
         if( at_one_of( s_string_set ) == true )
         {
-            f_token.str().append( 1, f_char );
+            f_buffer.append( 1, f_char );
 
             increment();
 
@@ -317,7 +317,7 @@ namespace midge
         //if at quote, then process key, then increment, then previous
         else if( at_exactly( s_quote ) == true )
         {
-            process_key( &f_token );
+            process_key( f_buffer );
 
             increment();
 
@@ -332,7 +332,7 @@ namespace midge
             return;
         }
     }
-    void lexer::parse_string()
+    void lexer::parse_lingual()
     {
 #if _midge_debug_lexer_==1
         cout << "in parse_string at <" << f_char << ">" << endl;
@@ -341,7 +341,7 @@ namespace midge
         //if at string, then append token, then increment, then recurse
         if( at_one_of( s_string_set ) == true )
         {
-            f_token.str().append( 1, f_char );
+            f_buffer.append( 1, f_char );
 
             increment();
 
@@ -351,7 +351,7 @@ namespace midge
         //if at quote, then process string, then increment, then previous
         else if( at_exactly( s_quote ) == true )
         {
-            process_string( &f_token );
+            process_lingual( f_buffer );
 
             increment();
 
@@ -375,7 +375,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at numeral, then parse numerical mantissa pre
@@ -400,7 +400,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at numeral, then recurse
@@ -428,7 +428,7 @@ namespace midge
         //if at whitespace, comma, close brace or close bracket, then process numerical, then previous
         else if( (at_one_of( s_whitespace_set ) == true) || (at_exactly( s_comma ) == true) || (at_exactly( s_object_stop ) == true) || (at_exactly( s_array_stop ) == true) )
         {
-            process_numerical( &f_token );
+            process_numerical( f_buffer );
 
             f_states.pop();
             return;
@@ -448,7 +448,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at numeral, then parse numerical mantissa post
@@ -473,7 +473,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at numeral, then recurse
@@ -493,7 +493,7 @@ namespace midge
         //if at whitespace, comma, close brace or close bracket, then process numerical, then previous
         else if( (at_one_of( s_whitespace_set ) == true) || (at_exactly( s_comma ) == true) || (at_exactly( s_object_stop ) == true) || (at_exactly( s_array_stop ) == true) )
         {
-            process_numerical( &f_token );
+            process_numerical( f_buffer );
 
             f_states.pop();
             return;
@@ -513,7 +513,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at minus, then parse numerical exponent value
@@ -546,7 +546,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at numeral, then parse numerical exponent value
@@ -571,7 +571,7 @@ namespace midge
 #endif
 
         //update token and increment
-        f_token.str().append( 1, f_char );
+        f_buffer.append( 1, f_char );
         increment();
 
         //if at numeral, then recurse
@@ -583,7 +583,7 @@ namespace midge
         //if at whitespace, comma, close brace or close bracket, then process numerical, then previous
         else if( (at_one_of( s_whitespace_set ) == true) || (at_exactly( s_comma ) == true) || (at_exactly( s_object_stop ) == true) || (at_exactly( s_array_stop ) == true) )
         {
-            process_numerical( &f_token );
+            process_numerical( f_buffer );
 
             f_states.pop();
             return;
@@ -614,7 +614,7 @@ namespace midge
         //if at quote, then clear token, then increment, then parse key, then parse object mid
         else if( at_exactly( s_quote ) == true )
         {
-            f_token.str().clear();
+            f_buffer.clear();
 
             increment();
 
@@ -657,7 +657,7 @@ namespace midge
         //if at quote, then clear token, then increment, then parse key, then parse object mid
         else if( at_exactly( s_quote ) == true )
         {
-            f_token.str().clear();
+            f_buffer.clear();
 
             increment();
             f_states.pop();

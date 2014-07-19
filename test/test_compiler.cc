@@ -1,4 +1,5 @@
 #include "lexer.hh"
+#include "compiler.hh"
 #include "reporter.hh"
 using namespace midge;
 
@@ -11,16 +12,18 @@ int main( int p_count, char** p_values )
     if( p_count < 2 )
     {
         cout << "usage:" << endl;
-        cout << "  test_lexer <input filename>" << endl;
+        cout << "  test_compiler <input filename>" << endl;
         return (-1);
     }
 
     string t_input_file( p_values[ 1 ] );
 
     lexer t_lexer;
+    compiler t_compiler;
     reporter t_reporter;
 
-    t_reporter.insert_after( &t_lexer );
+    t_compiler.insert_after( &t_lexer );
+    t_reporter.insert_after( &t_compiler );
 
     try
     {

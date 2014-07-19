@@ -137,6 +137,66 @@ namespace midge
         return f_child;
     }
 
+    void processor::process_value( value* p_value )
+    {
+        if( f_child == NULL )
+        {
+            return;
+        }
+        else
+        {
+            f_child->process_value( p_value );
+            return;
+        }
+    }
+    void processor::process_key( string p_string )
+    {
+        if( f_child == NULL )
+        {
+            return;
+        }
+        else
+        {
+            f_child->process_key( p_string );
+            return;
+        }
+    }
+    void processor::process_lingual( string p_string )
+    {
+        if( f_child == NULL )
+        {
+            return;
+        }
+        else
+        {
+            f_child->process_lingual( p_string );
+            return;
+        }
+    }
+    void processor::process_numerical( string p_string )
+    {
+        if( f_child == NULL )
+        {
+            return;
+        }
+        else
+        {
+            f_child->process_numerical( p_string );
+            return;
+        }
+    }
+    void processor::process_boolean( string p_string )
+    {
+        if( f_child == NULL )
+        {
+            return;
+        }
+        else
+        {
+            f_child->process_boolean( p_string );
+            return;
+        }
+    }
     void processor::process_null()
     {
         if( f_child == NULL )
@@ -146,54 +206,6 @@ namespace midge
         else
         {
             f_child->process_null();
-            return;
-        }
-    }
-    void processor::process_key( token* p_token )
-    {
-        if( f_child == NULL )
-        {
-            return;
-        }
-        else
-        {
-            f_child->process_key( p_token );
-            return;
-        }
-    }
-    void processor::process_string( token* p_token )
-    {
-        if( f_child == NULL )
-        {
-            return;
-        }
-        else
-        {
-            f_child->process_string( p_token );
-            return;
-        }
-    }
-    void processor::process_boolean( token* p_token )
-    {
-        if( f_child == NULL )
-        {
-            return;
-        }
-        else
-        {
-            f_child->process_boolean( p_token );
-            return;
-        }
-    }
-    void processor::process_numerical( token* p_token )
-    {
-        if( f_child == NULL )
-        {
-            return;
-        }
-        else
-        {
-            f_child->process_numerical( p_token );
             return;
         }
     }

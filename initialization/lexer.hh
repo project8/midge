@@ -27,7 +27,7 @@ namespace midge
             lexer();
             virtual ~lexer();
 
-            void execute( const string& p_file );
+            void input( const string& p_file );
 
             //*******
             //control
@@ -53,7 +53,7 @@ namespace midge
             void parse_value();
 
             void parse_key();
-            void parse_string();
+            void parse_lingual();
 
             void parse_numerical_mantissa_sign();
             void parse_numerical_mantissa_pre();
@@ -75,7 +75,7 @@ namespace midge
             void parse_error( error p_error );
 
             stack< void (lexer::*)() > f_states;
-            token f_token;
+            string f_buffer;
 
             //*******
             //lexicon

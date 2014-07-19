@@ -1,8 +1,8 @@
 #ifndef _midge_processor_hh_
 #define _midge_processor_hh_
 
-#include "token.hh"
 #include "error.hh"
+#include "value.hh"
 
 namespace midge
 {
@@ -40,11 +40,12 @@ namespace midge
             //*********
 
         public:
+            virtual void process_value( value* p_value );
+            virtual void process_key( string p_string );
+            virtual void process_lingual( string p_string );
+            virtual void process_numerical( string p_string );
+            virtual void process_boolean( string p_string );
             virtual void process_null();
-            virtual void process_key( token* p_token );
-            virtual void process_string( token* p_token );
-            virtual void process_boolean( token* p_token );
-            virtual void process_numerical( token* p_token );
             virtual void process_object_start();
             virtual void process_object_stop();
             virtual void process_array_start();

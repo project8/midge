@@ -1,42 +1,37 @@
 {
-    "midge" :
+    "nodes" :
     {
-        "nodes" :
+        "real_harmonic_producer" :
         {
-            "real_harmonic_producer" :
-            {
-                "name" : "test_producer",
-                "amplitude" : 1.5,
-                "frequency" : 0.0625,
-                "phase" : 0.0
-            },
-
-            "real" :
-            {
-                "name" : "test_real",
-                "allocate" : 1024
-            },
-
-            "real_ascii_consumer" :
-            {
-                "name" : "test_consumer",
-                "file" : "test_setup_one.ascii"
-            },
-
-            "count_control" :
-            {
-                "name" : "test_control",
-                "count" : 1
-            }
+            "name" : "test_producer",
+            "amplitude" : 1.5,
+            "frequency" : 0.0625,
+            "phase" : 0.0
         },
 
-        "links" :
+        "real" :
         {
-            "join" : "test_producer.out test_real.in",
-            "join" : "test_real.out test_consumer.in",
-            "out" : "test_control.out test_producer"
+            "name" : "test_real",
+            "allocate" : 1024
         },
 
-        "execute" : "test_control"
-    }
+        "real_ascii_consumer" :
+        {
+            "name" : "test_consumer",
+            "file" : "test_setup_one.ascii"
+        },
+
+        "count_control" :
+        {
+            "name" : "test_control",
+            "count" : 1
+        }
+    },
+
+    "join" : "test_producer.out test_real.in",
+    "join" : "test_real.out test_consumer.in",
+    "out" : "test_control.out test_producer",
+
+    "execute" : "test_control"
+
 }
