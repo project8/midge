@@ -62,43 +62,36 @@ namespace midge
             }
     };
 
-    template< class x_head, template< class, int > class x_socket, int x_index >
-    class typechain< typenode< x_head, typenull >, x_socket, x_index > :
-        public x_socket< x_head, x_index >
+    template< template< class, int > class x_socket, int x_index >
+    class typechain< typenull, x_socket, x_index >
     {
         public:
-            typechain() :
-                    x_socket< x_head, x_index >()
+            typechain()
             {
             }
 
             template< class x_1 >
-            typechain( x_1& p_1 ) :
-                    x_socket< x_head, x_index >( p_1 )
+            typechain( x_1& )
             {
             }
 
             template< class x_1, class x_2 >
-            typechain( x_1& p_1, x_2& p_2 ) :
-                    x_socket< x_head, x_index >( p_1, p_2 )
+            typechain( x_1&, x_2& )
             {
             }
 
             template< class x_1, class x_2, class x_3 >
-            typechain( x_1& p_1, x_2& p_2, x_3& p_3 ) :
-                    x_socket< x_head, x_index >( p_1, p_2, p_3 )
+            typechain( x_1&, x_2&, x_3& )
             {
             }
 
             template< class x_1, class x_2, class x_3, class x_4 >
-            typechain( x_1& p_1, x_2& p_2, x_3& p_3, x_4& p_4 ) :
-                    x_socket< x_head, x_index >( p_1, p_2, p_3, p_4 )
+            typechain( x_1&, x_2&, x_3&, x_4& )
             {
             }
 
             template< class x_1, class x_2, class x_3, class x_4, class x_5 >
-            typechain( x_1& p_1, x_2& p_2, x_3& p_3, x_4& p_4, x_5& p_5 ) :
-                    x_socket< x_head, x_index >( p_1, p_2, p_3, p_4, p_5 )
+            typechain( x_1&, x_2&, x_3&, x_4&, x_5& )
             {
             }
 

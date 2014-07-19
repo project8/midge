@@ -1,6 +1,7 @@
 #ifndef _midge_serializer_hh_
 #define _midge_serializer_hh_
 
+#include "value.hh"
 #include "processor.hh"
 
 #include <stack>
@@ -16,13 +17,16 @@ namespace midge
         public processor
     {
         public:
-            serializer();
+            serializer( const string& p_file );
             virtual ~serializer();
 
-            void output( const string& p_file );
+        public:
+            void operator()( value* p_value );
+
+        private:
+            void dispatch( value* p_value );
 
         public:
-            virtual void process_value( value* p_value );
             virtual void process_key( string p_string );
             virtual void process_lingual( string p_string );
             virtual void process_numerical( string p_string );
@@ -36,6 +40,9 @@ namespace midge
             virtual void process_stop();
 
         private:
+            string f_file;
+            ofstream f_stream;
+
             class context
             {
                 public:
@@ -48,9 +55,6 @@ namespace midge
             };
 
             stack< context > f_contexts;
-
-            string f_file;
-            ofstream f_stream;
     };
 }
 

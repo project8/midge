@@ -1,6 +1,5 @@
 #include "lexer.hh"
-#include "compiler.hh"
-#include "reporter.hh"
+#include "serializer.hh"
 using namespace midge;
 
 #include <iostream>
@@ -9,25 +8,24 @@ using std::endl;
 
 int main( int p_count, char** p_values )
 {
-    if( p_count < 2 )
+    if( p_count < 3 )
     {
         cout << "usage:" << endl;
-        cout << "  test_compiler <input filename>" << endl;
+        cout << "  test_lexer_serializer <input filename> <output filename>" << endl;
         return (-1);
     }
 
     string t_input_file( p_values[ 1 ] );
+    string t_output_file( p_values[ 2 ] );
 
     lexer t_lexer;
-    compiler t_compiler;
-    reporter t_reporter;
+    serializer t_serializer( t_output_file );
 
-    t_compiler.insert_after( &t_lexer );
-    t_reporter.insert_after( &t_compiler );
+    t_serializer.insert_after( &t_lexer );
 
     try
     {
-        t_lexer.input( t_input_file );
+        t_lexer( t_input_file );
     }
     catch( const error& t_error )
     {

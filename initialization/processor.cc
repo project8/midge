@@ -137,18 +137,6 @@ namespace midge
         return f_child;
     }
 
-    void processor::process_value( value* p_value )
-    {
-        if( f_child == NULL )
-        {
-            return;
-        }
-        else
-        {
-            f_child->process_value( p_value );
-            return;
-        }
-    }
     void processor::process_key( string p_string )
     {
         if( f_child == NULL )

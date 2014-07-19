@@ -18,6 +18,9 @@ namespace midge
             virtual ~compiler();
 
         public:
+            value* operator()();
+
+        public:
             virtual void process_key( string p_string );
             virtual void process_lingual( string p_string );
             virtual void process_numerical( string p_string );

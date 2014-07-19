@@ -22,7 +22,14 @@ namespace midge
     {
     }
 
-    void reporter::process_value( value* p_value )
+    void reporter::operator()( value* p_value )
+    {
+        process_start();
+        dispatch( p_value );
+        process_stop();
+        return;
+    }
+    void reporter::dispatch( value* p_value )
     {
         if( p_value->is< object >() == true )
         {
@@ -35,7 +42,7 @@ namespace midge
             {
                 t_value = t_object->at( t_index );
                 process_key( t_value.first );
-                process_value( t_value.second );
+                dispatch( t_value.second );
             }
 
             process_object_stop();
@@ -53,7 +60,7 @@ namespace midge
             for( uint64_t t_index = 0; t_index < t_array->size(); t_index++ )
             {
                 t_value = t_array->at( t_index );
-                process_value( t_value );
+                dispatch( t_value );
             }
 
             process_array_stop();
@@ -85,9 +92,10 @@ namespace midge
             return;
         }
 
-        throw error() << "reporter tried to process unknown object type";
+        throw error() << "reporter tried to dispatch unknown object type";
         return;
     }
+
     void reporter::process_key( string p_string )
     {
         f_contexts.top().key.assign( string( "\"" ) + p_string + string( "\" : " ) );

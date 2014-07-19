@@ -29,7 +29,7 @@ namespace midge
     //control
     //*******
 
-    void lexer::input( const string& p_file )
+    void lexer::operator()( const string& p_file )
     {
         f_stream.open( p_file, std::ios_base::in );
         f_file = p_file;
@@ -39,7 +39,7 @@ namespace midge
 
         process_start();
 
-        f_states.push( &lexer::parse_value );
+        f_states.push( &lexer::lex_value );
         while( true )
         {
             ((this)->*(f_states.top()))();
@@ -179,10 +179,10 @@ namespace midge
     //state
     //*****
 
-    void lexer::parse_value()
+    void lexer::lex_value()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_value at <" << f_char << ">" << endl;
+        cout << "in lex_value at <" << f_char << ">" << endl;
 #endif
         //if at whitespace, then increment, then recurse
         if( at_one_of( s_whitespace_set ) == true )
@@ -200,7 +200,7 @@ namespace midge
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_object_head );
+            f_states.push( &lexer::lex_object_head );
             return;
         }
 
@@ -211,7 +211,7 @@ namespace midge
 
             increment();
             f_states.pop();
-            f_states.push( &lexer::parse_array_head );
+            f_states.push( &lexer::lex_array_head );
             return;
         }
 
@@ -223,7 +223,7 @@ namespace midge
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_lingual );
+            f_states.push( &lexer::lex_lingual );
             return;
         }
 
@@ -233,7 +233,7 @@ namespace midge
             f_buffer.clear();
 
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_mantissa_sign );
+            f_states.push( &lexer::lex_numerical_mantissa_sign );
             return;
         }
 
@@ -243,7 +243,7 @@ namespace midge
             f_buffer.clear();
 
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_mantissa_pre );
+            f_states.push( &lexer::lex_numerical_mantissa_pre );
             return;
         }
 
@@ -293,15 +293,15 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_value" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_value" );
             return;
         }
     }
 
-    void lexer::parse_key()
+    void lexer::lex_key()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_key at <" << f_char << ">" << endl;
+        cout << "in lex_key at <" << f_char << ">" << endl;
 #endif
 
         //if at string, then append token, then increment, then recurse
@@ -328,14 +328,14 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_key" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_key" );
             return;
         }
     }
-    void lexer::parse_lingual()
+    void lexer::lex_lingual()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_string at <" << f_char << ">" << endl;
+        cout << "in lex_string at <" << f_char << ">" << endl;
 #endif
 
         //if at string, then append token, then increment, then recurse
@@ -362,16 +362,16 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_string" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_string" );
 
             return;
         }
     }
 
-    void lexer::parse_numerical_mantissa_sign()
+    void lexer::lex_numerical_mantissa_sign()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_mantissa_sign at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_mantissa_sign at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -382,21 +382,21 @@ namespace midge
         if( at_one_of( s_numeral_set ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_mantissa_pre );
+            f_states.push( &lexer::lex_numerical_mantissa_pre );
             return;
         }
 
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_mantissa_sign" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_mantissa_sign" );
             return;
         }
     }
-    void lexer::parse_numerical_mantissa_pre()
+    void lexer::lex_numerical_mantissa_pre()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_mantissa_pre at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_mantissa_pre at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -413,7 +413,7 @@ namespace midge
         else if( at_exactly( s_decimal ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_decimal );
+            f_states.push( &lexer::lex_numerical_decimal );
             return;
         }
 
@@ -421,7 +421,7 @@ namespace midge
         else if( at_one_of( s_power_set ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_power );
+            f_states.push( &lexer::lex_numerical_power );
             return;
         }
 
@@ -437,14 +437,14 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_mantissa_pre" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_mantissa_pre" );
             return;
         }
     }
-    void lexer::parse_numerical_decimal()
+    void lexer::lex_numerical_decimal()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_decimal at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_decimal at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -455,21 +455,21 @@ namespace midge
         if( at_one_of( s_numeral_set ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_mantissa_post );
+            f_states.push( &lexer::lex_numerical_mantissa_post );
             return;
         }
 
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_decimal" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_decimal" );
             return;
         }
     }
-    void lexer::parse_numerical_mantissa_post()
+    void lexer::lex_numerical_mantissa_post()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_mantissa_post at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_mantissa_post at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -486,7 +486,7 @@ namespace midge
         else if( at_one_of( s_power_set ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_power );
+            f_states.push( &lexer::lex_numerical_power );
             return;
         }
 
@@ -502,14 +502,14 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_mantissa_post" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_mantissa_post" );
             return;
         }
     }
-    void lexer::parse_numerical_power()
+    void lexer::lex_numerical_power()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_power at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_power at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -520,7 +520,7 @@ namespace midge
         if( at_exactly( s_minus ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_exponent_sign );
+            f_states.push( &lexer::lex_numerical_exponent_sign );
             return;
         }
 
@@ -528,21 +528,21 @@ namespace midge
         if( at_one_of( s_numeral_set ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_exponent_value );
+            f_states.push( &lexer::lex_numerical_exponent_value );
             return;
         }
 
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_power" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_power" );
             return;
         }
     }
-    void lexer::parse_numerical_exponent_sign()
+    void lexer::lex_numerical_exponent_sign()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_exponent_sign at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_exponent_sign at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -553,21 +553,21 @@ namespace midge
         if( at_one_of( s_numeral_set ) == true )
         {
             f_states.pop();
-            f_states.push( &lexer::parse_numerical_exponent_value );
+            f_states.push( &lexer::lex_numerical_exponent_value );
             return;
         }
 
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_exponent_sign" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_exponent_sign" );
             return;
         }
     }
-    void lexer::parse_numerical_exponent_value()
+    void lexer::lex_numerical_exponent_value()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_numerical_exponent_value at <" << f_char << ">" << endl;
+        cout << "in lex_numerical_exponent_value at <" << f_char << ">" << endl;
 #endif
 
         //update token and increment
@@ -592,15 +592,15 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_numerical_exponent_value" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_numerical_exponent_value" );
             return;
         }
     }
 
-    void lexer::parse_object_head()
+    void lexer::lex_object_head()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_object_head at <" << f_char << ">" << endl;
+        cout << "in lex_object_head at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then increment, then recurse
@@ -619,8 +619,8 @@ namespace midge
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_object_mid );
-            f_states.push( &lexer::parse_key );
+            f_states.push( &lexer::lex_object_mid );
+            f_states.push( &lexer::lex_key );
             return;
         }
 
@@ -637,14 +637,14 @@ namespace midge
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_head" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_object_head" );
             return;
         }
     }
-    void lexer::parse_object_next()
+    void lexer::lex_object_next()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_object_next at <" << f_char << ">" << endl;
+        cout << "in lex_object_next at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then recurse
@@ -661,22 +661,22 @@ namespace midge
 
             increment();
             f_states.pop();
-            f_states.push( &lexer::parse_object_mid );
-            f_states.push( &lexer::parse_key );
+            f_states.push( &lexer::lex_object_mid );
+            f_states.push( &lexer::lex_key );
             return;
         }
 
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_next" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_object_next" );
             return;
         }
     }
-    void lexer::parse_object_mid()
+    void lexer::lex_object_mid()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_object_mid at <" << f_char << ">" << endl;
+        cout << "in lex_object_mid at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then recurse
@@ -692,22 +692,22 @@ namespace midge
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_object_stop );
-            f_states.push( &lexer::parse_value );
+            f_states.push( &lexer::lex_object_stop );
+            f_states.push( &lexer::lex_value );
             return;
         }
 
         //if at anything else, then error
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_mid" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_object_mid" );
             return;
         }
     }
-    void lexer::parse_object_stop()
+    void lexer::lex_object_stop()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_object_stop at <" << f_char << ">" << endl;
+        cout << "in lex_object_stop at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then increment, then recurse
@@ -724,7 +724,7 @@ namespace midge
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_object_next );
+            f_states.push( &lexer::lex_object_next );
             return;
         }
 
@@ -738,15 +738,18 @@ namespace midge
             return;
         }
 
-        //unknown
-        parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_object_stop" );
-        return;
+        //if at anything else, then error
+        else
+        {
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_object_stop" );
+            return;
+        }
     }
 
-    void lexer::parse_array_head()
+    void lexer::lex_array_head()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_array_head at <" << f_char << ">" << endl;
+        cout << "in lex_array_head at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then increment, then recurse
@@ -771,15 +774,15 @@ namespace midge
         else
         {
             f_states.pop();
-            f_states.push( &lexer::parse_array_stop );
-            f_states.push( &lexer::parse_value );
+            f_states.push( &lexer::lex_array_stop );
+            f_states.push( &lexer::lex_value );
             return;
         }
     }
-    void lexer::parse_array_next()
+    void lexer::lex_array_next()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_array_next at <" << f_char << ">" << endl;
+        cout << "in lex_array_next at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then increment, then recurse
@@ -793,15 +796,15 @@ namespace midge
         else
         {
             f_states.pop();
-            f_states.push( &lexer::parse_array_stop );
-            f_states.push( &lexer::parse_value );
+            f_states.push( &lexer::lex_array_stop );
+            f_states.push( &lexer::lex_value );
             return;
         }
     }
-    void lexer::parse_array_stop()
+    void lexer::lex_array_stop()
     {
 #if _midge_debug_lexer_==1
-        cout << "in parse_array_stop at <" << f_char << ">" << endl;
+        cout << "in lex_array_stop at <" << f_char << ">" << endl;
 #endif
 
         //if at whitespace, then increment, then recurse
@@ -818,7 +821,7 @@ namespace midge
             increment();
 
             f_states.pop();
-            f_states.push( &lexer::parse_array_next );
+            f_states.push( &lexer::lex_array_next );
             return;
         }
 
@@ -836,12 +839,12 @@ namespace midge
         //if at anything else, then parse value, then parse array stop
         else
         {
-            parse_error( error() << "lexer encountered unexpected character <" << f_char << "> in parse_array_stop" );
+            lex_error( error() << "lexer encountered unexpected character <" << f_char << "> in lex_array_stop" );
             return;
         }
     }
 
-    void lexer::parse_error( error p_error )
+    void lexer::lex_error( error p_error )
     {
         p_error << ":\n";
         p_error << "  file <" << f_file << ">\n";

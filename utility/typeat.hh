@@ -24,18 +24,11 @@ namespace midge
             typedef x_head result;
     };
 
-    template< class x_head, int x_index >
-    class typeat< typenode< x_head, typenull >, x_index >
+    template< int x_index >
+    class typeat< typenull, x_index >
     {
         public:
             typedef typenull result;
-    };
-
-    template< class x_head >
-    class typeat< typenode< x_head, typenull >, 0 >
-    {
-        public:
-            typedef x_head result;
     };
 
 }

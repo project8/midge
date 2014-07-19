@@ -27,7 +27,7 @@ namespace midge
             lexer();
             virtual ~lexer();
 
-            void input( const string& p_file );
+            void operator()( const string& p_file );
 
             //*******
             //control
@@ -50,29 +50,29 @@ namespace midge
             //*****
 
         private:
-            void parse_value();
+            void lex_value();
 
-            void parse_key();
-            void parse_lingual();
+            void lex_key();
+            void lex_lingual();
 
-            void parse_numerical_mantissa_sign();
-            void parse_numerical_mantissa_pre();
-            void parse_numerical_decimal();
-            void parse_numerical_mantissa_post();
-            void parse_numerical_power();
-            void parse_numerical_exponent_sign();
-            void parse_numerical_exponent_value();
+            void lex_numerical_mantissa_sign();
+            void lex_numerical_mantissa_pre();
+            void lex_numerical_decimal();
+            void lex_numerical_mantissa_post();
+            void lex_numerical_power();
+            void lex_numerical_exponent_sign();
+            void lex_numerical_exponent_value();
 
-            void parse_object_head();
-            void parse_object_next();
-            void parse_object_mid();
-            void parse_object_stop();
+            void lex_object_head();
+            void lex_object_next();
+            void lex_object_mid();
+            void lex_object_stop();
 
-            void parse_array_head();
-            void parse_array_next();
-            void parse_array_stop();
+            void lex_array_head();
+            void lex_array_next();
+            void lex_array_stop();
 
-            void parse_error( error p_error );
+            void lex_error( error p_error );
 
             stack< void (lexer::*)() > f_states;
             string f_buffer;

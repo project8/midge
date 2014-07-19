@@ -17,6 +17,12 @@ namespace midge
     }
     compiler::~compiler()
     {
+        delete f_result;
+    }
+
+    value* compiler::operator()()
+    {
+        return f_result;
     }
 
     void compiler::process_key( string p_string )
@@ -68,16 +74,16 @@ namespace midge
     }
     void compiler::process_start()
     {
+        delete f_result;
         return;
     }
     void compiler::process_stop()
     {
-        processor::process_start();
-        processor::process_value( f_result );
-        processor::process_stop();
-
-        delete f_result;
-
+        while( f_values.size() != 0 )
+        {
+            delete f_values.top();
+            f_values.pop();
+        }
         return;
     }
 

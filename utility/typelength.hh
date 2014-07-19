@@ -20,13 +20,13 @@ namespace midge
             };
     };
 
-    template< class x_head >
-    class typelength< typenode< x_head, typenull > >
+    template< >
+    class typelength< typenull >
     {
         public:
             enum
             {
-                result = 1
+                result = 0
             };
     };
 

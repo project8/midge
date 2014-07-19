@@ -2,6 +2,7 @@
 #define _midge_typelist_hh_
 
 #include "typenode.hh"
+#include "typenull.hh"
 
 #define typelist_0() ::midge::typenull
 #define typelist_1(one) ::midge::typenode< one, ::midge::typenull >

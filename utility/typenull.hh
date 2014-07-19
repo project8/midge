@@ -6,9 +6,6 @@ namespace midge
 
     class typenull
     {
-        private:
-            typenull();
-            typenull( const typenull& );
     };
 
 }

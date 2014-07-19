@@ -1,6 +1,7 @@
 #ifndef _midge_reporter_hh_
 #define _midge_reporter_hh_
 
+#include "value.hh"
 #include "processor.hh"
 
 #include <stack>
@@ -17,7 +18,12 @@ namespace midge
             virtual ~reporter();
 
         public:
-            virtual void process_value( value* p_value );
+            void operator()( value* f_value );
+
+        private:
+            void dispatch( value* f_value );
+
+        public:
             virtual void process_key( string p_string );
             virtual void process_lingual( string p_string );
             virtual void process_numerical( string p_string );

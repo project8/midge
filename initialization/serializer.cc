@@ -10,23 +10,24 @@
 namespace midge
 {
 
-    serializer::serializer() :
-            f_contexts(),
-            f_file(),
-            f_stream()
+    serializer::serializer( const string& p_file ) :
+            f_file( p_file ),
+            f_stream(),
+            f_contexts()
     {
     }
     serializer::~serializer()
     {
     }
 
-    void serializer::output( const string& p_file )
+    void serializer::operator()( value* p_value )
     {
-        f_file = p_file;
+        process_start();
+        dispatch( p_value );
+        process_stop();
         return;
     }
-
-    void serializer::process_value( value* p_value )
+    void serializer::dispatch( value* p_value )
     {
         if( p_value->is< object >() == true )
         {
@@ -39,7 +40,7 @@ namespace midge
             {
                 t_value = t_object->at( t_index );
                 process_key( t_value.first );
-                process_value( t_value.second );
+                dispatch( t_value.second );
             }
 
             process_object_stop();
@@ -57,7 +58,7 @@ namespace midge
             for( uint64_t t_index = 0; t_index < t_array->size(); t_index++ )
             {
                 t_value = t_array->at( t_index );
-                process_value( t_value );
+                dispatch( t_value );
             }
 
             process_array_stop();
@@ -89,9 +90,10 @@ namespace midge
             return;
         }
 
-        throw error() << "serializer tried to process unknown object type";
+        throw error() << "serializer tried to dispatch unknown object type";
         return;
     }
+
     void serializer::process_key( string p_string )
     {
         f_contexts.top().key.assign( string( "\"" ) + p_string + string( "\" : " ) );

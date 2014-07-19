@@ -52,6 +52,8 @@ set( midge_utility_headers
 	typelist.hh
 	typelength.hh
 	typeat.hh
+	typein.hh
+	typeif.hh
 	typechain.hh
 )
 set( midge_utility_sources
@@ -98,6 +100,11 @@ set( midge_initialization_headers
 	reporter.hh
 	serializer.hh
 	compiler.hh
+	object_builder.hh
+	lingual_builder.hh
+	numerical_builder.hh
+	boolean_builder.hh
+	null_builder.hh
 )
 set( midge_initialization_sources
 	value.cc
@@ -136,10 +143,11 @@ set( midge_json_directory
 	json
 )
 set( midge_json_files
-	test_setup_one.json
-	test_objects.json
-	test_arrays.json
 	test_types.json
+	test_arrays.json
+	test_objects.json
+	test_builder.json
+	test_setup_one.json
 )
 
 foreach( base ${midge_json_files} )
@@ -357,9 +365,11 @@ set( midge_test_directory
 	test
 )
 set( midge_test_programs
-	test_lexer
-	test_compiler
-	test_serializer
+	test_lexer_reporter
+	test_lexer_serializer
+	test_lexer_compiler_reporter
+	test_lexer_compiler_serializer
+	test_builder
 	test_typelength
 	test_typeat
 	test_real
@@ -373,4 +383,3 @@ foreach( program ${midge_test_programs} )
 	target_link_libraries( ${program} ${midge_test_dependencies} ${midge_external_libraries} )
 	install( TARGETS ${program} DESTINATION bin )
 endforeach( program )
-

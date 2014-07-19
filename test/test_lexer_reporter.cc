@@ -11,7 +11,7 @@ int main( int p_count, char** p_values )
     if( p_count < 2 )
     {
         cout << "usage:" << endl;
-        cout << "  test_lexer <input filename>" << endl;
+        cout << "  test_lexer_reporter <input filename>" << endl;
         return (-1);
     }
 
@@ -24,7 +24,7 @@ int main( int p_count, char** p_values )
 
     try
     {
-        t_lexer.input( t_input_file );
+        t_lexer( t_input_file );
     }
     catch( const error& t_error )
     {

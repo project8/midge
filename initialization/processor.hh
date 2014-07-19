@@ -2,7 +2,6 @@
 #define _midge_processor_hh_
 
 #include "error.hh"
-#include "value.hh"
 
 namespace midge
 {
@@ -40,7 +39,6 @@ namespace midge
             //*********
 
         public:
-            virtual void process_value( value* p_value );
             virtual void process_key( string p_string );
             virtual void process_lingual( string p_string );
             virtual void process_numerical( string p_string );
