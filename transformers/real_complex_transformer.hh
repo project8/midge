@@ -10,7 +10,7 @@ namespace midge
 {
 
     class real_complex_transformer :
-        public transformer< real_complex_transformer, typelist_1( real ),typelist_1( complex ) >
+        public _transformer< real_complex_transformer, typelist_1( real ),typelist_1( complex ) >
     {
         public:
             real_complex_transformer();
@@ -23,14 +23,14 @@ namespace midge
                 e_imaginary = 1
             } mode;
 
-            void set_mode( const mode& p_mode );
+            void set_mode( const string& p_string );
             const mode& get_mode() const;
 
         private:
             mode f_mode;
             uint64_t f_size;
-            real_t* f_input;
-            complex_t* f_output;
+            real_t* f_in_raw;
+            complex_t* f_out_raw;
 
         protected:
             void initialize_transformer();

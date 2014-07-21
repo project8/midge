@@ -4,10 +4,10 @@ namespace midge
 {
 
     real_ascii_consumer::real_ascii_consumer() :
-            f_filename( "" ),
-            f_filestream(),
+            f_file( "" ),
+            f_stream(),
             f_internal( 0 ),
-            f_data( NULL ),
+            f_raw( NULL ),
             f_size( 0 )
     {
     }
@@ -15,21 +15,21 @@ namespace midge
     {
     }
 
-    void real_ascii_consumer::set_filename( const string& p_filename )
+    void real_ascii_consumer::set_file( const string& p_file )
     {
-        f_filename = p_filename;
+        f_file = p_file;
         return;
     }
-    const string& real_ascii_consumer::get_filename() const
+    const string& real_ascii_consumer::get_file() const
     {
-        return f_filename;
+        return f_file;
     }
 
     void real_ascii_consumer::initialize_consumer()
     {
-        f_filestream.open( f_filename, std::ios_base::trunc );
-        f_data = input< 0 >()->data();
-        f_size = input< 0 >()->size();
+        f_stream.open( f_file, std::ios_base::trunc );
+        f_raw = input< 0 >()->raw();
+        f_size = input< 0 >()->get_size();
 
         return;
     }
@@ -38,7 +38,7 @@ namespace midge
     {
         for( uint64_t t_index = 0; t_index < f_size; t_index++ )
         {
-            f_filestream << t_index + f_internal << " " << f_data[ t_index ] << "\n";
+            f_stream << t_index + f_internal << " " << f_raw[ t_index ] << "\n";
         }
 
         f_internal += f_size;
@@ -48,6 +48,6 @@ namespace midge
 
     void real_ascii_consumer::finalize_consumer()
     {
-        f_filestream.close();
+        f_stream.close();
     }
 }

@@ -1,14 +1,14 @@
 #ifndef _midge_complex_hh_
 #define _midge_complex_hh_
 
-#include "operand.hh"
+#include "data.hh"
 #include "types.hh"
 
 namespace midge
 {
 
     class complex :
-        public operand< complex, complex_t >
+        public _data< complex, complex_t >
     {
         public:
             complex();

@@ -29,9 +29,9 @@ namespace midge
         public:
             void operator()( value* p_value )
             {
-                if( p_value->is< null >() == true )
+                if( p_value->is< ::midge::null >() == true )
                 {
-                    operator()( p_value->as< null >() );
+                    operator()( p_value->as< ::midge::null >() );
                 }
                 else
                 {
@@ -39,7 +39,7 @@ namespace midge
                 }
                 return;
             }
-            void operator()( null* p_null )
+            void operator()( ::midge::null* )
             {
                 return;
             }

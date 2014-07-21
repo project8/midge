@@ -42,8 +42,8 @@ class child
 typedef object_builder< child > child_builder;
 
 static const int s_child =
-    child_builder::add_lingual< string >( &child::first, "first" ) +
-    child_builder::add_numerical< double >( &child::second, "second" );
+    child_builder::lingual< string >( &child::first, "first" ) +
+    child_builder::numerical< double >( &child::second, "second" );
 
 class parent
 {
@@ -75,7 +75,7 @@ class parent
 typedef object_builder< parent > parent_builder;
 
 static const int s_parent =
-    parent_builder::add_object< child >( &parent::add, "add" );
+    parent_builder::object< child >( &parent::add, "add" );
 
 int main( int p_count, char** p_values )
 {

@@ -1,0 +1,131 @@
+{
+    "real" :
+    {
+        "name" : "real_in",
+        "size" : 8192
+    },
+
+    "complex" :
+    {
+        "name" : "complex_in",
+        "size" : 8192
+    },
+
+    "complex" :
+    {
+        "name" : "complex_out",
+        "size" : 8192
+    },
+
+    "real" :
+    {
+        "name" : "real_out",
+        "size" : 8192
+    },
+
+    "real" :
+    {
+        "name" : "imaginary_out",
+        "size" : 8192
+    },
+
+    "real" :
+    {
+        "name" : "modulus_out",
+        "size" : 8192
+    },
+
+    "real" :
+    {
+        "name" : "argument_out",
+        "size" : 8192
+    },
+
+    "real_harmonic_producer" :
+    {
+        "name" : "producer",
+        "amplitude" : 1.5,
+        "frequency" : 0.0625,
+        "phase" : 0.0
+    },
+
+    "real_complex_transformer" :
+    {
+        "name" : "real_complex_real",
+        "mode" : "real"
+    },
+
+    "complex_forward_fourier_transformer" :
+    {
+        "name" : "fft"
+    },
+
+    "complex_real_transformer" :
+    {
+        "name" : "complex_real_real",
+        "mode" : "real"
+    },
+
+    "complex_real_transformer" :
+    {
+        "name" : "complex_real_imaginary",
+        "mode" : "imaginary"
+    },
+
+    "complex_real_transformer" :
+    {
+        "name" : "complex_real_modulus",
+        "mode" : "modulus"
+    },
+
+    "complex_real_transformer" :
+    {
+        "name" : "complex_real_argument",
+        "mode" : "argument"
+    },
+
+    "real_ascii_consumer" :
+    {
+        "name" : "consumer_real",
+        "file" : "test_fourier_transform.real.ascii"
+    },
+
+    "real_ascii_consumer" :
+    {
+        "name" : "consumer_imaginary",
+        "file" : "test_fourier_transform.imaginary.ascii"
+    },
+
+    "real_ascii_consumer" :
+    {
+        "name" : "consumer_modulus",
+        "file" : "test_fourier_transform.modulus.ascii"
+    },
+
+    "real_ascii_consumer" :
+    {
+        "name" : "consumer_argument",
+        "file" : "test_fourier_transform.argument.ascii"
+    },
+
+    "join" : "producer.out_0:real_in.in",
+    "join" : "real_in.out:real_complex_real.in_0",
+    "join" : "real_complex_real.out_0:complex_in.in",
+    "join" : "complex_in.out:fft.in_0",
+    "join" : "fft.out_0:complex_out.in",
+    "join" : "complex_out.out:complex_real_real.in_0",
+    "join" : "complex_out.out:complex_real_imaginary.in_0",
+    "join" : "complex_out.out:complex_real_modulus.in_0",
+    "join" : "complex_out.out:complex_real_argument.in_0",
+    "join" : "complex_real_real.out_0:real_out.in",
+    "join" : "complex_real_imaginary.out_0:imaginary_out.in",
+    "join" : "complex_real_modulus.out_0:modulus_out.in",
+    "join" : "complex_real_argument.out_0:argument_out.in",
+    "join" : "real_out.out:consumer_real.in_0",
+    "join" : "imaginary_out.out:consumer_imaginary.in_0",
+    "join" : "modulus_out.out:consumer_modulus.in_0",
+    "join" : "argument_out.out:consumer_argument.in_0",
+
+    "run" : "producer"
+
+}

@@ -15,7 +15,7 @@ namespace midge
             virtual ~member();
 
         public:
-            virtual void connect( node* p_node );
+            void connect( node* p_node );
 
         protected:
             x_parent f_parent;

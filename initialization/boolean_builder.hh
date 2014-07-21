@@ -29,9 +29,9 @@ namespace midge
         public:
             void operator()( value* p_value )
             {
-                if( p_value->is< boolean >() == true )
+                if( p_value->is< ::midge::boolean >() == true )
                 {
-                    operator()( p_value->as< boolean >() );
+                    operator()( p_value->as< ::midge::boolean >() );
                 }
                 else
                 {
@@ -39,11 +39,11 @@ namespace midge
                 }
                 return;
             }
-            void operator()( boolean* p_boolean )
+            void operator()( ::midge::boolean* p_boolean )
             {
                 stringstream t_stream;
-                t_stream << p_boolean->str();
-                t_stream >> (*f_type);
+                (void) (t_stream << p_boolean->str());
+                (void) (t_stream >> (*f_type));
                 return;
             }
 

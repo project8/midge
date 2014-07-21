@@ -1,6 +1,7 @@
 #ifndef _midge_consumer_hh_
 #define _midge_consumer_hh_
 
+#include "node.hh"
 #include "in.hh"
 #include "typechain.hh"
 #include "typelength.hh"
@@ -12,17 +13,27 @@ using std::vector;
 namespace midge
 {
 
-    template< class x_type, class x_input_list >
     class consumer :
-        virtual public component,
-        public typechain< x_input_list, in >
+        virtual public node
+    {
+        protected:
+            consumer();
+
+        public:
+            virtual ~consumer();
+    };
+
+    template< class x_type, class x_input_list >
+    class _consumer :
+        public consumer,
+        public typechain< x_input_list, _in >
     {
         public:
             using node::input;
 
         public:
-            consumer();
-            virtual ~consumer();
+            _consumer();
+            virtual ~_consumer();
 
             //***********
             //composition
@@ -32,7 +43,7 @@ namespace midge
             template< int x_index >
             typename typeat< x_input_list, x_index >::result* input()
             {
-                return this->in< typename typeat< x_input_list, x_index >::result, x_index >::get();
+                return this->_in< typename typeat< x_input_list, x_index >::result, x_index >::get();
             }
 
             //******
@@ -59,9 +70,9 @@ namespace midge
     };
 
     template< class x_type, class x_input_list >
-    consumer< x_type, x_input_list >::consumer() :
-            component(),
-            typechain< x_input_list, in >( f_inputs ),
+    _consumer< x_type, x_input_list >::_consumer() :
+            consumer(),
+            typechain< x_input_list, _in >( f_inputs ),
             f_state( e_idle ),
             f_count( 0 )
     {
@@ -71,7 +82,7 @@ namespace midge
         }
     }
     template< class x_type, class x_input_list >
-    consumer< x_type, x_input_list >::~consumer()
+    _consumer< x_type, x_input_list >::~_consumer()
     {
     }
 
@@ -80,7 +91,7 @@ namespace midge
     //******
 
     template< class x_type, class x_input_list >
-    inline void consumer< x_type, x_input_list >::initialize()
+    inline void _consumer< x_type, x_input_list >::initialize()
     {
         if( f_state == e_idle )
         {
@@ -111,7 +122,7 @@ namespace midge
         return;
     }
     template< class x_type, class x_input_list >
-    inline void consumer< x_type, x_input_list >::execute()
+    inline void _consumer< x_type, x_input_list >::execute()
     {
         if( f_state == e_initialized )
         {
@@ -132,7 +143,7 @@ namespace midge
         return;
     }
     template< class x_type, class x_input_list >
-    inline void consumer< x_type, x_input_list >::finalize()
+    inline void _consumer< x_type, x_input_list >::finalize()
     {
         if( f_state == e_initialized )
         {
@@ -156,21 +167,20 @@ namespace midge
     }
 
     template< class x_type, class x_input_list >
-    inline void consumer< x_type, x_input_list >::initialize_consumer()
+    inline void _consumer< x_type, x_input_list >::initialize_consumer()
     {
         return;
     }
     template< class x_type, class x_input_list >
-    inline void consumer< x_type, x_input_list >::execute_consumer()
+    inline void _consumer< x_type, x_input_list >::execute_consumer()
     {
         return;
     }
     template< class x_type, class x_input_list >
-    inline void consumer< x_type, x_input_list >::finalize_consumer()
+    inline void _consumer< x_type, x_input_list >::finalize_consumer()
     {
         return;
     }
-
 
 }
 

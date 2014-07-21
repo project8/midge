@@ -11,7 +11,7 @@ using std::map;
 namespace midge
 {
 
-    typedef typelist_1( string ) lingual_types;
+    typedef typelist_1( string )lingual_types;
 
     template< class x_type >
     class lingual_builder
@@ -29,9 +29,9 @@ namespace midge
         public:
             void operator()( value* p_value )
             {
-                if( p_value->is< lingual >() == true )
+                if( p_value->is< ::midge::lingual >() == true )
                 {
-                    operator()( p_value->as< lingual >() );
+                    operator()( p_value->as< ::midge::lingual >() );
                 }
                 else
                 {
@@ -39,11 +39,11 @@ namespace midge
                 }
                 return;
             }
-            void operator()( lingual* p_lingual )
+            void operator()( ::midge::lingual* p_lingual )
             {
                 stringstream t_stream;
-                t_stream << p_lingual->str();
-                t_stream >> (*f_type);
+                (void) (t_stream << p_lingual->str());
+                (void) (t_stream >> (*f_type));
                 return;
             }
 

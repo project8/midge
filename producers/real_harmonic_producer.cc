@@ -10,7 +10,7 @@ namespace midge
             f_frequency( .1 ),
             f_phase( 0. ),
             f_internal( 0. ),
-            f_data( NULL ),
+            f_raw( NULL ),
             f_size( 0 )
     {
     }
@@ -50,8 +50,8 @@ namespace midge
 
     void real_harmonic_producer::initialize_producer()
     {
-        f_size = output< 0 >()->size();
-        f_data = output< 0 >()->data();
+        f_size = output< 0 >()->get_size();
+        f_raw = output< 0 >()->raw();
         return;
     }
 
@@ -59,7 +59,7 @@ namespace midge
     {
         for( uint64_t t_index = 0; t_index < f_size; t_index++ )
         {
-            f_data[ t_index ] = f_amplitude * cos( 2. * M_PI * f_frequency * t_index + f_phase + f_internal );
+            f_raw[ t_index ] = f_amplitude * cos( 2. * M_PI * f_frequency * t_index + f_phase + f_internal );
         }
 
         f_internal += 2. * M_PI * f_frequency * f_size;

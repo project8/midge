@@ -9,7 +9,7 @@ namespace midge
 {
 
     class real_harmonic_producer :
-        public producer< real_harmonic_producer, typelist_1( real ) >
+        public _producer< real_harmonic_producer, typelist_1( real ) >
     {
         public:
             real_harmonic_producer();
@@ -30,7 +30,7 @@ namespace midge
             real_t f_frequency;
             real_t f_phase;
             real_t f_internal;
-            real_t* f_data;
+            real_t* f_raw;
             uint64_t f_size;
 
         protected:

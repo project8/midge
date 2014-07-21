@@ -11,7 +11,7 @@ namespace midge
 {
 
     class complex_forward_fourier_transformer :
-        public transformer< complex_forward_fourier_transformer, typelist_1( complex ), typelist_1( complex ) >
+        public _transformer< complex_forward_fourier_transformer, typelist_1( complex ), typelist_1( complex ) >
     {
         public:
             complex_forward_fourier_transformer();

@@ -10,7 +10,7 @@ int main()
 
     real t_real;
     t_real.set_name( "test_real" );
-    t_real.allocate( 1024 );
+    t_real.set_size( 1024 );
 
     t_real.initialize();
     t_real.execute();

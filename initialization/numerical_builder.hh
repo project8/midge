@@ -11,7 +11,7 @@ using std::map;
 namespace midge
 {
 
-    typedef typelist_10( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double ) numerical_types;
+    typedef typelist_10( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double )numerical_types;
 
     template< class x_type >
     class numerical_builder
@@ -29,9 +29,9 @@ namespace midge
         public:
             void operator()( value* p_value )
             {
-                if( p_value->is< numerical >() == true )
+                if( p_value->is< ::midge::numerical >() == true )
                 {
-                    operator()( p_value->as< numerical >() );
+                    operator()( p_value->as< ::midge::numerical >() );
                 }
                 else
                 {
@@ -39,11 +39,11 @@ namespace midge
                 }
                 return;
             }
-            void operator()( numerical* p_numerical )
+            void operator()( ::midge::numerical* p_numerical )
             {
                 stringstream t_stream;
-                t_stream << p_numerical->str();
-                t_stream >> (*f_type);
+                (void) (t_stream << p_numerical->str());
+                (void) (t_stream >> (*f_type));
                 return;
             }
 

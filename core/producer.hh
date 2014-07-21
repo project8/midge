@@ -1,6 +1,7 @@
 #ifndef _midge_producer_hh_
 #define _midge_producer_hh_
 
+#include "node.hh"
 #include "out.hh"
 #include "typechain.hh"
 #include "typelength.hh"
@@ -12,17 +13,27 @@ using std::vector;
 namespace midge
 {
 
-    template< class x_type, class x_output_list >
     class producer :
-        virtual public component,
-        public typechain< x_output_list, out >
+        virtual public node
+    {
+        protected:
+            producer();
+
+        public:
+            virtual ~producer();
+    };
+
+    template< class x_type, class x_output_list >
+    class _producer :
+        public producer,
+        public typechain< x_output_list, _out >
     {
         public:
             using node::output;
 
         public:
-            producer();
-            virtual ~producer();
+            _producer();
+            virtual ~_producer();
 
             //***********
             //composition
@@ -32,7 +43,7 @@ namespace midge
             template< int x_index >
             typename typeat< x_output_list, x_index >::result* output()
             {
-                return this->out< typename typeat< x_output_list, x_index >::result, x_index >::get();
+                return this->_out< typename typeat< x_output_list, x_index >::result, x_index >::get();
             }
 
             //******
@@ -58,18 +69,18 @@ namespace midge
     };
 
     template< class x_type, class x_output_list >
-    producer< x_type, x_output_list >::producer() :
-            component(),
-            typechain< x_output_list, out >( f_outputs ),
+    _producer< x_type, x_output_list >::_producer() :
+            producer(),
+            typechain< x_output_list, _out >( f_outputs ),
             f_state( e_idle )
     {
-        for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
+        for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
         {
             f_outputs[ t_index ] = NULL;
         }
     }
     template< class x_type, class x_output_list >
-    producer< x_type, x_output_list >::~producer()
+    _producer< x_type, x_output_list >::~_producer()
     {
     }
 
@@ -78,13 +89,13 @@ namespace midge
     //******
 
     template< class x_type, class x_output_list >
-    inline void producer< x_type, x_output_list >::initialize()
+    inline void _producer< x_type, x_output_list >::initialize()
     {
         if( f_state == e_idle )
         {
             f_state = e_initialized;
 
-            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
+            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
             {
                 if( f_outputs[ t_index ] == NULL )
                 {
@@ -94,7 +105,7 @@ namespace midge
 
             initialize_producer();
 
-            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
+            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
             {
                 f_outputs[ t_index ]->initialize();
             }
@@ -108,13 +119,13 @@ namespace midge
         return;
     }
     template< class x_type, class x_output_list >
-    inline void producer< x_type, x_output_list >::execute()
+    inline void _producer< x_type, x_output_list >::execute()
     {
         if( f_state == e_initialized )
         {
             execute_producer();
 
-            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
+            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
             {
                 f_outputs[ t_index ]->execute();
             }
@@ -127,7 +138,7 @@ namespace midge
         return;
     }
     template< class x_type, class x_output_list >
-    inline void producer< x_type, x_output_list >::finalize()
+    inline void _producer< x_type, x_output_list >::finalize()
     {
         if( f_state == e_initialized )
         {
@@ -135,7 +146,7 @@ namespace midge
 
             finalize_producer();
 
-            for( uint64_t t_index = 0; t_index < typelength< x_output_list >::result; t_index++ )
+            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
             {
                 f_outputs[ t_index ]->finalize();
             }
@@ -150,17 +161,17 @@ namespace midge
     }
 
     template< class x_type, class x_output_list >
-    inline void producer< x_type, x_output_list >::initialize_producer()
+    inline void _producer< x_type, x_output_list >::initialize_producer()
     {
         return;
     }
     template< class x_type, class x_output_list >
-    inline void producer< x_type, x_output_list >::execute_producer()
+    inline void _producer< x_type, x_output_list >::execute_producer()
     {
         return;
     }
     template< class x_type, class x_output_list >
-    inline void producer< x_type, x_output_list >::finalize_producer()
+    inline void _producer< x_type, x_output_list >::finalize_producer()
     {
         return;
     }

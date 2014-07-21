@@ -37,9 +37,9 @@ namespace midge
         public:
             void operator()( value* p_value )
             {
-                if( p_value->is< object >() == true )
+                if( p_value->is< ::midge::object >() == true )
                 {
-                    operator()( p_value->as< object >() );
+                    operator()( p_value->as< ::midge::object >() );
                 }
                 else
                 {
@@ -47,7 +47,7 @@ namespace midge
                 }
                 return;
             }
-            void operator()( object* p_object )
+            void operator()( ::midge::object* p_object )
             {
                 pair< string, value* > t_pair;
                 string t_label;
@@ -86,7 +86,7 @@ namespace midge
 
         public:
             template< class x_child, class x_member >
-            static int add_object( x_member p_member, const string& p_label )
+            static int object( x_member p_member, const string& p_label )
             {
                 if( f_entries == NULL )
                 {
@@ -107,7 +107,7 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int add_lingual( x_member p_member, const string& p_label )
+            static int lingual( x_member p_member, const string& p_label )
             {
                 if( f_entries == NULL )
                 {
@@ -128,7 +128,7 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int add_numerical( x_member p_member, const string& p_label )
+            static int numerical( x_member p_member, const string& p_label )
             {
                 if( f_entries == NULL )
                 {
@@ -149,7 +149,7 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int add_null( x_member p_member, const string& p_label )
+            static int null( x_member p_member, const string& p_label )
             {
                 if( f_entries == NULL )
                 {
@@ -181,18 +181,18 @@ namespace midge
                     }
 
                 public:
-                    virtual void bind( x_type* p_parent, value* p_value ) = 0;
+                    virtual void bind( x_type* p_type, value* p_value ) = 0;
             };
 
-            template< template< class > class x_builder, class x_child, class x_member >
+            template< template< class > class x_builder, class x_built, class x_member >
             class member;
 
-            template< template< class > class x_builder, class x_child, class x_argument >
-            class member< x_builder, x_child, void (x_type::*)( x_argument ) > :
+            template< template< class > class x_builder, class x_built, class x_target, class x_argument >
+            class member< x_builder, x_built, void (x_target::*)( x_argument ) > :
                 public entry
             {
                 public:
-                    member( void (x_type::*p_member)( x_argument ) ) :
+                    member( void (x_target::*p_member)( x_argument ) ) :
                             f_member( p_member )
                     {
                     }
@@ -201,24 +201,24 @@ namespace midge
                     }
 
                 public:
-                    void bind( x_type* p_parent, value* p_value )
+                    void bind( x_type* p_type, value* p_value )
                     {
-                        x_builder< x_child > t_builder;
+                        x_builder< x_built > t_builder;
                         t_builder( p_value );
-                        (p_parent->*f_member)( *(t_builder()) );
+                        (p_type->*f_member)( *(t_builder()) );
                         return;
                     }
 
                 private:
-                    void (x_type::*f_member)( x_argument );
+                    void (x_target::*f_member)( x_argument );
             };
 
-            template< template< class > class x_builder, class x_child, class x_argument >
-            class member< x_builder, x_child, void (x_type::*)( x_argument* ) > :
+            template< template< class > class x_builder, class x_built, class x_target, class x_argument >
+            class member< x_builder, x_built, void (x_target::*)( x_argument* ) > :
                 public entry
             {
                 public:
-                    member( void (x_type::*p_member)( x_argument* ) ) :
+                    member( void (x_target::*p_member)( x_argument* ) ) :
                             f_member( p_member )
                     {
                     }
@@ -227,16 +227,16 @@ namespace midge
                     }
 
                 public:
-                    void bind( x_type* p_parent, value* p_value )
+                    void bind( x_type* p_type, value* p_value )
                     {
-                        x_builder< x_child > t_builder;
+                        x_builder< x_built > t_builder;
                         t_builder( p_value );
-                        (p_parent->*f_member)( t_builder() );
+                        (p_type->*f_member)( t_builder() );
                         return;
                     }
 
                 private:
-                    void (x_type::*f_member)( x_argument* );
+                    void (x_target::*f_member)( x_argument* );
             };
 
             typedef map< string, entry* > map_t;
@@ -249,95 +249,6 @@ namespace midge
 
     template< class x_type >
     typename object_builder< x_type >::map_t* object_builder< x_type >::f_entries = NULL;
-
-/*
-    template< class x_type >
-    template< class x_child, class x_member >
-    static int object_builder< x_type >::add_object( x_member p_member, const string& p_label )
-    {
-        if( f_entries == NULL )
-        {
-            f_entries = new map< string, entry* >();
-        }
-
-        map_it_t t_it = f_entries->find( p_label );
-        if( t_it != f_entries->end() )
-        {
-            f_entries->insert( map_entry_t( p_label, new member< ::object_builder, x_child, x_member >( p_member ) ) );
-        }
-        else
-        {
-            throw error() << "object builder for <" << typeid(x_type).name() << "> already has entry for label <" << p_label << ">";
-        }
-
-        return 0;
-    }
-
-    template< class x_type >
-    template< class x_child, class x_member >
-    static int object_builder< x_type >::add_lingual( x_member p_member, const string& p_label )
-    {
-        if( f_entries == NULL )
-        {
-            f_entries = new map< string, entry* >();
-        }
-
-        map_it_t t_it = f_entries->find( p_label );
-        if( t_it != f_entries->end() )
-        {
-            f_entries->insert( map_entry_t( p_label, new member< lingual_builder, x_child, x_member >( p_member ) ) );
-        }
-        else
-        {
-            throw error() << "object builder for <" << typeid(x_type).name() << "> already has entry for label <" << p_label << ">";
-        }
-
-        return 0;
-    }
-
-    template< class x_type >
-    template< class x_child, class x_member >
-    static int add_numerical( x_member p_member, const string& p_label )
-    {
-        if( f_entries == NULL )
-        {
-            f_entries = new map< string, entry* >();
-        }
-
-        map_it_t t_it = f_entries->find( p_label );
-        if( t_it != f_entries->end() )
-        {
-            f_entries->insert( map_entry_t( p_label, new member< numerical_builder, x_child, x_member >( p_member ) ) );
-        }
-        else
-        {
-            throw error() << "object builder for <" << typeid(x_type).name() << "> already has entry for label <" << p_label << ">";
-        }
-
-        return 0;
-    }
-
-    template< class x_child, class x_member >
-    static int add_null( x_member p_member, const string& p_label )
-    {
-        if( f_entries == NULL )
-        {
-            f_entries = new map< string, entry* >();
-        }
-
-        map_it_t t_it = f_entries->find( p_label );
-        if( t_it != f_entries->end() )
-        {
-            f_entries->insert( map_entry_t( p_label, new member< null_builder, x_child, x_member >( p_member ) ) );
-        }
-        else
-        {
-            throw error() << "object builder for <" << typeid(x_type).name() << "> already has entry for label <" << p_label << ">";
-        }
-
-        return 0;
-    }
-*/
 
 }
 

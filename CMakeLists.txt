@@ -47,6 +47,7 @@ set( midge_utility_directory
 )
 set( midge_utility_headers
 	error.hh
+	types.hh
 	typenull.hh
 	typenode.hh
 	typelist.hh
@@ -73,6 +74,202 @@ add_library( ${midge_utility_name} SHARED ${midge_utility_header_files} ${midge_
 target_link_libraries( ${midge_utility_name} ${midge_utility_dependencies} ${midge_external_libraries} )
 install( FILES ${midge_utility_header_files} DESTINATION include )
 install( TARGETS ${midge_utility_name} DESTINATION lib )
+
+########
+# core #
+########
+
+set( midge_core_name
+	core
+)
+set( midge_core_dependencies
+	utility
+)
+set( midge_core_directory
+	core
+)
+set( midge_core_headers
+	root.hh
+	link.hh
+	member.hh
+	node.hh
+	data.hh
+	in.hh
+	out.hh
+	producer.hh
+	consumer.hh
+	transformer.hh
+)
+set( midge_core_sources
+	root.cc
+	link.cc
+	node.cc
+	data.cc
+	producer.cc
+	consumer.cc
+	transformer.cc
+)
+
+foreach( base ${midge_core_headers} )
+	list( APPEND midge_core_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_core_sources} )
+	list( APPEND midge_core_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory} )
+add_library( ${midge_core_name} SHARED ${midge_core_header_files} ${midge_core_source_files} )
+target_link_libraries( ${midge_core_name} ${midge_core_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_core_header_files} DESTINATION include )
+install( TARGETS ${midge_core_name} DESTINATION lib )
+
+########
+# data #
+########
+
+set( midge_data_name
+	data
+)
+set( midge_data_dependencies
+	core
+)
+set( midge_data_directory
+	data
+)
+set( midge_data_headers
+	real.hh
+	complex.hh
+)
+set( midge_data_sources
+	real.cc
+	complex.cc
+)
+
+foreach( base ${midge_data_headers} )
+	list( APPEND midge_data_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_data_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_data_sources} )
+	list( APPEND midge_data_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_data_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_data_directory} )
+add_library( ${midge_data_name} SHARED ${midge_data_header_files} ${midge_data_source_files} )
+target_link_libraries( ${midge_data_name} ${midge_data_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_data_header_files} DESTINATION include )
+install( TARGETS ${midge_data_name} DESTINATION lib )
+
+#############
+# producers #
+#############
+
+set( midge_producers_name
+	producers
+)
+set( midge_producers_dependencies
+	core
+	data
+)
+set( midge_producers_directory
+	producers
+)
+set( midge_producers_headers
+	real_harmonic_producer.hh
+)
+set( midge_producers_sources
+	real_harmonic_producer.cc
+)
+
+foreach( base ${midge_producers_headers} )
+	list( APPEND midge_producers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_producers_sources} )
+	list( APPEND midge_producers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory} )
+add_library( ${midge_producers_name} SHARED ${midge_producers_header_files} ${midge_producers_source_files} )
+target_link_libraries( ${midge_producers_name} ${midge_producers_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_producers_header_files} DESTINATION include )
+install( TARGETS ${midge_producers_name} DESTINATION lib )
+
+#############
+# consumers #
+#############
+
+set( midge_consumers_name
+	consumers
+)
+set( midge_consumers_dependencies
+	core
+	data
+)
+set( midge_consumers_directory
+	consumers
+)
+set( midge_consumers_headers
+	real_ascii_consumer.hh
+)
+set( midge_consumers_sources
+	real_ascii_consumer.cc
+)
+
+foreach( base ${midge_consumers_headers} )
+	list( APPEND midge_consumers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_consumers_sources} )
+	list( APPEND midge_consumers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory} )
+add_library( ${midge_consumers_name} SHARED ${midge_consumers_header_files} ${midge_consumers_source_files} )
+target_link_libraries( ${midge_consumers_name} ${midge_consumers_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_consumers_header_files} DESTINATION include )
+install( TARGETS ${midge_consumers_name} DESTINATION lib )
+
+################
+# transformers #
+################
+
+set( midge_transformers_name
+	transformers
+)
+set( midge_transformers_dependencies
+	core
+	data
+)
+set( midge_transformers_directory
+	transformers
+)
+set( midge_transformers_headers
+	real_complex_transformer.hh
+	complex_real_transformer.hh
+	complex_forward_fourier_transformer.hh
+	complex_backward_fourier_transformer.hh
+)
+set( midge_transformers_sources
+	real_complex_transformer.cc
+	complex_real_transformer.cc
+	complex_forward_fourier_transformer.cc
+	complex_backward_fourier_transformer.cc
+)
+
+foreach( base ${midge_transformers_headers} )
+	list( APPEND midge_transformers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_transformers_sources} )
+	list( APPEND midge_transformers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory} )
+add_library( ${midge_transformers_name} SHARED ${midge_transformers_header_files} ${midge_transformers_source_files} )
+target_link_libraries( ${midge_transformers_name} ${midge_transformers_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_transformers_header_files} DESTINATION include )
+install( TARGETS ${midge_transformers_name} DESTINATION lib )
 
 ##################
 # initialization #
@@ -135,6 +332,62 @@ target_link_libraries( ${midge_initialization_name} ${midge_initialization_depen
 install( FILES ${midge_initialization_header_files} DESTINATION include )
 install( TARGETS ${midge_initialization_name} DESTINATION lib )
 
+############
+# bindings #
+############
+
+set( midge_bindings_name
+	bindings
+)
+set( midge_bindings_dependencies
+	utility
+	core
+	data
+	producers
+	consumers
+	transformers
+	initialization
+)
+set( midge_bindings_directory
+	bindings
+)
+set( midge_bindings_headers
+	root_builder.hh
+	real_builder.hh
+	complex_builder.hh
+	real_ascii_consumer_builder.hh
+	real_harmonic_producer_builder.hh
+	real_complex_transformer_builder.hh
+	complex_real_transformer_builder.hh
+	complex_forward_fourier_transformer_builder.hh
+	complex_backward_fourier_transformer_builder.hh
+)
+set( midge_bindings_sources
+	root_builder.cc
+	real_builder.cc
+	complex_builder.cc
+	real_ascii_consumer_builder.cc
+	real_harmonic_producer_builder.cc
+	real_complex_transformer_builder.cc
+	complex_real_transformer_builder.cc
+	complex_forward_fourier_transformer_builder.cc
+	complex_backward_fourier_transformer_builder.cc
+)
+
+foreach( base ${midge_bindings_headers} )
+	list( APPEND midge_bindings_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_bindings_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_bindings_sources} )
+	list( APPEND midge_bindings_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_bindings_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_bindings_directory} )
+add_library( ${midge_bindings_name} SHARED ${midge_bindings_header_files} ${midge_bindings_source_files} )
+target_link_libraries( ${midge_bindings_name} ${midge_bindings_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_bindings_header_files} DESTINATION include )
+install( TARGETS ${midge_bindings_name} DESTINATION lib )
+
 ########
 # json #
 ########
@@ -147,7 +400,8 @@ set( midge_json_files
 	test_arrays.json
 	test_objects.json
 	test_builder.json
-	test_setup_one.json
+	test_harmonic_producer.json
+	test_fourier_transformer.json
 )
 
 foreach( base ${midge_json_files} )
@@ -157,197 +411,30 @@ endforeach( base )
 install( FILES ${midge_json_file_files} DESTINATION config )
 
 ########
-# core #
+# main #
 ########
 
-set( midge_core_name
+set( midge_main_dependencies
 	core
-)
-set( midge_core_dependencies
-	utility
-)
-set( midge_core_directory
-	core
-)
-set( midge_core_headers
-	node.hh
-	link.hh
-	member.hh
-	component.hh
-	operand.hh
-	in.hh
-	out.hh
-	producer.hh
-	consumer.hh
-	transformer.hh
-)
-set( midge_core_sources
-	node.cc
-	link.cc
-	component.cc
-)
-
-foreach( base ${midge_core_headers} )
-	list( APPEND midge_core_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_core_sources} )
-	list( APPEND midge_core_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory} )
-add_library( ${midge_core_name} SHARED ${midge_core_header_files} ${midge_core_source_files} )
-target_link_libraries( ${midge_core_name} ${midge_core_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_core_header_files} DESTINATION include )
-install( TARGETS ${midge_core_name} DESTINATION lib )
-
-############
-# operands #
-############
-
-set( midge_operands_name
-	operands
-)
-set( midge_operands_dependencies
-	core
-)
-set( midge_operands_directory
-	operands
-)
-set( midge_operands_headers
-	types.hh
-	real.hh
-	complex.hh
-)
-set( midge_operands_sources
-	real.cc
-	complex.cc
-)
-
-foreach( base ${midge_operands_headers} )
-	list( APPEND midge_operands_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_operands_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_operands_sources} )
-	list( APPEND midge_operands_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_operands_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_operands_directory} )
-add_library( ${midge_operands_name} SHARED ${midge_operands_header_files} ${midge_operands_source_files} )
-target_link_libraries( ${midge_operands_name} ${midge_operands_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_operands_header_files} DESTINATION include )
-install( TARGETS ${midge_operands_name} DESTINATION lib )
-
-#############
-# producers #
-#############
-
-set( midge_producers_name
+	data
 	producers
-)
-set( midge_producers_dependencies
-	core
-	operands
-)
-set( midge_producers_directory
-	producers
-)
-set( midge_producers_headers
-	real_harmonic_producer.hh
-)
-set( midge_producers_sources
-	real_harmonic_producer.cc
-)
-
-foreach( base ${midge_producers_headers} )
-	list( APPEND midge_producers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_producers_sources} )
-	list( APPEND midge_producers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory} )
-add_library( ${midge_producers_name} SHARED ${midge_producers_header_files} ${midge_producers_source_files} )
-target_link_libraries( ${midge_producers_name} ${midge_producers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_producers_header_files} DESTINATION include )
-install( TARGETS ${midge_producers_name} DESTINATION lib )
-
-#############
-# consumers #
-#############
-
-set( midge_consumers_name
 	consumers
-)
-set( midge_consumers_dependencies
-	core
-	operands
-)
-set( midge_consumers_directory
-	consumers
-)
-set( midge_consumers_headers
-	real_ascii_consumer.hh
-)
-set( midge_consumers_sources
-	real_ascii_consumer.cc
-)
-
-foreach( base ${midge_consumers_headers} )
-	list( APPEND midge_consumers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_consumers_sources} )
-	list( APPEND midge_consumers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory} )
-add_library( ${midge_consumers_name} SHARED ${midge_consumers_header_files} ${midge_consumers_source_files} )
-target_link_libraries( ${midge_consumers_name} ${midge_consumers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_consumers_header_files} DESTINATION include )
-install( TARGETS ${midge_consumers_name} DESTINATION lib )
-
-################
-# transformers #
-################
-
-set( midge_transformers_name
 	transformers
+	initialization
+	bindings
 )
-set( midge_transformers_dependencies
-	core
-	operands
+set( midge_main_directory
+	main
 )
-set( midge_transformers_directory
-	transformers
-)
-set( midge_transformers_headers
-	real_complex_transformer.hh
-	complex_real_transformer.hh
-	complex_forward_fourier_transformer.hh
-	complex_backward_fourier_transformer.hh
-)
-set( midge_transformers_sources
-	real_complex_transformer.cc
-	complex_real_transformer.cc
-	complex_forward_fourier_transformer.cc
-	complex_backward_fourier_transformer.cc
+set( midge_main_programs
+	midge
 )
 
-foreach( base ${midge_transformers_headers} )
-	list( APPEND midge_transformers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_transformers_sources} )
-	list( APPEND midge_transformers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory} )
-add_library( ${midge_transformers_name} SHARED ${midge_transformers_header_files} ${midge_transformers_source_files} )
-target_link_libraries( ${midge_transformers_name} ${midge_transformers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_transformers_header_files} DESTINATION include )
-install( TARGETS ${midge_transformers_name} DESTINATION lib )
+foreach( program ${midge_main_programs} )
+	add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${midge_main_directory}/${program}.cc )
+	target_link_libraries( ${program} ${midge_main_dependencies} ${midge_external_libraries} )
+	install( TARGETS ${program} DESTINATION bin )
+endforeach( program )
 
 ########
 # test #
@@ -355,11 +442,12 @@ install( TARGETS ${midge_transformers_name} DESTINATION lib )
 
 set( midge_test_dependencies
 	core
-	operands
+	data
 	producers
 	consumers
 	transformers
 	initialization
+	bindings
 )
 set( midge_test_directory
 	test
@@ -374,8 +462,8 @@ set( midge_test_programs
 	test_typeat
 	test_real
 	test_complex
-	test_setup_one
-	test_setup_two
+	test_harmonic_producer
+	test_fourier_transformer
 )
 
 foreach( program ${midge_test_programs} )

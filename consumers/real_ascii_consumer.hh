@@ -12,21 +12,21 @@ namespace midge
 {
 
     class real_ascii_consumer :
-        public consumer< real_ascii_consumer, typelist_1( real )>
+        public _consumer< real_ascii_consumer, typelist_1( real )>
     {
         public:
             real_ascii_consumer();
             virtual ~real_ascii_consumer();
 
         public:
-            void set_filename( const string& p_filename );
-            const string& get_filename() const;
+            void set_file( const string& p_filename );
+            const string& get_file() const;
 
         private:
-            string f_filename;
-            ofstream f_filestream;
+            string f_file;
+            ofstream f_stream;
             uint64_t f_internal;
-            real_t* f_data;
+            real_t* f_raw;
             uint64_t f_size;
 
         protected:
