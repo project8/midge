@@ -22,12 +22,17 @@ set( CMAKE_BUILD_WITH_INSTALL_RPATH TRUE )
 # fftw
 find_package( FFTW REQUIRED )
 
+# gsl
+find_package( GSL REQUIRED )
+
 set( midge_external_includes{
 	${FFTW_INCLUDE_DIR}
+	${GSL_INCLUDE_DIRS}
 )
 
 set( midge_external_libraries 
 	${FFTW_LIBRARIES}
+	${GSL_LIBRARIES}
 )
 
 include_directories( ${midge_external_includes} )
@@ -180,9 +185,11 @@ set( midge_producers_directory
 )
 set( midge_producers_headers
 	rt_harmonic_producer.hh
+	rt_gaussian_producer.hh
 )
 set( midge_producers_sources
 	rt_harmonic_producer.cc
+	rt_gaussian_producer.cc
 )
 
 foreach( base ${midge_producers_headers} )
@@ -257,6 +264,7 @@ set( midge_transformers_headers
 	cf_rf_transformer.hh
 	ct_cf_fourier_transformer.hh
 	cf_ct_fourier_transformer.hh
+	cf_rf_power_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_transformer.cc
@@ -265,6 +273,7 @@ set( midge_transformers_sources
 	cf_rf_transformer.cc
 	ct_cf_fourier_transformer.cc
 	cf_ct_fourier_transformer.cc
+	cf_rf_power_transformer.cc
 )
 
 foreach( base ${midge_transformers_headers} )
@@ -368,6 +377,7 @@ set( midge_bindings_headers
 	ct_data_builder.hh
 	cf_data_builder.hh
 	rt_harmonic_producer_builder.hh
+	rt_gaussian_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
 	rt_ct_transformer_builder.hh
@@ -376,6 +386,7 @@ set( midge_bindings_headers
 	cf_rf_transformer_builder.hh
 	ct_cf_fourier_transformer_builder.hh
 	cf_ct_fourier_transformer_builder.hh
+	cf_rf_power_transformer_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
@@ -384,6 +395,7 @@ set( midge_bindings_sources
 	ct_data_builder.cc
 	cf_data_builder.cc
 	rt_harmonic_producer_builder.cc
+	rt_gaussian_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
 	rt_ct_transformer_builder.cc
@@ -392,6 +404,7 @@ set( midge_bindings_sources
 	cf_rf_transformer_builder.cc
 	ct_cf_fourier_transformer_builder.cc
 	cf_ct_fourier_transformer_builder.cc
+	cf_rf_power_transformer_builder.cc
 )
 
 foreach( base ${midge_bindings_headers} )
@@ -421,6 +434,7 @@ set( midge_json_files
 	test_objects.json
 	test_builder.json
 	test_harmonic_producer.json
+	test_gaussian_producer.json
 	test_fourier_transformer.json
 )
 
@@ -484,6 +498,7 @@ set( midge_test_programs
 	test_complex
 	test_harmonic_producer
 	test_fourier_transformer
+	test_power_transformer
 )
 
 foreach( program ${midge_test_programs} )

@@ -9,6 +9,7 @@ using std::endl;
 
 namespace midge
 {
+    typedef bool bool_t;
     typedef uint64_t count_t;
     typedef double real_t;
     typedef double complex_t[2];

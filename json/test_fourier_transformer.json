@@ -24,15 +24,30 @@
         "name" : "rf_argument_out"
     },
 
+    "rt_gaussian_producer" :
+    {
+        "name" : "rt_gaussian",
+        "power_dbm" : -10.0,
+        "impedance_ohm" : 50.0,
+        "start_sec" : 100.0e-9,
+        "stop_sec" : 1900.0e-9,
+        "interval" : 1.0e-9,
+        "seed" : 51385,
+        "size" : 2000,
+        "stride" : 2000
+    },
+
     "rt_harmonic_producer" :
     {
-        "name" : "rt",
-        "power_dbm" : -30.0,
+        "name" : "rt_harmonic",
+        "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
         "frequency_hz" : 100.0e6,
         "phase_deg" : 60.0,
-        "stride" : 8192,
-        "size" : 8192,
+        "start_sec" : 100.0e-9,
+        "stop_sec" : 9900.0e-9,
+        "stride" : 10000,
+        "size" : 10000,
         "interval" : 1.0e-9
     },
 
@@ -62,16 +77,16 @@
     "rf_ascii_consumer" :
     {
         "name" : "rf_modulus",
-        "file" : "test_fourier_transform.modulus.txt"
+        "file" : "test_fourier_transform.modulus.json.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rf_argument",
-        "file" : "test_fourier_transform.argument.txt"
+        "file" : "test_fourier_transform.argument.json.txt"
     },
 
-    "join" : "rt.out_0:rt_in.in",
+    "join" : "rt_gaussian.out_0:rt_in.in",
     "join" : "rt_in.out:rt_ct_real.in_0",
     "join" : "rt_ct_real.out_0:ct_in.in",
     "join" : "ct_in.out:ct_cf_fourier.in_0",
@@ -83,5 +98,5 @@
     "join" : "cf_rf_argument.out_0:rf_argument_out.in",
     "join" : "rf_argument_out.out:rf_argument.in_0",
 
-    "run" : "rt"
+    "run" : "rt_gaussian"
 }

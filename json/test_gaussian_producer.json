@@ -19,19 +19,17 @@
         "name" : "rf"
     },
 
-
-    "rt_harmonic_producer" :
+    "rt_gaussian_producer" :
     {
         "name" : "rt_in",
         "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
-        "frequency_hz" : 100.0e6,
-        "phase_deg" : 60.0,
         "start_sec" : 100.0e-9,
-        "stop_sec" : 9900.0e-9,
+        "stop_sec" : 1900.0e-9,
         "interval" : 1.0e-9,
-        "size" : 10000,
-        "stride" : 10000
+        "seed" : 51385,
+        "size" : 2000,
+        "stride" : 2000
     },
 
     "rt_ct_transformer" :
@@ -54,13 +52,13 @@
     "rt_ascii_consumer" :
     {
         "name" : "rt_out",
-        "file" : "test_harmonic_producer.signal.txt"
+        "file" : "test_gaussian_producer.signal.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rf_out",
-        "file" : "test_harmonic_producer.spectrum.txt"
+        "file" : "test_gaussian_producer.spectrum.txt"
     },
 
     "join" : "rt_in.out_0:rt.in",

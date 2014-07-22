@@ -18,17 +18,17 @@ namespace midge
             cf_ct_fourier_transformer();
             virtual ~cf_ct_fourier_transformer();
 
-        protected:
-            void start_transformer();
-            void execute_transformer();
-            void stop_transformer();
-
         private:
             count_t f_size;
             complex_t* f_in;
             complex_t* f_out;
             fftw_plan f_plan;
             real_t f_norm;
+
+        protected:
+            void start_transformer();
+            void execute_transformer();
+            void stop_transformer();
     };
 
 }

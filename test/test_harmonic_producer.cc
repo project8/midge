@@ -24,9 +24,11 @@ int main()
     t_producer->set_impedance_ohm( 50. );
     t_producer->set_frequency_hz( 10.e6 );
     t_producer->set_phase_deg( 60. );
+    t_producer->set_start_sec( 500.e-9 );
+    t_producer->set_stop_sec( 1500.e-9 );
     t_producer->set_interval( 1.e-9 );
-    t_producer->set_size( 2048 );
-    t_producer->set_stride( 2048 );
+    t_producer->set_size( 2000 );
+    t_producer->set_stride( 2000 );
     t_root->add( t_producer );
 
     rt_ascii_consumer* t_consumer = new rt_ascii_consumer();
