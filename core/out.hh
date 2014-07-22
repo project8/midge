@@ -21,17 +21,17 @@ namespace midge
                 stringstream t_name;
                 t_name << "out_" << x_index;
 
-                output( this, &_out< x_type, x_index >::out, t_name.str() );
+                node::out( &_out< x_type, x_index >::out, t_name.str() );
             }
             virtual ~_out()
             {
             }
 
         public:
-            void out( x_type* p_output )
+            void out( x_type* p_out )
             {
-                f_out = p_output;
-                f_table[ x_index ] = p_output;
+                f_out = p_out;
+                f_table[ x_index ] = p_out;
                 return;
             }
 

@@ -1,131 +1,87 @@
 {
-    "real" :
+    "rt_data" :
     {
-        "name" : "real_in",
-        "size" : 8192
+        "name" : "rt_in"
     },
 
-    "complex" :
+    "ct_data" :
     {
-        "name" : "complex_in",
-        "size" : 8192
+        "name" : "ct_in"
     },
 
-    "complex" :
+    "cf_data" :
     {
-        "name" : "complex_out",
-        "size" : 8192
+        "name" : "cf_out"
     },
 
-    "real" :
+    "rf_data" :
     {
-        "name" : "real_out",
-        "size" : 8192
+        "name" : "rf_modulus_out"
     },
 
-    "real" :
+    "rf_data" :
     {
-        "name" : "imaginary_out",
-        "size" : 8192
+        "name" : "rf_argument_out"
     },
 
-    "real" :
+    "rt_harmonic_producer" :
     {
-        "name" : "modulus_out",
-        "size" : 8192
+        "name" : "rt",
+        "power_dbm" : -30.0,
+        "impedance_ohm" : 50.0,
+        "frequency_hz" : 100.0e6,
+        "phase_deg" : 60.0,
+        "stride" : 8192,
+        "size" : 8192,
+        "interval" : 1.0e-9
     },
 
-    "real" :
+    "rt_ct_transformer" :
     {
-        "name" : "argument_out",
-        "size" : 8192
-    },
-
-    "real_harmonic_producer" :
-    {
-        "name" : "producer",
-        "amplitude" : 1.5,
-        "frequency" : 0.0625,
-        "phase" : 0.0
-    },
-
-    "real_complex_transformer" :
-    {
-        "name" : "real_complex_real",
+        "name" : "rt_ct_real",
         "mode" : "real"
     },
 
-    "complex_forward_fourier_transformer" :
+    "ct_cf_fourier_transformer" :
     {
-        "name" : "fft"
+        "name" : "ct_cf_fourier"
     },
 
-    "complex_real_transformer" :
+    "cf_rf_transformer" :
     {
-        "name" : "complex_real_real",
-        "mode" : "real"
-    },
-
-    "complex_real_transformer" :
-    {
-        "name" : "complex_real_imaginary",
-        "mode" : "imaginary"
-    },
-
-    "complex_real_transformer" :
-    {
-        "name" : "complex_real_modulus",
+        "name" : "cf_rf_modulus",
         "mode" : "modulus"
     },
 
-    "complex_real_transformer" :
+    "cf_rf_transformer" :
     {
-        "name" : "complex_real_argument",
+        "name" : "cf_rf_argument",
         "mode" : "argument"
     },
 
-    "real_ascii_consumer" :
+    "rf_ascii_consumer" :
     {
-        "name" : "consumer_real",
-        "file" : "test_fourier_transform.real.ascii"
+        "name" : "rf_modulus",
+        "file" : "test_fourier_transform.modulus.txt"
     },
 
-    "real_ascii_consumer" :
+    "rf_ascii_consumer" :
     {
-        "name" : "consumer_imaginary",
-        "file" : "test_fourier_transform.imaginary.ascii"
+        "name" : "rf_argument",
+        "file" : "test_fourier_transform.argument.txt"
     },
 
-    "real_ascii_consumer" :
-    {
-        "name" : "consumer_modulus",
-        "file" : "test_fourier_transform.modulus.ascii"
-    },
+    "join" : "rt.out_0:rt_in.in",
+    "join" : "rt_in.out:rt_ct_real.in_0",
+    "join" : "rt_ct_real.out_0:ct_in.in",
+    "join" : "ct_in.out:ct_cf_fourier.in_0",
+    "join" : "ct_cf_fourier.out_0:cf_out.in",
+    "join" : "cf_out.out:cf_rf_modulus.in_0",
+    "join" : "cf_rf_modulus.out_0:rf_modulus_out.in",
+    "join" : "rf_modulus_out.out:rf_modulus.in_0",
+    "join" : "cf_out.out:cf_rf_argument.in_0",
+    "join" : "cf_rf_argument.out_0:rf_argument_out.in",
+    "join" : "rf_argument_out.out:rf_argument.in_0",
 
-    "real_ascii_consumer" :
-    {
-        "name" : "consumer_argument",
-        "file" : "test_fourier_transform.argument.ascii"
-    },
-
-    "join" : "producer.out_0:real_in.in",
-    "join" : "real_in.out:real_complex_real.in_0",
-    "join" : "real_complex_real.out_0:complex_in.in",
-    "join" : "complex_in.out:fft.in_0",
-    "join" : "fft.out_0:complex_out.in",
-    "join" : "complex_out.out:complex_real_real.in_0",
-    "join" : "complex_out.out:complex_real_imaginary.in_0",
-    "join" : "complex_out.out:complex_real_modulus.in_0",
-    "join" : "complex_out.out:complex_real_argument.in_0",
-    "join" : "complex_real_real.out_0:real_out.in",
-    "join" : "complex_real_imaginary.out_0:imaginary_out.in",
-    "join" : "complex_real_modulus.out_0:modulus_out.in",
-    "join" : "complex_real_argument.out_0:argument_out.in",
-    "join" : "real_out.out:consumer_real.in_0",
-    "join" : "imaginary_out.out:consumer_imaginary.in_0",
-    "join" : "modulus_out.out:consumer_modulus.in_0",
-    "join" : "argument_out.out:consumer_argument.in_0",
-
-    "run" : "producer"
-
+    "run" : "rt"
 }

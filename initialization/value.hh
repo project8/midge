@@ -1,10 +1,11 @@
 #ifndef _midge_value_hh_
 #define _midge_value_hh_
 
+#include "error.hh"
+#include "types.hh"
+
 #include <string>
 using std::string;
-
-#include "error.hh"
 
 namespace midge
 {

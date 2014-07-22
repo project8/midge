@@ -18,11 +18,11 @@ namespace midge
             array* clone() const;
 
         public:
-            uint64_t size() const;
+            count_t size() const;
             void add( value* p_value );
 
-            value* at( const uint64_t& p_index );
-            const value* at( const uint64_t& p_index ) const;
+            value* at( const count_t& p_index );
+            const value* at( const count_t& p_index ) const;
 
         private:
             typedef vector< value* > vector_t;

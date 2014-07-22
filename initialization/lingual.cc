@@ -16,7 +16,7 @@ namespace midge
         return (new lingual( f_string ));
     }
 
-    uint64_t lingual::size() const
+    count_t lingual::size() const
     {
         return 0;
     }
@@ -25,7 +25,7 @@ namespace midge
         throw error() << "lingual has no aggregated values";
         return this;
     }
-    const value* lingual::at( const uint64_t& ) const
+    const value* lingual::at( const count_t& ) const
     {
         throw error() << "lingual has no aggregated values";
         return this;

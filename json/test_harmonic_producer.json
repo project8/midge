@@ -1,27 +1,29 @@
 {
-    "real_harmonic_producer" :
+    "rt_harmonic_producer" :
     {
         "name" : "producer",
-        "amplitude" : 1.5,
-        "frequency" : 0.0625,
-        "phase" : 0.0
+        "power" : -10.0,
+        "impedance" : 50.0,
+        "frequency" : 10.0e6,
+        "phase" : 60.0,
+        "interval" : 1.0e-9,
+        "size" : 2048,
+        "stride" : 2048
     },
 
-    "real" :
+    "rt_data" :
     {
-        "name" : "real",
-        "size" : 1024
+        "name" : "data"
     },
 
-    "real_ascii_consumer" :
+    "rt_ascii_consumer" :
     {
         "name" : "consumer",
         "file" : "test_harmonic_producer.ascii"
     },
 
-    "join" : "producer.out_0:real.in",
-    "join" : "real.out:consumer.in_0",
+    "join" : "producer.out_0:data.in",
+    "join" : "data.out:consumer.in_0",
 
     "run" : "producer"
-
 }

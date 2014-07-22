@@ -23,13 +23,13 @@ namespace midge
             virtual ~producer();
     };
 
-    template< class x_type, class x_output_list >
+    template< class x_type, class x_out_list >
     class _producer :
         public producer,
-        public typechain< x_output_list, _out >
+        public typechain< x_out_list, _out >
     {
         public:
-            using node::output;
+            using node::out;
 
         public:
             _producer();
@@ -41,9 +41,9 @@ namespace midge
 
         protected:
             template< int x_index >
-            typename typeat< x_output_list, x_index >::result* output()
+            typename typeat< x_out_list, x_index >::result* out()
             {
-                return this->_out< typename typeat< x_output_list, x_index >::result, x_index >::get();
+                return this->_out< typename typeat< x_out_list, x_index >::result, x_index >::get();
             }
 
             //******
@@ -52,35 +52,39 @@ namespace midge
 
         public:
             void initialize();
+            void start();
             void execute();
+            void stop();
             void finalize();
 
         protected:
             typedef enum
             {
-                e_idle = 0, e_initialized = 1
+                e_idle = 0, e_initialized = 1, e_started = 2
             } state;
             state f_state;
-            node* f_outputs[ typelength< x_output_list >::result ];
+            node* f_outs[ typelength< x_out_list >::result ];
 
             virtual void initialize_producer();
+            virtual void start_producer();
             virtual void execute_producer();
+            virtual void stop_producer();
             virtual void finalize_producer();
     };
 
-    template< class x_type, class x_output_list >
-    _producer< x_type, x_output_list >::_producer() :
+    template< class x_type, class x_out_list >
+    _producer< x_type, x_out_list >::_producer() :
             producer(),
-            typechain< x_output_list, _out >( f_outputs ),
+            typechain< x_out_list, _out >( f_outs ),
             f_state( e_idle )
     {
-        for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
+        for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
         {
-            f_outputs[ t_index ] = NULL;
+            f_outs[ t_index ] = NULL;
         }
     }
-    template< class x_type, class x_output_list >
-    _producer< x_type, x_output_list >::~_producer()
+    template< class x_type, class x_out_list >
+    _producer< x_type, x_out_list >::~_producer()
     {
     }
 
@@ -88,27 +92,14 @@ namespace midge
     //action
     //******
 
-    template< class x_type, class x_output_list >
-    inline void _producer< x_type, x_output_list >::initialize()
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::initialize()
     {
         if( f_state == e_idle )
         {
             f_state = e_initialized;
 
-            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
-            {
-                if( f_outputs[ t_index ] == NULL )
-                {
-                    throw error() << "producer named <" << this->get_name() << "> cannot initialize with output <" << t_index << "> unset";
-                }
-            }
-
             initialize_producer();
-
-            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
-            {
-                f_outputs[ t_index ]->initialize();
-            }
         }
 
         if( f_state != e_initialized )
@@ -118,16 +109,46 @@ namespace midge
 
         return;
     }
-    template< class x_type, class x_output_list >
-    inline void _producer< x_type, x_output_list >::execute()
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::start()
     {
         if( f_state == e_initialized )
         {
+            f_state = e_started;
+
+            for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
+            {
+                if( f_outs[ t_index ] == NULL )
+                {
+                    throw error() << "producer named <" << this->get_name() << "> cannot start with out <" << t_index << "> unset";
+                }
+            }
+
+            start_producer();
+
+            for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
+            {
+                f_outs[ t_index ]->start();
+            }
+        }
+
+        if( f_state != e_started )
+        {
+            throw error() << "producer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+        }
+
+        return;
+    }
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::execute()
+    {
+        if( f_state == e_started )
+        {
             execute_producer();
 
-            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
+            for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outputs[ t_index ]->execute();
+                f_outs[ t_index ]->execute();
             }
         }
         else
@@ -137,19 +158,36 @@ namespace midge
 
         return;
     }
-    template< class x_type, class x_output_list >
-    inline void _producer< x_type, x_output_list >::finalize()
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::stop()
+    {
+        if( f_state == e_started )
+        {
+            f_state = e_initialized;
+
+            stop_producer();
+
+            for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
+            {
+                f_outs[ t_index ]->stop();
+            }
+        }
+
+        if( f_state != e_initialized )
+        {
+            throw error() << "producer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+        }
+
+        return;
+    }
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::finalize()
     {
         if( f_state == e_initialized )
         {
             f_state = e_idle;
 
             finalize_producer();
-
-            for( uint64_t t_index = 0; t_index < typelength < x_output_list > ::result; t_index++ )
-            {
-                f_outputs[ t_index ]->finalize();
-            }
         }
 
         if( f_state != e_idle )
@@ -160,18 +198,28 @@ namespace midge
         return;
     }
 
-    template< class x_type, class x_output_list >
-    inline void _producer< x_type, x_output_list >::initialize_producer()
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::initialize_producer()
     {
         return;
     }
-    template< class x_type, class x_output_list >
-    inline void _producer< x_type, x_output_list >::execute_producer()
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::start_producer()
     {
         return;
     }
-    template< class x_type, class x_output_list >
-    inline void _producer< x_type, x_output_list >::finalize_producer()
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::execute_producer()
+    {
+        return;
+    }
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::stop_producer()
+    {
+        return;
+    }
+    template< class x_type, class x_out_list >
+    inline void _producer< x_type, x_out_list >::finalize_producer()
     {
         return;
     }

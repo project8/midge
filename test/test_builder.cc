@@ -28,22 +28,22 @@ class child
             f_first = p_string;
             return;
         }
-        void second( const double& p_double )
+        void second( const real_t& p_real_t )
         {
-            f_second = p_double;
+            f_second = p_real_t;
             return;
         }
 
     private:
         string f_first;
-        double f_second;
+        real_t f_second;
 };
 
 typedef object_builder< child > child_builder;
 
 static const int s_child =
     child_builder::lingual< string >( &child::first, "first" ) +
-    child_builder::numerical< double >( &child::second, "second" );
+    child_builder::numerical< real_t >( &child::second, "second" );
 
 class parent
 {

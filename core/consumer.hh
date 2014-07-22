@@ -23,13 +23,13 @@ namespace midge
             virtual ~consumer();
     };
 
-    template< class x_type, class x_input_list >
+    template< class x_type, class x_in_list >
     class _consumer :
         public consumer,
-        public typechain< x_input_list, _in >
+        public typechain< x_in_list, _in >
     {
         public:
-            using node::input;
+            using node::in;
 
         public:
             _consumer();
@@ -41,9 +41,9 @@ namespace midge
 
         protected:
             template< int x_index >
-            typename typeat< x_input_list, x_index >::result* input()
+            typename typeat< x_in_list, x_index >::result* in()
             {
-                return this->_in< typename typeat< x_input_list, x_index >::result, x_index >::get();
+                return this->_in< typename typeat< x_in_list, x_index >::result, x_index >::get();
             }
 
             //******
@@ -52,37 +52,41 @@ namespace midge
 
         public:
             void initialize();
+            void start();
             void execute();
+            void stop();
             void finalize();
 
         protected:
             typedef enum
             {
-                e_idle = 0, e_initialized = 1
+                e_idle = 0, e_initialized = 1, e_started = 2
             } state;
             state f_state;
-            uint64_t f_count;
-            node* f_inputs[ typelength< x_input_list >::result ];
+            count_t f_count;
+            node* f_ins[ typelength< x_in_list >::result ];
 
             virtual void initialize_consumer();
+            virtual void start_consumer();
             virtual void execute_consumer();
+            virtual void stop_consumer();
             virtual void finalize_consumer();
     };
 
-    template< class x_type, class x_input_list >
-    _consumer< x_type, x_input_list >::_consumer() :
+    template< class x_type, class x_in_list >
+    _consumer< x_type, x_in_list >::_consumer() :
             consumer(),
-            typechain< x_input_list, _in >( f_inputs ),
+            typechain< x_in_list, _in >( f_ins ),
             f_state( e_idle ),
             f_count( 0 )
     {
-        for( uint64_t t_index = 0; t_index < typelength< x_input_list >::result; t_index++ )
+        for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
         {
-            f_inputs[ t_index ] = NULL;
+            f_ins[ t_index ] = NULL;
         }
     }
-    template< class x_type, class x_input_list >
-    _consumer< x_type, x_input_list >::~_consumer()
+    template< class x_type, class x_in_list >
+    _consumer< x_type, x_in_list >::~_consumer()
     {
     }
 
@@ -90,26 +94,12 @@ namespace midge
     //action
     //******
 
-    template< class x_type, class x_input_list >
-    inline void _consumer< x_type, x_input_list >::initialize()
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::initialize()
     {
         if( f_state == e_idle )
         {
-            if( ++f_count != typelength< x_input_list >::result )
-            {
-                return;
-            }
-
-            f_count = 0;
             f_state = e_initialized;
-
-            for( uint64_t t_index = 0; t_index < typelength< x_input_list >::result; t_index++ )
-            {
-                if( f_inputs[ t_index ] == NULL )
-                {
-                    throw error() << "consumer named <" << this->get_name() << "> cannot initialize with input <" << t_index << "> unset";
-                }
-            }
 
             initialize_consumer();
         }
@@ -121,12 +111,43 @@ namespace midge
 
         return;
     }
-    template< class x_type, class x_input_list >
-    inline void _consumer< x_type, x_input_list >::execute()
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::start()
     {
         if( f_state == e_initialized )
         {
-            if( ++f_count != typelength< x_input_list >::result )
+            if( ++f_count != typelength< x_in_list >::result )
+            {
+                return;
+            }
+
+            f_count = 0;
+            f_state = e_started;
+
+            for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
+            {
+                if( f_ins[ t_index ] == NULL )
+                {
+                    throw error() << "consumer named <" << this->get_name() << "> cannot start with in <" << t_index << "> unset";
+                }
+            }
+
+            start_consumer();
+        }
+
+        if( f_state != e_started )
+        {
+            throw error() << "consumer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+        }
+
+        return;
+    }
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::execute()
+    {
+        if( f_state == e_started )
+        {
+            if( ++f_count != typelength< x_in_list >::result )
             {
                 return;
             }
@@ -142,17 +163,34 @@ namespace midge
 
         return;
     }
-    template< class x_type, class x_input_list >
-    inline void _consumer< x_type, x_input_list >::finalize()
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::stop()
     {
-        if( f_state == e_initialized )
+        if( f_state == e_started )
         {
-            if( ++f_count != typelength< x_input_list >::result )
+            if( ++f_count != typelength< x_in_list >::result )
             {
                 return;
             }
 
             f_count = 0;
+            f_state = e_initialized;
+
+            stop_consumer();
+        }
+
+        if( f_state != e_initialized )
+        {
+            throw error() << "consumer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+        }
+
+        return;
+    }
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::finalize()
+    {
+        if( f_state == e_initialized )
+        {
             f_state = e_idle;
 
             finalize_consumer();
@@ -166,18 +204,28 @@ namespace midge
         return;
     }
 
-    template< class x_type, class x_input_list >
-    inline void _consumer< x_type, x_input_list >::initialize_consumer()
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::initialize_consumer()
     {
         return;
     }
-    template< class x_type, class x_input_list >
-    inline void _consumer< x_type, x_input_list >::execute_consumer()
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::start_consumer()
     {
         return;
     }
-    template< class x_type, class x_input_list >
-    inline void _consumer< x_type, x_input_list >::finalize_consumer()
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::execute_consumer()
+    {
+        return;
+    }
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::stop_consumer()
+    {
+        return;
+    }
+    template< class x_type, class x_in_list >
+    inline void _consumer< x_type, x_in_list >::finalize_consumer()
     {
         return;
     }

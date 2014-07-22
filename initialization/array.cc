@@ -32,12 +32,12 @@ namespace midge
         f_vector.push_back( vector_entry_t( p_value ) );
         return;
     }
-    uint64_t array::size() const
+    count_t array::size() const
     {
         return f_vector.size();
     }
 
-    value* array::at( const uint64_t& p_index )
+    value* array::at( const count_t& p_index )
     {
         if( p_index < f_vector.size() )
         {
@@ -47,7 +47,7 @@ namespace midge
         throw error() << "array has no value for index <" << p_index << ">";
         return this;
     }
-    const value* array::at( const uint64_t& p_index ) const
+    const value* array::at( const count_t& p_index ) const
     {
         if( p_index < f_vector.size() )
         {

@@ -24,14 +24,14 @@ namespace midge
             object* clone() const;
 
         public:
-            uint64_t size() const;
+            count_t size() const;
             void add( const string& p_key, value* p_value );
 
-            pair< string, value* > at( const uint64_t& p_index );
-            pair< string, const value* > at( const uint64_t& p_index ) const;
+            pair< string, value* > at( const count_t& p_index );
+            pair< string, const value* > at( const count_t& p_index ) const;
 
-            value* at( const string& p_key, const uint64_t& p_index = 0 );
-            const value* at( const string& p_key, const uint64_t& p_index = 0 ) const;
+            value* at( const string& p_key, const count_t& p_index = 0 );
+            const value* at( const string& p_key, const count_t& p_index = 0 ) const;
 
         private:
             typedef vector< pair< string, value* > > vector_t;

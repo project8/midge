@@ -28,7 +28,7 @@ namespace midge
         return t_clone;
     }
 
-    uint64_t object::size() const
+    count_t object::size() const
     {
         return f_vector.size();
     }
@@ -39,7 +39,7 @@ namespace midge
         return;
     }
 
-    pair< string, value* > object::at( const uint64_t& p_index )
+    pair< string, value* > object::at( const count_t& p_index )
     {
         string t_key;
         value* t_value;
@@ -53,7 +53,7 @@ namespace midge
         throw error() << "object has no value for index <" << p_index << ">";
         return (pair< string, value* >( "", NULL ));
     }
-    pair< string, const value* > object::at( const uint64_t& p_index ) const
+    pair< string, const value* > object::at( const count_t& p_index ) const
     {
         string t_key;
         value* t_value;
@@ -68,9 +68,9 @@ namespace midge
         return (pair< string, const value* >( "", NULL ));
     }
 
-    value* object::at( const string& p_key, const uint64_t& p_index )
+    value* object::at( const string& p_key, const count_t& p_index )
     {
-        uint64_t t_index = p_index;
+        count_t t_index = p_index;
         multimap_it_t t_first = f_multimap.lower_bound( p_key );
         multimap_it_t t_last = f_multimap.upper_bound( p_key );
         if( t_first != f_multimap.end() )
@@ -89,9 +89,9 @@ namespace midge
         throw error() << "object has no value for key <" << p_key << ">";
         return NULL;
     }
-    const value* object::at( const string& p_key, const uint64_t& p_index ) const
+    const value* object::at( const string& p_key, const count_t& p_index ) const
     {
-        uint64_t t_index = p_index;
+        count_t t_index = p_index;
         multimap_cit_t t_first = f_multimap.lower_bound( p_key );
         multimap_cit_t t_last = f_multimap.upper_bound( p_key );
         if( t_first != f_multimap.end() )

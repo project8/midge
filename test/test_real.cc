@@ -1,4 +1,4 @@
-#include "real.hh"
+#include "rt_data.hh"
 using namespace midge;
 
 #include <iostream>
@@ -8,13 +8,13 @@ using std::endl;
 int main()
 {
 
-    real t_real;
-    t_real.set_name( "test_real" );
-    t_real.set_size( 1024 );
+    rt_data t_data;
+    t_data.set_name( "test_data" );
+    t_data.set_size( 1024 );
 
-    t_real.initialize();
-    t_real.execute();
-    t_real.finalize();
+    t_data.start();
+    t_data.execute();
+    t_data.stop();
 
     return 0;
 

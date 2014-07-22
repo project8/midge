@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace midge
 {
     typedef uint64_t count_t;

@@ -16,7 +16,7 @@ using std::map;
 namespace midge
 {
 
-    //typedef typelist_11( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double, string ) atomic;
+    //typedef typelist_11( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, real_t, string ) atomic;
 
     template< class x_type >
     class atomic

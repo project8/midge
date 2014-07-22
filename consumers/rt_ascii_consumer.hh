@@ -1,0 +1,45 @@
+#ifndef _midge_rt_ascii_consumer_hh_
+#define _midge_rt_ascii_consumer_hh_
+
+#include "consumer.hh"
+#include "rt_data.hh"
+#include "typelist.hh"
+
+#include <fstream>
+using std::ofstream;
+
+namespace midge
+{
+
+    class rt_ascii_consumer :
+        public _consumer< rt_ascii_consumer, typelist_1( rt_data )>
+    {
+        public:
+            rt_ascii_consumer();
+            virtual ~rt_ascii_consumer();
+
+        public:
+            void set_file( const string& p_filename );
+            const string& get_file() const;
+
+        private:
+            string f_file;
+
+            ofstream f_stream;
+
+            count_t f_size;
+            real_t f_interval;
+            real_t f_start_time;
+            real_t* f_in;
+
+        protected:
+            void initialize_consumer();
+            void start_consumer();
+            void execute_consumer();
+            void stop_consumer();
+            void finalize_consumer();
+    };
+
+}
+
+#endif

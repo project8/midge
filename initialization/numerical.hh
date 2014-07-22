@@ -18,12 +18,12 @@ namespace midge
             string& str();
             const string& str() const;
 
-            double& get();
-            const double& get() const;
+            real_t& get();
+            const real_t& get() const;
 
         private:
             string f_string;
-            double f_value;
+            real_t f_value;
     };
 }
 

@@ -21,17 +21,17 @@ namespace midge
                 stringstream t_name;
                 t_name << "in_" << x_index;
 
-                input( this, &_in< x_type, x_index >::in, t_name.str() );
+                node::in( &_in< x_type, x_index >::in, t_name.str() );
             }
             virtual ~_in()
             {
             }
 
         public:
-            void in( x_type* p_input )
+            void in( x_type* p_in )
             {
-                f_in = p_input;
-                f_table[ x_index ] = p_input;
+                f_in = p_in;
+                f_table[ x_index ] = p_in;
                 return;
             }
 

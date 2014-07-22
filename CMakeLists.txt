@@ -138,12 +138,16 @@ set( midge_data_directory
 	data
 )
 set( midge_data_headers
-	real.hh
-	complex.hh
+	rt_data.hh
+	rf_data.hh
+	ct_data.hh
+	cf_data.hh
 )
 set( midge_data_sources
-	real.cc
-	complex.cc
+	rt_data.cc
+	rf_data.cc
+	ct_data.cc
+	cf_data.cc
 )
 
 foreach( base ${midge_data_headers} )
@@ -175,10 +179,10 @@ set( midge_producers_directory
 	producers
 )
 set( midge_producers_headers
-	real_harmonic_producer.hh
+	rt_harmonic_producer.hh
 )
 set( midge_producers_sources
-	real_harmonic_producer.cc
+	rt_harmonic_producer.cc
 )
 
 foreach( base ${midge_producers_headers} )
@@ -210,10 +214,12 @@ set( midge_consumers_directory
 	consumers
 )
 set( midge_consumers_headers
-	real_ascii_consumer.hh
+	rt_ascii_consumer.hh
+	rf_ascii_consumer.hh
 )
 set( midge_consumers_sources
-	real_ascii_consumer.cc
+	rt_ascii_consumer.cc
+	rf_ascii_consumer.cc
 )
 
 foreach( base ${midge_consumers_headers} )
@@ -245,16 +251,20 @@ set( midge_transformers_directory
 	transformers
 )
 set( midge_transformers_headers
-	real_complex_transformer.hh
-	complex_real_transformer.hh
-	complex_forward_fourier_transformer.hh
-	complex_backward_fourier_transformer.hh
+	rt_ct_transformer.hh
+	rf_cf_transformer.hh
+	ct_rt_transformer.hh
+	cf_rf_transformer.hh
+	ct_cf_fourier_transformer.hh
+	cf_ct_fourier_transformer.hh
 )
 set( midge_transformers_sources
-	real_complex_transformer.cc
-	complex_real_transformer.cc
-	complex_forward_fourier_transformer.cc
-	complex_backward_fourier_transformer.cc
+	rt_ct_transformer.cc
+	rf_cf_transformer.cc
+	ct_rt_transformer.cc
+	cf_rf_transformer.cc
+	ct_cf_fourier_transformer.cc
+	cf_ct_fourier_transformer.cc
 )
 
 foreach( base ${midge_transformers_headers} )
@@ -353,25 +363,35 @@ set( midge_bindings_directory
 )
 set( midge_bindings_headers
 	root_builder.hh
-	real_builder.hh
-	complex_builder.hh
-	real_ascii_consumer_builder.hh
-	real_harmonic_producer_builder.hh
-	real_complex_transformer_builder.hh
-	complex_real_transformer_builder.hh
-	complex_forward_fourier_transformer_builder.hh
-	complex_backward_fourier_transformer_builder.hh
+	rt_data_builder.hh
+	rf_data_builder.hh
+	ct_data_builder.hh
+	cf_data_builder.hh
+	rt_harmonic_producer_builder.hh
+	rt_ascii_consumer_builder.hh
+	rf_ascii_consumer_builder.hh
+	rt_ct_transformer_builder.hh
+	rf_cf_transformer_builder.hh
+	ct_rt_transformer_builder.hh
+	cf_rf_transformer_builder.hh
+	ct_cf_fourier_transformer_builder.hh
+	cf_ct_fourier_transformer_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
-	real_builder.cc
-	complex_builder.cc
-	real_ascii_consumer_builder.cc
-	real_harmonic_producer_builder.cc
-	real_complex_transformer_builder.cc
-	complex_real_transformer_builder.cc
-	complex_forward_fourier_transformer_builder.cc
-	complex_backward_fourier_transformer_builder.cc
+	rt_data_builder.cc
+	rf_data_builder.cc
+	ct_data_builder.cc
+	cf_data_builder.cc
+	rt_harmonic_producer_builder.cc
+	rt_ascii_consumer_builder.cc
+	rf_ascii_consumer_builder.cc
+	rt_ct_transformer_builder.cc
+	rf_cf_transformer_builder.cc
+	ct_rt_transformer_builder.cc
+	cf_rf_transformer_builder.cc
+	ct_cf_fourier_transformer_builder.cc
+	cf_ct_fourier_transformer_builder.cc
 )
 
 foreach( base ${midge_bindings_headers} )

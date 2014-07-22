@@ -33,11 +33,11 @@ namespace midge
         return f_string;
     }
 
-    double& numerical::get()
+    real_t& numerical::get()
     {
         return f_value;
     }
-    const double& numerical::get() const
+    const real_t& numerical::get() const
     {
         return f_value;
     }

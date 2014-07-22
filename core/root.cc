@@ -9,9 +9,12 @@ namespace midge
     }
     root::~root()
     {
+        node* t_node;
         for( map_it_t t_it = f_map.begin(); t_it != f_map.end(); t_it++ )
         {
-            delete (t_it->second);
+            t_node = t_it->second;
+            t_node->finalize();
+            delete (t_node);
         }
     }
 
@@ -21,6 +24,7 @@ namespace midge
         map_it_t t_it = f_map.find( t_name );
         if( t_it == f_map.end() )
         {
+            p_node->initialize();
             f_map.insert( map_entry_t( t_name, p_node ) );
         }
         else
@@ -33,12 +37,12 @@ namespace midge
     {
         string t_first_node_string( "" );
         node* t_first_node;
-        string t_first_output_string( "" );
-        link* t_first_output;
+        string t_first_out_string( "" );
+        link* t_first_out;
         string t_second_node_string( "" );
         node* t_second_node;
-        string t_second_input_string( "" );
-        link* t_second_input;
+        string t_second_in_string( "" );
+        link* t_second_in;
 
         size_t t_first_pos;
         size_t t_second_pos;
@@ -61,7 +65,7 @@ namespace midge
                     if( t_second_pos == string::npos )
                     {
                         t_first_node_string = t_first_argument.substr( 0, t_first_pos );
-                        t_first_output_string = t_first_argument.substr( t_first_pos + 1, string::npos );
+                        t_first_out_string = t_first_argument.substr( t_first_pos + 1, string::npos );
                     }
                     else
                     {
@@ -81,7 +85,7 @@ namespace midge
                     if( t_second_pos == string::npos )
                     {
                         t_second_node_string = t_second_argument.substr( 0, t_first_pos );
-                        t_second_input_string = t_second_argument.substr( t_first_pos + 1, string::npos );
+                        t_second_in_string = t_second_argument.substr( t_first_pos + 1, string::npos );
                     }
                     else
                     {
@@ -94,7 +98,7 @@ namespace midge
                     t_second_node_string = t_second_argument;
                 }
 
-                if( (t_first_output_string.length() > 0) && (t_second_input_string.length() > 0) )
+                if( (t_first_out_string.length() > 0) && (t_second_in_string.length() > 0) )
                 {
                     map_it_t t_first_it = f_map.find( t_first_node_string );
                     if( t_first_it == f_map.end() )
@@ -112,26 +116,28 @@ namespace midge
                     }
                     t_second_node = t_second_it->second;
 
-                    t_first_output = t_first_node->output( t_first_output_string );
-                    if( t_first_output == NULL )
+                    t_first_out = t_first_node->out( t_first_out_string );
+                    if( t_first_out == NULL )
                     {
-                        throw error() << "root join found no first output with name <" << t_first_output_string << "> in node with name <" << t_first_node_string << ">";
+                        throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
                         return;
                     }
-                    t_first_output->connect( t_second_node );
+                    t_first_out->set_argument( t_second_node );
+                    t_first_out->connect();
 
-                    t_second_input = t_second_node->input( t_second_input_string );
-                    if( t_second_input == NULL )
+                    t_second_in = t_second_node->in( t_second_in_string );
+                    if( t_second_in == NULL )
                     {
-                        throw error() << "root join found no second input with name <" << t_second_input_string << "> in node with name <" << t_second_node_string << ">";
+                        throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
                         return;
                     }
-                    t_second_input->connect( t_first_node );
+                    t_second_in->set_argument( t_first_node );
+                    t_second_in->connect();
 
                     return;
                 }
 
-                if( t_first_output_string.length() > 0 )
+                if( t_first_out_string.length() > 0 )
                 {
                     map_it_t t_first_it = f_map.find( t_first_node_string );
                     if( t_first_it == f_map.end() )
@@ -149,18 +155,19 @@ namespace midge
                     }
                     t_second_node = t_second_it->second;
 
-                    t_first_output = t_first_node->output( t_first_output_string );
-                    if( t_first_output == NULL )
+                    t_first_out = t_first_node->out( t_first_out_string );
+                    if( t_first_out == NULL )
                     {
-                        throw error() << "root join found no first output with name <" << t_first_output_string << "> in node with name <" << t_first_node_string << ">";
+                        throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
                         return;
                     }
-                    t_first_output->connect( t_second_node );
+                    t_first_out->set_argument( t_second_node );
+                    t_first_out->connect();
 
                     return;
                 }
 
-                if( t_second_input_string.length() > 0 )
+                if( t_second_in_string.length() > 0 )
                 {
                     map_it_t t_first_it = f_map.find( t_first_node_string );
                     if( t_first_it == f_map.end() )
@@ -178,13 +185,14 @@ namespace midge
                     }
                     t_second_node = t_second_it->second;
 
-                    t_second_input = t_second_node->output( t_second_input_string );
-                    if( t_second_input == NULL )
+                    t_second_in = t_second_node->out( t_second_in_string );
+                    if( t_second_in == NULL )
                     {
-                        throw error() << "root join found no second input with name <" << t_second_input_string << "> in node with name <" << t_second_node_string << ">";
+                        throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
                         return;
                     }
-                    t_second_input->connect( t_first_node );
+                    t_second_in->set_argument( t_first_node );
+                    t_second_in->connect();
 
                     return;
                 }
@@ -211,9 +219,9 @@ namespace midge
         {
             node* t_node = t_it->second;
 
-            t_node->initialize();
+            t_node->start();
             t_node->execute();
-            t_node->finalize();
+            t_node->stop();
         }
         else
         {

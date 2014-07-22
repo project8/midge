@@ -18,7 +18,7 @@ int main()
 
     cout << "type at position <6> of list_one should be <unsigned long> and is <" << typeid(typeat< list_two, 6 >::result).name() << ">" << endl;
     cout << "type at position <0> of list_one should be <unsigned char> and is <" << typeid(typeat< list_two, 0 >::result).name() << ">" << endl;
-    cout << "type at position <9> of list_one should be <double> and is <" << typeid(typeat< list_two, 9 >::result).name() << ">" << endl;
+    cout << "type at position <9> of list_one should be <real_t> and is <" << typeid(typeat< list_two, 9 >::result).name() << ">" << endl;
 
     return 0;
 

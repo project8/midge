@@ -15,9 +15,9 @@ namespace midge
             lingual* clone() const;
 
         public:
-            uint64_t size() const;
+            count_t size() const;
             const value* at( const string& p_key ) const;
-            const value* at( const uint64_t& p_index ) const;
+            const value* at( const count_t& p_index ) const;
 
         public:
             string& str();

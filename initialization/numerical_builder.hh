@@ -11,7 +11,7 @@ using std::map;
 namespace midge
 {
 
-    typedef typelist_10( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double )numerical_types;
+    typedef typelist_10( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, real_t )numerical_types;
 
     template< class x_type >
     class numerical_builder
