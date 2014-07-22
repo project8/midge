@@ -1,7 +1,10 @@
 #include "root.hh"
 #include "rt_data.hh"
+#include "rf_data.hh"
 #include "rt_harmonic_producer.hh"
+#include "rt_rf_power_transformer.hh"
 #include "rt_ascii_consumer.hh"
+#include "rf_ascii_consumer.hh"
 using namespace midge;
 
 #include <iostream>
@@ -10,13 +13,19 @@ using std::endl;
 
 #include <cmath>
 
+//todo: finish this
+
 int main()
 {
     root* t_root = new root();
 
-    rt_data* t_data = new rt_data();
-    t_data->set_name( "data" );
-    t_root->add( t_data );
+    rt_data* t_rt = new rt_data();
+    t_rt->set_name( "rt" );
+    t_root->add( t_rt );
+
+    rf_data* t_rf = new rf_data();
+    t_rf->set_name( "rf" );
+    t_root->add( t_rf );
 
     rt_harmonic_producer* t_producer = new rt_harmonic_producer();
     t_producer->set_name( "producer" );

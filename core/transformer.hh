@@ -65,9 +65,9 @@ namespace midge
 
         public:
             void initialize();
-            void start();
-            void execute();
-            void stop();
+            bool start();
+            bool execute();
+            bool stop();
             void finalize();
 
         protected:
@@ -81,9 +81,9 @@ namespace midge
             node* f_outs[ typelength< x_out_list >::result ];
 
             virtual void initialize_transformer();
-            virtual void start_transformer();
-            virtual void execute_transformer();
-            virtual void stop_transformer();
+            virtual bool start_transformer();
+            virtual bool execute_transformer();
+            virtual bool stop_transformer();
             virtual void finalize_transformer();
     };
 
@@ -98,10 +98,6 @@ namespace midge
         for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
         {
             f_ins[ t_index ] = NULL;
-        }
-
-        for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
-        {
             f_outs[ t_index ] = NULL;
         }
     }
@@ -132,16 +128,16 @@ namespace midge
         return;
     }
     template< class x_type, class x_in_list, class x_out_list >
-    inline void _transformer< x_type, x_in_list, x_out_list >::start()
+    inline bool _transformer< x_type, x_in_list, x_out_list >::start()
     {
         if( f_state == e_initialized )
         {
             if( ++f_count != typelength< x_in_list >::result )
             {
-                return;
+                return true;
             }
-
             f_count = 0;
+
             f_state = e_started;
 
             for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
@@ -149,6 +145,7 @@ namespace midge
                 if( f_ins[ t_index ] == NULL )
                 {
                     throw error() << "transformer named <" << this->get_name() << "> cannot start with in <" << t_index << "> unset";
+                    return false;
                 }
             }
 
@@ -157,77 +154,98 @@ namespace midge
                 if( f_outs[ t_index ] == NULL )
                 {
                     throw error() << "transformer named <" << this->get_name() << "> cannot start with out <" << t_index << "> unset";
+                    return false;
                 }
             }
 
-            start_transformer();
+            if( start_transformer() == false )
+            {
+                return false;
+            }
 
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outs[ t_index ]->start();
+                if( f_outs[ t_index ]->start() == false )
+                {
+                    return false;
+                }
             }
         }
 
         if( f_state != e_started )
         {
             throw error() << "transformer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_in_list, class x_out_list >
-    inline void _transformer< x_type, x_in_list, x_out_list >::execute()
+    inline bool _transformer< x_type, x_in_list, x_out_list >::execute()
     {
         if( f_state == e_started )
         {
             if( ++f_count != typelength< x_in_list >::result )
             {
-                return;
+                return true;
             }
-
             f_count = 0;
 
-            execute_transformer();
+            if( execute_transformer() == false )
+            {
+                return false;
+            }
 
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outs[ t_index ]->execute();
+                if( f_outs[ t_index ]->execute() == false )
+                {
+                    return false;
+                }
             }
         }
         else
         {
             throw error() << "transformer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_in_list, class x_out_list >
-    inline void _transformer< x_type, x_in_list, x_out_list >::stop()
+    inline bool _transformer< x_type, x_in_list, x_out_list >::stop()
     {
         if( f_state == e_started )
         {
             if( ++f_count != typelength< x_in_list >::result )
             {
-                return;
+                return true;
             }
-
             f_count = 0;
+
             f_state = e_initialized;
 
-            stop_transformer();
+            if( stop_transformer() == false )
+            {
+                return false;
+            }
 
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outs[ t_index ]->stop();
+                if( f_outs[ t_index ]->stop() == false )
+                {
+                    return false;
+                }
             }
         }
 
         if( f_state != e_initialized )
         {
             throw error() << "transformer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_in_list, class x_out_list >
     inline void _transformer< x_type, x_in_list, x_out_list >::finalize()
@@ -253,19 +271,19 @@ namespace midge
         return;
     }
     template< class x_type, class x_in_list, class x_out_list >
-    inline void _transformer< x_type, x_in_list, x_out_list >::start_transformer()
+    inline bool _transformer< x_type, x_in_list, x_out_list >::start_transformer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_in_list, class x_out_list >
-    inline void _transformer< x_type, x_in_list, x_out_list >::execute_transformer()
+    inline bool _transformer< x_type, x_in_list, x_out_list >::execute_transformer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_in_list, class x_out_list >
-    inline void _transformer< x_type, x_in_list, x_out_list >::stop_transformer()
+    inline bool _transformer< x_type, x_in_list, x_out_list >::stop_transformer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_in_list, class x_out_list >
     inline void _transformer< x_type, x_in_list, x_out_list >::finalize_transformer()

@@ -29,14 +29,13 @@ namespace midge
 
             count_t f_size;
             real_t f_interval;
-            real_t f_center_time;
             real_t* f_in;
 
         protected:
             void initialize_consumer();
-            void start_consumer();
-            void execute_consumer();
-            void stop_consumer();
+            bool start_consumer();
+            bool execute_consumer();
+            bool stop_consumer();
             void finalize_consumer();
     };
 

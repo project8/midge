@@ -52,9 +52,9 @@ namespace midge
 
         public:
             void initialize();
-            void start();
-            void execute();
-            void stop();
+            bool start();
+            bool execute();
+            bool stop();
             void finalize();
 
         protected:
@@ -67,9 +67,9 @@ namespace midge
             node* f_ins[ typelength< x_in_list >::result ];
 
             virtual void initialize_consumer();
-            virtual void start_consumer();
-            virtual void execute_consumer();
-            virtual void stop_consumer();
+            virtual bool start_consumer();
+            virtual bool execute_consumer();
+            virtual bool stop_consumer();
             virtual void finalize_consumer();
     };
 
@@ -112,16 +112,16 @@ namespace midge
         return;
     }
     template< class x_type, class x_in_list >
-    inline void _consumer< x_type, x_in_list >::start()
+    inline bool _consumer< x_type, x_in_list >::start()
     {
         if( f_state == e_initialized )
         {
             if( ++f_count != typelength< x_in_list >::result )
             {
-                return;
+                return true;
             }
-
             f_count = 0;
+
             f_state = e_started;
 
             for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
@@ -129,62 +129,74 @@ namespace midge
                 if( f_ins[ t_index ] == NULL )
                 {
                     throw error() << "consumer named <" << this->get_name() << "> cannot start with in <" << t_index << "> unset";
+                    return false;
                 }
             }
 
-            start_consumer();
+            if( start_consumer() == false )
+            {
+                return false;
+            }
         }
 
         if( f_state != e_started )
         {
             throw error() << "consumer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_in_list >
-    inline void _consumer< x_type, x_in_list >::execute()
+    inline bool _consumer< x_type, x_in_list >::execute()
     {
         if( f_state == e_started )
         {
             if( ++f_count != typelength< x_in_list >::result )
             {
-                return;
+                return true;
             }
-
             f_count = 0;
 
-            execute_consumer();
+            if( execute_consumer() == false )
+            {
+                return false;
+            }
         }
         else
         {
             throw error() << "consumer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_in_list >
-    inline void _consumer< x_type, x_in_list >::stop()
+    inline bool _consumer< x_type, x_in_list >::stop()
     {
         if( f_state == e_started )
         {
             if( ++f_count != typelength< x_in_list >::result )
             {
-                return;
+                return true;
             }
-
             f_count = 0;
+
             f_state = e_initialized;
 
-            stop_consumer();
+            if( stop_consumer() == false )
+            {
+                return false;
+            }
         }
 
         if( f_state != e_initialized )
         {
             throw error() << "consumer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_in_list >
     inline void _consumer< x_type, x_in_list >::finalize()
@@ -210,19 +222,19 @@ namespace midge
         return;
     }
     template< class x_type, class x_in_list >
-    inline void _consumer< x_type, x_in_list >::start_consumer()
+    inline bool _consumer< x_type, x_in_list >::start_consumer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_in_list >
-    inline void _consumer< x_type, x_in_list >::execute_consumer()
+    inline bool _consumer< x_type, x_in_list >::execute_consumer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_in_list >
-    inline void _consumer< x_type, x_in_list >::stop_consumer()
+    inline bool _consumer< x_type, x_in_list >::stop_consumer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_in_list >
     inline void _consumer< x_type, x_in_list >::finalize_consumer()

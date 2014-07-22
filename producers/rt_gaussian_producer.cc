@@ -110,7 +110,7 @@ namespace midge
 
     void rt_gaussian_producer::initialize_producer()
     {
-        f_amplitude = sqrt( f_size * f_impedance_ohm ) * pow( 10., (f_power_dbm - 30.) / 20. );
+        f_amplitude = sqrt( f_impedance_ohm ) * pow( 10., (f_power_dbm - 30.) / 20. );
         f_start = (count_t) (floor( f_start_sec / f_interval ));
         f_stop = (count_t) (ceil( f_stop_sec / f_interval ));
         f_index = 0;
@@ -121,17 +121,17 @@ namespace midge
         return;
     }
 
-    void rt_gaussian_producer::start_producer()
+    bool rt_gaussian_producer::start_producer()
     {
         out< 0 >()->set_size( f_size );
         out< 0 >()->set_interval( f_interval );
 
         f_out = out< 0 >()->raw();
 
-        return;
+        return true;
     }
 
-    void rt_gaussian_producer::execute_producer()
+    bool rt_gaussian_producer::execute_producer()
     {
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
@@ -147,14 +147,14 @@ namespace midge
         out< 0 >()->set_start_time( f_index * f_interval );
         f_index += f_stride;
 
-        return;
+        return true;
     }
 
-    void rt_gaussian_producer::stop_producer()
+    bool rt_gaussian_producer::stop_producer()
     {
         f_out = NULL;
 
-        return;
+        return true;
     }
 
     void rt_gaussian_producer::finalize_producer()
@@ -165,6 +165,8 @@ namespace midge
         f_index = 0;
 
         gsl_rng_free( f_rng );
+
+        return;
     }
 
 }

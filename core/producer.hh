@@ -52,9 +52,9 @@ namespace midge
 
         public:
             void initialize();
-            void start();
-            void execute();
-            void stop();
+            bool start();
+            bool execute();
+            bool stop();
             void finalize();
 
         protected:
@@ -66,9 +66,9 @@ namespace midge
             node* f_outs[ typelength< x_out_list >::result ];
 
             virtual void initialize_producer();
-            virtual void start_producer();
-            virtual void execute_producer();
-            virtual void stop_producer();
+            virtual bool start_producer();
+            virtual bool execute_producer();
+            virtual bool stop_producer();
             virtual void finalize_producer();
     };
 
@@ -110,7 +110,7 @@ namespace midge
         return;
     }
     template< class x_type, class x_out_list >
-    inline void _producer< x_type, x_out_list >::start()
+    inline bool _producer< x_type, x_out_list >::start()
     {
         if( f_state == e_initialized )
         {
@@ -121,64 +121,86 @@ namespace midge
                 if( f_outs[ t_index ] == NULL )
                 {
                     throw error() << "producer named <" << this->get_name() << "> cannot start with out <" << t_index << "> unset";
+                    return false;
                 }
             }
 
-            start_producer();
+            if( start_producer() == false )
+            {
+                return false;
+            }
 
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outs[ t_index ]->start();
+                if( f_outs[ t_index ]->start() == false )
+                {
+                    return false;
+                }
             }
         }
 
         if( f_state != e_started )
         {
             throw error() << "producer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_out_list >
-    inline void _producer< x_type, x_out_list >::execute()
+    inline bool _producer< x_type, x_out_list >::execute()
     {
         if( f_state == e_started )
         {
-            execute_producer();
+            if( execute_producer() == false )
+            {
+                return false;
+            }
 
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outs[ t_index ]->execute();
+                if( f_outs[ t_index ]->execute() == false )
+                {
+                    return false;
+                }
             }
         }
         else
         {
             throw error() << "producer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_out_list >
-    inline void _producer< x_type, x_out_list >::stop()
+    inline bool _producer< x_type, x_out_list >::stop()
     {
         if( f_state == e_started )
         {
             f_state = e_initialized;
 
-            stop_producer();
+            if( stop_producer() == false )
+            {
+                return false;
+            }
 
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
-                f_outs[ t_index ]->stop();
+                if( f_outs[ t_index ]->stop() == false )
+                {
+                    return false;
+                }
             }
         }
 
         if( f_state != e_initialized )
         {
             throw error() << "producer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return false;
     }
     template< class x_type, class x_out_list >
     inline void _producer< x_type, x_out_list >::finalize()
@@ -204,19 +226,19 @@ namespace midge
         return;
     }
     template< class x_type, class x_out_list >
-    inline void _producer< x_type, x_out_list >::start_producer()
+    inline bool _producer< x_type, x_out_list >::start_producer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_out_list >
-    inline void _producer< x_type, x_out_list >::execute_producer()
+    inline bool _producer< x_type, x_out_list >::execute_producer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_out_list >
-    inline void _producer< x_type, x_out_list >::stop_producer()
+    inline bool _producer< x_type, x_out_list >::stop_producer()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_out_list >
     inline void _producer< x_type, x_out_list >::finalize_producer()

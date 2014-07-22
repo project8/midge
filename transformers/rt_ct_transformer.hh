@@ -34,9 +34,9 @@ namespace midge
             complex_t* f_out;
 
         protected:
-            void start_transformer();
-            void execute_transformer();
-            void stop_transformer();
+            bool start_transformer();
+            bool execute_transformer();
+            bool stop_transformer();
     };
 }
 

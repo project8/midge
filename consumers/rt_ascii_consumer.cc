@@ -33,34 +33,34 @@ namespace midge
         return;
     }
 
-    void rt_ascii_consumer::start_consumer()
+    bool rt_ascii_consumer::start_consumer()
     {
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_start_time = in< 0 >()->get_start_time();
         f_in = in< 0 >()->raw();
 
-        return;
+        return true;
     }
 
-    void rt_ascii_consumer::execute_consumer()
+    bool rt_ascii_consumer::execute_consumer()
     {
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
             f_stream << (f_start_time + t_index * f_interval) << " " << f_in[ t_index ] << "\n";
         }
 
-        return;
+        return true;
     }
 
-    void rt_ascii_consumer::stop_consumer()
+    bool rt_ascii_consumer::stop_consumer()
     {
         f_size = 0;
         f_interval = 1.;
         f_start_time = 0.;
         f_in = NULL;
 
-        return;
+        return true;
     }
 
     void rt_ascii_consumer::finalize_consumer()

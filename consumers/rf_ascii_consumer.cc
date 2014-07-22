@@ -8,7 +8,6 @@ namespace midge
             f_stream(),
             f_size( 0 ),
             f_interval( 1. ),
-            f_center_time( 0. ),
             f_in( NULL )
     {
     }
@@ -33,34 +32,33 @@ namespace midge
         return;
     }
 
-    void rf_ascii_consumer::start_consumer()
+    bool rf_ascii_consumer::start_consumer()
     {
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
-        f_center_time = in< 0 >()->get_center_time();
         f_in = in< 0 >()->raw();
 
-        return;
+        return true;
     }
 
-    void rf_ascii_consumer::execute_consumer()
+    bool rf_ascii_consumer::execute_consumer()
     {
+        real_t t_center_time = in< 0 >()->get_center_time();
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
-            f_stream << f_center_time << " " << (t_index * f_interval) << " " << f_in[ t_index ] << "\n";
+            f_stream << t_center_time << " " << (t_index * f_interval) << " " << f_in[ t_index ] << "\n";
         }
 
-        return;
+        return true;
     }
 
-    void rf_ascii_consumer::stop_consumer()
+    bool rf_ascii_consumer::stop_consumer()
     {
         f_size = 0;
         f_interval = 1.;
-        f_center_time = 0.;
         f_in = NULL;
 
-        return;
+        return true;
     }
 
     void rf_ascii_consumer::finalize_consumer()

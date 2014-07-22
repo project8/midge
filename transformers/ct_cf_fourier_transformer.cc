@@ -17,7 +17,7 @@ namespace midge
     {
     }
 
-    void ct_cf_fourier_transformer::start_transformer()
+    bool ct_cf_fourier_transformer::start_transformer()
     {
         out< 0 >()->set_size( in< 0 >()->get_size() );
         out< 0 >()->set_interval( 1. / (in< 0 >()->get_size() * in< 0 >()->get_interval()) );
@@ -28,9 +28,9 @@ namespace midge
         f_plan = fftw_plan_dft_1d( f_size, f_in, f_out, FFTW_FORWARD, FFTW_MEASURE );
         f_norm = sqrt( (real_t) (f_size) );
 
-        return;
+        return true;
     }
-    void ct_cf_fourier_transformer::execute_transformer()
+    bool ct_cf_fourier_transformer::execute_transformer()
     {
         fftw_execute( f_plan );
 
@@ -41,9 +41,9 @@ namespace midge
         }
         out< 0 >()->set_center_time( in< 0 >()->get_start_time() + .5 * in< 0 >()->get_interval() * (real_t) (f_size - 1) );
 
-        return;
+        return true;
     }
-    void ct_cf_fourier_transformer::stop_transformer()
+    bool ct_cf_fourier_transformer::stop_transformer()
     {
         f_size = 0;
         f_in = NULL;
@@ -51,7 +51,7 @@ namespace midge
         fftw_destroy_plan( f_plan );
         f_norm = 1.;
 
-        return;
+        return true;
     }
 
 }

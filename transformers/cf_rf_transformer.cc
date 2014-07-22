@@ -50,7 +50,7 @@ namespace midge
         return f_mode;
     }
 
-    void cf_rf_transformer::start_transformer()
+    bool cf_rf_transformer::start_transformer()
     {
         out< 0 >()->set_size( in< 0 >()->get_size() );
         out< 0 >()->set_interval( in< 0 >()->get_interval() );
@@ -59,9 +59,9 @@ namespace midge
         f_in = in< 0 >()->raw();
         f_out = out< 0 >()->raw();
 
-        return;
+        return true;
     }
-    void cf_rf_transformer::execute_transformer()
+    bool cf_rf_transformer::execute_transformer()
     {
         switch( f_mode )
         {
@@ -96,14 +96,14 @@ namespace midge
 
         out< 0 >()->set_center_time( in< 0 >()->get_center_time() );
 
-        return;
+        return true;
     }
-    void cf_rf_transformer::stop_transformer()
+    bool cf_rf_transformer::stop_transformer()
     {
         f_size = 0;
         f_in = NULL;
         f_out = NULL;
 
-        return;
+        return true;
     }
 }

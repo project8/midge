@@ -130,16 +130,16 @@ namespace midge
         return;
     }
 
-    void rt_harmonic_producer::start_producer()
+    bool rt_harmonic_producer::start_producer()
     {
         out< 0 >()->set_size( f_size );
         out< 0 >()->set_interval( f_interval );
         f_out = out< 0 >()->raw();
 
-        return;
+        return true;
     }
 
-    void rt_harmonic_producer::execute_producer()
+    bool rt_harmonic_producer::execute_producer()
     {
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
@@ -155,14 +155,14 @@ namespace midge
         out< 0 >()->set_start_time( f_index * f_interval );
         f_index += f_stride;
 
-        return;
+        return true;
     }
 
-    void rt_harmonic_producer::stop_producer()
+    bool rt_harmonic_producer::stop_producer()
     {
         f_out = NULL;
 
-        return;
+        return true;
     }
 
     void rt_harmonic_producer::finalize_producer()

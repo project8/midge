@@ -4,21 +4,10 @@
         "name" : "rt"
     },
 
-    "ct_data" :
-    {
-        "name" : "ct"
-    },
-
-    "cf_data" :
-    {
-        "name" : "cf"
-    },
-
     "rf_data" :
     {
         "name" : "rf"
     },
-
 
     "rt_harmonic_producer" :
     {
@@ -34,20 +23,9 @@
         "stride" : 10000
     },
 
-    "rt_ct_transformer" :
+    "rt_rf_power_transformer" :
     {
-        "name" : "rt_ct",
-        "mode" : "real"
-    },
-
-    "ct_cf_fourier_transformer" :
-    {
-        "name" : "ct_cf"
-    },
-
-    "cf_rf_power_transformer" :
-    {
-        "name" : "cf_rf",
+        "name" : "rt_rf",
         "impedance_ohm" : 50.0
     },
 
@@ -64,12 +42,8 @@
     },
 
     "join" : "rt_in.out_0:rt.in",
-    "join" : "rt.out:rt_ct.in_0",
-    "join" : "rt_ct.out_0:ct.in",
-    "join" : "ct.out:ct_cf.in_0",
-    "join" : "ct_cf.out_0:cf.in",
-    "join" : "cf.out:cf_rf.in_0",
-    "join" : "cf_rf.out_0:rf.in",
+    "join" : "rt.out:rt_rf.in_0",
+    "join" : "rt_rf.out_0:rf.in",
     "join" : "rt.out:rt_out.in_0",
     "join" : "rf.out:rf_out.in_0",
 

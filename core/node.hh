@@ -27,9 +27,9 @@ namespace midge
 
         public:
             virtual void initialize() = 0;
-            virtual void start() = 0;
-            virtual void execute() = 0;
-            virtual void stop() = 0;
+            virtual bool start() = 0;
+            virtual bool execute() = 0;
+            virtual bool stop() = 0;
             virtual void finalize() = 0;
 
         public:
@@ -99,7 +99,7 @@ namespace midge
         }
         else
         {
-            throw error() << "node already has no in named <" << p_link << ">";
+            throw error() << "node has no in named <" << p_link << ">";
         }
         return;
     }
@@ -141,7 +141,7 @@ namespace midge
         }
         else
         {
-            throw error() << "node already has no out named <" << p_link << ">";
+            throw error() << "node has no out named <" << p_link << ">";
         }
         return;
     }

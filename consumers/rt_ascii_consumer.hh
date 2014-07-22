@@ -34,9 +34,9 @@ namespace midge
 
         protected:
             void initialize_consumer();
-            void start_consumer();
-            void execute_consumer();
-            void stop_consumer();
+            bool start_consumer();
+            bool execute_consumer();
+            bool stop_consumer();
             void finalize_consumer();
     };
 

@@ -11,30 +11,17 @@
 
     "cf_data" :
     {
-        "name" : "cf_out"
+        "name" : "cf"
     },
 
-    "rf_data" :
+    "ct_data" :
     {
-        "name" : "rf_modulus_out"
+        "name" : "ct_out"
     },
 
-    "rf_data" :
+    "rt_data" :
     {
-        "name" : "rf_argument_out"
-    },
-
-    "rt_gaussian_producer" :
-    {
-        "name" : "rt_gaussian",
-        "power_dbm" : -10.0,
-        "impedance_ohm" : 50.0,
-        "start_sec" : 100.0e-9,
-        "stop_sec" : 1900.0e-9,
-        "interval" : 1.0e-9,
-        "seed" : 51385,
-        "size" : 2000,
-        "stride" : 2000
+        "name" : "rt_out"
     },
 
     "rt_harmonic_producer" :
@@ -42,10 +29,10 @@
         "name" : "rt_harmonic",
         "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
-        "frequency_hz" : 100.0e6,
+        "frequency_hz" : 10.0e6,
         "phase_deg" : 60.0,
-        "start_sec" : 100.0e-9,
-        "stop_sec" : 9900.0e-9,
+        "start_sec" : 300.0e-9,
+        "stop_sec" : 9700.0e-9,
         "stride" : 10000,
         "size" : 10000,
         "interval" : 1.0e-9
@@ -53,50 +40,49 @@
 
     "rt_ct_transformer" :
     {
-        "name" : "rt_ct_real",
+        "name" : "rt_ct",
         "mode" : "real"
     },
 
     "ct_cf_fourier_transformer" :
     {
-        "name" : "ct_cf_fourier"
+        "name" : "ct_cf"
     },
 
-    "cf_rf_transformer" :
+    "cf_ct_fourier_transformer" :
     {
-        "name" : "cf_rf_modulus",
-        "mode" : "modulus"
+        "name" : "cf_ct"
     },
 
-    "cf_rf_transformer" :
+    "ct_rt_transformer" :
     {
-        "name" : "cf_rf_argument",
-        "mode" : "argument"
+        "name" : "ct_rt",
+        "mode" : "real"
     },
 
-    "rf_ascii_consumer" :
+    "rt_ascii_consumer" :
     {
-        "name" : "rf_modulus",
-        "file" : "test_fourier_transform.modulus.json.txt"
+        "name" : "rt_pre",
+        "file" : "test_fourier_transform.pre.txt"
     },
 
-    "rf_ascii_consumer" :
+    "rt_ascii_consumer" :
     {
-        "name" : "rf_argument",
-        "file" : "test_fourier_transform.argument.json.txt"
+        "name" : "rt_post",
+        "file" : "test_fourier_transform.post.txt"
     },
 
-    "join" : "rt_gaussian.out_0:rt_in.in",
-    "join" : "rt_in.out:rt_ct_real.in_0",
-    "join" : "rt_ct_real.out_0:ct_in.in",
-    "join" : "ct_in.out:ct_cf_fourier.in_0",
-    "join" : "ct_cf_fourier.out_0:cf_out.in",
-    "join" : "cf_out.out:cf_rf_modulus.in_0",
-    "join" : "cf_rf_modulus.out_0:rf_modulus_out.in",
-    "join" : "rf_modulus_out.out:rf_modulus.in_0",
-    "join" : "cf_out.out:cf_rf_argument.in_0",
-    "join" : "cf_rf_argument.out_0:rf_argument_out.in",
-    "join" : "rf_argument_out.out:rf_argument.in_0",
+    "join" : "rt_harmonic.out_0:rt_in.in",
+    "join" : "rt_in.out:rt_ct.in_0",
+    "join" : "rt_ct.out_0:ct_in.in",
+    "join" : "ct_in.out:ct_cf.in_0",
+    "join" : "ct_cf.out_0:cf.in",
+    "join" : "cf.out:cf_ct.in_0",
+    "join" : "cf_ct.out_0:ct_out.in",
+    "join" : "ct_out.out:ct_rt.in_0",
+    "join" : "ct_rt.out_0:rt_out.in",
+    "join" : "rt_in.out:rt_pre.in_0",
+    "join" : "rt_out.out:rt_post.in_0",
 
-    "run" : "rt_gaussian"
+    "run" : "rt_harmonic"
 }

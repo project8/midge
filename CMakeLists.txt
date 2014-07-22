@@ -104,6 +104,7 @@ set( midge_core_headers
 	producer.hh
 	consumer.hh
 	transformer.hh
+	controller.hh
 )
 set( midge_core_sources
 	root.cc
@@ -113,6 +114,7 @@ set( midge_core_sources
 	producer.cc
 	consumer.cc
 	transformer.cc
+	controller.cc
 )
 
 foreach( base ${midge_core_headers} )
@@ -264,7 +266,7 @@ set( midge_transformers_headers
 	cf_rf_transformer.hh
 	ct_cf_fourier_transformer.hh
 	cf_ct_fourier_transformer.hh
-	cf_rf_power_transformer.hh
+	rt_rf_power_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_transformer.cc
@@ -273,7 +275,7 @@ set( midge_transformers_sources
 	cf_rf_transformer.cc
 	ct_cf_fourier_transformer.cc
 	cf_ct_fourier_transformer.cc
-	cf_rf_power_transformer.cc
+	rt_rf_power_transformer.cc
 )
 
 foreach( base ${midge_transformers_headers} )
@@ -289,6 +291,44 @@ add_library( ${midge_transformers_name} SHARED ${midge_transformers_header_files
 target_link_libraries( ${midge_transformers_name} ${midge_transformers_dependencies} ${midge_external_libraries} )
 install( FILES ${midge_transformers_header_files} DESTINATION include )
 install( TARGETS ${midge_transformers_name} DESTINATION lib )
+
+################
+# controllers #
+################
+
+set( midge_controllers_name
+	controllers
+)
+set( midge_controllers_dependencies
+	core
+	data
+	producers
+	consumers
+	transformers
+)
+set( midge_controllers_directory
+	controllers
+)
+set( midge_controllers_headers
+	count_controller.hh
+)
+set( midge_controllers_sources
+	count_controller.cc
+)
+
+foreach( base ${midge_controllers_headers} )
+	list( APPEND midge_controllers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_controllers_directory}/${base} )
+endforeach( base )
+
+foreach( base ${midge_controllers_sources} )
+	list( APPEND midge_controllers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_controllers_directory}/${base} )
+endforeach( base )
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_controllers_directory} )
+add_library( ${midge_controllers_name} SHARED ${midge_controllers_header_files} ${midge_controllers_source_files} )
+target_link_libraries( ${midge_controllers_name} ${midge_controllers_dependencies} ${midge_external_libraries} )
+install( FILES ${midge_controllers_header_files} DESTINATION include )
+install( TARGETS ${midge_controllers_name} DESTINATION lib )
 
 ##################
 # initialization #
@@ -386,7 +426,7 @@ set( midge_bindings_headers
 	cf_rf_transformer_builder.hh
 	ct_cf_fourier_transformer_builder.hh
 	cf_ct_fourier_transformer_builder.hh
-	cf_rf_power_transformer_builder.hh
+	rt_rf_power_transformer_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
@@ -404,7 +444,7 @@ set( midge_bindings_sources
 	cf_rf_transformer_builder.cc
 	ct_cf_fourier_transformer_builder.cc
 	cf_ct_fourier_transformer_builder.cc
-	cf_rf_power_transformer_builder.cc
+	rt_rf_power_transformer_builder.cc
 )
 
 foreach( base ${midge_bindings_headers} )
@@ -420,29 +460,6 @@ add_library( ${midge_bindings_name} SHARED ${midge_bindings_header_files} ${midg
 target_link_libraries( ${midge_bindings_name} ${midge_bindings_dependencies} ${midge_external_libraries} )
 install( FILES ${midge_bindings_header_files} DESTINATION include )
 install( TARGETS ${midge_bindings_name} DESTINATION lib )
-
-########
-# json #
-########
-
-set( midge_json_directory
-	json
-)
-set( midge_json_files
-	test_types.json
-	test_arrays.json
-	test_objects.json
-	test_builder.json
-	test_harmonic_producer.json
-	test_gaussian_producer.json
-	test_fourier_transformer.json
-)
-
-foreach( base ${midge_json_files} )
-	list( APPEND midge_json_file_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_json_directory}/${base} )
-endforeach( base )
-
-install( FILES ${midge_json_file_files} DESTINATION config )
 
 ########
 # main #
@@ -498,7 +515,6 @@ set( midge_test_programs
 	test_complex
 	test_harmonic_producer
 	test_fourier_transformer
-	test_power_transformer
 )
 
 foreach( program ${midge_test_programs} )
@@ -506,3 +522,26 @@ foreach( program ${midge_test_programs} )
 	target_link_libraries( ${program} ${midge_test_dependencies} ${midge_external_libraries} )
 	install( TARGETS ${program} DESTINATION bin )
 endforeach( program )
+
+########
+# json #
+########
+
+set( midge_json_directory
+	json
+)
+set( midge_json_files
+	test_types.json
+	test_arrays.json
+	test_objects.json
+	test_builder.json
+	test_harmonic_producer.json
+	test_gaussian_producer.json
+	test_fourier_transformer.json
+)
+
+foreach( base ${midge_json_files} )
+	list( APPEND midge_json_file_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_json_directory}/${base} )
+endforeach( base )
+
+install( FILES ${midge_json_file_files} DESTINATION config )

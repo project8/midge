@@ -64,9 +64,9 @@ namespace midge
 
         public:
             void initialize();
-            void start();
-            void execute();
-            void stop();
+            bool start();
+            bool execute();
+            bool stop();
             void finalize();
 
         protected:
@@ -77,9 +77,9 @@ namespace midge
             state f_state;
 
             virtual void initialize_data();
-            virtual void start_data();
-            virtual void execute_data();
-            virtual void stop_data();
+            virtual bool start_data();
+            virtual bool execute_data();
+            virtual bool stop_data();
             virtual void finalize_data();
     };
 
@@ -193,67 +193,88 @@ namespace midge
         return;
     }
     template< class x_type, class x_raw >
-    inline void _data< x_type, x_raw >::start()
+    inline bool _data< x_type, x_raw >::start()
     {
         if( f_state == e_initialized )
         {
             f_state = e_started;
 
-            start_data();
+            if( start_data() == false )
+            {
+                return false;
+            }
 
             for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
-                (*t_it)->start();
+                if( (*t_it)->start() == false )
+                {
+                    return false;
+                }
             }
         }
 
         if( f_state != e_started )
         {
             throw error() << "data named <" << get_name() << "> cannot start from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_raw >
-    inline void _data< x_type, x_raw >::execute()
+    inline bool _data< x_type, x_raw >::execute()
     {
         if( f_state == e_started )
         {
-            execute_data();
+            if( execute_data() == false )
+            {
+                return false;
+            }
 
             for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
-                (*t_it)->execute();
+                if( (*t_it)->execute() == false )
+                {
+                    return false;
+                }
             }
         }
         else
         {
             throw error() << "data named <" << get_name() << "> cannot execute from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_raw >
-    inline void _data< x_type, x_raw >::stop()
+    inline bool _data< x_type, x_raw >::stop()
     {
         if( f_state == e_started )
         {
             f_state = e_initialized;
 
-            stop_data();
+            if( stop_data() == false )
+            {
+                return false;
+            }
 
             for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
             {
-                (*t_it)->stop();
+                if( (*t_it)->stop() == false )
+                {
+                    return false;
+                }
             }
         }
 
         if( f_state != e_initialized )
         {
             throw error() << "data named <" << get_name() << "> cannot stop from state <" << f_state << ">";
+            return false;
         }
 
-        return;
+        return true;
     }
     template< class x_type, class x_raw >
     inline void _data< x_type, x_raw >::finalize()
@@ -279,19 +300,19 @@ namespace midge
         return;
     }
     template< class x_type, class x_raw >
-    inline void _data< x_type, x_raw >::start_data()
+    inline bool _data< x_type, x_raw >::start_data()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_raw >
-    inline void _data< x_type, x_raw >::execute_data()
+    inline bool _data< x_type, x_raw >::execute_data()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_raw >
-    inline void _data< x_type, x_raw >::stop_data()
+    inline bool _data< x_type, x_raw >::stop_data()
     {
-        return;
+        return true;
     }
     template< class x_type, class x_raw >
     inline void _data< x_type, x_raw >::finalize_data()

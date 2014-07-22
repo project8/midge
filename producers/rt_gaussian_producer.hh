@@ -62,9 +62,9 @@ namespace midge
 
         protected:
             void initialize_producer();
-            void start_producer();
-            void execute_producer();
-            void stop_producer();
+            bool start_producer();
+            bool execute_producer();
+            bool stop_producer();
             void finalize_producer();
     };
 }
