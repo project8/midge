@@ -219,9 +219,23 @@ namespace midge
         {
             node* t_node = t_it->second;
 
-            t_node->start();
-            t_node->execute();
-            t_node->stop();
+            if( t_node->start() == false )
+            {
+                return;
+            }
+
+            while( true )
+            {
+                if( t_node->execute() == false )
+                {
+                    break;
+                }
+            }
+
+            if( t_node->stop() == false )
+            {
+                return;
+            }
         }
         else
         {

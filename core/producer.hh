@@ -200,7 +200,7 @@ namespace midge
             return false;
         }
 
-        return false;
+        return true;
     }
     template< class x_type, class x_out_list >
     inline void _producer< x_type, x_out_list >::finalize()

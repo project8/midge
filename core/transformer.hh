@@ -76,7 +76,7 @@ namespace midge
                 e_idle = 0, e_initialized = 1, e_started = 2
             } state;
             state f_state;
-            count_t f_count;
+            count_t f_calls;
             node* f_ins[ typelength< x_in_list >::result ];
             node* f_outs[ typelength< x_out_list >::result ];
 
@@ -93,7 +93,7 @@ namespace midge
             typechain< x_in_list, _in >( f_ins ),
             typechain< x_out_list, _out >( f_outs ),
             f_state( e_idle ),
-            f_count( 0 )
+            f_calls( 0 )
     {
         for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
         {
@@ -132,11 +132,11 @@ namespace midge
     {
         if( f_state == e_initialized )
         {
-            if( ++f_count != typelength< x_in_list >::result )
+            if( ++f_calls != typelength< x_in_list >::result )
             {
                 return true;
             }
-            f_count = 0;
+            f_calls = 0;
 
             f_state = e_started;
 
@@ -185,11 +185,11 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            if( ++f_count != typelength< x_in_list >::result )
+            if( ++f_calls != typelength< x_in_list >::result )
             {
                 return true;
             }
-            f_count = 0;
+            f_calls = 0;
 
             if( execute_transformer() == false )
             {
@@ -217,11 +217,11 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            if( ++f_count != typelength< x_in_list >::result )
+            if( ++f_calls != typelength< x_in_list >::result )
             {
                 return true;
             }
-            f_count = 0;
+            f_calls = 0;
 
             f_state = e_initialized;
 

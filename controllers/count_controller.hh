@@ -13,6 +13,21 @@ namespace midge
         public:
             count_controller();
             virtual ~count_controller();
+
+        public:
+            void set_count( const count_t& p_count );
+            const count_t& get_count() const;
+
+        private:
+            count_t f_count;
+
+            count_t f_current;
+
+        protected:
+            bool start_controller_pre();
+            bool execute_controller_pre();
+            bool execute_controller_post();
+            bool stop_controller_post();
     };
 
 }

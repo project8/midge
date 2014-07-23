@@ -5,6 +5,7 @@
 #include "rt_rf_power_transformer.hh"
 #include "rt_ascii_consumer.hh"
 #include "rf_ascii_consumer.hh"
+#include "count_controller.hh"
 using namespace midge;
 
 #include <iostream>
@@ -12,8 +13,6 @@ using std::cout;
 using std::endl;
 
 #include <cmath>
-
-//todo: finish this
 
 int main()
 {
@@ -27,29 +26,47 @@ int main()
     t_rf->set_name( "rf" );
     t_root->add( t_rf );
 
-    rt_harmonic_producer* t_producer = new rt_harmonic_producer();
-    t_producer->set_name( "producer" );
-    t_producer->set_power_dbm( -10. );
-    t_producer->set_impedance_ohm( 50. );
-    t_producer->set_frequency_hz( 10.e6 );
-    t_producer->set_phase_deg( 60. );
-    t_producer->set_start_sec( 500.e-9 );
-    t_producer->set_stop_sec( 1500.e-9 );
-    t_producer->set_interval( 1.e-9 );
-    t_producer->set_size( 2000 );
-    t_producer->set_stride( 2000 );
-    t_root->add( t_producer );
+    rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
+    t_rt_in->set_name( "rt_in" );
+    t_rt_in->set_power_dbm( -10. );
+    t_rt_in->set_impedance_ohm( 50. );
+    t_rt_in->set_frequency_hz( 100.e6 );
+    t_rt_in->set_phase_deg( 60. );
+    t_rt_in->set_start_sec( 200.e-9 );
+    t_rt_in->set_stop_sec( 1800.e-9 );
+    t_rt_in->set_interval( 1.e-9 );
+    t_rt_in->set_size( 1000 );
+    t_rt_in->set_stride( 200 );
+    t_root->add( t_rt_in );
 
-    rt_ascii_consumer* t_consumer = new rt_ascii_consumer();
-    t_consumer->set_name( "consumer" );
-    t_consumer->set_file( "test_harmonic_producer.txt" );
-    t_root->add( t_consumer );
+    rt_rf_power_transformer* t_rt_rf = new rt_rf_power_transformer();
+    t_rt_rf->set_name( "rt_rf" );
+    t_rt_rf->set_impedance_ohm( 50. );
+    t_root->add( t_rt_rf );
 
+    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
+    t_rt_out->set_name( "rt_out" );
+    t_rt_out->set_file( "test_harmonic_producer.signal.txt" );
+    t_root->add( t_rt_out );
 
-    t_root->join( "producer.out_0:data.in" );
-    t_root->join( "data.out:consumer.in_0" );
+    rf_ascii_consumer* t_rf_out = new rf_ascii_consumer();
+    t_rf_out->set_name( "rf_out" );
+    t_rf_out->set_file( "test_harmonic_producer.spectrum.txt" );
+    t_root->add( t_rf_out );
 
-    t_root->run( "producer" );
+    count_controller* t_c = new count_controller();
+    t_c->set_name( "c" );
+    t_c->set_count( 1 );
+    t_root->add( t_c );
+
+    t_root->join( "rt_in.out_0:rt.in" );
+    t_root->join( "rt.out:rt_rf.in_0" );
+    t_root->join( "rt_rf.out_0:rf.in");
+    t_root->join( "rf.out:rf_out.in_0" );
+    t_root->join( "rt.out:rt_out.in_0" );
+    t_root->join( "c.out_0:rt_in" );
+
+    t_root->run( "c" );
 
     delete t_root;
 

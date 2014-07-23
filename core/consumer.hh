@@ -63,7 +63,7 @@ namespace midge
                 e_idle = 0, e_initialized = 1, e_started = 2
             } state;
             state f_state;
-            count_t f_count;
+            count_t f_calls;
             node* f_ins[ typelength< x_in_list >::result ];
 
             virtual void initialize_consumer();
@@ -78,7 +78,7 @@ namespace midge
             consumer(),
             typechain< x_in_list, _in >( f_ins ),
             f_state( e_idle ),
-            f_count( 0 )
+            f_calls( 0 )
     {
         for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
         {
@@ -116,11 +116,11 @@ namespace midge
     {
         if( f_state == e_initialized )
         {
-            if( ++f_count != typelength< x_in_list >::result )
+            if( ++f_calls != typelength< x_in_list >::result )
             {
                 return true;
             }
-            f_count = 0;
+            f_calls = 0;
 
             f_state = e_started;
 
@@ -152,11 +152,11 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            if( ++f_count != typelength< x_in_list >::result )
+            if( ++f_calls != typelength< x_in_list >::result )
             {
                 return true;
             }
-            f_count = 0;
+            f_calls = 0;
 
             if( execute_consumer() == false )
             {
@@ -176,11 +176,11 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            if( ++f_count != typelength< x_in_list >::result )
+            if( ++f_calls != typelength< x_in_list >::result )
             {
                 return true;
             }
-            f_count = 0;
+            f_calls = 0;
 
             f_state = e_initialized;
 

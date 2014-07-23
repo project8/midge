@@ -405,6 +405,7 @@ set( midge_bindings_dependencies
 	producers
 	consumers
 	transformers
+	controllers
 	initialization
 )
 set( midge_bindings_directory
@@ -427,6 +428,7 @@ set( midge_bindings_headers
 	ct_cf_fourier_transformer_builder.hh
 	cf_ct_fourier_transformer_builder.hh
 	rt_rf_power_transformer_builder.hh
+	count_controller_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
@@ -445,6 +447,7 @@ set( midge_bindings_sources
 	ct_cf_fourier_transformer_builder.cc
 	cf_ct_fourier_transformer_builder.cc
 	rt_rf_power_transformer_builder.cc
+	count_controller_builder.cc
 )
 
 foreach( base ${midge_bindings_headers} )
@@ -466,11 +469,13 @@ install( TARGETS ${midge_bindings_name} DESTINATION lib )
 ########
 
 set( midge_main_dependencies
+	utility
 	core
 	data
 	producers
 	consumers
 	transformers
+	controllers
 	initialization
 	bindings
 )
@@ -492,13 +497,14 @@ endforeach( program )
 ########
 
 set( midge_test_dependencies
+	utility
 	core
 	data
 	producers
 	consumers
 	transformers
+	controllers
 	initialization
-	bindings
 )
 set( midge_test_directory
 	test
