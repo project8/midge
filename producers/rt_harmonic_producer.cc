@@ -20,7 +20,9 @@ namespace midge
             f_phase( 0. ),
             f_start( 0 ),
             f_stop( 0 ),
-            f_index( 0 ),
+            f_start_index( 0 ),
+            f_stop_index( 0 ),
+            f_current_index( 0 ),
             f_out( NULL )
     {
     }
@@ -123,9 +125,11 @@ namespace midge
         f_amplitude = sqrt( 2. * f_impedance_ohm ) * pow( 10., (f_power_dbm - 30.) / 20. );
         f_frequency = f_interval * f_frequency_hz;
         f_phase = ( M_PI / 180.) * f_phase_deg;
-        f_start = (count_t) (floor( f_start_sec / f_interval ));
-        f_stop = (count_t) (ceil( f_stop_sec / f_interval ));
-        f_index = 0;
+        f_start = (count_t) (round( f_start_sec / f_interval ));
+        f_stop = (count_t) (round( f_stop_sec / f_interval ));
+        f_start_index = 0;
+        f_stop_index = f_size;
+        f_current_index = 0;
 
         return;
     }
@@ -141,19 +145,29 @@ namespace midge
 
     bool rt_harmonic_producer::execute_producer()
     {
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+        // shift the block
+        for( count_t t_index = f_start_index; t_index < f_current_index; t_index++ )
         {
-            if( (f_index + t_index >= f_start) && (f_index + t_index <= f_stop) )
+            f_out[ t_index - f_start_index ] = f_out[ t_index - f_start_index + f_stop_index - f_current_index ];
+        }
+
+        // add new data to the block
+        for( count_t t_index = f_current_index; t_index < f_stop_index; t_index++ )
+        {
+            if( (t_index >= f_start) && (t_index <= f_stop) )
             {
-                f_out[ t_index ] = f_amplitude * cos( 2. * M_PI * f_frequency * (t_index + f_index - f_start) + f_phase );
+                f_out[ t_index - f_start_index ] = f_amplitude * cos( 2. * M_PI * f_frequency * (t_index - f_start) + f_phase );
             }
             else
             {
-                f_out[ t_index ] = 0.;
+                f_out[ t_index - f_start_index ] = 0.;
             }
         }
-        out< 0 >()->set_start_time( f_index * f_interval );
-        f_index += f_stride;
+
+        out< 0 >()->set_start_time( f_start_index * f_interval );
+        f_start_index += f_stride;
+        f_current_index = f_stop_index;
+        f_stop_index += f_stride;
 
         return true;
     }
@@ -172,7 +186,9 @@ namespace midge
         f_phase = 0.;
         f_start = 0.;
         f_stop = 0.;
-        f_index = 0;
+        f_start_index = 0;
+        f_stop_index = 0;
+        f_current_index = 0;
 
         return;
     }

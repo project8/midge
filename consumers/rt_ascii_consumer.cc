@@ -1,5 +1,7 @@
 #include "rt_ascii_consumer.hh"
 
+#include <cmath>
+
 namespace midge
 {
 
@@ -8,8 +10,10 @@ namespace midge
             f_stream(),
             f_size( 0 ),
             f_interval( 1. ),
+            f_in( NULL ),
             f_start_time( 0. ),
-            f_in( NULL )
+            f_stop_time( 0. ),
+            f_current_time( 0. )
     {
     }
     rt_ascii_consumer::~rt_ascii_consumer()
@@ -37,18 +41,36 @@ namespace midge
     {
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
-        f_start_time = in< 0 >()->get_start_time();
         f_in = in< 0 >()->raw();
+
+        f_current_time = 0.;
+        f_start_time = 0.;
+        f_stop_time = f_interval * f_size;
 
         return true;
     }
 
     bool rt_ascii_consumer::execute_consumer()
     {
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+        count_t t_current_index = (count_t) (round( f_current_time / f_interval ));
+        f_start_time = in< 0 >()->get_start_time();
+        count_t t_start_index = (count_t) (round( f_start_time / f_interval ));
+        f_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
+        count_t t_stop_index = (count_t) (round( f_stop_time / f_interval ));
+
+        cout << "ascii consumer:" << endl;
+        cout << "  current_time: " << f_current_time << endl;
+        cout << "  current_index: " << t_current_index << endl;
+        cout << "  start_time: " << f_start_time << endl;
+        cout << "  start_index: " << t_start_index << endl;
+        cout << "  stop_time: " << f_stop_time << endl;
+        cout << "  stop_index: " << t_stop_index << endl;
+
+        for( count_t t_index = t_current_index; t_index < t_stop_index; t_index++ )
         {
-            f_stream << (f_start_time + t_index * f_interval) << " " << f_in[ t_index ] << "\n";
+            f_stream << (f_start_time + (t_index - t_start_index) * f_interval) << " " << f_in[ t_index - t_start_index ] << "\n";
         }
+        f_current_time = f_stop_time;
 
         return true;
     }
@@ -57,8 +79,11 @@ namespace midge
     {
         f_size = 0;
         f_interval = 1.;
-        f_start_time = 0.;
         f_in = NULL;
+
+        f_current_time = 0.;
+        f_start_time = 0.;
+        f_stop_time = 0.;
 
         return true;
     }

@@ -11,10 +11,6 @@
 #include <vector>
 using std::vector;
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 namespace midge
 {
 
@@ -126,10 +122,10 @@ namespace midge
     {
         if( f_state == e_idle )
         {
-            cout << "initializing controller <" << this->get_name() << ">" << endl;
+            //cout << "initializing controller <" << this->get_name() << ">" << endl;
             f_state = e_initialized;
 
-            cout << "  initializing self" << endl;
+            //cout << "  initializing self" << endl;
             initialize_controller();
 
             return;
@@ -148,72 +144,72 @@ namespace midge
     {
         if( f_state == e_initialized )
         {
-            cout << "starting controller <" << this->get_name() << ">" << endl;
+            //cout << "starting controller <" << this->get_name() << ">" << endl;
             f_state = e_starting;
 
-            cout << "  examining <" << typelength< x_in_list >::result << "> ins" << endl;
+            //cout << "  examining <" << typelength< x_in_list >::result << "> ins" << endl;
             for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
             {
                 if( f_ins[ t_index ] != NULL )
                 {
-                    cout << "  in at <" << t_index << "> is set" << endl;
+                    //cout << "  in at <" << t_index << "> is set" << endl;
                     f_set_ins[ f_set_in_size ] = f_ins[ t_index ];
                     f_set_in_size++;
                 }
                 else
                 {
-                    cout << "  in at <" << t_index << "> is null" << endl;
+                    //cout << "  in at <" << t_index << "> is null" << endl;
                 }
             }
 
-            cout << "  examining <" << typelength< x_out_list >::result << "> outs" << endl;
+            //cout << "  examining <" << typelength< x_out_list >::result << "> outs" << endl;
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
                 if( f_outs[ t_index ] != NULL )
                 {
-                    cout << "  out at <" << t_index << "> is set" << endl;
+                    //cout << "  out at <" << t_index << "> is set" << endl;
                     f_set_outs[ f_set_out_size ] = f_outs[ t_index ];
                     f_set_out_size++;
                 }
                 else
                 {
-                    cout << "  out at <" << t_index << "> is null" << endl;
+                    //cout << "  out at <" << t_index << "> is null" << endl;
                 }
             }
 
-            cout << "  starting self pre" << endl;
+            //cout << "  starting self pre" << endl;
             if( start_controller_pre() == false )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_initialized;
                 return false;
             }
 
-            cout << "  starting outs" << endl;
+            //cout << "  starting outs" << endl;
             f_calls = 0;
             for( count_t t_index = 0; t_index < f_set_out_size; t_index++ )
             {
-                cout << "  starting out at <" << t_index << ">" << endl;
+                //cout << "  starting out at <" << t_index << ">" << endl;
                 if( f_set_outs[ t_index ]->start() == false )
                 {
-                    cout << "  done" << endl;
+                    //cout << "  done" << endl;
                     f_state = e_initialized;
                     return false;
                 }
             }
 
-            cout << "  checking ins" << endl;
+            //cout << "  checking ins" << endl;
             if( f_calls != f_set_in_size )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_initialized;
                 return false;
             }
 
-            cout << "  starting self post" << endl;
+            //cout << "  starting self post" << endl;
             if( start_controller_post() == false )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_initialized;
                 return false;
             }
@@ -224,7 +220,7 @@ namespace midge
 
         if( f_state == e_starting )
         {
-            cout << "    called" << endl;
+            //cout << "    called" << endl;
             f_calls++;
             return true;
         }
@@ -242,42 +238,42 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            cout << "executing controller <" << this->get_name() << ">" << endl;
+            //cout << "executing controller <" << this->get_name() << ">" << endl;
             f_state = e_executing;
 
-            cout << "  executing self pre" << endl;
+            //cout << "  executing self pre" << endl;
             if( execute_controller_pre() == false )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_started;
                 return false;
             }
 
-            cout << "  executing outs" << endl;
+            //cout << "  executing outs" << endl;
             f_calls = 0;
             for( count_t t_index = 0; t_index < f_set_out_size; t_index++ )
             {
-                cout << "  executing out at <" << t_index << ">" << endl;
+                //cout << "  executing out at <" << t_index << ">" << endl;
                 if( f_set_outs[ t_index ]->execute() == false )
                 {
-                    cout << "  done" << endl;
+                    //cout << "  done" << endl;
                     f_state = e_started;
                     return false;
                 }
             }
 
-            cout << "  checking ins" << endl;
+            //cout << "  checking ins" << endl;
             if( f_calls != f_set_in_size )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_started;
                 return false;
             }
 
-            cout << "  executing self post" << endl;
+            //cout << "  executing self post" << endl;
             if( execute_controller_post() == false )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_started;
                 return false;
             }
@@ -288,7 +284,7 @@ namespace midge
 
         if( f_state == e_executing )
         {
-            cout << "    called" << endl;
+            //cout << "    called" << endl;
             f_calls++;
             return true;
         }
@@ -301,42 +297,42 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            cout << "stopping controller <" << this->get_name() << ">" << endl;
+            //cout << "stopping controller <" << this->get_name() << ">" << endl;
             f_state = e_stopping;
 
-            cout << "  stopping self pre" << endl;
+            //cout << "  stopping self pre" << endl;
             if( stop_controller_pre() == false )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_initialized;
                 return false;
             }
 
-            cout << "  stopping outs" << endl;
+            //cout << "  stopping outs" << endl;
             f_calls = 0;
             for( count_t t_index = 0; t_index < f_set_out_size; t_index++ )
             {
-                cout << "  stopping out at <" << t_index << ">" << endl;
+                //cout << "  stopping out at <" << t_index << ">" << endl;
                 if( f_set_outs[ t_index ]->stop() == false )
                 {
-                    cout << "  done" << endl;
+                    //cout << "  done" << endl;
                     f_state = e_initialized;
                     return false;
                 }
             }
 
-            cout << "  checking ins" << endl;
+            //cout << "  checking ins" << endl;
             if( f_calls != f_set_in_size )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_initialized;
                 return false;
             }
 
-            cout << "  stopping self post" << endl;
+            //cout << "  stopping self post" << endl;
             if( stop_controller_post() == false )
             {
-                cout << "  done" << endl;
+                //cout << "  done" << endl;
                 f_state = e_initialized;
                 return false;
             }
@@ -347,7 +343,7 @@ namespace midge
 
         if( f_state == e_stopping )
         {
-            cout << "    called" << endl;
+            //cout << "    called" << endl;
             f_calls++;
             return true;
         }

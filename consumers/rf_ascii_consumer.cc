@@ -48,6 +48,7 @@ namespace midge
         {
             f_stream << t_center_time << " " << (t_index * f_interval) << " " << f_in[ t_index ] << "\n";
         }
+        f_stream << "\n";
 
         return true;
     }

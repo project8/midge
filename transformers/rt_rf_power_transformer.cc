@@ -47,14 +47,13 @@ namespace midge
             f_last = (f_size + 1) / 2;
             f_nyquist = false;
         }
-        out< 0 >()->set_interval( in< 0 >()->get_interval() );
+        out< 0 >()->set_interval( 1. / (in< 0 >()->get_interval() * in< 0 >()->get_size()) );
 
         f_in = in< 0 >()->raw();
         f_out = out< 0 >()->raw();
 
-
-        f_c_in = (fftw_complex*) (fftw_malloc( sizeof(fftw_complex) * f_size ));
-        f_c_out = (fftw_complex*) (fftw_malloc( sizeof(fftw_complex) * f_size ));
+        f_c_in = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
+        f_c_out = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
         f_plan = fftw_plan_dft_1d( f_size, f_c_in, f_c_out, FFTW_FORWARD, FFTW_MEASURE );
 
         f_norm = f_impedance_ohm * f_size * f_size;
@@ -64,7 +63,7 @@ namespace midge
     bool rt_rf_power_transformer::execute_transformer()
     {
         // real signal to complex signal
-        for( count_t t_index = 1; t_index < f_size; t_index++ )
+        for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
             f_c_in[ t_index ][ 0 ] = f_in[ t_index ];
             f_c_in[ t_index ][ 1 ] = 0.;

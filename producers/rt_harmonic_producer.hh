@@ -59,7 +59,9 @@ namespace midge
             real_t f_phase;
             count_t f_start;
             count_t f_stop;
-            count_t f_index;
+            count_t f_start_index;
+            count_t f_stop_index;
+            count_t f_current_index;
 
             real_t* f_out;
 
