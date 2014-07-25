@@ -570,7 +570,7 @@ set( midge_json_files
 	test_harmonic_producer.json
 	test_chirp_producer.json
 	test_gaussian_producer.json
-	test_sum.json
+	test_comparison.json
 )
 
 foreach( base ${midge_json_files} )

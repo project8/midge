@@ -1,6 +1,16 @@
 {
     "rt_data" :
     {
+        "name" : "rtc0"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rtc1"
+    },
+
+    "rt_data" :
+    {
         "name" : "rtc"
     },
 
@@ -26,14 +36,29 @@
 
     "rt_chirp_producer" :
     {
-        "name" : "rtc_in",
-        "power_dbm" : 10.0,
+        "name" : "rtc0_in",
+        "power_dbm" : 7.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 100.0e6,
+        "stop_frequency_hz" : 200.0e6,
+        "phase_deg" : -90.0,
+        "start_sec" : 4000.0e-9,
+        "stop_sec" : 11000.0e-9,
+        "interval" : 1.0e-9,
+        "size" : 2000,
+        "stride" : 10
+    },
+
+    "rt_chirp_producer" :
+    {
+        "name" : "rtc1_in",
+        "power_dbm" : 7.0,
+        "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 250.0e6,
         "stop_frequency_hz" : 400.0e6,
         "phase_deg" : -90.0,
-        "start_sec" : 6000.0e-9,
-        "stop_sec" : 14000.0e-9,
+        "start_sec" : 11000.0e-9,
+        "stop_sec" : 17000.0e-9,
         "interval" : 1.0e-9,
         "size" : 2000,
         "stride" : 10
@@ -49,6 +74,11 @@
         "interval" : 1.0e-9,
         "size" : 2000,
         "stride" : 10
+    },
+
+    "rt_rt_sum_transformer" :
+    {
+        "name" : "rtc_in"
     },
 
     "rt_rt_sum_transformer" :
@@ -72,19 +102,19 @@
     "rt_ascii_consumer" :
     {
         "name" : "rt_out",
-        "file" : "test_sum.signal.txt"
+        "file" : "test_comparison.signal.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rfp_out",
-        "file" : "test_sum.power.txt"
+        "file" : "test_comparison.power.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rfw_out",
-        "file" : "test_sum.wigner.txt"
+        "file" : "test_comparison.wigner.txt"
     },
 
     "count_controller" :
@@ -93,6 +123,10 @@
         "count" : 1801
     },
 
+    "join" : "rtc0_in.out_0:rtc0.in",
+    "join" : "rtc1_in.out_0:rtc1.in",
+    "join" : "rtc0.out:rtc_in.in_0",
+    "join" : "rtc1.out:rtc_in.in_1",
     "join" : "rtc_in.out_0:rtc.in",
     "join" : "rtg_in.out_0:rtg.in",
     "join" : "rtc.out:rts_in.in_0",
@@ -105,8 +139,9 @@
     "join" : "rt_rfw.out_0:rfw.in",
     "join" : "rfp.out:rfp_out.in_0",
     "join" : "rfw.out:rfw_out.in_0",
-    "join" : "c.out_0:rtc_in",
-    "join" : "c.out_1:rtg_in",
+    "join" : "c.out_0:rtc0_in",
+    "join" : "c.out_1:rtc1_in",
+    "join" : "c.out_2:rtg_in",
 
     "run" : "c"
 }
