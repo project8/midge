@@ -58,14 +58,6 @@ namespace midge
         f_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
         count_t t_stop_index = (count_t) (round( f_stop_time / f_interval ));
 
-        cout << "ascii consumer:" << endl;
-        cout << "  current_time: " << f_current_time << endl;
-        cout << "  current_index: " << t_current_index << endl;
-        cout << "  start_time: " << f_start_time << endl;
-        cout << "  start_index: " << t_start_index << endl;
-        cout << "  stop_time: " << f_stop_time << endl;
-        cout << "  stop_index: " << t_stop_index << endl;
-
         for( count_t t_index = t_current_index; t_index < t_stop_index; t_index++ )
         {
             f_stream << (f_start_time + (t_index - t_start_index) * f_interval) << " " << f_in[ t_index - t_start_index ] << "\n";

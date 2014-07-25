@@ -3,7 +3,7 @@
 #include "ct_data.hh"
 #include "cf_data.hh"
 #include "rf_data.hh"
-#include "rt_harmonic_producer.hh"
+#include "rt_gaussian_producer.hh"
 #include "rt_ct_transformer.hh"
 #include "ct_cf_fourier_transformer.hh"
 #include "cf_rf_transformer.hh"
@@ -43,12 +43,10 @@ int main()
     t_rfs->set_name( "rfs" );
     t_root->add( t_rfs );
 
-    rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
+    rt_gaussian_producer* t_rt_in = new rt_gaussian_producer();
     t_rt_in->set_name( "rt_in" );
     t_rt_in->set_power_dbm( -10. );
     t_rt_in->set_impedance_ohm( 50. );
-    t_rt_in->set_frequency_hz( 100.e6 );
-    t_rt_in->set_phase_deg( 60. );
     t_rt_in->set_start_sec( 2000.e-9 );
     t_rt_in->set_stop_sec( 18000.e-9 );
     t_rt_in->set_interval( 1.e-9 );
@@ -77,17 +75,17 @@ int main()
 
     rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
     t_rt_out->set_name( "rt_out" );
-    t_rt_out->set_file( "test_harmonic_producer.signal.txt" );
+    t_rt_out->set_file( "test_gaussian_producer.signal.txt" );
     t_root->add( t_rt_out );
 
     rf_ascii_consumer* t_rft_out = new rf_ascii_consumer();
     t_rft_out->set_name( "rft_out" );
-    t_rft_out->set_file( "test_harmonic_producer.transform.txt" );
+    t_rft_out->set_file( "test_gaussian_producer.transform.txt" );
     t_root->add( t_rft_out );
 
     rf_ascii_consumer* t_rfs_out = new rf_ascii_consumer();
     t_rfs_out->set_name( "rfs_out" );
-    t_rfs_out->set_file( "test_harmonic_producer.spectrum.txt" );
+    t_rfs_out->set_file( "test_gaussian_producer.spectrum.txt" );
     t_root->add( t_rfs_out );
 
     count_controller* t_c = new count_controller();

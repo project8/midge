@@ -1,12 +1,12 @@
 {
     "rt_data" :
     {
-        "name" : "rt_in"
+        "name" : "rt"
     },
 
     "ct_data" :
     {
-        "name" : "ct_in"
+        "name" : "ct"
     },
 
     "cf_data" :
@@ -14,27 +14,27 @@
         "name" : "cf"
     },
 
-    "ct_data" :
+    "rf_data" :
     {
-        "name" : "ct_out"
+        "name" : "rfm"
     },
 
-    "rt_data" :
+    "rf_data" :
     {
-        "name" : "rt_out"
+        "name" : "rfa"
     },
 
     "rt_harmonic_producer" :
     {
-        "name" : "rt_harmonic",
+        "name" : "rt_in",
         "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
-        "frequency_hz" : 10.0e6,
+        "frequency_hz" : 100.0e6,
         "phase_deg" : 60.0,
-        "start_sec" : 300.0e-9,
-        "stop_sec" : 9700.0e-9,
-        "stride" : 10000,
-        "size" : 10000,
+        "start_sec" : 2000.0e-9,
+        "stop_sec" : 18000.0e-9,
+        "stride" : 20000,
+        "size" : 20000,
         "interval" : 1.0e-9
     },
 
@@ -49,40 +49,55 @@
         "name" : "ct_cf"
     },
 
-    "cf_ct_fourier_transformer" :
+    "cf_rf_transformer" :
     {
-        "name" : "cf_ct"
+        "name" : "cf_rfm",
+        "mode" : "modulus"
     },
 
-    "ct_rt_transformer" :
+    "cf_rf_transformer" :
     {
-        "name" : "ct_rt",
-        "mode" : "real"
-    },
-
-    "rt_ascii_consumer" :
-    {
-        "name" : "rt_pre",
-        "file" : "test_fourier_transform.pre.txt"
+        "name" : "cf_rfa",
+        "mode" : "argument"
     },
 
     "rt_ascii_consumer" :
     {
-        "name" : "rt_post",
-        "file" : "test_fourier_transform.post.txt"
+        "name" : "rt_out",
+        "file" : "test_fourier_transform.signal.txt"
     },
 
-    "join" : "rt_harmonic.out_0:rt_in.in",
-    "join" : "rt_in.out:rt_ct.in_0",
-    "join" : "rt_ct.out_0:ct_in.in",
-    "join" : "ct_in.out:ct_cf.in_0",
+    "rf_ascii_consumer" :
+    {
+        "name" : "rfm_out",
+        "file" : "test_fourier_transform.modulus.txt"
+    },
+
+    "rf_ascii_consumer" :
+    {
+        "name" : "rfa_out",
+        "file" : "test_fourier_transform.argument.txt"
+    },
+
+    "count_controller" :
+    {
+        "name" : "c",
+        "count" : 1
+    },
+
+    "join" : "rt_in.out_0:rt.in",
+    "join" : "rt.out:rt_out.in_0",
+    "join" : "rt.out:rt_ct.in_0",
+    "join" : "rt_ct.out_0:ct.in",
+    "join" : "ct.out:ct_cf.in_0",
     "join" : "ct_cf.out_0:cf.in",
-    "join" : "cf.out:cf_ct.in_0",
-    "join" : "cf_ct.out_0:ct_out.in",
-    "join" : "ct_out.out:ct_rt.in_0",
-    "join" : "ct_rt.out_0:rt_out.in",
-    "join" : "rt_in.out:rt_pre.in_0",
-    "join" : "rt_out.out:rt_post.in_0",
+    "join" : "cf.out:cf_rfm.in_0",
+    "join" : "cf.out:cf_rfa.in_0",
+    "join" : "cf_rfm.out_0:rfm.in",
+    "join" : "cf_rfa.out_0:rfa.in",
+    "join" : "rfm.out:rfm_out.in_0",
+    "join" : "rfa.out:rfa_out.in_0",
+    "join" : "c.out_0:rt_in",
 
-    "run" : "rt_harmonic"
+    "run" : "c"
 }

@@ -1,0 +1,90 @@
+{
+    "rt_data" :
+    {
+        "name" : "rt"
+    },
+
+    "ct_data" :
+    {
+        "name" : "ct"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rtr"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rti"
+    },
+
+    "rt_harmonic_producer" :
+    {
+        "name" : "rt_in",
+        "power_dbm" : -10.0,
+        "impedance_ohm" : 50.0,
+        "frequency_hz" : 2.0e6,
+        "phase_deg" : 60.0,
+        "start_sec" : 2000.0e-9,
+        "stop_sec" : 18000.0e-9,
+        "stride" : 20000,
+        "size" : 20000,
+        "interval" : 1.0e-9
+    },
+
+    "rt_ct_analytic_transformer" :
+    {
+        "name" : "rt_ct"
+    },
+
+    "ct_rt_transformer" :
+    {
+        "name" : "ct_rtr",
+        "mode" : "real"
+    },
+
+    "ct_rt_transformer" :
+    {
+        "name" : "ct_rti",
+        "mode" : "imaginary"
+    },
+
+    "rt_ascii_consumer" :
+    {
+        "name" : "rt_out",
+        "file" : "test_analytic_transform.signal.txt"
+    },
+
+    "rt_ascii_consumer" :
+    {
+        "name" : "rtr_out",
+        "file" : "test_analytic_transform.real.txt"
+    },
+
+    "rt_ascii_consumer" :
+    {
+        "name" : "rti_out",
+        "file" : "test_analytic_transform.imaginary.txt"
+    },
+
+    "count_controller" :
+    {
+        "name" : "c",
+        "count" : 1
+    },
+
+    "join" : "rt_in.out_0:rt.in",
+    "join" : "rt.out:rt_out.in_0",
+    "join" : "rt.out:rt_ct.in_0",
+    "join" : "rt_ct.out_0:ct.in",
+    "join" : "ct.out:ct_rtr.in_0",
+    "join" : "ct.out:ct_rti.in_0",
+    "join" : "ct_rtr.out_0:rtr.in",
+    "join" : "ct_rti.out_0:rti.in",
+    "join" : "rtr.out:rtr_out.in_0",
+    "join" : "rti.out:rti_out.in_0",
+    "join" : "c.out_0:rt_in",
+
+    "run" : "c"
+}

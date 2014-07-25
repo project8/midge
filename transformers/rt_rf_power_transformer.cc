@@ -12,8 +12,8 @@ namespace midge
             f_nyquist( true ),
             f_in( NULL ),
             f_out( NULL ),
-            f_c_in( NULL ),
-            f_c_out( NULL ),
+            f_signal( NULL ),
+            f_transform( NULL ),
             f_plan( NULL ),
             f_norm( 1. )
     {
@@ -52,9 +52,9 @@ namespace midge
         f_in = in< 0 >()->raw();
         f_out = out< 0 >()->raw();
 
-        f_c_in = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
-        f_c_out = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
-        f_plan = fftw_plan_dft_1d( f_size, f_c_in, f_c_out, FFTW_FORWARD, FFTW_MEASURE );
+        f_signal = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
+        f_transform = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
+        f_plan = fftw_plan_dft_1d( f_size, f_signal, f_transform, FFTW_FORWARD, FFTW_MEASURE );
 
         f_norm = f_impedance_ohm * f_size * f_size;
 
@@ -65,26 +65,26 @@ namespace midge
         // real signal to complex signal
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
-            f_c_in[ t_index ][ 0 ] = f_in[ t_index ];
-            f_c_in[ t_index ][ 1 ] = 0.;
+            f_signal[ t_index ][ 0 ] = f_in[ t_index ];
+            f_signal[ t_index ][ 1 ] = 0.;
         }
 
         // complex signal to complex spectrum
         fftw_execute( f_plan );
 
         // complex spectrum to power spectrum
-        real_t t_power_watt = (f_c_out[ 0 ][ 0 ] * f_c_out[ 0 ][ 0 ] + f_c_out[ 0 ][ 1 ] * f_c_out[ 0 ][ 1 ]) / f_norm;
+        real_t t_power_watt = (f_transform[ 0 ][ 0 ] * f_transform[ 0 ][ 0 ] + f_transform[ 0 ][ 1 ] * f_transform[ 0 ][ 1 ]) / f_norm;
         real_t t_power_dbm = 10. * log10( t_power_watt ) + 30.;
         f_out[ 0 ] = t_power_dbm;
         for( count_t t_index = 1; t_index < f_last; t_index++ )
         {
-            t_power_watt = 2. * (f_c_out[ t_index ][ 0 ] * f_c_out[ t_index ][ 0 ] + f_c_out[ t_index ][ 1 ] * f_c_out[ t_index ][ 1 ]) / f_norm;
+            t_power_watt = 2. * (f_transform[ t_index ][ 0 ] * f_transform[ t_index ][ 0 ] + f_transform[ t_index ][ 1 ] * f_transform[ t_index ][ 1 ]) / f_norm;
             t_power_dbm = 10. * log10( t_power_watt ) + 30.;
             f_out[ t_index ] = t_power_dbm;
         }
         if( f_nyquist == true )
         {
-            t_power_watt = (f_c_out[ f_last ][ 0 ] * f_c_out[ f_last ][ 0 ] + f_c_out[ f_last ][ 1 ] * f_c_out[ f_last ][ 1 ]) / f_norm;
+            t_power_watt = (f_transform[ f_last ][ 0 ] * f_transform[ f_last ][ 0 ] + f_transform[ f_last ][ 1 ] * f_transform[ f_last ][ 1 ]) / f_norm;
             t_power_dbm = 10. * log10( t_power_watt ) + 30.;
             f_out[ f_last ] = t_power_dbm;
         }
@@ -102,11 +102,11 @@ namespace midge
         f_in = NULL;
         f_out = NULL;
 
-        fftw_free( f_c_in );
-        f_c_in = NULL;
+        fftw_free( f_signal );
+        f_signal = NULL;
 
-        fftw_free( f_c_out );
-        f_c_out = NULL;
+        fftw_free( f_transform );
+        f_transform = NULL;
 
         fftw_destroy_plan( f_plan );
         f_plan = NULL;

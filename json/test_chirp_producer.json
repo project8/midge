@@ -24,11 +24,14 @@
         "name" : "rfs"
     },
 
-    "rt_gaussian_producer" :
+    "rt_chirp_producer" :
     {
         "name" : "rt_in",
         "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 100.0e6,
+        "stop_frequency_hz" : 400.0e6,
+        "phase_deg" : 60.0,
         "start_sec" : 2000.0e-9,
         "stop_sec" : 18000.0e-9,
         "interval" : 1.0e-9,
@@ -62,19 +65,19 @@
     "rt_ascii_consumer" :
     {
         "name" : "rt_out",
-        "file" : "test_gaussian_producer.signal.txt"
+        "file" : "test_chirp_producer.signal.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rft_out",
-        "file" : "test_gaussian_producer.transform.txt"
+        "file" : "test_chirp_producer.transform.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rfs_out",
-        "file" : "test_gaussian_producer.spectrum.txt"
+        "file" : "test_chirp_producer.spectrum.txt"
     },
 
     "count_controller" :

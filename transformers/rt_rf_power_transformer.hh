@@ -30,8 +30,8 @@ namespace midge
             bool_t f_nyquist;
             real_t* f_in;
             real_t* f_out;
-            fftw_complex* f_c_in;
-            fftw_complex* f_c_out;
+            fftw_complex* f_signal;
+            fftw_complex* f_transform;
             fftw_plan f_plan;
             real_t f_norm;
 

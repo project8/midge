@@ -1,5 +1,5 @@
-#ifndef _midge_rt_harmonic_producer_hh_
-#define _midge_rt_harmonic_producer_hh_
+#ifndef _midge_rt_chirp_producer_hh_
+#define _midge_rt_chirp_producer_hh_
 
 #include "producer.hh"
 #include "rt_data.hh"
@@ -8,12 +8,12 @@
 namespace midge
 {
 
-    class rt_harmonic_producer :
-        public _producer< rt_harmonic_producer, typelist_1( rt_data ) >
+    class rt_chirp_producer :
+        public _producer< rt_chirp_producer, typelist_1( rt_data ) >
     {
         public:
-            rt_harmonic_producer();
-            virtual ~rt_harmonic_producer();
+            rt_chirp_producer();
+            virtual ~rt_chirp_producer();
 
         public:
             void set_power_dbm( const real_t& p_power );
@@ -22,8 +22,11 @@ namespace midge
             void set_impedance_ohm( const real_t& p_impedance );
             const real_t& get_impedance_ohm() const;
 
-            void set_frequency_hz( const real_t& p_frequency );
-            const real_t& get_frequency_hz() const;
+            void set_start_frequency_hz( const real_t& p_frequency );
+            const real_t& get_start_frequency_hz() const;
+
+            void set_stop_frequency_hz( const real_t& p_frequency );
+            const real_t& get_stop_frequency_hz() const;
 
             void set_phase_deg( const real_t& p_phase );
             const real_t& get_phase_deg() const;
@@ -46,7 +49,8 @@ namespace midge
         private:
             real_t f_power_dbm;
             real_t f_impedance_ohm;
-            real_t f_frequency_hz;
+            real_t f_start_frequency_hz;
+            real_t f_stop_frequency_hz;
             real_t f_phase_deg;
             real_t f_start_sec;
             real_t f_stop_sec;
@@ -58,6 +62,7 @@ namespace midge
             count_t f_stop;
             real_t f_amplitude;
             real_t f_linear;
+            real_t f_quadratic;
             real_t f_phase;
 
             real_t* f_out;

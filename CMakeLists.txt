@@ -187,10 +187,12 @@ set( midge_producers_directory
 )
 set( midge_producers_headers
 	rt_harmonic_producer.hh
+	rt_chirp_producer.hh
 	rt_gaussian_producer.hh
 )
 set( midge_producers_sources
 	rt_harmonic_producer.cc
+	rt_chirp_producer.cc
 	rt_gaussian_producer.cc
 )
 
@@ -264,18 +266,26 @@ set( midge_transformers_headers
 	rf_cf_transformer.hh
 	ct_rt_transformer.hh
 	cf_rf_transformer.hh
+	rt_rt_sum_transformer.hh
+	ct_ct_sum_transformer.hh
 	ct_cf_fourier_transformer.hh
 	cf_ct_fourier_transformer.hh
+	rt_ct_analytic_transformer.hh
 	rt_rf_power_transformer.hh
+	rt_rf_wigner_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_transformer.cc
 	rf_cf_transformer.cc
 	ct_rt_transformer.cc
 	cf_rf_transformer.cc
+	rt_rt_sum_transformer.cc
+	ct_ct_sum_transformer.cc
 	ct_cf_fourier_transformer.cc
 	cf_ct_fourier_transformer.cc
+	rt_ct_analytic_transformer.cc
 	rt_rf_power_transformer.cc
+	rt_rf_wigner_transformer.cc
 )
 
 foreach( base ${midge_transformers_headers} )
@@ -418,6 +428,7 @@ set( midge_bindings_headers
 	ct_data_builder.hh
 	cf_data_builder.hh
 	rt_harmonic_producer_builder.hh
+	rt_chirp_producer_builder.hh
 	rt_gaussian_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
@@ -425,9 +436,13 @@ set( midge_bindings_headers
 	rf_cf_transformer_builder.hh
 	ct_rt_transformer_builder.hh
 	cf_rf_transformer_builder.hh
+	rt_rt_sum_transformer_builder.hh
+	ct_ct_sum_transformer_builder.hh
 	ct_cf_fourier_transformer_builder.hh
 	cf_ct_fourier_transformer_builder.hh
+	rt_ct_analytic_transformer_builder.hh
 	rt_rf_power_transformer_builder.hh
+	rt_rf_wigner_transformer_builder.hh
 	count_controller_builder.hh
 )
 set( midge_bindings_sources
@@ -437,6 +452,7 @@ set( midge_bindings_sources
 	ct_data_builder.cc
 	cf_data_builder.cc
 	rt_harmonic_producer_builder.cc
+	rt_chirp_producer_builder.cc
 	rt_gaussian_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
@@ -444,9 +460,13 @@ set( midge_bindings_sources
 	rf_cf_transformer_builder.cc
 	ct_rt_transformer_builder.cc
 	cf_rf_transformer_builder.cc
+	rt_rt_sum_transformer_builder.cc
+	ct_ct_sum_transformer_builder.cc
 	ct_cf_fourier_transformer_builder.cc
 	cf_ct_fourier_transformer_builder.cc
+	rt_ct_analytic_transformer_builder.cc
 	rt_rf_power_transformer_builder.cc
+	rt_rf_wigner_transformer_builder.cc
 	count_controller_builder.cc
 )
 
@@ -519,8 +539,12 @@ set( midge_test_programs
 	test_typeat
 	test_real
 	test_complex
-	test_harmonic_producer
 	test_fourier_transformer
+	test_analytic_transformer
+	test_wigner_transformer
+	test_harmonic_producer
+	test_chirp_producer
+	test_gaussian_producer
 )
 
 foreach( program ${midge_test_programs} )
@@ -541,9 +565,12 @@ set( midge_json_files
 	test_arrays.json
 	test_objects.json
 	test_builder.json
-	test_harmonic_producer.json
-	test_gaussian_producer.json
 	test_fourier_transformer.json
+	test_analytic_transformer.json
+	test_harmonic_producer.json
+	test_chirp_producer.json
+	test_gaussian_producer.json
+	test_sum.json
 )
 
 foreach( base ${midge_json_files} )
