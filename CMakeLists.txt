@@ -25,16 +25,31 @@ find_package( FFTW REQUIRED )
 # gsl
 find_package( GSL REQUIRED )
 
-set( midge_external_includes{
+# monarch
+set( Monarch_INSTALL_DIR "/usr/local" CACHE PATH "path to monarch installation" )
+set( Monarch_INCLUDE_DIR ${Monarch_INSTALL_DIR}/include )
+set( Monarch_LIBRARY_DIR ${Monarch_INSTALL_DIR}/lib )
+set( Monarch_LIBRARIES -lMonarchCore -lMonarchProto )
+
+# midge
+set( midge_external_directories
+	${GSL_LIBRARY_DIRS}
+	${Monarch_LIBRARY_DIR}
+)
+
+set( midge_external_includes
 	${FFTW_INCLUDE_DIR}
 	${GSL_INCLUDE_DIRS}
+	${Monarch_INCLUDE_DIR}
 )
 
 set( midge_external_libraries 
 	${FFTW_LIBRARIES}
 	${GSL_LIBRARIES}
+	${Monarch_LIBRARIES}
 )
 
+link_directories( ${midge_external_directories} )
 include_directories( ${midge_external_includes} )
 
 
@@ -189,11 +204,13 @@ set( midge_producers_headers
 	rt_harmonic_producer.hh
 	rt_chirp_producer.hh
 	rt_gaussian_producer.hh
+	rt_monarch_producer.hh
 )
 set( midge_producers_sources
 	rt_harmonic_producer.cc
 	rt_chirp_producer.cc
 	rt_gaussian_producer.cc
+	rt_monarch_producer.cc
 )
 
 foreach( base ${midge_producers_headers} )
@@ -227,10 +244,12 @@ set( midge_consumers_directory
 set( midge_consumers_headers
 	rt_ascii_consumer.hh
 	rf_ascii_consumer.hh
+	rt_monarch_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
 	rf_ascii_consumer.cc
+	rt_monarch_consumer.cc
 )
 
 foreach( base ${midge_consumers_headers} )
@@ -320,9 +339,11 @@ set( midge_controllers_directory
 	controllers
 )
 set( midge_controllers_headers
+	void_controller.hh
 	count_controller.hh
 )
 set( midge_controllers_sources
+	void_controller.cc
 	count_controller.cc
 )
 
@@ -430,8 +451,10 @@ set( midge_bindings_headers
 	rt_harmonic_producer_builder.hh
 	rt_chirp_producer_builder.hh
 	rt_gaussian_producer_builder.hh
+	rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
+	rt_monarch_consumer_builder.hh
 	rt_ct_transformer_builder.hh
 	rf_cf_transformer_builder.hh
 	ct_rt_transformer_builder.hh
@@ -443,6 +466,7 @@ set( midge_bindings_headers
 	rt_ct_analytic_transformer_builder.hh
 	rt_rf_power_transformer_builder.hh
 	rt_rf_wigner_transformer_builder.hh
+	void_controller_builder.hh
 	count_controller_builder.hh
 )
 set( midge_bindings_sources
@@ -454,8 +478,10 @@ set( midge_bindings_sources
 	rt_harmonic_producer_builder.cc
 	rt_chirp_producer_builder.cc
 	rt_gaussian_producer_builder.cc
+	rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
+	rt_monarch_consumer_builder.cc
 	rt_ct_transformer_builder.cc
 	rf_cf_transformer_builder.cc
 	ct_rt_transformer_builder.cc
@@ -467,6 +493,7 @@ set( midge_bindings_sources
 	rt_ct_analytic_transformer_builder.cc
 	rt_rf_power_transformer_builder.cc
 	rt_rf_wigner_transformer_builder.cc
+	void_controller_builder.cc
 	count_controller_builder.cc
 )
 
@@ -571,6 +598,7 @@ set( midge_json_files
 	test_chirp_producer.json
 	test_gaussian_producer.json
 	test_comparison.json
+	test_monarch.json
 )
 
 foreach( base ${midge_json_files} )

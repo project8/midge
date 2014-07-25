@@ -37,43 +37,43 @@
     "rt_chirp_producer" :
     {
         "name" : "rtc0_in",
-        "power_dbm" : 7.0,
+        "power_dbm" : 0.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 100.0e6,
         "stop_frequency_hz" : 200.0e6,
         "phase_deg" : -90.0,
         "start_sec" : 4000.0e-9,
-        "stop_sec" : 11000.0e-9,
+        "stop_sec" : 14000.0e-9,
         "interval" : 1.0e-9,
-        "size" : 2000,
-        "stride" : 10
+        "size" : 1000,
+        "stride" : 20
     },
 
     "rt_chirp_producer" :
     {
         "name" : "rtc1_in",
-        "power_dbm" : 7.0,
+        "power_dbm" : 0.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 250.0e6,
         "stop_frequency_hz" : 400.0e6,
         "phase_deg" : -90.0,
-        "start_sec" : 11000.0e-9,
+        "start_sec" : 14000.0e-9,
         "stop_sec" : 17000.0e-9,
         "interval" : 1.0e-9,
-        "size" : 2000,
-        "stride" : 10
+        "size" : 1000,
+        "stride" : 20
     },
 
     "rt_gaussian_producer" :
     {
         "name" : "rtg_in",
-        "power_dbm" : 10.0,
+        "power_dbm" : 0.0,
         "impedance_ohm" : 50.0,
         "start_sec" : 2000.0e-9,
         "stop_sec" : 18000.0e-9,
         "interval" : 1.0e-9,
-        "size" : 2000,
-        "stride" : 10
+        "size" : 1000,
+        "stride" : 20
     },
 
     "rt_rt_sum_transformer" :
@@ -95,8 +95,8 @@
     "rt_rf_wigner_transformer" :
     {
         "name" : "rt_rfw",
-        "offset" : 1000,
-        "length" : 500
+        "offset" : 500,
+        "length" : 499
     },
 
     "rt_ascii_consumer" :
@@ -120,7 +120,7 @@
     "count_controller" :
     {
         "name" : "c",
-        "count" : 1801
+        "count" : 951
     },
 
     "join" : "rtc0_in.out_0:rtc0.in",

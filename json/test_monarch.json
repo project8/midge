@@ -1,0 +1,80 @@
+{
+    "rt_data" :
+    {
+        "name" : "rtw"
+    },
+
+    "rt_chirp_producer" :
+    {
+        "name" : "rtw_in",
+        "power_dbm" : -4.0,
+        "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 2.5e4,
+        "stop_frequency_hz" : 2.5e4,
+        "phase_deg" : 60.0,
+        "start_sec" : 0.0e-9,
+        "stop_sec" : 2000000.0e-9,
+        "interval" : 1.0e-9,
+        "size" : 8192,
+        "stride" : 2048
+    },
+
+    "rt_ascii_consumer" :
+    {
+    	"name" : "rtwa_out",
+    	"file" : "test_monarch.write.txt"
+    },
+
+    "rt_monarch_consumer" :
+    {
+    	"name" : "rtwm_out",
+    	"file" : "test_monarch.egg",
+    	"bits" : 8,
+    	"length" : 16384,
+    	"voltage_minimum" : -0.25,
+    	"voltage_maximum" : 0.25,
+    	"duration" : 2.0e-3
+    },
+
+    "void_controller" :
+    {
+    	"name" : "cw"
+    },
+
+    "join" : "rtw_in.out_0:rtw.in",
+    "join" : "rtw.out:rtwm_out.in_0",
+    "join" : "rtw.out:rtwa_out.in_0",
+    "join" : "cw.out_0:rtw_in",
+
+    "run" : "cw",
+
+    "rt_data" :
+    {
+        "name" : "rtr"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "rtr_in",
+        "file" : "test_monarch.egg",
+        "size" : 8192,
+        "stride" : 4096
+    },
+
+    "rt_ascii_consumer" :
+    {
+        "name" : "rtra_out",
+        "file" : "test_monarch.read.txt"
+    },
+
+    "void_controller" :
+    {
+        "name" : "cr"
+    },
+
+    "join" : "rtr_in.out_0:rtr.in",
+    "join" : "rtr.out:rtra_out.in_0",
+    "join" : "cr.out_0:rtr_in",
+
+    "run" : "cr"
+}
