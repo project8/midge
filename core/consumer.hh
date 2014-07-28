@@ -1,6 +1,8 @@
 #ifndef _midge_consumer_hh_
 #define _midge_consumer_hh_
 
+#include "core_message.hh"
+
 #include "node.hh"
 #include "in.hh"
 #include "typechain.hh"
@@ -99,16 +101,23 @@ namespace midge
     {
         if( f_state == e_idle )
         {
+            msg_debug( coremsg, "initializing consumer named <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
+            msg_debug( coremsg, "  initializing self" << eom );
             initialize_consumer();
+
+            msg_debug( coremsg, "initialized consumer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state != e_initialized )
+        if( f_state == e_initialized )
         {
-            throw error() << "consumer named <" << this->get_name() << "> cannot initialize from state <" << f_state << ">";
+            msg_debug( coremsg, "already initialized consumer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
+        throw error() << "cannot initialize consumer named <" << this->get_name() << "> from state <" << f_state << ">";
         return;
     }
     template< class x_type, class x_in_list >
@@ -118,12 +127,15 @@ namespace midge
         {
             if( ++f_calls != typelength< x_in_list >::result )
             {
+                msg_debug( coremsg, "starting consumer named <" << this->get_name() << "> on call <" << f_calls << "> of <" << (count_t) (typelength< x_in_list >::result) << ">" << eom );
                 return true;
             }
             f_calls = 0;
 
+            msg_debug( coremsg, "starting consumer named <" << this->get_name() << ">" << eom );
             f_state = e_started;
 
+            msg_debug( coremsg, "  checking ins" << eom );
             for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
             {
                 if( f_ins[ t_index ] == NULL )
@@ -133,19 +145,25 @@ namespace midge
                 }
             }
 
+            msg_debug( coremsg, "  starting self" << eom );
             if( start_consumer() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
+
+            msg_debug( coremsg, "started consumer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        if( f_state != e_started )
+        if( f_state == e_started )
         {
-            throw error() << "consumer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
-            return false;
+            msg_debug( coremsg, "already started consumer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "consumer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_in_list >
     inline bool _consumer< x_type, x_in_list >::execute()
@@ -154,22 +172,26 @@ namespace midge
         {
             if( ++f_calls != typelength< x_in_list >::result )
             {
+                msg_debug( coremsg, "executing consumer named <" << this->get_name() << "> on call <" << f_calls << "> of <" << (count_t) (typelength< x_in_list >::result) << ">" << eom );
                 return true;
             }
             f_calls = 0;
 
+            msg_debug( coremsg, "executing consumer named <" << this->get_name() << ">" << eom );
+
+            msg_debug( coremsg, "  executing self" << eom );
             if( execute_consumer() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
-        }
-        else
-        {
-            throw error() << "consumer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
-            return false;
+
+            msg_debug( coremsg, "executed consumer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "consumer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_in_list >
     inline bool _consumer< x_type, x_in_list >::stop()
@@ -178,41 +200,56 @@ namespace midge
         {
             if( ++f_calls != typelength< x_in_list >::result )
             {
+                msg_debug( coremsg, "stopping consumer named <" << this->get_name() << "> on call <" << f_calls << "> of <" << (count_t) (typelength< x_in_list >::result) << ">" << eom );
                 return true;
             }
             f_calls = 0;
 
+            msg_debug( coremsg, "stopping consumer named <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
+            msg_debug( coremsg, "  stopping self" << eom );
             if( stop_consumer() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
+
+            msg_debug( coremsg, "stopped consumer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        if( f_state != e_initialized )
+        if( f_state == e_initialized )
         {
-            throw error() << "consumer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
-            return false;
+            msg_debug( coremsg, "already stopped consumer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "consumer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_in_list >
     inline void _consumer< x_type, x_in_list >::finalize()
     {
         if( f_state == e_initialized )
         {
+            msg_debug( coremsg, "finalizing consumer named <" << this->get_name() << ">" << eom );
             f_state = e_idle;
 
+            msg_debug( coremsg, "  finalizing self" << eom );
             finalize_consumer();
+
+            msg_debug( coremsg, "finalized consumer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state != e_idle )
+        if( f_state == e_idle )
         {
-            throw error() << "consumer named <" << this->get_name() << "> cannot finalize from state <" << f_state << ">";
+            msg_debug( coremsg, "already finalized consumer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
+        throw error() << "consumer named <" << this->get_name() << "> cannot finalize from state <" << f_state << ">";
         return;
     }
 

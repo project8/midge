@@ -122,7 +122,7 @@ namespace midge
 
         out< 0 >()->set_start_time( f_start_index * f_interval );
         f_start_index += f_stride;
-        f_current_index = f_stop_index;
+        f_current_index = (f_stride > f_size ? f_start_index : f_stop_index);
         f_stop_index += f_stride;
         f_record_index += (f_stride > f_size ? f_stride - f_size : 0);
 

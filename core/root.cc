@@ -26,6 +26,7 @@ namespace midge
         {
             p_node->initialize();
             f_map.insert( map_entry_t( t_name, p_node ) );
+            msg_normal( coremsg, "added node <" << t_name << ">" << eom );
         }
         else
         {
@@ -134,6 +135,8 @@ namespace midge
                     t_second_in->set_argument( t_first_node );
                     t_second_in->connect();
 
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+
                     return;
                 }
 
@@ -163,6 +166,8 @@ namespace midge
                     }
                     t_first_out->set_argument( t_second_node );
                     t_first_out->connect();
+
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << ">" << eom );
 
                     return;
                 }
@@ -194,6 +199,8 @@ namespace midge
                     t_second_in->set_argument( t_first_node );
                     t_second_in->connect();
 
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+
                     return;
                 }
 
@@ -218,7 +225,9 @@ namespace midge
         if( t_it != f_map.end() )
         {
             node* t_node = t_it->second;
+            count_t t_count = 0;
 
+            msg_normal( coremsg,  "starting [" << p_string << "]" << eom );
             if( t_node->start() == false )
             {
                 return;
@@ -230,8 +239,14 @@ namespace midge
                 {
                     break;
                 }
+                if( t_count % 100 == 0 )
+                {
+                    msg_normal( coremsg,  "executing [" << t_count << "]" << eom );
+                }
+                t_count++;
             }
 
+            msg_normal( coremsg,  "stopping [" << p_string << "]" << eom );
             if( t_node->stop() == false )
             {
                 return;

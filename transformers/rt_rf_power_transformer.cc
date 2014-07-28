@@ -75,18 +75,18 @@ namespace midge
         // complex spectrum to power spectrum
         real_t t_power_watt = (f_transform[ 0 ][ 0 ] * f_transform[ 0 ][ 0 ] + f_transform[ 0 ][ 1 ] * f_transform[ 0 ][ 1 ]) / f_norm;
         real_t t_power_dbm = 10. * log10( t_power_watt ) + 30.;
-        f_out[ 0 ] = t_power_dbm;
+        f_out[ 0 ] = t_power_watt;
         for( count_t t_index = 1; t_index < f_last; t_index++ )
         {
             t_power_watt = 2. * (f_transform[ t_index ][ 0 ] * f_transform[ t_index ][ 0 ] + f_transform[ t_index ][ 1 ] * f_transform[ t_index ][ 1 ]) / f_norm;
             t_power_dbm = 10. * log10( t_power_watt ) + 30.;
-            f_out[ t_index ] = t_power_dbm;
+            f_out[ t_index ] = t_power_watt;
         }
         if( f_nyquist == true )
         {
             t_power_watt = (f_transform[ f_last ][ 0 ] * f_transform[ f_last ][ 0 ] + f_transform[ f_last ][ 1 ] * f_transform[ f_last ][ 1 ]) / f_norm;
             t_power_dbm = 10. * log10( t_power_watt ) + 30.;
-            f_out[ f_last ] = t_power_dbm;
+            f_out[ f_last ] = t_power_watt;
         }
 
         // update time

@@ -1,0 +1,89 @@
+{
+    "rt_data" :
+    {
+        "name" : "rton"
+    },
+
+    "rf_data" :
+    {
+        "name" : "rfon"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "rton_in",
+        "file" : "trap_on.egg",
+        "size" : 8192,
+        "stride" : 8192
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "rton_rfon",
+        "impedance_ohm" : 50
+    },
+
+    "rf_ascii_consumer" :
+    {
+        "name" : "rfon_out",
+        "file" : "trap_on.txt"
+    },
+
+    "count_controller" :
+    {
+        "name" : "con",
+        "count" : 2048
+    },
+
+    "join" : "rton_in.out_0:rton.in",
+    "join" : "rton.out:rton_rfon.in_0",
+    "join" : "rton_rfon.out_0:rfon.in",
+    "join" : "rfon.out:rfon_out.in_0",
+    "join" : "con.out_0:rton_in",
+
+    "run" : "con",
+
+    "rt_data" : 
+    {
+        "name" : "rtoff"
+    },
+
+    "rf_data" :
+    {
+        "name" : "rfoff"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "rtoff_in",
+        "file" : "trap_off.egg",
+        "size" : 8192,
+        "stride" : 8192
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "rtoff_rfoff",
+        "impedance_ohm" : 50
+    },
+
+    "rf_ascii_consumer" :
+    {
+        "name" : "rfoff_out",
+        "file" : "trap_off.txt"
+    },
+
+    "count_controller" :
+    {
+        "name" : "coff",
+        "count" : 2048
+    },
+
+    "join" : "rtoff_in.out_0:rtoff.in",
+    "join" : "rtoff.out:rtoff_rfoff.in_0",
+    "join" : "rtoff_rfoff.out_0:rfoff.in",
+    "join" : "rfoff.out:rfoff_out.in_0",
+    "join" : "coff.out_0:rtoff_in",
+
+    "run" : "coff"
+}

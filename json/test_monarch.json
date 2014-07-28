@@ -4,13 +4,12 @@
         "name" : "rtw"
     },
 
-    "rt_chirp_producer" :
+    "rt_harmonic_producer" :
     {
         "name" : "rtw_in",
         "power_dbm" : -4.0,
         "impedance_ohm" : 50.0,
-        "start_frequency_hz" : 2.5e4,
-        "stop_frequency_hz" : 2.5e4,
+        "frequency_hz" : 5.0e2,
         "phase_deg" : 60.0,
         "start_sec" : 0.0e-9,
         "stop_sec" : 2000000.0e-9,
@@ -57,8 +56,8 @@
     {
         "name" : "rtr_in",
         "file" : "test_monarch.egg",
-        "size" : 8192,
-        "stride" : 4096
+        "size" : 4096,
+        "stride" : 8192
     },
 
     "rt_ascii_consumer" :

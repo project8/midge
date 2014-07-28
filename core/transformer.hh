@@ -1,6 +1,8 @@
 #ifndef _midge_transformer_hh_
 #define _midge_transformer_hh_
 
+#include "core_message.hh"
+
 #include "node.hh"
 #include "in.hh"
 #include "out.hh"
@@ -115,16 +117,23 @@ namespace midge
     {
         if( f_state == e_idle )
         {
+            msg_debug( coremsg, "initializing transformer named <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
+            msg_debug( coremsg, "  initializing self" << eom );
             initialize_transformer();
+
+            msg_debug( coremsg, "initialized transformer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state != e_initialized )
+        if( f_state == e_initialized )
         {
-            throw error() << "transformer named <" << this->get_name() << "> cannot initialize from state <" << f_state << ">";
+            msg_debug( coremsg, "already initialized transformer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
+        throw error() << "cannot initialize transformer named <" << this->get_name() << "> from state <" << f_state << ">";
         return;
     }
     template< class x_type, class x_in_list, class x_out_list >
@@ -134,12 +143,15 @@ namespace midge
         {
             if( ++f_calls != typelength< x_in_list >::result )
             {
+                msg_debug( coremsg, "starting transformer named <" << this->get_name() << "> on call <" << f_calls << "> of <" << (count_t) (typelength< x_in_list >::result) << ">" << eom );
                 return true;
             }
             f_calls = 0;
 
+            msg_debug( coremsg, "starting transformer named <" << this->get_name() << ">" << eom );
             f_state = e_started;
 
+            msg_debug( coremsg, "  checking ins" << eom );
             for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
             {
                 if( f_ins[ t_index ] == NULL )
@@ -149,6 +161,7 @@ namespace midge
                 }
             }
 
+            msg_debug( coremsg, "  checking outs" << eom );
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
                 if( f_outs[ t_index ] == NULL )
@@ -158,27 +171,36 @@ namespace midge
                 }
             }
 
+            msg_debug( coremsg, "  starting self" << eom );
             if( start_transformer() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
 
+            msg_debug( coremsg, "  starting outs" << eom );
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
+                msg_debug( coremsg, "  starting out at <" << t_index << ">" << eom );
                 if( f_outs[ t_index ]->start() == false )
                 {
+                    msg_debug( coremsg, "    done" << eom );
                     return false;
                 }
             }
+
+            msg_debug( coremsg, "started transformer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        if( f_state != e_started )
+        if( f_state == e_started )
         {
-            throw error() << "transformer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
-            return false;
+            msg_debug( coremsg, "already started transformer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "transformer named <" << this->get_name() << "> cannot start from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_in_list, class x_out_list >
     inline bool _transformer< x_type, x_in_list, x_out_list >::execute()
@@ -187,30 +209,37 @@ namespace midge
         {
             if( ++f_calls != typelength< x_in_list >::result )
             {
+                msg_debug( coremsg, "executing transformer named <" << this->get_name() << "> on call <" << f_calls << "> of <" << (count_t) (typelength< x_in_list >::result) << ">" << eom );
                 return true;
             }
             f_calls = 0;
 
+            msg_debug( coremsg, "executing transformer named <" << this->get_name() << ">" << eom );
+
+            msg_debug( coremsg, "  executing self" << eom );
             if( execute_transformer() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
 
+            msg_debug( coremsg, "  executing outs" << eom );
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
+                msg_debug( coremsg, "  executing out at <" << t_index << ">" << eom );
                 if( f_outs[ t_index ]->execute() == false )
                 {
+                    msg_debug( coremsg, "    done" << eom );
                     return false;
                 }
             }
-        }
-        else
-        {
-            throw error() << "transformer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
-            return false;
+
+            msg_debug( coremsg, "executed transformer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "transformer named <" << this->get_name() << "> cannot execute from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_in_list, class x_out_list >
     inline bool _transformer< x_type, x_in_list, x_out_list >::stop()
@@ -219,49 +248,67 @@ namespace midge
         {
             if( ++f_calls != typelength< x_in_list >::result )
             {
+                msg_debug( coremsg, "stopping transformer named <" << this->get_name() << "> on call <" << f_calls << "> of <" << (count_t) (typelength< x_in_list >::result) << ">" << eom );
                 return true;
             }
             f_calls = 0;
 
+            msg_debug( coremsg, "stopping transformer named <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
+            msg_debug( coremsg, "  stopping self" << eom );
             if( stop_transformer() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
 
+            msg_debug( coremsg, "  stopping outs" << eom );
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
+                msg_debug( coremsg, "  stopping out at <" << t_index << ">" << eom );
                 if( f_outs[ t_index ]->stop() == false )
                 {
+                    msg_debug( coremsg, "    done" << eom );
                     return false;
                 }
             }
+
+            msg_debug( coremsg, "stopped transformer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        if( f_state != e_initialized )
+        if( f_state == e_initialized )
         {
-            throw error() << "transformer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
-            return false;
+            msg_debug( coremsg, "already stopped transformer named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "transformer named <" << this->get_name() << "> cannot stop from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_in_list, class x_out_list >
     inline void _transformer< x_type, x_in_list, x_out_list >::finalize()
     {
         if( f_state == e_initialized )
         {
+            msg_debug( coremsg, "finalizing transformer named <" << this->get_name() << ">" << eom );
             f_state = e_idle;
 
+            msg_debug( coremsg, "  finalizing self" << eom );
             finalize_transformer();
+
+            msg_debug( coremsg, "finalized transformer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state != e_idle )
+        if( f_state == e_idle )
         {
-            throw error() << "transformer named <" << this->get_name() << "> cannot finalize from state <" << f_state << ">";
+            msg_debug( coremsg, "already finalized transformer named <" << this->get_name() << ">" << eom );
+            return;
         }
 
+        throw error() << "transformer named <" << this->get_name() << "> cannot finalize from state <" << f_state << ">";
         return;
     }
 

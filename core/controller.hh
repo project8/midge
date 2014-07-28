@@ -1,6 +1,8 @@
 #ifndef _midge_controller_hh_
 #define _midge_controller_hh_
 
+#include "core_message.hh"
+
 #include "node.hh"
 #include "in.hh"
 #include "out.hh"
@@ -122,17 +124,19 @@ namespace midge
     {
         if( f_state == e_idle )
         {
-            //cout << "initializing controller <" << this->get_name() << ">" << endl;
+            msg_debug( coremsg,  "initializing controller <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
-            //cout << "  initializing self" << endl;
+            msg_debug( coremsg,  "  initializing self" << eom );
             initialize_controller();
 
+            msg_debug( coremsg,  "initialized controller <" << this->get_name() << ">" << eom );
             return;
         }
 
         if( f_state == e_initialized )
         {
+            msg_debug( coremsg,  "already initialized controller <" << this->get_name() << ">" << eom );
             return;
         }
 
@@ -144,83 +148,84 @@ namespace midge
     {
         if( f_state == e_initialized )
         {
-            //cout << "starting controller <" << this->get_name() << ">" << endl;
+            msg_debug( coremsg,  "starting controller <" << this->get_name() << ">" << eom );
             f_state = e_starting;
 
-            //cout << "  examining <" << typelength< x_in_list >::result << "> ins" << endl;
+            msg_debug( coremsg,  "  checking ins" << eom );
             for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
             {
                 if( f_ins[ t_index ] != NULL )
                 {
-                    //cout << "  in at <" << t_index << "> is set" << endl;
+                    msg_debug( coremsg,  "  in at <" << t_index << "> is set" << eom );
                     f_set_ins[ f_set_in_size ] = f_ins[ t_index ];
                     f_set_in_size++;
                 }
                 else
                 {
-                    //cout << "  in at <" << t_index << "> is null" << endl;
+                    msg_debug( coremsg,  "  in at <" << t_index << "> is null" << eom );
                 }
             }
 
-            //cout << "  examining <" << typelength< x_out_list >::result << "> outs" << endl;
+            msg_debug( coremsg,  "  checking outs" << eom );
             for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
             {
                 if( f_outs[ t_index ] != NULL )
                 {
-                    //cout << "  out at <" << t_index << "> is set" << endl;
+                    msg_debug( coremsg,  "  out at <" << t_index << "> is set" << eom );
                     f_set_outs[ f_set_out_size ] = f_outs[ t_index ];
                     f_set_out_size++;
                 }
                 else
                 {
-                    //cout << "  out at <" << t_index << "> is null" << endl;
+                    msg_debug( coremsg,  "  out at <" << t_index << "> is null" << eom );
                 }
             }
 
-            //cout << "  starting self pre" << endl;
+            msg_debug( coremsg,  "  starting self pre" << eom );
             if( start_controller_pre() == false )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_initialized;
                 return false;
             }
 
-            //cout << "  starting outs" << endl;
+            msg_debug( coremsg,  "  starting outs" << eom );
             f_calls = 0;
             for( count_t t_index = 0; t_index < f_set_out_size; t_index++ )
             {
-                //cout << "  starting out at <" << t_index << ">" << endl;
+                msg_debug( coremsg,  "  starting out at <" << t_index << ">" << eom );
                 if( f_set_outs[ t_index ]->start() == false )
                 {
-                    //cout << "  done" << endl;
+                    msg_debug( coremsg,  "    done" << eom );
                     f_state = e_initialized;
                     return false;
                 }
             }
 
-            //cout << "  checking ins" << endl;
+            msg_debug( coremsg,  "  checking ins" << eom );
             if( f_calls != f_set_in_size )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_initialized;
                 return false;
             }
 
-            //cout << "  starting self post" << endl;
+            msg_debug( coremsg,  "  starting self post" << eom );
             if( start_controller_post() == false )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_initialized;
                 return false;
             }
 
+            msg_debug( coremsg,  "started controller <" << this->get_name() << ">" << eom );
             f_state = e_started;
             return true;
         }
 
         if( f_state == e_starting )
         {
-            //cout << "    called" << endl;
+            msg_debug( coremsg,  "starting controller <" << this->get_name() << "> was called" << eom );
             f_calls++;
             return true;
         }
@@ -238,53 +243,54 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            //cout << "executing controller <" << this->get_name() << ">" << endl;
+            msg_debug( coremsg,  "executing controller <" << this->get_name() << ">" << eom );
             f_state = e_executing;
 
-            //cout << "  executing self pre" << endl;
+            msg_debug( coremsg,  "  executing self pre" << eom );
             if( execute_controller_pre() == false )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_started;
                 return false;
             }
 
-            //cout << "  executing outs" << endl;
+            msg_debug( coremsg,  "  executing outs" << eom );
             f_calls = 0;
             for( count_t t_index = 0; t_index < f_set_out_size; t_index++ )
             {
-                //cout << "  executing out at <" << t_index << ">" << endl;
+                msg_debug( coremsg,  "  executing out at <" << t_index << ">" << eom );
                 if( f_set_outs[ t_index ]->execute() == false )
                 {
-                    //cout << "  done" << endl;
+                    msg_debug( coremsg,  "    done" << eom );
                     f_state = e_started;
                     return false;
                 }
             }
 
-            //cout << "  checking ins" << endl;
+            msg_debug( coremsg,  "  checking ins" << eom );
             if( f_calls != f_set_in_size )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_started;
                 return false;
             }
 
-            //cout << "  executing self post" << endl;
+            msg_debug( coremsg,  "  executing self post" << eom );
             if( execute_controller_post() == false )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_started;
                 return false;
             }
 
+            msg_debug( coremsg,  "executed controller <" << this->get_name() << ">" << eom );
             f_state = e_started;
             return true;
         }
 
         if( f_state == e_executing )
         {
-            //cout << "    called" << endl;
+            msg_debug( coremsg,  "executing controller <" << this->get_name() << "> was called" << eom );
             f_calls++;
             return true;
         }
@@ -297,53 +303,54 @@ namespace midge
     {
         if( f_state == e_started )
         {
-            //cout << "stopping controller <" << this->get_name() << ">" << endl;
+            msg_debug( coremsg,  "stopping controller <" << this->get_name() << ">" << eom );
             f_state = e_stopping;
 
-            //cout << "  stopping self pre" << endl;
+            msg_debug( coremsg,  "  stopping self pre" << eom );
             if( stop_controller_pre() == false )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_initialized;
                 return false;
             }
 
-            //cout << "  stopping outs" << endl;
+            msg_debug( coremsg,  "  stopping outs" << eom );
             f_calls = 0;
             for( count_t t_index = 0; t_index < f_set_out_size; t_index++ )
             {
-                //cout << "  stopping out at <" << t_index << ">" << endl;
+                msg_debug( coremsg,  "  stopping out at <" << t_index << ">" << eom );
                 if( f_set_outs[ t_index ]->stop() == false )
                 {
-                    //cout << "  done" << endl;
+                    msg_debug( coremsg,  "    done" << eom );
                     f_state = e_initialized;
                     return false;
                 }
             }
 
-            //cout << "  checking ins" << endl;
+            msg_debug( coremsg,  "  checking ins" << eom );
             if( f_calls != f_set_in_size )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_initialized;
                 return false;
             }
 
-            //cout << "  stopping self post" << endl;
+            msg_debug( coremsg,  "  stopping self post" << eom );
             if( stop_controller_post() == false )
             {
-                //cout << "  done" << endl;
+                msg_debug( coremsg,  "    done" << eom );
                 f_state = e_initialized;
                 return false;
             }
 
+            msg_debug( coremsg,  "stopped controller <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
             return true;
         }
 
         if( f_state == e_stopping )
         {
-            //cout << "    called" << endl;
+            msg_debug( coremsg,  "stopping controller <" << this->get_name() << "> was called" << eom );
             f_calls++;
             return true;
         }
@@ -359,15 +366,21 @@ namespace midge
     template< class x_type, class x_in_list, class x_out_list >
     inline void _controller< x_type, x_in_list, x_out_list >::finalize()
     {
-        if( f_state == e_initialized )
+        if( f_state == e_started )
         {
-            f_state = e_idle;
+            msg_debug( coremsg,  "finalizing controller <" << this->get_name() << ">" << eom );
+            f_state = e_initialized;
 
+            msg_debug( coremsg,  "  finalizing self" << eom );
             finalize_controller();
+
+            msg_debug( coremsg,  "finalized controller <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state == e_idle )
+        if( f_state == e_initialized )
         {
+            msg_debug( coremsg,  "already finalized controller <" << this->get_name() << ">" << eom );
             return;
         }
 

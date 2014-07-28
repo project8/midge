@@ -1,6 +1,8 @@
 #ifndef _midge_data_hh_
 #define _midge_data_hh_
 
+#include "core_message.hh"
+
 #include "node.hh"
 
 #include <vector>
@@ -180,16 +182,23 @@ namespace midge
     {
         if( f_state == e_idle )
         {
+            msg_debug( coremsg, "initializing data named <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
+            msg_debug( coremsg, "  initializing self" << eom );
             initialize_data();
+
+            msg_debug( coremsg, "initialized data named <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state != e_initialized )
+        if( f_state == e_initialized )
         {
-            throw error() << "data named <" << get_name() << "> cannot initialize from state <" << f_state << ">";
+            msg_debug( coremsg, "already initialized data named <" << this->get_name() << ">" << eom );
+            return;
         }
 
+        throw error() << "cannot initialize data named <" << this->get_name() << "> from state <" << f_state << ">";
         return;
     }
     template< class x_type, class x_raw >
@@ -197,26 +206,35 @@ namespace midge
     {
         if( f_state == e_initialized )
         {
+            msg_debug( coremsg, "starting data named <" << this->get_name() << ">" << eom );
             f_state = e_started;
 
+            msg_debug( coremsg, "  starting self" << eom );
             if( start_data() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
 
-            for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
+            msg_debug( coremsg, "  starting outs" << eom );
+            for( count_t t_index = 0; t_index < f_outputs.size(); t_index++ )
             {
-                if( (*t_it)->start() == false )
+                msg_debug( coremsg, "  starting out at <" << t_index << ">" << eom );
+                if( f_outputs[ t_index ]->start() == false )
                 {
+                    msg_debug( coremsg, "    done" << eom );
                     return false;
                 }
             }
+
+            msg_debug( coremsg, "started data named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        if( f_state != e_started )
+        if( f_state == e_started )
         {
-            throw error() << "data named <" << get_name() << "> cannot start from state <" << f_state << ">";
-            return false;
+            msg_debug( coremsg, "already started data named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
         return true;
@@ -226,71 +244,94 @@ namespace midge
     {
         if( f_state == e_started )
         {
+            msg_debug( coremsg, "executing data named <" << this->get_name() << ">" << eom );
+
+            msg_debug( coremsg, "  executing self" << eom );
             if( execute_data() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
 
-            for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
+            msg_debug( coremsg, "  executing outs" << eom );
+            for( count_t t_index = 0; t_index < f_outputs.size(); t_index++ )
             {
-                if( (*t_it)->execute() == false )
+                msg_debug( coremsg, "  executing out at <" << t_index << ">" << eom );
+                if( f_outputs[ t_index ]->execute() == false )
                 {
+                    msg_debug( coremsg, "    done" << eom );
                     return false;
                 }
             }
-        }
-        else
-        {
-            throw error() << "data named <" << get_name() << "> cannot execute from state <" << f_state << ">";
-            return false;
+
+            msg_debug( coremsg, "executed data named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        return true;
+        throw error() << "data named <" << get_name() << "> cannot execute from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_raw >
     inline bool _data< x_type, x_raw >::stop()
     {
         if( f_state == e_started )
         {
+            msg_debug( coremsg, "stopping data named <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
 
+            msg_debug( coremsg, "  stopping self" << eom );
             if( stop_data() == false )
             {
+                msg_debug( coremsg, "    done" << eom );
                 return false;
             }
 
-            for( typename vector< node* >::iterator t_it = f_outputs.begin(); t_it != f_outputs.end(); t_it++ )
+            msg_debug( coremsg, "  stopping outs" << eom );
+            for( count_t t_index = 0; t_index < f_outputs.size(); t_index++ )
             {
-                if( (*t_it)->stop() == false )
+                msg_debug( coremsg, "  stopping out at <" << t_index << ">" << eom );
+                if( f_outputs[ t_index ]->stop() == false )
                 {
+                    msg_debug( coremsg, "    done" << eom );
                     return false;
                 }
             }
+
+            msg_debug( coremsg, "stopped data named <" << this->get_name() << ">" << eom );
+            return true;
         }
 
-        if( f_state != e_initialized )
+        if( f_state == e_initialized )
         {
-            throw error() << "data named <" << get_name() << "> cannot stop from state <" << f_state << ">";
+            msg_debug( coremsg, "already stopped data named <" << this->get_name() << ">" << eom );
             return false;
         }
 
-        return true;
+        throw error() << "data named <" << get_name() << "> cannot stop from state <" << f_state << ">";
+        return false;
     }
     template< class x_type, class x_raw >
     inline void _data< x_type, x_raw >::finalize()
     {
         if( f_state == e_initialized )
         {
+            msg_debug( coremsg, "finalizing data named <" << this->get_name() << ">" << eom );
             f_state = e_idle;
 
+            msg_debug( coremsg, "  finalizing self" << eom );
             finalize_data();
+
+            msg_debug( coremsg, "finalized data named <" << this->get_name() << ">" << eom );
+            return;
         }
 
-        if( f_state != e_idle )
+        if( f_state == e_idle )
         {
-            throw error() << "data named <" << get_name() << "> cannot finalize from state <" << f_state << ">";
+            msg_debug( coremsg, "already finalized data named <" << this->get_name() << ">" << eom );
+            return;
         }
 
+        throw error() << "data named <" << this->get_name() << "> cannot finalize from state <" << f_state << ">";
         return;
     }
 

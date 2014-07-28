@@ -52,11 +52,12 @@ namespace midge
 
     bool rt_ascii_consumer::execute_consumer()
     {
-        count_t t_current_index = (count_t) (round( f_current_time / f_interval ));
         f_start_time = in< 0 >()->get_start_time();
         count_t t_start_index = (count_t) (round( f_start_time / f_interval ));
         f_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
         count_t t_stop_index = (count_t) (round( f_stop_time / f_interval ));
+
+        count_t t_current_index = f_current_time > f_start_time ? (count_t) (round( f_current_time / f_interval )) : (count_t) (round( f_start_time / f_interval));
 
         for( count_t t_index = t_current_index; t_index < t_stop_index; t_index++ )
         {

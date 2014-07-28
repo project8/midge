@@ -13,7 +13,16 @@ set( CMAKE_MACOSX_RPATH TRUE )
 set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 set( CMAKE_SKIP_RPATH FALSE )
 set( CMAKE_SKIP_BUILD_RPATH  FALSE )
-set( CMAKE_BUILD_WITH_INSTALL_RPATH TRUE ) 
+set( CMAKE_BUILD_WITH_INSTALL_RPATH TRUE )
+
+#########
+# flags #
+#########
+
+set( MIDGE_ENABLE_DEBUG_MESSAGES "false" CACHE BOOL "enable debug messages" )
+if( MIDGE_ENABLE_DEBUG_MESSAGES )
+	add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
+endif()
 
 ############
 # external #
@@ -66,7 +75,10 @@ set( midge_utility_directory
 	utility
 )
 set( midge_utility_headers
+	initializer.hh
+	singleton.hh
 	error.hh
+	message.hh
 	types.hh
 	typenull.hh
 	typenode.hh
@@ -79,6 +91,7 @@ set( midge_utility_headers
 )
 set( midge_utility_sources
 	error.cc
+	message.cc
 )
 
 foreach( base ${midge_utility_headers} )
@@ -109,6 +122,7 @@ set( midge_core_directory
 	core
 )
 set( midge_core_headers
+	core_message.hh
 	root.hh
 	link.hh
 	member.hh
@@ -122,6 +136,7 @@ set( midge_core_headers
 	controller.hh
 )
 set( midge_core_sources
+	core_message.cc
 	root.cc
 	link.cc
 	node.cc
@@ -599,6 +614,7 @@ set( midge_json_files
 	test_gaussian_producer.json
 	test_comparison.json
 	test_monarch.json
+	test_analysis.json
 )
 
 foreach( base ${midge_json_files} )
