@@ -11,9 +11,7 @@ namespace midge
             f_size( 0 ),
             f_interval( 1. ),
             f_in( NULL ),
-            f_start_time( 0. ),
-            f_stop_time( 0. ),
-            f_current_time( 0. )
+            f_time( 0. )
     {
     }
     rt_ascii_consumer::~rt_ascii_consumer()
@@ -43,27 +41,34 @@ namespace midge
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
 
-        f_current_time = 0.;
-        f_start_time = 0.;
-        f_stop_time = f_interval * f_size;
+        f_time = 0.;
 
         return true;
     }
 
     bool rt_ascii_consumer::execute_consumer()
     {
-        f_start_time = in< 0 >()->get_start_time();
-        count_t t_start_index = (count_t) (round( f_start_time / f_interval ));
-        f_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
-        count_t t_stop_index = (count_t) (round( f_stop_time / f_interval ));
+        real_t t_start_time = in< 0 >()->get_start_time();
+        count_t t_start_index = (count_t) (round( t_start_time / f_interval ));
+        real_t t_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
+        count_t t_stop_index = (count_t) (round( t_stop_time / f_interval ));
 
-        count_t t_current_index = f_current_time > f_start_time ? (count_t) (round( f_current_time / f_interval )) : (count_t) (round( f_start_time / f_interval));
+        count_t t_current_index;
+        if( t_start_time > f_time )
+        {
+            t_current_index = t_start_index;
+        }
+        else
+        {
+            t_current_index = (count_t) (round( f_time / f_interval));
+        }
 
         for( count_t t_index = t_current_index; t_index < t_stop_index; t_index++ )
         {
-            f_stream << (f_start_time + (t_index - t_start_index) * f_interval) << " " << f_in[ t_index - t_start_index ] << "\n";
+            f_stream << (t_start_time + (t_index - t_start_index) * f_interval) << " " << f_in[ t_index - t_start_index ] << "\n";
         }
-        f_current_time = f_stop_time;
+
+        f_time = t_stop_time;
 
         return true;
     }
@@ -74,9 +79,7 @@ namespace midge
         f_interval = 1.;
         f_in = NULL;
 
-        f_current_time = 0.;
-        f_start_time = 0.;
-        f_stop_time = 0.;
+        f_time = 0.;
 
         return true;
     }

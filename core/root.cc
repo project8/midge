@@ -227,7 +227,7 @@ namespace midge
             node* t_node = t_it->second;
             count_t t_count = 0;
 
-            msg_normal( coremsg,  "starting [" << p_string << "]" << eom );
+            msg_normal( coremsg,  "starting <" << p_string << ">" << eom );
             if( t_node->start() == false )
             {
                 return;
@@ -241,12 +241,12 @@ namespace midge
                 }
                 if( t_count % 100 == 0 )
                 {
-                    msg_normal( coremsg,  "executing [" << t_count << "]" << eom );
+                    msg_normal( coremsg,  "executing <" << t_count << ">" << eom );
                 }
                 t_count++;
             }
 
-            msg_normal( coremsg,  "stopping [" << p_string << "]" << eom );
+            msg_normal( coremsg,  "stopping <" << p_string << ">" << eom );
             if( t_node->stop() == false )
             {
                 return;

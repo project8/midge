@@ -55,10 +55,10 @@ namespace midge
             real_t f_amplitude;
             count_t f_start;
             count_t f_stop;
-            count_t f_index;
             gsl_rng* f_rng;
 
             real_t* f_out;
+            count_t f_index;
 
         protected:
             void initialize_producer();

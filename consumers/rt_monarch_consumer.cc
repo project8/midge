@@ -22,11 +22,9 @@ namespace midge
             f_monarch( NULL ),
             f_header( NULL ),
             f_record( NULL ),
-            f_start_time( 0. ),
-            f_stop_time( 0. ),
-            f_current_time( 0. ),
-            f_sample_count( 0 ),
-            f_record_count( 0 )
+            f_time( 0. ),
+            f_samples( 0 ),
+            f_records( 0 )
     {
     }
     rt_monarch_consumer::~rt_monarch_consumer()
@@ -130,33 +128,40 @@ namespace midge
         f_monarch->SetInterface( monarch::sInterfaceInterleaved );
         f_record = f_monarch->GetRecordInterleaved();
 
-        f_current_time = 0.;
-        f_start_time = 0.;
-        f_stop_time = f_interval * f_size;
-        f_sample_count = 0;
-        f_record_count = 0;
+        f_time = 0.;
+        f_samples = 0;
+        f_records = 0;
 
         return true;
     }
 
     bool rt_monarch_consumer::execute_consumer()
     {
-        count_t t_current_index = (count_t) (round( f_current_time / f_interval ));
-        f_start_time = in< 0 >()->get_start_time();
-        count_t t_start_index = (count_t) (round( f_start_time / f_interval ));
-        f_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
-        count_t t_stop_index = (count_t) (round( f_stop_time / f_interval ));
+        real_t t_start_time = in< 0 >()->get_start_time();
+        count_t t_start_index = (count_t) (round( t_start_time / f_interval ));
+        real_t t_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
+        count_t t_stop_index = (count_t) (round( t_start_time / f_interval ));
+
+        count_t t_current_index;
+        if( t_start_time > f_time )
+        {
+            t_current_index = t_start_index;
+        }
+        else
+        {
+            t_current_index = (count_t) (round( f_time / f_interval));
+        }
 
         register real_t t_datum;
         for( count_t t_index = t_current_index; t_index < t_stop_index; t_index++ )
         {
-            if( f_sample_count == f_length )
+            if( f_samples == f_length )
             {
                 f_record->fAcquisitionId = 0;
-                f_record->fRecordId = f_record_count;
+                f_record->fRecordId = f_records;
                 f_monarch->WriteRecord();
-                f_sample_count = 0;
-                f_record_count++;
+                f_samples = 0;
+                f_records++;
             }
 
             t_datum = f_in[ t_index - t_start_index ];
@@ -169,13 +174,12 @@ namespace midge
             {
                 t_datum = 0.;
             }
-            f_record->fData[ f_sample_count ] = (monarch::DataType) (t_datum);
-
-            f_sample_count++;
+            f_record->fData[ f_samples ] = (monarch::DataType) (t_datum);
+            f_samples++;
         }
 
-        f_current_time = f_stop_time;
-        if( f_current_time >= f_duration )
+        f_time = t_stop_time;
+        if( f_time >= f_duration )
         {
             return false;
         }
@@ -195,11 +199,9 @@ namespace midge
         f_header = NULL;
         f_record = NULL;
 
-        f_current_time = 0.;
-        f_start_time = 0.;
-        f_stop_time = 0.;
-        f_sample_count = 0;
-        f_record_count = 0;
+        f_time = 0.;
+        f_samples = 0;
+        f_records = 0;
 
         return true;
     }

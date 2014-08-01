@@ -30,10 +30,7 @@ namespace midge
             count_t f_size;
             real_t f_interval;
             real_t* f_in;
-
-            real_t f_start_time;
-            real_t f_stop_time;
-            real_t f_current_time;
+            real_t f_time;
 
         protected:
             void initialize_consumer();

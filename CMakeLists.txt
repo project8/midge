@@ -34,6 +34,9 @@ find_package( FFTW REQUIRED )
 # gsl
 find_package( GSL REQUIRED )
 
+# root
+find_package( ROOT REQUIRED )
+
 # monarch
 set( Monarch_INSTALL_DIR "/usr/local" CACHE PATH "path to monarch installation" )
 set( Monarch_INCLUDE_DIR ${Monarch_INSTALL_DIR}/include )
@@ -49,12 +52,14 @@ set( midge_external_directories
 set( midge_external_includes
 	${FFTW_INCLUDE_DIR}
 	${GSL_INCLUDE_DIRS}
+	${ROOT_INCLUDE_DIR}
 	${Monarch_INCLUDE_DIR}
 )
 
 set( midge_external_libraries 
 	${FFTW_LIBRARIES}
 	${GSL_LIBRARIES}
+	${ROOT_LIBRARIES}
 	${Monarch_LIBRARIES}
 )
 

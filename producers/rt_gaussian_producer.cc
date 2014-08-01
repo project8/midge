@@ -113,7 +113,6 @@ namespace midge
         f_amplitude = sqrt( f_impedance_ohm ) * pow( 10., (f_power_dbm - 30.) / 20. );
         f_start = (count_t) (floor( f_start_sec / f_interval ));
         f_stop = (count_t) (ceil( f_stop_sec / f_interval ));
-        f_index = 0;
 
         f_rng = gsl_rng_alloc( gsl_rng_mt19937 );
         gsl_rng_set( f_rng, f_seed );
@@ -127,15 +126,30 @@ namespace midge
         out< 0 >()->set_interval( f_interval );
 
         f_out = out< 0 >()->raw();
+        f_index = 0;
 
         return true;
     }
 
     bool rt_gaussian_producer::execute_producer()
     {
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+        count_t t_offset;
+        if( f_stride < f_size )
         {
-            if( (f_index + t_index >= f_start) && (f_index + t_index <= f_stop) )
+            t_offset = f_size - f_stride;
+            for( count_t t_index = 0; t_index < f_size - f_stride; t_index++ )
+            {
+                f_out[ t_index ] = f_out[ t_index + f_stride ];
+            }
+        }
+        else
+        {
+            t_offset = 0;
+        }
+
+        for( count_t t_index = t_offset; t_index < f_size; t_index++ )
+        {
+            if( (t_index + f_index >= f_start) && (t_index + f_index <= f_stop) )
             {
                 f_out[ t_index ] = gsl_ran_gaussian( f_rng, f_amplitude );
             }
@@ -144,6 +158,7 @@ namespace midge
                 f_out[ t_index ] = 0.;
             }
         }
+
         out< 0 >()->set_start_time( f_index * f_interval );
         f_index += f_stride;
 
@@ -153,6 +168,7 @@ namespace midge
     bool rt_gaussian_producer::stop_producer()
     {
         f_out = NULL;
+        f_index = 0;
 
         return true;
     }
