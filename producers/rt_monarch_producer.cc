@@ -20,10 +20,9 @@ namespace midge
             f_voltage_levels( 256. ),
             f_voltage_inverse_levels( 1. / 256. ),
             f_out( NULL ),
-            f_start_index( 0 ),
-            f_stop_index( 0 ),
-            f_current_index( 0 ),
-            f_record_index( 0 )
+            f_index( 0 ),
+            f_begin( 0 ),
+            f_end( 0 )
     {
     }
     rt_monarch_producer::~rt_monarch_producer()
@@ -86,45 +85,65 @@ namespace midge
         out< 0 >()->set_size( f_size );
         out< 0 >()->set_interval( f_interval );
         f_out = out< 0 >()->raw();
-        f_start_index = 0;
-        f_stop_index = f_size;
-        f_current_index = 0;
-        f_record_index = f_length;
+        f_index = f_length;
+        f_begin = 0;
+        f_end = 0;
 
         return true;
     }
 
     bool rt_monarch_producer::execute_producer()
     {
-        // shift the block
-        for( count_t t_index = f_start_index; t_index < f_current_index; t_index++ )
-        {
-            f_out[ t_index - f_start_index ] = f_out[ t_index - f_start_index + f_stop_index - f_current_index ];
-        }
-
-        // add new data to the block
+        count_t t_index;
         real_t t_datum;
-        for( count_t t_index = f_current_index; t_index < f_stop_index; t_index++ )
-        {
-            while( f_record_index >= f_length )
-            {
-                if( f_monarch->ReadRecord() == false )
-                {
-                    return false;
-                }
-                f_record_index -= f_length;
-            }
-            t_datum = f_voltage_minimum + f_voltage_range * (real_t) (f_record->fData[ f_record_index ]) * f_voltage_inverse_levels;
 
-            f_out[ t_index - f_start_index ] = t_datum;
-            f_record_index++;
+        if( f_end != 0 )
+        {
+            f_begin += f_stride;
         }
 
-        out< 0 >()->set_start_time( f_start_index * f_interval );
-        f_start_index += f_stride;
-        f_current_index = (f_stride > f_size ? f_start_index : f_stop_index);
-        f_stop_index += f_stride;
-        f_record_index += (f_stride > f_size ? f_stride - f_size : 0);
+        if( f_end > f_begin )
+        {
+            for( t_index = f_begin; t_index < f_end; t_index++ )
+            {
+                f_out[ t_index - f_begin ] = f_out[ t_index - f_end + f_size ];
+            }
+            for( t_index = f_end; t_index < f_begin + f_size; t_index++ )
+            {
+                while( f_index >= f_length )
+                {
+                    if( f_monarch->ReadRecord() == false )
+                    {
+                        return false;
+                    }
+                    f_index -= f_length;
+                }
+                t_datum = f_voltage_minimum + f_voltage_range * (real_t) (f_record->fData[ f_index ]) * f_voltage_inverse_levels;
+                f_out[ t_index - f_begin ] = t_datum;
+                f_index++;
+            }
+        }
+        else
+        {
+            for( t_index = f_begin; t_index < f_begin + f_size; t_index++ )
+            {
+                while( f_index >= f_length )
+                {
+                    if( f_monarch->ReadRecord() == false )
+                    {
+                        return false;
+                    }
+                    f_index -= f_length;
+                }
+                t_datum = f_voltage_minimum + f_voltage_range * (real_t) (f_record->fData[ f_index ]) * f_voltage_inverse_levels;
+                f_out[ t_index - f_begin ] = t_datum;
+                f_index++;
+            }
+        }
+
+        f_end = f_begin + f_size;
+
+        out< 0 >()->set_start_time( f_begin * f_interval );
 
         return true;
     }
@@ -146,10 +165,9 @@ namespace midge
         f_voltage_inverse_levels = 1. / 256.;
 
         f_out = NULL;
-        f_start_index = 0;
-        f_stop_index = 0;
-        f_current_index = 0;
-        f_record_index = 0;
+        f_index = 0;
+        f_begin = 0;
+        f_end = 0;
 
         return true;
     }

@@ -45,10 +45,9 @@ namespace midge
             real_t f_voltage_inverse_levels;
 
             real_t* f_out;
-            count_t f_start_index;
-            count_t f_stop_index;
-            count_t f_current_index;
-            count_t f_record_index;
+            count_t f_index;
+            count_t f_begin;
+            count_t f_end;
 
         protected:
             void initialize_producer();

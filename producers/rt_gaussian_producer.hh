@@ -58,7 +58,8 @@ namespace midge
             gsl_rng* f_rng;
 
             real_t* f_out;
-            count_t f_index;
+            count_t f_end;
+            count_t f_begin;
 
         protected:
             void initialize_producer();

@@ -1,4 +1,46 @@
 {
+    "rt_data" : 
+    {
+        "name" : "rtoff"
+    },
+
+    "rf_data" :
+    {
+        "name" : "rfoff"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "rtoff_in",
+        "file" : "trap_off.egg",
+        "size" : 4096,
+        "stride" : 4096
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "rtoff_rfoff",
+        "impedance_ohm" : 50
+    },
+
+    "rf_average_root_consumer" :
+    {
+        "name" : "rfoff_out",
+        "file" : "trap_off.root",
+        "plot" : true
+    },
+
+    "void_controller" :
+    {
+        "name" : "coff"
+    },
+
+    "join" : "rtoff_in.out_0:rtoff.in",
+    "join" : "rtoff.out:rtoff_rfoff.in_0",
+    "join" : "rtoff_rfoff.out_0:rfoff.in",
+    "join" : "rfoff.out:rfoff_out.in_0",
+    "join" : "coff.out_0:rtoff_in",
+
     "rt_data" :
     {
         "name" : "rton"
@@ -23,16 +65,16 @@
         "impedance_ohm" : 50
     },
 
-    "rf_ascii_consumer" :
+    "rf_average_root_consumer" :
     {
         "name" : "rfon_out",
-        "file" : "trap_on.txt"
+        "file" : "trap_on.root",
+        "plot" : true
     },
 
-    "count_controller" :
+    "void_controller" :
     {
-        "name" : "con",
-        "count" : 2048
+        "name" : "con"
     },
 
     "join" : "rton_in.out_0:rton.in",
@@ -41,49 +83,6 @@
     "join" : "rfon.out:rfon_out.in_0",
     "join" : "con.out_0:rton_in",
 
-    "run" : "con",
-
-    "rt_data" : 
-    {
-        "name" : "rtoff"
-    },
-
-    "rf_data" :
-    {
-        "name" : "rfoff"
-    },
-
-    "rt_monarch_producer" :
-    {
-        "name" : "rtoff_in",
-        "file" : "trap_off.egg",
-        "size" : 8192,
-        "stride" : 8192
-    },
-
-    "rt_rf_power_transformer" :
-    {
-        "name" : "rtoff_rfoff",
-        "impedance_ohm" : 50
-    },
-
-    "rf_ascii_consumer" :
-    {
-        "name" : "rfoff_out",
-        "file" : "trap_off.txt"
-    },
-
-    "count_controller" :
-    {
-        "name" : "coff",
-        "count" : 2048
-    },
-
-    "join" : "rtoff_in.out_0:rtoff.in",
-    "join" : "rtoff.out:rtoff_rfoff.in_0",
-    "join" : "rtoff_rfoff.out_0:rfoff.in",
-    "join" : "rfoff.out:rfoff_out.in_0",
-    "join" : "coff.out_0:rtoff_in",
-
-    "run" : "coff"
+    "run" : "coff",
+    "run" : "con"
 }

@@ -8,7 +8,7 @@ namespace midge
 {
 
     class void_controller :
-        public _controller< void_controller, typelist_0(),typelist_10( node, node, node, node, node, node, node, node, node, node ) >
+        public _controller< void_controller, typelist_0(), typelist_10( node, node, node, node, node, node, node, node, node, node ) >
     {
         public:
             void_controller();

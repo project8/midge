@@ -10,10 +10,15 @@ namespace midge
     root::~root()
     {
         node* t_node;
-        for( map_it_t t_it = f_map.begin(); t_it != f_map.end(); t_it++ )
+        map_it_t t_it;
+        for( t_it = f_map.begin(); t_it != f_map.end(); t_it++ )
         {
             t_node = t_it->second;
             t_node->finalize();
+        }
+        for( t_it = f_map.begin(); t_it != f_map.end(); t_it++ )
+        {
+            t_node = t_it->second;
             delete (t_node);
         }
     }
@@ -235,13 +240,13 @@ namespace midge
 
             while( true )
             {
+                if( t_count % 1000 == 0 )
+                {
+                    msg_normal( coremsg,  "executing <" << t_count << ">" << eom );
+                }
                 if( t_node->execute() == false )
                 {
                     break;
-                }
-                if( t_count % 100 == 0 )
-                {
-                    msg_normal( coremsg,  "executing <" << t_count << ">" << eom );
                 }
                 t_count++;
             }

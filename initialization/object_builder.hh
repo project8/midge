@@ -149,6 +149,27 @@ namespace midge
             }
 
             template< class x_child, class x_member >
+            static int boolean( x_member p_member, const string& p_label )
+            {
+                if( f_entries == NULL )
+                {
+                    f_entries = new map< string, entry* >();
+                }
+
+                map_it_t t_it = f_entries->find( p_label );
+                if( t_it == f_entries->end() )
+                {
+                    f_entries->insert( map_entry_t( p_label, new member< ::midge::boolean_builder, x_child, x_member >( p_member ) ) );
+                }
+                else
+                {
+                    throw error() << "object builder for <" << typeid(x_type).name() << "> already has entry for label <" << p_label << ">";
+                }
+
+                return 0;
+            }
+
+            template< class x_child, class x_member >
             static int null( x_member p_member, const string& p_label )
             {
                 if( f_entries == NULL )

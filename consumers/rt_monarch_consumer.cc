@@ -140,7 +140,7 @@ namespace midge
         real_t t_start_time = in< 0 >()->get_start_time();
         count_t t_start_index = (count_t) (round( t_start_time / f_interval ));
         real_t t_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
-        count_t t_stop_index = (count_t) (round( t_start_time / f_interval ));
+        count_t t_stop_index = (count_t) (round( t_stop_time / f_interval ));
 
         count_t t_current_index;
         if( t_start_time > f_time )

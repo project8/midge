@@ -46,7 +46,7 @@
         "stop_sec" : 14000.0e-9,
         "interval" : 1.0e-9,
         "size" : 1000,
-        "stride" : 20
+        "stride" : 10
     },
 
     "rt_chirp_producer" :
@@ -61,7 +61,7 @@
         "stop_sec" : 17000.0e-9,
         "interval" : 1.0e-9,
         "size" : 1000,
-        "stride" : 20
+        "stride" : 10
     },
 
     "rt_gaussian_producer" :
@@ -73,7 +73,7 @@
         "stop_sec" : 18000.0e-9,
         "interval" : 1.0e-9,
         "size" : 1000,
-        "stride" : 20
+        "stride" : 10
     },
 
     "rt_rt_sum_transformer" :
@@ -96,31 +96,34 @@
     {
         "name" : "rt_rfw",
         "offset" : 500,
-        "length" : 499
+        "length" : 399
     },
 
-    "rt_ascii_consumer" :
+    "rt_root_consumer" :
     {
         "name" : "rt_out",
-        "file" : "test_comparison.signal.txt"
+        "file" : "test_comparison.signal.root",
+        "plot" : true
     },
 
-    "rf_ascii_consumer" :
+    "rf_root_consumer" :
     {
         "name" : "rfp_out",
-        "file" : "test_comparison.power.txt"
+        "file" : "test_comparison.power.root",
+        "plot" : true
     },
 
-    "rf_ascii_consumer" :
+    "rf_root_consumer" :
     {
         "name" : "rfw_out",
-        "file" : "test_comparison.wigner.txt"
+        "file" : "test_comparison.wigner.root",
+        "plot" : true
     },
 
     "count_controller" :
     {
         "name" : "c",
-        "count" : 951
+        "count" : 1901
     },
 
     "join" : "rtc0_in.out_0:rtc0.in",

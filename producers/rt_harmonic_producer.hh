@@ -61,7 +61,8 @@ namespace midge
             real_t f_phase;
 
             real_t* f_out;
-            count_t f_index;
+            count_t f_begin;
+            count_t f_end;
 
         protected:
             void initialize_producer();

@@ -35,7 +35,7 @@ find_package( FFTW REQUIRED )
 find_package( GSL REQUIRED )
 
 # root
-find_package( ROOT REQUIRED )
+find_package( ROOT 5.24.0 REQUIRED )
 
 # monarch
 set( Monarch_INSTALL_DIR "/usr/local" CACHE PATH "path to monarch installation" )
@@ -46,6 +46,7 @@ set( Monarch_LIBRARIES -lMonarchCore -lMonarchProto )
 # midge
 set( midge_external_directories
 	${GSL_LIBRARY_DIRS}
+	${ROOT_LIBRARY_DIRS}
 	${Monarch_LIBRARY_DIR}
 )
 
@@ -139,6 +140,7 @@ set( midge_core_headers
 	consumer.hh
 	transformer.hh
 	controller.hh
+	plot.hh
 )
 set( midge_core_sources
 	core_message.cc
@@ -150,6 +152,7 @@ set( midge_core_sources
 	consumer.cc
 	transformer.cc
 	controller.cc
+	plot.cc
 )
 
 foreach( base ${midge_core_headers} )
@@ -264,11 +267,17 @@ set( midge_consumers_directory
 set( midge_consumers_headers
 	rt_ascii_consumer.hh
 	rf_ascii_consumer.hh
+	rt_root_consumer.hh
+	rf_root_consumer.hh
+	rf_average_root_consumer.hh
 	rt_monarch_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
 	rf_ascii_consumer.cc
+	rt_root_consumer.cc
+	rf_root_consumer.cc
+	rf_average_root_consumer.cc
 	rt_monarch_consumer.cc
 )
 
@@ -474,6 +483,9 @@ set( midge_bindings_headers
 	rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
+	rt_root_consumer_builder.hh
+	rf_root_consumer_builder.hh
+	rf_average_root_consumer_builder.hh
 	rt_monarch_consumer_builder.hh
 	rt_ct_transformer_builder.hh
 	rf_cf_transformer_builder.hh
@@ -501,6 +513,9 @@ set( midge_bindings_sources
 	rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
+	rt_root_consumer_builder.cc
+	rf_root_consumer_builder.cc
+	rf_average_root_consumer_builder.cc
 	rt_monarch_consumer_builder.cc
 	rt_ct_transformer_builder.cc
 	rf_cf_transformer_builder.cc

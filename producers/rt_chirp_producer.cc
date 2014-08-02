@@ -23,7 +23,8 @@ namespace midge
             f_quadratic( 0. ),
             f_phase( 0. ),
             f_out( NULL ),
-            f_index( 0 )
+            f_begin( 0 ),
+            f_end( 0 )
     {
     }
     rt_chirp_producer::~rt_chirp_producer()
@@ -148,41 +149,57 @@ namespace midge
         out< 0 >()->set_interval( f_interval );
 
         f_out = out< 0 >()->raw();
-        f_index = 0;
+        f_begin = 0;
+        f_end = 0;
 
         return true;
     }
 
     bool rt_chirp_producer::execute_producer()
     {
-        count_t t_offset;
-        if( f_stride < f_size )
+        count_t t_index;
+
+        if( f_end != 0 )
         {
-            t_offset = f_size - f_stride;
-            for( count_t t_index = 0; t_index < f_size - f_stride; t_index++ )
+            f_begin += f_stride;
+        }
+
+        if( f_end > f_begin )
+        {
+            for( t_index = f_begin; t_index < f_end; t_index++ )
             {
-                f_out[ t_index ] = f_out[ t_index + f_stride ];
+                f_out[ t_index - f_begin ] = f_out[ t_index - f_end + f_size ];
+            }
+            for( t_index = f_end; t_index < f_begin + f_size; t_index++ )
+            {
+                if( (t_index >= f_start) && (t_index <= f_stop) )
+                {
+                    f_out[ t_index - f_begin ] = f_amplitude * cos( 2. * M_PI * (f_quadratic * (t_index - f_start) * (t_index - f_start) + f_linear * (t_index - f_start)) + f_phase );
+                }
+                else
+                {
+                    f_out[ t_index - f_begin ] = 0.;
+                }
             }
         }
         else
         {
-            t_offset = 0;
-        }
-
-        for( count_t t_index = t_offset; t_index < f_size; t_index++ )
-        {
-            if( (t_index + f_index >= f_start) && (t_index + f_index <= f_stop) )
+            for( t_index = f_begin; t_index < f_begin + f_size; t_index++ )
             {
-                f_out[ t_index ] = f_amplitude * cos( 2. * M_PI * (f_quadratic * (t_index + f_index - f_start) * (t_index + f_index - f_start) + f_linear * (t_index + f_index - f_start)) + f_phase );
-            }
-            else
-            {
-                f_out[ t_index ] = 0.;
+                if( (t_index >= f_start) && (t_index <= f_stop) )
+                {
+                    f_out[ t_index - f_begin ] = f_amplitude * cos( 2. * M_PI * (f_quadratic * (t_index - f_start) * (t_index - f_start) + f_linear * (t_index - f_start)) + f_phase );
+                }
+                else
+                {
+                    f_out[ t_index - f_begin ] = 0.;
+                }
             }
         }
 
-        out< 0 >()->set_start_time( f_index * f_interval );
-        f_index += f_stride;
+        f_end = f_begin + f_size;
+
+        out< 0 >()->set_start_time( f_begin * f_interval );
 
         return true;
     }
@@ -190,7 +207,8 @@ namespace midge
     bool rt_chirp_producer::stop_producer()
     {
         f_out = NULL;
-        f_index = 0;
+        f_begin = 0;
+        f_end = 0;
 
         return true;
     }

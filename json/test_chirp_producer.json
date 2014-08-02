@@ -4,27 +4,12 @@
         "name" : "rt"
     },
 
-    "ct_data" :
-    {
-        "name" : "ct"
-    },
-
-    "cf_data" :
-    {
-        "name" : "cf"
-    },
-
     "rf_data" :
     {
-        "name" : "rft"
+        "name" : "rf"
     },
 
-    "rf_data" :
-    {
-        "name" : "rfs"
-    },
-
-    "rt_chirp_producer" :
+     "rt_chirp_producer" :
     {
         "name" : "rt_in",
         "power_dbm" : -10.0,
@@ -39,23 +24,6 @@
         "stride" : 10
     },
 
-    "rt_ct_transformer" :
-    {
-        "name" : "rt_ct",
-        "mode" : "real"
-    },
-
-    "ct_cf_fourier_transformer" :
-    {
-        "name" : "ct_cf"
-    },
-
-    "cf_rf_transformer" :
-    {
-        "name" : "cf_rf",
-        "mode" : "modulus"
-    },
-
     "rt_rf_power_transformer" :
     {
         "name" : "rt_rf",
@@ -64,20 +32,35 @@
 
     "rt_ascii_consumer" :
     {
-        "name" : "rt_out",
-        "file" : "test_chirp_producer.signal.txt"
+        "name" : "rta_out",
+        "file" : "test_harmonic_producer.signal.txt"
+    },
+
+    "rt_root_consumer" :
+    {
+        "name" : "rtr_out",
+        "file" : "test_harmonic_producer.signal.root",
+        "plot" : true
     },
 
     "rf_ascii_consumer" :
     {
-        "name" : "rft_out",
-        "file" : "test_chirp_producer.transform.txt"
+        "name" : "rfa_out",
+        "file" : "test_harmonic_producer.waterfall.txt"
     },
 
-    "rf_ascii_consumer" :
+    "rf_root_consumer" :
     {
-        "name" : "rfs_out",
-        "file" : "test_chirp_producer.spectrum.txt"
+        "name" : "rfr_out",
+        "file" : "test_harmonic_producer.waterfall.root",
+        "plot" : true
+    },
+
+    "rf_average_root_consumer" :
+    {
+        "name" : "rfra_out",
+        "file" : "test_harmonic_producer.average.root",
+        "plot" : true
     },
 
     "count_controller" :
@@ -87,17 +70,13 @@
     },
 
     "join" : "rt_in.out_0:rt.in",
-    "join" : "rt.out:rt_ct.in_0",
-    "join" : "rt_ct.out_0:ct.in",
-    "join" : "ct.out:ct_cf.in_0",
-    "join" : "ct_cf.out_0:cf.in",
-    "join" : "cf.out:cf_rf.in_0",
-    "join" : "cf_rf.out_0:rft.in",
-    "join" : "rft.out:rft_out.in_0",
+    "join" : "rt.out:rta_out.in_0",
+    "join" : "rt.out:rtr_out.in_0",
     "join" : "rt.out:rt_rf.in_0",
-    "join" : "rt_rf.out_0:rfs.in",
-    "join" : "rfs.out:rfs_out.in_0",
-    "join" : "rt.out:rt_out.in_0",
+    "join" : "rt_rf.out_0:rf.in",
+    "join" : "rf.out:rfa_out.in_0",
+    "join" : "rf.out:rfr_out.in_0",
+    "join" : "rf.out:rfra_out.in_0",
     "join" : "c.out_0:rt_in",
 
     "run" : "c"

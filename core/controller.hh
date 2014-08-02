@@ -102,13 +102,6 @@ namespace midge
             f_set_in_size( 0 ),
             f_set_out_size( 0 )
     {
-        for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
-        {
-            f_ins[ t_index ] = NULL;
-            f_outs[ t_index ] = NULL;
-            f_set_ins[ t_index ] = NULL;
-            f_set_outs[ t_index ] = NULL;
-        }
     }
     template< class x_type, class x_in_list, class x_out_list >
     _controller< x_type, x_in_list, x_out_list >::~_controller()
@@ -126,6 +119,20 @@ namespace midge
         {
             msg_debug( coremsg,  "initializing controller <" << this->get_name() << ">" << eom );
             f_state = e_initialized;
+
+            msg_debug( coremsg, "initializing ins" << eom );
+            for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
+            {
+                f_ins[ t_index ] = NULL;
+                f_set_ins[ t_index ] = NULL;
+            }
+
+            msg_debug( coremsg, "initializing outs" << eom );
+            for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
+            {
+                f_outs[ t_index ] = NULL;
+                f_set_outs[ t_index ] = NULL;
+            }
 
             msg_debug( coremsg,  "  initializing self" << eom );
             initialize_controller();
@@ -366,10 +373,24 @@ namespace midge
     template< class x_type, class x_in_list, class x_out_list >
     inline void _controller< x_type, x_in_list, x_out_list >::finalize()
     {
-        if( f_state == e_started )
+        if( f_state == e_initialized )
         {
             msg_debug( coremsg,  "finalizing controller <" << this->get_name() << ">" << eom );
-            f_state = e_initialized;
+            f_state = e_idle;
+
+            msg_debug( coremsg, "finalizing ins" << eom );
+            for( count_t t_index = 0; t_index < typelength< x_in_list >::result; t_index++ )
+            {
+                f_ins[ t_index ] = NULL;
+                f_set_ins[ t_index ] = NULL;
+            }
+
+            msg_debug( coremsg, "finalizing outs" << eom );
+            for( count_t t_index = 0; t_index < typelength< x_out_list >::result; t_index++ )
+            {
+                f_outs[ t_index ] = NULL;
+                f_set_outs[ t_index ] = NULL;
+            }
 
             msg_debug( coremsg,  "  finalizing self" << eom );
             finalize_controller();
@@ -378,7 +399,7 @@ namespace midge
             return;
         }
 
-        if( f_state == e_initialized )
+        if( f_state == e_idle )
         {
             msg_debug( coremsg,  "already finalized controller <" << this->get_name() << ">" << eom );
             return;
