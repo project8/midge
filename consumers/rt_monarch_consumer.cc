@@ -19,12 +19,12 @@ namespace midge
             f_size( 0 ),
             f_interval( 1. ),
             f_in( NULL ),
+            f_index( 0 ),
+            f_samples( 0 ),
+            f_records( 0 ),
             f_monarch( NULL ),
             f_header( NULL ),
-            f_record( NULL ),
-            f_time( 0. ),
-            f_samples( 0 ),
-            f_records( 0 )
+            f_record( NULL )
     {
     }
     rt_monarch_consumer::~rt_monarch_consumer()
@@ -106,6 +106,9 @@ namespace midge
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
+        f_index = 0;
+        f_samples = 0;
+        f_records = 0;
 
         f_monarch = monarch::Monarch::OpenForWriting( f_file );
 
@@ -128,63 +131,83 @@ namespace midge
         f_monarch->SetInterface( monarch::sInterfaceInterleaved );
         f_record = f_monarch->GetRecordInterleaved();
 
-        f_time = 0.;
-        f_samples = 0;
-        f_records = 0;
-
         return true;
     }
 
     bool rt_monarch_consumer::execute_consumer()
     {
-        real_t t_start_time = in< 0 >()->get_start_time();
-        count_t t_start_index = (count_t) (round( t_start_time / f_interval ));
-        real_t t_stop_time = in< 0 >()->get_start_time() + f_size * f_interval;
-        count_t t_stop_index = (count_t) (round( t_stop_time / f_interval ));
+        count_t t_index;
+        real_t t_datum;
 
-        count_t t_current_index;
-        if( t_start_time > f_time )
+        count_t t_next = (count_t) (round( in< 0 >()->get_time() / f_interval ));
+
+        if( t_next < f_index )
         {
-            t_current_index = t_start_index;
+            for( t_index = f_index; t_index < t_next + f_size; t_index++ )
+            {
+                t_datum = f_in[ t_index - t_next ];
+                t_datum = (t_datum - f_voltage_minimum) * f_voltage_inverse_range * f_voltage_levels;
+
+                if( t_datum > (f_voltage_levels - 1.) )
+                {
+                    t_datum = f_voltage_levels - 1.;
+                }
+                else if( t_datum < 0. )
+                {
+                    t_datum = 0.;
+                }
+
+                f_record->fData[ f_samples ] = (monarch::DataType) (t_datum);
+
+                if( ++f_samples == f_length )
+                {
+                    f_record->fAcquisitionId = 0;
+                    f_record->fRecordId = f_records;
+                    f_monarch->WriteRecord();
+                    f_samples = 0;
+                    f_records++;
+                }
+            }
         }
         else
         {
-            t_current_index = (count_t) (round( f_time / f_interval));
+            for( t_index = t_next; t_index < t_next + f_size; t_index++ )
+            {
+                t_datum = f_in[ t_index - t_next ];
+                t_datum = (t_datum - f_voltage_minimum) * f_voltage_inverse_range * f_voltage_levels;
+
+                if( t_datum > (f_voltage_levels - 1.) )
+                {
+                    t_datum = f_voltage_levels - 1.;
+                }
+                else if( t_datum < 0. )
+                {
+                    t_datum = 0.;
+                }
+
+                f_record->fData[ f_samples ] = (monarch::DataType) (t_datum);
+
+                if( ++f_samples == f_length )
+                {
+                    f_record->fAcquisitionId = 0;
+                    f_record->fRecordId = f_records;
+                    f_monarch->WriteRecord();
+                    f_samples = 0;
+                    f_records++;
+                }
+            }
         }
 
-        register real_t t_datum;
-        for( count_t t_index = t_current_index; t_index < t_stop_index; t_index++ )
-        {
-            if( f_samples == f_length )
-            {
-                f_record->fAcquisitionId = 0;
-                f_record->fRecordId = f_records;
-                f_monarch->WriteRecord();
-                f_samples = 0;
-                f_records++;
-            }
+        f_index = t_next + f_size;
 
-            t_datum = f_in[ t_index - t_start_index ];
-            t_datum = (t_datum - f_voltage_minimum) * f_voltage_inverse_range * f_voltage_levels;
-            if( t_datum > (f_voltage_levels - 1.) )
-            {
-                t_datum = f_voltage_levels - 1.;
-            }
-            else if( t_datum < 0. )
-            {
-                t_datum = 0.;
-            }
-            f_record->fData[ f_samples ] = (monarch::DataType) (t_datum);
-            f_samples++;
-        }
-
-        f_time = t_stop_time;
-        if( f_time >= f_duration )
+        if( f_index * f_interval >= f_duration )
         {
             return false;
         }
-
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool rt_monarch_consumer::stop_consumer()
@@ -192,16 +215,15 @@ namespace midge
         f_size = 0;
         f_interval = 1.;
         f_in = NULL;
+        f_index = 0;
+        f_samples = 0;
+        f_records = 0;
 
         f_monarch->Close();
         delete f_monarch;
         f_monarch = NULL;
         f_header = NULL;
         f_record = NULL;
-
-        f_time = 0.;
-        f_samples = 0;
-        f_records = 0;
 
         return true;
     }

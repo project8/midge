@@ -43,10 +43,14 @@ namespace midge
             void set_interval( const real_t& p_interval );
             const real_t& get_interval() const;
 
+            void set_time( const real_t& p_time );
+            const real_t& get_time() const;
+
         protected:
             x_raw* f_raw;
             count_t f_size;
             real_t f_interval;
+            real_t f_time;
 
             //***********
             //composition
@@ -91,6 +95,7 @@ namespace midge
             f_raw( NULL ),
             f_size( 0 ),
             f_interval( 1. ),
+            f_time( 0. ),
             f_input( NULL ),
             f_outputs(),
             f_state( e_idle )
@@ -153,6 +158,18 @@ namespace midge
     inline const real_t& _data< x_type, x_raw >::get_interval() const
     {
         return f_interval;
+    }
+
+    template< class x_type, class x_raw >
+    inline void _data< x_type, x_raw >::set_time( const real_t& p_time )
+    {
+        f_time = p_time;
+        return;
+    }
+    template< class x_type, class x_raw >
+    inline const real_t& _data< x_type, x_raw >::get_time() const
+    {
+        return f_time;
     }
 
     //***********

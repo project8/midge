@@ -46,7 +46,7 @@ namespace midge
             f_out[ t_index ][ 1 ] = f_in_0[ t_index ][ 1 ] + f_in_1[ t_index ][ 1 ];
         }
 
-        out< 0 >()->set_start_time( in< 0 >()->get_start_time() );
+        out< 0 >()->set_time( in< 0 >()->get_time() );
 
         return true;
     }

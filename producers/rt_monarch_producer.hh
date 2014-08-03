@@ -4,6 +4,7 @@
 #include "producer.hh"
 #include "rt_data.hh"
 #include "typelist.hh"
+#include "macros.hh"
 
 #include "Monarch.hpp"
 
@@ -18,20 +19,12 @@ namespace midge
             virtual ~rt_monarch_producer();
 
         public:
-            void set_file( const string& p_filename );
-            const string& get_file() const;
-
-            void set_stride( const count_t& p_stride );
-            const count_t& get_stride() const;
-
-            void set_size( const count_t& p_size );
-            const count_t& get_size() const;
+            accessible( string, file )
+            accessible( count_t, offset )
+            accessible( count_t, stride )
+            accessible( count_t, size )
 
         private:
-            string f_file;
-            count_t f_stride;
-            count_t f_size;
-
             const monarch::Monarch* f_monarch;
             const monarch::MonarchHeader* f_header;
             const monarch::MonarchRecord< monarch::DataType >* f_record;
@@ -46,8 +39,8 @@ namespace midge
 
             real_t* f_out;
             count_t f_index;
-            count_t f_begin;
-            count_t f_end;
+            count_t f_next;
+            count_t f_samples;
 
         protected:
             void initialize_producer();

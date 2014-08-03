@@ -21,8 +21,8 @@ namespace midge
             f_linear( 0. ),
             f_phase( 0. ),
             f_out( NULL ),
-            f_begin( 0 ),
-            f_end( 0 )
+            f_index( 0 ),
+            f_next( 0 )
     {
     }
     rt_harmonic_producer::~rt_harmonic_producer()
@@ -136,8 +136,8 @@ namespace midge
         out< 0 >()->set_interval( f_interval );
 
         f_out = out< 0 >()->raw();
-        f_begin = 0;
-        f_end = 0;
+        f_index = 0;
+        f_next = 0;
 
         return true;
     }
@@ -146,47 +146,47 @@ namespace midge
     {
         count_t t_index;
 
-        if( f_end != 0 )
+        if( f_index != 0 )
         {
-            f_begin += f_stride;
+            f_next += f_stride;
         }
 
-        if( f_end > f_begin )
+        if( f_index > f_next )
         {
-            for( t_index = f_begin; t_index < f_end; t_index++ )
+            for( t_index = f_next; t_index < f_index; t_index++ )
             {
-                f_out[ t_index - f_begin ] = f_out[ t_index - f_end + f_size ];
+                f_out[ t_index - f_next ] = f_out[ t_index - f_index + f_size ];
             }
-            for( t_index = f_end; t_index < f_begin + f_size; t_index++ )
+            for( t_index = f_index; t_index < f_next + f_size; t_index++ )
             {
                 if( (t_index >= f_start) && (t_index <= f_stop) )
                 {
-                    f_out[ t_index - f_begin ] = f_amplitude * cos( 2. * M_PI * f_linear * (t_index - f_start) + f_phase );
+                    f_out[ t_index - f_next ] = f_amplitude * cos( 2. * M_PI * f_linear * (t_index - f_start) + f_phase );
                 }
                 else
                 {
-                    f_out[ t_index - f_begin ] = 0.;
+                    f_out[ t_index - f_next ] = 0.;
                 }
             }
         }
         else
         {
-            for( t_index = f_begin; t_index < f_begin + f_size; t_index++ )
+            for( t_index = f_next; t_index < f_next + f_size; t_index++ )
             {
                 if( (t_index >= f_start) && (t_index <= f_stop) )
                 {
-                    f_out[ t_index - f_begin ] = f_amplitude * cos( 2. * M_PI * f_linear * (t_index - f_begin - f_start) + f_phase );
+                    f_out[ t_index - f_next ] = f_amplitude * cos( 2. * M_PI * f_linear * (t_index - f_next - f_start) + f_phase );
                 }
                 else
                 {
-                    f_out[ t_index - f_begin ] = 0.;
+                    f_out[ t_index - f_next ] = 0.;
                 }
             }
         }
 
-        f_end = f_begin + f_size;
+        f_index = f_next + f_size;
 
-        out< 0 >()->set_start_time( f_begin * f_interval );
+        out< 0 >()->set_time( f_next * f_interval );
 
         return true;
     }
@@ -194,8 +194,8 @@ namespace midge
     bool rt_harmonic_producer::stop_producer()
     {
         f_out = NULL;
-        f_begin = 0;
-        f_end = 0;
+        f_index = 0;
+        f_next = 0;
 
         return true;
     }

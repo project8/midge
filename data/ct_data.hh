@@ -13,13 +13,6 @@ namespace midge
         public:
             ct_data();
             virtual ~ct_data();
-
-        public:
-            void set_start_time( const real_t& p_time );
-            const real_t& get_start_time() const;
-
-        protected:
-            real_t f_start_time;
     };
 
 }

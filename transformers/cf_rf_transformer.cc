@@ -94,7 +94,7 @@ namespace midge
                 break;
         }
 
-        out< 0 >()->set_center_time( in< 0 >()->get_center_time() );
+        out< 0 >()->set_time( in< 0 >()->get_time() );
 
         return true;
     }

@@ -8,7 +8,7 @@ namespace midge
         rt_data_builder::lingual< string >( &rt_data::set_name, "name" ) +
         rt_data_builder::numerical< count_t >( &rt_data::set_size, "size" ) +
         rt_data_builder::numerical< real_t >( &rt_data::set_interval, "interval" ) +
-        rt_data_builder::numerical< real_t >( &rt_data::set_start_time, "start_time" ) +
+        rt_data_builder::numerical< real_t >( &rt_data::set_time, "time" ) +
         root_builder::object< rt_data >( &root::add, "rt_data" );
 
 }

@@ -41,6 +41,8 @@
     "join" : "rfoff.out:rfoff_out.in_0",
     "join" : "coff.out_0:rtoff_in",
 
+    "run" : "coff",
+
     "rt_data" :
     {
         "name" : "rton"
@@ -72,17 +74,23 @@
         "plot" : true
     },
 
-    "void_controller" :
+    "candidate_controller" :
     {
-        "name" : "con"
+        "name" : "con",
+        "candidate_file" : "trap_candidates.root",
+        "background_file" : "trap_off.root",
+        "background_name" : "FAIL",
+        "rough_stride" : 8192,
+        "fine_stride" : 512,
+        "threshold" : 4.0
     },
 
     "join" : "rton_in.out_0:rton.in",
     "join" : "rton.out:rton_rfon.in_0",
     "join" : "rton_rfon.out_0:rfon.in",
     "join" : "rfon.out:rfon_out.in_0",
+    "join" : "rfon.out:con.in_0",
     "join" : "con.out_0:rton_in",
 
-    "run" : "coff",
     "run" : "con"
 }

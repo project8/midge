@@ -13,13 +13,6 @@ namespace midge
         public:
             rf_data();
             virtual ~rf_data();
-
-        public:
-            void set_center_time( const real_t& p_time );
-            const real_t& get_center_time() const;
-
-        protected:
-            real_t f_center_time;
     };
 
 }

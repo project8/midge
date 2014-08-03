@@ -1,0 +1,64 @@
+{
+    "rt_data" :
+    {
+        "name" : "signal_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "power_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "wigner_data"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "signal",
+        "file" : "trap_on.egg",
+        "size" : 10000
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "power",
+        "impedance_ohm" : 50
+    },
+
+    "rt_rf_wigner_transformer" :
+    {
+        "name" : "wigner",
+        "offset" : 10000,
+        "length" : 9999
+    },
+
+    "candidate_controller" :
+    {
+        "name" : "control",
+        "candidate_file" : "trap_candidates.root",
+        "background_file" : "trap_background.root",
+        "background_name" : "spectrum",
+        "rough_stride" : 5000,
+        "fine_stride" : 512,
+        "threshold_ratio" : 4.0,
+        "minimum_time" : 0.308,
+        "maximum_time" : 0.317,
+        "minimum_frequency" : 41.0e6,
+        "maximum_frequency" : 48.0e6,
+        "plot" : true,
+        "plot_title" : "Candidates",
+        "axis_title" : "Excess Power Ratio"
+    },
+
+    "join" : "signal.out_0:signal_data.in",
+    "join" : "signal_data.out:power.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:control.in_1",
+    "join" : "power_data.out:control.in_2",
+    "join" : "signal_data.out:control.in_0",
+    "join" : "control.out_0:signal",
+
+    "run" : "control"
+}

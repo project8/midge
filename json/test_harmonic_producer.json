@@ -39,27 +39,33 @@
     {
         "name" : "rtr_out",
         "file" : "test_harmonic_producer.signal.root",
-        "plot" : true
+        "plot" : true,
+        "plot_title" : "Test Harmonic Producer Signal",
+        "axis_title" : "Signal [volt]"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rfa_out",
-        "file" : "test_harmonic_producer.waterfall.txt"
+        "file" : "test_harmonic_producer.power.txt"
     },
 
     "rf_root_consumer" :
     {
         "name" : "rfr_out",
-        "file" : "test_harmonic_producer.waterfall.root",
-        "plot" : true
+        "file" : "test_harmonic_producer.power.root",
+        "plot" : true,
+        "plot_title" : "Test Harmonic Producer Power",
+        "axis_title" : "Power [watt]"
     },
 
     "rf_average_root_consumer" :
     {
         "name" : "rfra_out",
-        "file" : "test_harmonic_producer.average.root",
-        "plot" : true
+        "file" : "test_harmonic_producer.spectrum.root",
+        "plot" : true,
+        "plot_title" : "Test Harmonic Producer Spectrum",
+        "axis_title" : "Power [watt]"
     },
 
     "count_controller" :

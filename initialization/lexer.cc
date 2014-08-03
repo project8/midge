@@ -335,7 +335,7 @@ namespace midge
     void lexer::lex_lingual()
     {
 #if _midge_debug_lexer_==1
-        cout << "in lex_string at <" << f_char << ">" << endl;
+        cout << "in lex_lingual at <" << f_char << ">" << endl;
 #endif
 
         //if at string, then append token, then increment, then recurse

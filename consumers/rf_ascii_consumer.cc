@@ -43,10 +43,10 @@ namespace midge
 
     bool rf_ascii_consumer::execute_consumer()
     {
-        real_t t_center_time = in< 0 >()->get_center_time();
+        real_t t_start_time = in< 0 >()->get_time();
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
-            f_stream << t_center_time << " " << (t_index * f_interval) << " " << f_in[ t_index ] << "\n";
+            f_stream << t_start_time << " " << (t_index * f_interval) << " " << f_in[ t_index ] << "\n";
         }
         f_stream << "\n";
 

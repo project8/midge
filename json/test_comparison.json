@@ -103,21 +103,27 @@
     {
         "name" : "rt_out",
         "file" : "test_comparison.signal.root",
-        "plot" : true
+        "plot_title" : "Test Comparision Signal",
+        "plot" : true,
+        "axis_title" : "Signal [volt]"
     },
 
     "rf_root_consumer" :
     {
         "name" : "rfp_out",
         "file" : "test_comparison.power.root",
-        "plot" : true
+        "plot" : true,
+        "plot_title" : "Test Comparision Power Spectrum",
+        "axis_title" : "Power [watt]"
     },
 
     "rf_root_consumer" :
     {
         "name" : "rfw_out",
         "file" : "test_comparison.wigner.root",
-        "plot" : true
+        "plot" : true,
+        "plot_title" : "Test Comparision Wigner-Ville Distribution",
+        "axis_title" : "Power [arb]"
     },
 
     "count_controller" :

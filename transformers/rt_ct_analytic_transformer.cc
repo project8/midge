@@ -99,7 +99,7 @@ namespace midge
         }
 
         // update time
-        out< 0 >()->set_start_time( in< 0 >()->get_start_time() );
+        out< 0 >()->set_time( in< 0 >()->get_time() );
 
         return true;
     }

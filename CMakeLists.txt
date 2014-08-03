@@ -23,6 +23,7 @@ set( MIDGE_ENABLE_DEBUG_MESSAGES "false" CACHE BOOL "enable debug messages" )
 if( MIDGE_ENABLE_DEBUG_MESSAGES )
 	add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
 endif()
+add_definitions( -Wall )
 
 ############
 # external #
@@ -81,6 +82,7 @@ set( midge_utility_directory
 	utility
 )
 set( midge_utility_headers
+	macros.hh
 	initializer.hh
 	singleton.hh
 	error.hh
@@ -370,10 +372,12 @@ set( midge_controllers_directory
 set( midge_controllers_headers
 	void_controller.hh
 	count_controller.hh
+	candidate_controller.hh
 )
 set( midge_controllers_sources
 	void_controller.cc
 	count_controller.cc
+	candidate_controller.cc
 )
 
 foreach( base ${midge_controllers_headers} )
@@ -500,6 +504,7 @@ set( midge_bindings_headers
 	rt_rf_wigner_transformer_builder.hh
 	void_controller_builder.hh
 	count_controller_builder.hh
+	candidate_controller_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
@@ -530,6 +535,7 @@ set( midge_bindings_sources
 	rt_rf_wigner_transformer_builder.cc
 	void_controller_builder.cc
 	count_controller_builder.cc
+	candidate_controller_builder.cc
 )
 
 foreach( base ${midge_bindings_headers} )

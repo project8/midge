@@ -157,7 +157,7 @@ namespace midge
         }
 
         // update time
-        out< 0 >()->set_center_time( in< 0 >()->get_start_time() + f_offset * in< 0 >()->get_interval() );
+        out< 0 >()->set_time( in< 0 >()->get_time() );
 
         return true;
     }

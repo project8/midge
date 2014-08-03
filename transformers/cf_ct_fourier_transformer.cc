@@ -39,7 +39,7 @@ namespace midge
             f_out[ t_index ][ 0 ] /= f_norm;
             f_out[ t_index ][ 1 ] /= f_norm;
         }
-        out< 0 >()->set_start_time( in< 0 >()->get_center_time() - .5 * in< 0 >()->get_interval() * (real_t) (f_size - 1) );
+        out< 0 >()->set_time( in< 0 >()->get_time() );
 
         return true;
     }

@@ -195,7 +195,7 @@ namespace midge
                     }
                     t_second_node = t_second_it->second;
 
-                    t_second_in = t_second_node->out( t_second_in_string );
+                    t_second_in = t_second_node->in( t_second_in_string );
                     if( t_second_in == NULL )
                     {
                         throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";

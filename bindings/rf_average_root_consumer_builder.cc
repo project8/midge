@@ -8,6 +8,8 @@ namespace midge
         rf_average_root_consumer_builder::lingual< string >( &rf_average_root_consumer::set_name, "name" ) +
         rf_average_root_consumer_builder::lingual< string >( &rf_average_root_consumer::set_file, "file" ) +
         rf_average_root_consumer_builder::boolean< bool_t >( &rf_average_root_consumer::set_plot, "plot" ) +
+        rf_average_root_consumer_builder::lingual< string >( &rf_average_root_consumer::set_plot_title, "plot_title" ) +
+        rf_average_root_consumer_builder::lingual< string >( &rf_average_root_consumer::set_axis_title, "axis_title" ) +
         root_builder::object< rf_average_root_consumer >( &root::add, "rf_average_root_consumer" );
 
 }

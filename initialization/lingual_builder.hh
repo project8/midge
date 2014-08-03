@@ -41,9 +41,7 @@ namespace midge
             }
             void operator()( ::midge::lingual* p_lingual )
             {
-                stringstream t_stream;
-                (void) (t_stream << p_lingual->str());
-                (void) (t_stream >> (*f_type));
+                f_type->assign( p_lingual->str() );
                 return;
             }
 

@@ -51,14 +51,13 @@ namespace midge
             count_t f_size;
             real_t f_interval;
             real_t* f_in;
+            count_t f_index;
+            count_t f_samples;
+            count_t f_records;
 
             monarch::Monarch* f_monarch;
             monarch::MonarchHeader* f_header;
             monarch::MonarchRecord< monarch::DataType >* f_record;
-
-            real_t f_time;
-            count_t f_samples;
-            count_t f_records;
 
         protected:
             void initialize_consumer();

@@ -9,20 +9,22 @@
         "name" : "rtw_in",
         "power_dbm" : -4.0,
         "impedance_ohm" : 50.0,
-        "frequency_hz" : 7629.39453125,
-        "phase_deg" : 60.0,
+        "frequency_hz" : 1.0e6,
+        "phase_deg" : 270.0,
         "start_sec" : 0.0e-9,
-        "stop_sec" : 2097152.0e-9,
+        "stop_sec" : 20000.0e-9,
         "interval" : 1.0e-9,
-        "size" : 8192,
-        "stride" : 2048
+        "size" : 10000,
+        "stride" : 100
     },
 
     "rt_root_consumer" :
     {
     	"name" : "rtwa_out",
     	"file" : "test_monarch.write.root",
-        "plot" : true
+        "plot" : true,
+        "plot_title" : "Test Monarch Write",
+        "axis_title" : "Signal [volt]"
     },
 
     "rt_monarch_consumer" :
@@ -30,10 +32,10 @@
     	"name" : "rtwm_out",
     	"file" : "test_monarch.egg",
     	"bits" : 8,
-    	"length" : 16384,
+    	"length" : 5000,
     	"voltage_minimum" : -0.25,
     	"voltage_maximum" : 0.25,
-    	"duration" : 2097152.0e-9
+    	"duration" : 20000.0e-9
     },
 
     "void_controller" :
@@ -45,6 +47,7 @@
     "join" : "rtw.out:rtwa_out.in_0",
     "join" : "rtw.out:rtwm_out.in_0",
     "join" : "cw.out_0:rtw_in",
+
     "run" : "cw",
 
     "rt_data" :
@@ -56,15 +59,17 @@
     {
         "name" : "rtr_in",
         "file" : "test_monarch.egg",
-        "size" : 4096,
-        "stride" : 8192
+        "size" : 100,
+        "stride" : 200
     },
 
     "rt_root_consumer" :
     {
         "name" : "rtra_out",
         "file" : "test_monarch.read.root",
-        "plot" : true
+        "plot" : true,
+        "plot_title" : "Test Monarch Read",
+        "axis_title" : "Signal [volt]"
     },
 
     "void_controller" :
