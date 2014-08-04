@@ -1,3 +1,7 @@
+##########
+# global #
+##########
+
 cmake_minimum_required( VERSION 2.8 )
 project( midge )
 
@@ -8,12 +12,16 @@ set( MODULE_VERSION_PATCH 0 )
 set( MODULE_VERSION "${MODULE_VERSION_MAJOR}.${MODULE_VERSION_MINOR}.${MODULE_VERSION_PATCH}" )
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/" )
 
-# rpath shit
+# rpath settings
 set( CMAKE_MACOSX_RPATH TRUE )
 set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 set( CMAKE_SKIP_RPATH FALSE )
 set( CMAKE_SKIP_BUILD_RPATH  FALSE )
 set( CMAKE_BUILD_WITH_INSTALL_RPATH TRUE )
+
+# utilities
+
+include( MidgeUtility )
 
 #########
 # flags #
@@ -68,14 +76,10 @@ set( midge_external_libraries
 link_directories( ${midge_external_directories} )
 include_directories( ${midge_external_includes} )
 
-
 ###########
 # utility #
 ###########
 
-set( midge_utility_name
-	utility
-)
 set( midge_utility_dependencies
 )
 set( midge_utility_directory
@@ -102,29 +106,34 @@ set( midge_utility_sources
 	message.cc
 )
 
-foreach( base ${midge_utility_headers} )
-	list( APPEND midge_utility_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_utility_directory}/${base} )
-endforeach( base )
+midge_library( utility )
 
-foreach( base ${midge_utility_sources} )
-	list( APPEND midge_utility_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_utility_directory}/${base} )
-endforeach( base )
+########
+# math #
+########
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_utility_directory} )
-add_library( ${midge_utility_name} SHARED ${midge_utility_header_files} ${midge_utility_source_files} )
-target_link_libraries( ${midge_utility_name} ${midge_utility_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_utility_header_files} DESTINATION include )
-install( TARGETS ${midge_utility_name} DESTINATION lib )
+set( midge_math_dependencies
+	utility
+)
+set( midge_math_directory
+	math
+)
+set( midge_math_headers
+	window.hh
+)
+set( midge_math_sources
+	window.cc
+)
+
+midge_library( math )
 
 ########
 # core #
 ########
 
-set( midge_core_name
-	core
-)
 set( midge_core_dependencies
 	utility
+	math
 )
 set( midge_core_directory
 	core
@@ -157,28 +166,15 @@ set( midge_core_sources
 	plot.cc
 )
 
-foreach( base ${midge_core_headers} )
-	list( APPEND midge_core_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_core_sources} )
-	list( APPEND midge_core_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_core_directory} )
-add_library( ${midge_core_name} SHARED ${midge_core_header_files} ${midge_core_source_files} )
-target_link_libraries( ${midge_core_name} ${midge_core_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_core_header_files} DESTINATION include )
-install( TARGETS ${midge_core_name} DESTINATION lib )
+midge_library( core )
 
 ########
 # data #
 ########
 
-set( midge_data_name
-	data
-)
 set( midge_data_dependencies
+	utility
+	math
 	core
 )
 set( midge_data_directory
@@ -197,28 +193,15 @@ set( midge_data_sources
 	cf_data.cc
 )
 
-foreach( base ${midge_data_headers} )
-	list( APPEND midge_data_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_data_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_data_sources} )
-	list( APPEND midge_data_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_data_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_data_directory} )
-add_library( ${midge_data_name} SHARED ${midge_data_header_files} ${midge_data_source_files} )
-target_link_libraries( ${midge_data_name} ${midge_data_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_data_header_files} DESTINATION include )
-install( TARGETS ${midge_data_name} DESTINATION lib )
+midge_library( data )
 
 #############
 # producers #
 #############
 
-set( midge_producers_name
-	producers
-)
 set( midge_producers_dependencies
+	utility
+	math
 	core
 	data
 )
@@ -238,28 +221,15 @@ set( midge_producers_sources
 	rt_monarch_producer.cc
 )
 
-foreach( base ${midge_producers_headers} )
-	list( APPEND midge_producers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_producers_sources} )
-	list( APPEND midge_producers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_producers_directory} )
-add_library( ${midge_producers_name} SHARED ${midge_producers_header_files} ${midge_producers_source_files} )
-target_link_libraries( ${midge_producers_name} ${midge_producers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_producers_header_files} DESTINATION include )
-install( TARGETS ${midge_producers_name} DESTINATION lib )
+midge_library( producers )
 
 #############
 # consumers #
 #############
 
-set( midge_consumers_name
-	consumers
-)
 set( midge_consumers_dependencies
+	utility
+	math
 	core
 	data
 )
@@ -283,28 +253,15 @@ set( midge_consumers_sources
 	rt_monarch_consumer.cc
 )
 
-foreach( base ${midge_consumers_headers} )
-	list( APPEND midge_consumers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_consumers_sources} )
-	list( APPEND midge_consumers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_consumers_directory} )
-add_library( ${midge_consumers_name} SHARED ${midge_consumers_header_files} ${midge_consumers_source_files} )
-target_link_libraries( ${midge_consumers_name} ${midge_consumers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_consumers_header_files} DESTINATION include )
-install( TARGETS ${midge_consumers_name} DESTINATION lib )
+midge_library( consumers )
 
 ################
 # transformers #
 ################
 
-set( midge_transformers_name
-	transformers
-)
 set( midge_transformers_dependencies
+	utility
+	math
 	core
 	data
 )
@@ -338,28 +295,15 @@ set( midge_transformers_sources
 	rt_rf_wigner_transformer.cc
 )
 
-foreach( base ${midge_transformers_headers} )
-	list( APPEND midge_transformers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_transformers_sources} )
-	list( APPEND midge_transformers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_transformers_directory} )
-add_library( ${midge_transformers_name} SHARED ${midge_transformers_header_files} ${midge_transformers_source_files} )
-target_link_libraries( ${midge_transformers_name} ${midge_transformers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_transformers_header_files} DESTINATION include )
-install( TARGETS ${midge_transformers_name} DESTINATION lib )
+midge_library( transformers )
 
 ################
 # controllers #
 ################
 
-set( midge_controllers_name
-	controllers
-)
 set( midge_controllers_dependencies
+	utility
+	math
 	core
 	data
 	producers
@@ -380,27 +324,12 @@ set( midge_controllers_sources
 	candidate_controller.cc
 )
 
-foreach( base ${midge_controllers_headers} )
-	list( APPEND midge_controllers_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_controllers_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_controllers_sources} )
-	list( APPEND midge_controllers_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_controllers_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_controllers_directory} )
-add_library( ${midge_controllers_name} SHARED ${midge_controllers_header_files} ${midge_controllers_source_files} )
-target_link_libraries( ${midge_controllers_name} ${midge_controllers_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_controllers_header_files} DESTINATION include )
-install( TARGETS ${midge_controllers_name} DESTINATION lib )
+midge_library( controllers )
 
 ##################
 # initialization #
 ##################
 
-set( midge_initialization_name
-	initialization
-)
 set( midge_initialization_dependencies
 	utility
 )
@@ -441,29 +370,15 @@ set( midge_initialization_sources
 	compiler.cc
 )
 
-foreach( base ${midge_initialization_headers} )
-	list( APPEND midge_initialization_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_initialization_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_initialization_sources} )
-	list( APPEND midge_initialization_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_initialization_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_initialization_directory} )
-add_library( ${midge_initialization_name} SHARED ${midge_initialization_header_files} ${midge_initialization_source_files} )
-target_link_libraries( ${midge_initialization_name} ${midge_initialization_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_initialization_header_files} DESTINATION include )
-install( TARGETS ${midge_initialization_name} DESTINATION lib )
+midge_library( initialization )
 
 ############
 # bindings #
 ############
 
-set( midge_bindings_name
-	bindings
-)
 set( midge_bindings_dependencies
 	utility
+	math
 	core
 	data
 	producers
@@ -538,19 +453,7 @@ set( midge_bindings_sources
 	candidate_controller_builder.cc
 )
 
-foreach( base ${midge_bindings_headers} )
-	list( APPEND midge_bindings_header_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_bindings_directory}/${base} )
-endforeach( base )
-
-foreach( base ${midge_bindings_sources} )
-	list( APPEND midge_bindings_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_bindings_directory}/${base} )
-endforeach( base )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_bindings_directory} )
-add_library( ${midge_bindings_name} SHARED ${midge_bindings_header_files} ${midge_bindings_source_files} )
-target_link_libraries( ${midge_bindings_name} ${midge_bindings_dependencies} ${midge_external_libraries} )
-install( FILES ${midge_bindings_header_files} DESTINATION include )
-install( TARGETS ${midge_bindings_name} DESTINATION lib )
+midge_library( bindings )
 
 ########
 # main #
@@ -558,6 +461,7 @@ install( TARGETS ${midge_bindings_name} DESTINATION lib )
 
 set( midge_main_dependencies
 	utility
+	math
 	core
 	data
 	producers
@@ -574,11 +478,7 @@ set( midge_main_programs
 	midge
 )
 
-foreach( program ${midge_main_programs} )
-	add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${midge_main_directory}/${program}.cc )
-	target_link_libraries( ${program} ${midge_main_dependencies} ${midge_external_libraries} )
-	install( TARGETS ${program} DESTINATION bin )
-endforeach( program )
+midge_executables( main )
 
 ########
 # test #
@@ -586,6 +486,7 @@ endforeach( program )
 
 set( midge_test_dependencies
 	utility
+	math
 	core
 	data
 	producers
@@ -615,11 +516,7 @@ set( midge_test_programs
 	test_gaussian_producer
 )
 
-foreach( program ${midge_test_programs} )
-	add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${midge_test_directory}/${program}.cc )
-	target_link_libraries( ${program} ${midge_test_dependencies} ${midge_external_libraries} )
-	install( TARGETS ${program} DESTINATION bin )
-endforeach( program )
+midge_executables( test )
 
 ########
 # json #
@@ -643,8 +540,4 @@ set( midge_json_files
 	test_analysis.json
 )
 
-foreach( base ${midge_json_files} )
-	list( APPEND midge_json_file_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_json_directory}/${base} )
-endforeach( base )
-
-install( FILES ${midge_json_file_files} DESTINATION config )
+midge_configurations( json )
