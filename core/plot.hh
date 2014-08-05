@@ -94,14 +94,16 @@ namespace midge
             void initialize();
             void plot_one_dimensional
             (
-                const string& p_label,
+                const string& p_key,
+                const string& p_name,
                 const string& p_title,
                 const abscissa& p_x_axis,
                 const ordinate& p_y_values
             );
             void plot_two_dimensional
             (
-                const string& p_label,
+                const string& p_key,
+                const string& p_name,
                 const string& p_title,
                 const abscissa& p_x_axis,
                 const abscissa& p_y_axis,
@@ -112,9 +114,25 @@ namespace midge
         private:
             count_t f_count;
             TApplication* f_application;
-            vector< TCanvas* > f_canvases;
-            vector< TH1D* > f_one_dimensional_plots;
-            vector< TH2D* > f_two_dimensional_plots;
+
+            typedef map< string, TCanvas* > canvas_map;
+            typedef canvas_map::iterator canvas_it;
+            typedef canvas_map::const_iterator canvas_cit;
+            typedef canvas_map::value_type canvas_entry;
+
+            canvas_map f_canvases;
+
+            typedef vector< TH1D* > th1_vector;
+            typedef th1_vector::iterator th1_it;
+            typedef th1_vector::const_iterator th1_cit;
+
+            th1_vector f_th1s;
+
+            typedef vector< TH2D* > th2_vector;
+            typedef th2_vector::iterator th2_it;
+            typedef th2_vector::const_iterator th2_cit;
+
+            th2_vector f_th2s;
     };
 
 }

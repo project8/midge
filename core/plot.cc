@@ -96,22 +96,22 @@ namespace midge
             f_count( 0 ),
             f_application( NULL ),
             f_canvases(),
-            f_one_dimensional_plots(),
-            f_two_dimensional_plots()
+            f_th1s(),
+            f_th2s()
     {
 
     }
     plot::~plot()
     {
-        for( vector< TH1D* >::iterator t_it = f_one_dimensional_plots.begin(); t_it != f_one_dimensional_plots.end(); ++t_it )
+        for( canvas_it t_it = f_canvases.begin(); t_it != f_canvases.end(); ++t_it )
+        {
+            delete t_it->second;
+        }
+        for( th1_it t_it = f_th1s.begin(); t_it != f_th1s.end(); ++t_it )
         {
             delete *t_it;
         }
-        for( vector< TH2D* >::iterator t_it = f_two_dimensional_plots.begin(); t_it != f_two_dimensional_plots.end(); ++t_it )
-        {
-            delete *t_it;
-        }
-        for( vector< TCanvas* >::iterator t_it = f_canvases.begin(); t_it != f_canvases.end(); ++t_it )
+        for( th2_it t_it = f_th2s.begin(); t_it != f_th2s.end(); ++t_it )
         {
             delete *t_it;
         }
@@ -125,38 +125,50 @@ namespace midge
         }
         return;
     }
-    void plot::plot_one_dimensional( const string& p_label, const string& p_title, const abscissa& p_x, const ordinate& p_y )
+    void plot::plot_one_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const ordinate& p_y )
     {
         if( p_x.values().size() != p_y.values().size() )
         {
             throw error() << "plot one dimensional was given x values with size <" << p_x.values().size() << "> and y values with size <" << p_y.values().size() << ">";
         }
 
-        msg_normal( coremsg, "making one dimensional plot <" << p_label << ">" << eom );
+        msg_normal( coremsg, "making one dimensional plot <" << p_name << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
 
-        TCanvas* t_canvas = new TCanvas( (p_label + string( "_canvas" )).c_str(), (p_label + string( "_canvas" )).c_str(), 0, 0, 1024, 768 );
-        TH1D* t_histogram = new TH1D( (p_label + string( "_histogram" )).c_str(), (p_label + string( "_histogram" )).c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment );
+        TH1D* t_histogram = new TH1D( p_name.c_str(), p_name.c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment );
         t_histogram->SetDirectory( NULL );
         for( count_t t_index = 0; t_index < p_x.values().size(); t_index++ )
         {
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ) );
         }
 
-        t_canvas->cd( 0 );
         t_histogram->SetStats( kFALSE );
         t_histogram->SetTitle( p_title.c_str() );
         t_histogram->GetXaxis()->SetTitle( p_x.title().c_str() );
         t_histogram->GetYaxis()->SetTitle( p_y.title().c_str() );
-        t_histogram->Draw( "LP" );
 
-        f_canvases.push_back( t_canvas );
-        f_one_dimensional_plots.push_back( t_histogram );
+        TCanvas* t_canvas;
+        canvas_it t_it = f_canvases.find( p_key );
+        if( t_it != f_canvases.end() )
+        {
+            t_canvas = t_it->second;
+            t_canvas->cd( 0 );
+            t_histogram->Draw( "LP,SAME" );
+        }
+        else
+        {
+            TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
+            t_canvas->cd( 0 );
+            t_histogram->Draw( "LP" );
+            f_canvases.insert( canvas_entry( p_key, t_canvas ) );
+        }
+
+        f_th1s.push_back( t_histogram );
 
         return;
     }
-    void plot::plot_two_dimensional( const string& p_label, const string& p_title, const abscissa& p_x, const abscissa& p_y, const ordinate& p_z )
+    void plot::plot_two_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const abscissa& p_y, const ordinate& p_z )
     {
         if( p_z.values().size() != p_x.values().size() )
         {
@@ -168,29 +180,41 @@ namespace midge
             throw error() << "time frequency plotter was given z values with size <" << p_z.values().size() << "> and y values with size <" << p_y.values().size() << ">";
         }
 
-        msg_normal( coremsg, "making two dimensional plot <" << p_label << ">" << eom );
+        msg_normal( coremsg, "making two dimensional plot <" << p_name << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
 
-        TCanvas* t_canvas = new TCanvas( (p_label + string( "_canvas" )).c_str(), (p_label + string( "_canvas" )).c_str(), 0, 0, 1024, 768 );
-        TH2D* t_histogram = new TH2D( (p_label + string( "_histogram" )).c_str(), (p_label + string( "_histogram" )).c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment, p_y.count(), p_y.low() - .5 * t_y_increment, p_y.high() + .5 * t_y_increment );
+        TH2D* t_histogram = new TH2D( p_name.c_str(), p_name.c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment, p_y.count(), p_y.low() - .5 * t_y_increment, p_y.high() + .5 * t_y_increment );
         t_histogram->SetDirectory( NULL );
         for( count_t t_index = 0; t_index < p_z.values().size(); t_index++ )
         {
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ), p_z.values().at( t_index ) );
         }
 
-        t_canvas->cd( 0 );
         t_histogram->SetStats( kFALSE );
         t_histogram->SetTitle( p_title.c_str() );
         t_histogram->GetXaxis()->SetTitle( p_x.title().c_str() );
         t_histogram->GetYaxis()->SetTitle( p_y.title().c_str() );
         t_histogram->GetZaxis()->SetTitle( p_z.title().c_str() );
-        t_histogram->Draw( "COLZ" );
 
-        f_canvases.push_back( t_canvas );
-        f_two_dimensional_plots.push_back( t_histogram );
+        TCanvas* t_canvas;
+        canvas_it t_it = f_canvases.find( p_key );
+        if( t_it != f_canvases.end() )
+        {
+            t_canvas = t_it->second;
+            t_canvas->cd( 0 );
+            t_histogram->Draw( "COLZ,SAME" );
+        }
+        else
+        {
+            TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
+            t_canvas->cd( 0 );
+            t_histogram->Draw( "COLZ" );
+            f_canvases.insert( canvas_entry( p_key, t_canvas ) );
+        }
+
+        f_th2s.push_back( t_histogram );
 
         return;
     }

@@ -23,7 +23,9 @@
     	"name" : "rtwa_out",
     	"file" : "test_monarch.write.root",
         "plot" : true,
-        "plot_title" : "Test Monarch Write",
+        "plot_key" : "monarch_write_canvas",
+        "plot_name" : "monarch_write_histogram",
+        "chart_title" : "Test Monarch Write",
         "axis_title" : "Signal [volt]"
     },
 
@@ -59,6 +61,8 @@
     {
         "name" : "rtr_in",
         "file" : "test_monarch.egg",
+        "minimum_time" : 0.0e-9,
+        "maximum_time" : 20000.0e-9,
         "size" : 100,
         "stride" : 200
     },
@@ -68,7 +72,9 @@
         "name" : "rtra_out",
         "file" : "test_monarch.read.root",
         "plot" : true,
-        "plot_title" : "Test Monarch Read",
+        "plot_key" : "monarch_read_canvas",
+        "plot_name" : "monarch_read_histogram",
+        "chart_title" : "Test Monarch Read",
         "axis_title" : "Signal [volt]"
     },
 

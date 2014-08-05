@@ -41,7 +41,9 @@
         "name" : "rtr_out",
         "file" : "test_chirp_producer.signal.root",
         "plot" : true,
-        "plot_title" : "Test Chrip Producer Signal",
+        "plot_key" : "rt_root_consumer_canvas",
+        "plot_name" : "rt_root_consumer",
+        "chart_title" : "Test Chrip Producer Signal",
         "axis_title" : "Signal [volt]"
     },
 
@@ -56,7 +58,9 @@
         "name" : "rfr_out",
         "file" : "test_chirp_producer.power.root",
         "plot" : true,
-        "plot_title" : "Test Chirp Producer Power",
+        "plot_key" : "rf_root_consumer_canvas",
+        "plot_name" : "rf_root_consumer",
+        "chart_title" : "Test Chirp Producer Power",
         "axis_title" : "Power [watt]"
     },
 
@@ -65,7 +69,9 @@
         "name" : "rfra_out",
         "file" : "test_chirp_producer.spectrum.root",
         "plot" : true,
-        "plot_title" : "Test Chirp Producer Spectrum",
+        "plot_key" : "rf_average_root_consumer_canvas",
+        "plot_name" : "rf_average_root_consumer",
+        "chart_title" : "Test Chirp Producer Spectrum",
         "axis_title" : "Power [watt]"
     },
 

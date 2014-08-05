@@ -11,14 +11,17 @@
 
     "rf_data" :
     {
-        "name" : "wigner_data"
+        "name" : "threshold_data"
     },
 
     "rt_monarch_producer" :
     {
         "name" : "signal",
         "file" : "trap_on.egg",
-        "size" : 10000
+        "minimum_time" : 0.308,
+        "maximum_time" : 0.317,
+        "size" : 8192,
+        "stride" : 4096
     },
 
     "rt_rf_power_transformer" :
@@ -27,26 +30,16 @@
         "impedance_ohm" : 50
     },
 
-    "rt_rf_wigner_transformer" :
+    "cluster_controller" :
     {
-        "name" : "wigner",
-        "offset" : 10000,
-        "length" : 9999
-    },
-
-    "candidate_controller" :
-    {
-        "name" : "control",
+        "name" : "cluster",
         "candidate_file" : "trap_candidates.root",
         "background_file" : "trap_background.root",
         "background_name" : "spectrum",
-        "rough_stride" : 5000,
-        "fine_stride" : 512,
-        "threshold_ratio" : 4.0,
-        "minimum_time" : 0.308,
-        "maximum_time" : 0.317,
         "minimum_frequency" : 41.0e6,
         "maximum_frequency" : 48.0e6,
+        "stride" : 4096,
+        "threshold" : 3.75,
         "plot" : true,
         "plot_title" : "Candidates",
         "axis_title" : "Excess Power Ratio"
@@ -56,9 +49,8 @@
     "join" : "signal_data.out:power.in_0",
     "join" : "power.out_0:power_data.in",
     "join" : "power_data.out:control.in_1",
-    "join" : "power_data.out:control.in_2",
     "join" : "signal_data.out:control.in_0",
-    "join" : "control.out_0:signal",
+    "join" : "cluster.out_0:signal",
 
-    "run" : "control"
+    "run" : "cluster"
 }

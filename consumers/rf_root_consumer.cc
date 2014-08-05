@@ -8,7 +8,9 @@ namespace midge
     rf_root_consumer::rf_root_consumer() :
             f_file( "" ),
             f_plot( false ),
-            f_plot_title( "" ),
+            f_plot_key( "" ),
+            f_plot_name( "" ),
+            f_chart_title( "" ),
             f_axis_title( "" ),
             f_stream( NULL ),
             f_tree( NULL ),
@@ -18,51 +20,13 @@ namespace midge
             f_size( 0 ),
             f_interval( 1. ),
             f_in( NULL ),
-            f_index( 0 )
+            f_first_time( 0. ),
+            f_last_time( 0. ),
+            f_count( 0 )
     {
     }
     rf_root_consumer::~rf_root_consumer()
     {
-    }
-
-    void rf_root_consumer::set_file( const string& p_file )
-    {
-        f_file = p_file;
-        return;
-    }
-    const string& rf_root_consumer::get_file() const
-    {
-        return f_file;
-    }
-
-    void rf_root_consumer::set_plot( const bool_t& p_plot )
-    {
-        f_plot = p_plot;
-        return;
-    }
-    const bool_t& rf_root_consumer::get_plot() const
-    {
-        return f_plot;
-    }
-
-    void rf_root_consumer::set_plot_title( const string& p_plot_title )
-    {
-        f_plot_title = p_plot_title;
-        return;
-    }
-    const string& rf_root_consumer::get_plot_title() const
-    {
-        return f_plot_title;
-    }
-
-    void rf_root_consumer::set_axis_title( const string& p_axis_title )
-    {
-        f_axis_title = p_axis_title;
-        return;
-    }
-    const string& rf_root_consumer::get_axis_title() const
-    {
-        return f_axis_title;
     }
 
     bool rf_root_consumer::start_consumer()
@@ -83,13 +47,26 @@ namespace midge
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
-        f_index = 0;
+
+        f_first_time = 0.;
+        f_last_time = 0.;
+        f_count = 0;
 
         return true;
     }
 
     bool rf_root_consumer::execute_consumer()
     {
+        if( f_count == 0 )
+        {
+            f_first_time = in< 0 >()->get_time();
+        }
+        else
+        {
+            f_last_time = in< 0 >()->get_time();
+        }
+        f_count++;
+
         f_time = in< 0 >()->get_time();
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
@@ -97,7 +74,6 @@ namespace midge
             f_value = f_in[ t_index ];
             f_tree->Fill();
         }
-        f_index++;
 
         return true;
     }
@@ -126,9 +102,9 @@ namespace midge
 
             plot::abscissa t_times( t_entries );
             t_times.title() = string( "Time [sec]" );
-            t_times.count() = f_index;
-            t_times.low() = 0.;
-            t_times.high() = f_time;
+            t_times.count() = f_count;
+            t_times.low() = f_first_time;
+            t_times.high() = f_last_time;
 
             plot::abscissa t_frequencies( t_entries );
             t_frequencies.title() = string( "Frequency [Hz]" );
@@ -151,7 +127,7 @@ namespace midge
             t_file->Close();
             delete t_file;
 
-            plot::get_instance()->plot_two_dimensional( get_name(), f_plot_title, t_times, t_frequencies, t_values );
+            plot::get_instance()->plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_times, t_frequencies, t_values );
 
             plot::get_instance()->finalize();
         }
@@ -159,7 +135,7 @@ namespace midge
         f_size = 0;
         f_interval = 1.;
         f_in = NULL;
-        f_index = 0;
+        f_count = 0;
 
         return true;
     }

@@ -38,7 +38,9 @@
         "name" : "rtr_out",
         "file" : "test_gaussian_producer.signal.root",
         "plot" : true,
-        "plot_title" : "Test Gaussian Producer Signal",
+        "plot_key" : "rt_root_consumer_canvas",
+        "plot_name" : "rt_root_consumer",
+        "chart_title" : "Test Gaussian Producer Signal",
         "axis_title" : "Signal [volt]"
     },
 
@@ -53,7 +55,9 @@
         "name" : "rfr_out",
         "file" : "test_gaussian_producer.power.root",
         "plot" : true,
-        "plot_title" : "Test Gaussian Producer Power",
+        "plot_key" : "rf_root_consumer_canvas",
+        "plot_name" : "rf_root_consumer",
+        "chart_title" : "Test Gaussian Producer Power",
         "axis_title" : "Power [watt]"
     },
 
@@ -62,7 +66,9 @@
         "name" : "rfra_out",
         "file" : "test_gaussian_producer.spectrum.root",
         "plot" : true,
-        "plot_title" : "Test Gaussian Producer Spectrum Power",
+        "plot_key" : "rf_average_root_consumer_canvas",
+        "plot_name" : "rf_average_root_consumer",
+        "chart_title" : "Test Gaussian Producer Spectrum Power",
         "axis_title" : "Power [watt]"
     },
 

@@ -142,6 +142,8 @@ namespace midge
             f_next += f_stride;
         }
 
+        out< 0 >()->set_time( f_next * f_interval );
+
         if( f_index > f_next )
         {
             for( t_index = f_next; t_index < f_index; t_index++ )
@@ -176,8 +178,6 @@ namespace midge
         }
 
         f_index = f_next + f_size;
-
-        out< 0 >()->set_time( f_next * f_interval );
 
         return true;
     }

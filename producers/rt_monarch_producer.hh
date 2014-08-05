@@ -20,7 +20,8 @@ namespace midge
 
         public:
             accessible( string, file )
-            accessible( count_t, offset )
+            accessible( real_t, minimum_time )
+            accessible( real_t, maximum_time )
             accessible( count_t, stride )
             accessible( count_t, size )
 
@@ -36,6 +37,9 @@ namespace midge
             real_t f_voltage_inverse_range;
             real_t f_voltage_levels;
             real_t f_voltage_inverse_levels;
+
+            count_t f_minimum_index;
+            count_t f_maximum_index;
 
             real_t* f_out;
             count_t f_index;

@@ -1,5 +1,8 @@
 #include "rt_monarch_producer.hh"
 
+#include <limits>
+using std::numeric_limits;
+
 #include <cmath>
 
 namespace midge
@@ -7,7 +10,8 @@ namespace midge
 
     rt_monarch_producer::rt_monarch_producer() :
             f_file( "" ),
-            f_offset( 0 ),
+            f_minimum_time( 0. ),
+            f_maximum_time( numeric_limits< real_t >::max() ),
             f_stride( 0 ),
             f_size( 0 ),
             f_monarch( NULL ),
@@ -20,6 +24,8 @@ namespace midge
             f_voltage_inverse_range( 1. / .5 ),
             f_voltage_levels( 256. ),
             f_voltage_inverse_levels( 1. / 256. ),
+            f_minimum_index( 0 ),
+            f_maximum_index( numeric_limits< count_t >::max() ),
             f_out( NULL ),
             f_index( 0 ),
             f_next( 0 ),
@@ -53,6 +59,9 @@ namespace midge
         f_voltage_levels = 1 << f_header->GetBitDepth();
         f_voltage_inverse_levels = 1. / f_voltage_levels;
 
+        f_minimum_index = (count_t) (round( f_minimum_time / (f_interval * f_size) ) * f_size);
+        f_maximum_index = (count_t) (round( f_maximum_time / (f_interval * f_size) ) * f_size);
+
         out< 0 >()->set_size( f_size );
         out< 0 >()->set_interval( f_interval );
         f_out = out< 0 >()->raw();
@@ -68,13 +77,17 @@ namespace midge
         count_t t_index;
         real_t t_datum;
 
-        if( f_index != 0 )
+        if( f_index == f_maximum_index )
         {
-            f_next += f_stride;
+            return false;
+        }
+        else if( f_index == 0 )
+        {
+            f_next += f_minimum_index;
         }
         else
         {
-            f_next += f_offset;
+            f_next += f_stride;
         }
 
         if( f_index > f_next )
@@ -145,6 +158,9 @@ namespace midge
         f_voltage_inverse_range = 1. / .5;
         f_voltage_levels = 256.;
         f_voltage_inverse_levels = 1. / 256.;
+
+        f_minimum_index = 0;
+        f_maximum_index = numeric_limits< count_t >::max();
 
         f_out = NULL;
         f_index = 0;

@@ -10,7 +10,9 @@ namespace midge
     rt_root_consumer::rt_root_consumer() :
             f_file( "" ),
             f_plot( false ),
-            f_plot_title( "" ),
+            f_plot_key( "" ),
+            f_plot_name( "" ),
+            f_chart_title( "" ),
             f_axis_title( "" ),
             f_stream( NULL ),
             f_tree( NULL ),
@@ -24,46 +26,6 @@ namespace midge
     }
     rt_root_consumer::~rt_root_consumer()
     {
-    }
-
-    void rt_root_consumer::set_file( const string& p_file )
-    {
-        f_file = p_file;
-        return;
-    }
-    const string& rt_root_consumer::get_file() const
-    {
-        return f_file;
-    }
-
-    void rt_root_consumer::set_plot( const bool_t& p_plot )
-    {
-        f_plot = p_plot;
-        return;
-    }
-    const bool_t& rt_root_consumer::get_plot() const
-    {
-        return f_plot;
-    }
-
-    void rt_root_consumer::set_plot_title( const string& p_plot_title )
-    {
-        f_plot_title = p_plot_title;
-        return;
-    }
-    const string& rt_root_consumer::get_plot_title() const
-    {
-        return f_plot_title;
-    }
-
-    void rt_root_consumer::set_axis_title( const string& p_axis_title )
-    {
-        f_axis_title = p_axis_title;
-        return;
-    }
-    const string& rt_root_consumer::get_axis_title() const
-    {
-        return f_axis_title;
     }
 
     bool rt_root_consumer::start_consumer()
@@ -157,7 +119,7 @@ namespace midge
             t_file->Close();
             delete t_file;
 
-            plot::get_instance()->plot_one_dimensional( get_name(), f_plot_title, t_times, t_values );
+            plot::get_instance()->plot_one_dimensional( f_plot_key, f_plot_name, f_chart_title, t_times, t_values );
 
             plot::get_instance()->finalize();
         }

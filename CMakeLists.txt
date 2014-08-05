@@ -280,6 +280,7 @@ set( midge_transformers_headers
 	rt_ct_analytic_transformer.hh
 	rt_rf_power_transformer.hh
 	rt_rf_wigner_transformer.hh
+	rf_rf_threshold_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_transformer.cc
@@ -293,6 +294,7 @@ set( midge_transformers_sources
 	rt_ct_analytic_transformer.cc
 	rt_rf_power_transformer.cc
 	rt_rf_wigner_transformer.cc
+	rf_rf_threshold_transformer.cc
 )
 
 midge_library( transformers )
@@ -316,12 +318,10 @@ set( midge_controllers_directory
 set( midge_controllers_headers
 	void_controller.hh
 	count_controller.hh
-	candidate_controller.hh
 )
 set( midge_controllers_sources
 	void_controller.cc
 	count_controller.cc
-	candidate_controller.cc
 )
 
 midge_library( controllers )
@@ -417,9 +417,9 @@ set( midge_bindings_headers
 	rt_ct_analytic_transformer_builder.hh
 	rt_rf_power_transformer_builder.hh
 	rt_rf_wigner_transformer_builder.hh
+	rf_rf_threshold_transformer_builder.hh
 	void_controller_builder.hh
 	count_controller_builder.hh
-	candidate_controller_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
@@ -448,9 +448,9 @@ set( midge_bindings_sources
 	rt_ct_analytic_transformer_builder.cc
 	rt_rf_power_transformer_builder.cc
 	rt_rf_wigner_transformer_builder.cc
+	rf_rf_threshold_transformer_builder.cc
 	void_controller_builder.cc
 	count_controller_builder.cc
-	candidate_controller_builder.cc
 )
 
 midge_library( bindings )

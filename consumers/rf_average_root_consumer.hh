@@ -4,6 +4,7 @@
 #include "consumer.hh"
 #include "rf_data.hh"
 #include "typelist.hh"
+#include "macros.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -19,24 +20,14 @@ namespace midge
             virtual ~rf_average_root_consumer();
 
         public:
-            void set_file( const string& p_filename );
-            const string& get_file() const;
-
-            void set_plot( const bool_t& p_plot );
-            const bool_t& get_plot() const;
-
-            void set_plot_title( const string& p_plot_title );
-            const string& get_plot_title() const;
-
-            void set_axis_title( const string& p_axis_title );
-            const string& get_axis_title() const;
+            accessible( string, file )
+            accessible( bool_t, plot )
+            accessible( string, plot_key )
+            accessible( string, plot_name )
+            accessible( string, chart_title )
+            accessible( string, axis_title )
 
         private:
-            string f_file;
-            bool_t f_plot;
-            string f_plot_title;
-            string f_axis_title;
-
             TFile* f_stream;
             TTree* f_tree;
             real_t f_frequency_point;
