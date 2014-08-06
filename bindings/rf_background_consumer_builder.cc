@@ -12,7 +12,7 @@ namespace midge
     static const int s_rf_background_consumer =
         rf_background_consumer_builder::lingual< string >( &rf_background_consumer::set_name, "name" ) +
         rf_background_consumer_builder::lingual< string >( &rf_background_consumer::set_file, "file" ) +
-        rf_background_consumer_builder::numerical< real_t >( &rf_background_consumer::set_length, "length" ) +
+        rf_background_consumer_builder::numerical< count_t >( &rf_background_consumer::set_length, "length" ) +
         rf_background_consumer_builder::object< window_rectangular >( &rf_background_consumer::set_window, "window_rectangular" ) +
         rf_background_consumer_builder::object< window_bartlett >( &rf_background_consumer::set_window, "window_bartlett" ) +
         rf_background_consumer_builder::object< window_welch >( &rf_background_consumer::set_window, "window_welch" ) +
