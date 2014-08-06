@@ -1,0 +1,70 @@
+{
+    "rt_data" : 
+    {
+        "name" : "signal_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "power_data"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "signal",
+        "file" : "trap_simulation.egg",
+        "minimum_time" : 0.0,
+        "maximum_time" : 1.0,
+        "size" : 1000,
+        "stride" : 1000
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "power",
+        "impedance_ohm" : 50,
+        "window_hamming" :
+        {
+        }
+    },
+
+    "rf_background_consumer" :
+    {
+        "name" : "background",
+        "file" : "trap_simulation_background.root",
+        "length" : 30,
+        "window_bartlett" :
+        {
+        },
+        "plot" : true,
+        "plot_key" : "background_canvas",
+        "plot_name" : "background_histogram",
+        "chart_title" : "Trap Off Power",
+        "axis_title" : "Power [watt]"
+    },
+
+    "rf_root_consumer" :
+    {
+        "name" : "waterfall",
+        "file" : "trap_simulation_waterfall.root",
+        "plot" : true,
+        "plot_key" : "rf_root_consumer_canvas",
+        "plot_name" : "rf_root_consumer",
+        "chart_title" : "Test Chirp Producer Power",
+        "axis_title" : "Power [watt]"
+    },
+
+    "void_controller" :
+    {
+        "name" : "control"
+    },
+
+    "join" : "signal.out_0:signal_data.in",
+    "join" : "signal_data.out:power.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:background.in_0",
+    "join" : "power_data.out:waterfall.in_0",
+    "join" : "control.out_0:signal",
+
+    "run" : "control"
+}

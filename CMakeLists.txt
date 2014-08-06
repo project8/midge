@@ -253,6 +253,7 @@ set( midge_consumers_headers
 	rf_root_consumer.hh
 	rt_monarch_consumer.hh
 	rf_background_consumer.hh
+	rf_candidate_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
@@ -261,6 +262,7 @@ set( midge_consumers_sources
 	rf_root_consumer.cc
 	rt_monarch_consumer.cc
 	rf_background_consumer.cc
+	rf_candidate_consumer.cc
 )
 
 midge_library( consumers )
@@ -421,6 +423,7 @@ set( midge_bindings_headers
 	rf_root_consumer_builder.hh
 	rt_monarch_consumer_builder.hh
 	rf_background_consumer_builder.hh
+	rf_candidate_consumer_builder.hh
 	rt_ct_transformer_builder.hh
 	rf_cf_transformer_builder.hh
 	ct_rt_transformer_builder.hh
@@ -452,6 +455,7 @@ set( midge_bindings_sources
 	rf_root_consumer_builder.cc
 	rt_monarch_consumer_builder.cc
 	rf_background_consumer_builder.cc
+	rf_candidate_consumer_builder.cc
 	rt_ct_transformer_builder.cc
 	rf_cf_transformer_builder.cc
 	ct_rt_transformer_builder.cc

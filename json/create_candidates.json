@@ -38,7 +38,7 @@
         "name" : "threshold",
         "threshold_file" : "trap_threshold.root",
         "background_file" : "trap_background.root",
-        "threshold" : 4.0,
+        "threshold" : 3.8,
         "minimum_frequency" : 41.0e6,
         "maximum_frequency" : 48.0e6,
         "plot" : true,

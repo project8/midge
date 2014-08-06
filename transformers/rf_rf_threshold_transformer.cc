@@ -22,6 +22,7 @@ namespace midge
             f_chart_title( "" ),
             f_axis_title( "" ),
             f_stream( NULL ),
+            f_label( NULL ),
             f_tree( NULL ),
             f_time( 0. ),
             f_frequency( 0. ),
