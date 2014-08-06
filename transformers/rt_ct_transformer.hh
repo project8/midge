@@ -30,7 +30,7 @@ namespace midge
             mode f_mode;
 
             count_t f_size;
-            real_t* f_in;
+            const real_t* f_in;
             complex_t* f_out;
 
         protected:

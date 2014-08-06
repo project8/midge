@@ -44,7 +44,7 @@ namespace midge
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
-        f_index = 0.;
+        f_index = 0;
 
         return true;
     }
@@ -127,7 +127,7 @@ namespace midge
         f_size = 0;
         f_interval = 1.;
         f_in = NULL;
-        f_index = 0.;
+        f_index = 0;
 
         return true;
     }

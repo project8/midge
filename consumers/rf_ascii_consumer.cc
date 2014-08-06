@@ -15,25 +15,10 @@ namespace midge
     {
     }
 
-    void rf_ascii_consumer::set_file( const string& p_file )
-    {
-        f_file = p_file;
-        return;
-    }
-    const string& rf_ascii_consumer::get_file() const
-    {
-        return f_file;
-    }
-
-    void rf_ascii_consumer::initialize_consumer()
+    bool rf_ascii_consumer::start_consumer()
     {
         f_stream.open( f_file, std::ios_base::trunc );
 
-        return;
-    }
-
-    bool rf_ascii_consumer::start_consumer()
-    {
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
@@ -55,6 +40,8 @@ namespace midge
 
     bool rf_ascii_consumer::stop_consumer()
     {
+        f_stream.close();
+
         f_size = 0;
         f_interval = 1.;
         f_in = NULL;
@@ -62,10 +49,4 @@ namespace midge
         return true;
     }
 
-    void rf_ascii_consumer::finalize_consumer()
-    {
-        f_stream.close();
-
-        return;
-    }
 }

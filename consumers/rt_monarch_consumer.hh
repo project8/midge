@@ -50,7 +50,7 @@ namespace midge
 
             count_t f_size;
             real_t f_interval;
-            real_t* f_in;
+            const real_t* f_in;
             count_t f_index;
             count_t f_samples;
             count_t f_records;

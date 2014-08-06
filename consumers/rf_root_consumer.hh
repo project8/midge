@@ -36,7 +36,7 @@ namespace midge
 
             count_t f_size;
             real_t f_interval;
-            real_t* f_in;
+            const real_t* f_in;
             real_t f_first_time;
             real_t f_last_time;
             count_t f_count;

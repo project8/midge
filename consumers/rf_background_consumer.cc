@@ -7,12 +7,13 @@ namespace midge
 
     rf_background_consumer::rf_background_consumer() :
             f_file( "" ),
+            f_length( 0 ),
+            f_window( NULL ),
             f_plot( false ),
             f_plot_key( "" ),
             f_plot_name( "" ),
             f_chart_title( "" ),
             f_axis_title( "" ),
-            f_window( NULL ),
             f_stream( NULL ),
             f_label( NULL ),
             f_tree( NULL ),
@@ -21,8 +22,9 @@ namespace midge
             f_size( 0 ),
             f_interval( 1. ),
             f_in( NULL ),
-            f_count( 0 ),
-            f_average( NULL )
+            f_average( NULL ),
+            f_background( NULL ),
+            f_count( 0 )
     {
     }
     rf_background_consumer::~rf_background_consumer()

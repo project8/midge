@@ -19,8 +19,8 @@ namespace midge
             f_size( 0 ),
             f_interval( 1. ),
             f_in( NULL ),
-            f_count( 0 ),
-            f_average( NULL )
+            f_average( NULL ),
+            f_count( 0 )
     {
     }
     rf_average_root_consumer::~rf_average_root_consumer()
@@ -44,13 +44,13 @@ namespace midge
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
-        f_count = 0;
 
         f_average = new real_t[ f_size ];
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
             f_average[ t_index ] = 0.;
         }
+        f_count = 0;
 
         return true;
     }
@@ -121,9 +121,11 @@ namespace midge
         f_size = 0;
         f_interval = 1.;
         f_in = NULL;
-        f_count = 0;
 
         delete[] f_average;
+        f_average = NULL;
+
+        f_count = 0;
 
         return true;
     }

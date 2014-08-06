@@ -32,7 +32,7 @@ namespace midge
         f_out_interval = 1. / (f_size * f_in_interval);
         out< 0 >()->set_interval( f_out_interval );
 
-        f_plan = fftw_plan_dft_1d( f_size, f_in, f_out, FFTW_FORWARD, FFTW_MEASURE );
+        f_plan = fftw_plan_dft_1d( f_size, const_cast< complex_t* >( f_in ), f_out, FFTW_FORWARD, FFTW_MEASURE );
         f_norm = sqrt( (real_t) (f_size) );
 
         return true;

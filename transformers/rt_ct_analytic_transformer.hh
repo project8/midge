@@ -23,7 +23,7 @@ namespace midge
             count_t f_under;
             count_t f_nyquist;
             count_t f_over;
-            real_t* f_in;
+            const real_t* f_in;
             complex_t* f_out;
             fftw_complex* f_signal;
             fftw_complex* f_transform;

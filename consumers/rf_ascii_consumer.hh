@@ -4,6 +4,7 @@
 #include "consumer.hh"
 #include "rf_data.hh"
 #include "typelist.hh"
+#include "macros.hh"
 
 #include <fstream>
 using std::ofstream;
@@ -19,24 +20,19 @@ namespace midge
             virtual ~rf_ascii_consumer();
 
         public:
-            void set_file( const string& p_filename );
-            const string& get_file() const;
+            accessible( string, file )
 
         private:
-            string f_file;
-
             ofstream f_stream;
 
             count_t f_size;
             real_t f_interval;
-            real_t* f_in;
+            const real_t* f_in;
 
         protected:
-            void initialize_consumer();
             bool start_consumer();
             bool execute_consumer();
             bool stop_consumer();
-            void finalize_consumer();
     };
 
 }

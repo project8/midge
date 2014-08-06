@@ -43,7 +43,7 @@ namespace midge
 
         protected:
             template< int x_index >
-            typename typeat< x_in_list, x_index >::result* in()
+            const typename typeat< x_in_list, x_index >::result* in()
             {
                 return this->_in< typename typeat< x_in_list, x_index >::result, x_index >::get();
             }

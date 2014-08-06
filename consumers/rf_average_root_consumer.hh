@@ -35,9 +35,9 @@ namespace midge
 
             count_t f_size;
             real_t f_interval;
-            real_t* f_in;
-            count_t f_count;
+            const real_t* f_in;
             real_t* f_average;
+            count_t f_count;
 
         protected:
             bool start_consumer();

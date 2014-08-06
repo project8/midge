@@ -17,8 +17,8 @@ namespace midge
 
         private:
             count_t f_size;
-            complex_t* f_in_0;
-            complex_t* f_in_1;
+            const complex_t* f_in_0;
+            const complex_t* f_in_1;
             complex_t* f_out;
 
         protected:

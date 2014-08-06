@@ -23,12 +23,13 @@ namespace midge
 
         public:
             accessible( string, file )
+            accessible( count_t, length )
+            composable( window, window )
             accessible( bool_t, plot )
             accessible( string, plot_key )
             accessible( string, plot_name )
             accessible( string, chart_title )
             accessible( string, axis_title )
-            composable( window, window )
 
         private:
             TFile* f_stream;
@@ -40,8 +41,10 @@ namespace midge
             count_t f_size;
             real_t f_interval;
             real_t* f_in;
-            count_t f_count;
             real_t* f_average;
+            const real_t* f_multiplier;
+            real_t* f_background;
+            count_t f_count;
 
         protected:
             bool start_consumer();

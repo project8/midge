@@ -32,7 +32,7 @@ namespace midge
             count_t f_center;
             count_t f_over;
 
-            real_t* f_in;
+            const real_t* f_in;
             real_t f_in_interval;
             real_t f_in_time;
 

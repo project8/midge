@@ -30,7 +30,7 @@ namespace midge
             count_t f_last;
             count_t f_nyquist;
 
-            real_t* f_in;
+            const real_t* f_in;
             real_t f_in_interval;
             real_t f_in_time;
 
