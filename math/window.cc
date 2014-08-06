@@ -17,7 +17,10 @@ namespace midge
     void window::initialize( const count_t& p_size )
     {
         finalize();
-        initialize_window( p_size, f_raw );
+
+        f_raw = new real_t[ p_size ];
+
+        fill( p_size, f_raw );
 
         for( count_t t_index = 0; t_index < p_size; t_index++ )
         {
@@ -31,7 +34,7 @@ namespace midge
     {
         if( f_raw != NULL )
         {
-            finalize_window( f_raw );
+            delete[] f_raw;
             f_raw = NULL;
         }
 
@@ -53,4 +56,5 @@ namespace midge
     {
         return f_square;
     }
+
 }

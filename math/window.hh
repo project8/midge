@@ -21,8 +21,7 @@ namespace midge
             const real_t& square() const;
 
         protected:
-            virtual void initialize_window( const count_t& p_size, real_t*& p_raw ) = 0;
-            virtual void finalize_window( real_t*& p_raw ) = 0;
+            virtual void fill( const count_t& p_size, real_t*& p_raw ) = 0;
 
         private:
             real_t* f_raw;

@@ -4,7 +4,9 @@
 #include "transformer.hh"
 #include "rt_data.hh"
 #include "rf_data.hh"
+#include "window.hh"
 #include "typelist.hh"
+#include "macros.hh"
 
 #include "fftw3.h"
 
@@ -19,17 +21,25 @@ namespace midge
             virtual ~rt_rf_power_transformer();
 
         public:
-            void set_impedance_ohm( const real_t& p_impedance );
-            const real_t& get_impedance_ohm() const;
+            accessible( real_t, impedance_ohm );
+            composable( window, window );
 
         private:
-            real_t f_impedance_ohm;
-
-            count_t f_size;
+            count_t f_in_size;
+            count_t f_out_size;
             count_t f_last;
-            bool_t f_nyquist;
+            count_t f_nyquist;
+
             real_t* f_in;
+            real_t f_in_interval;
+            real_t f_in_time;
+
             real_t* f_out;
+            real_t f_out_interval;
+            real_t f_out_time;
+
+            const real_t* f_multiplier;
+
             fftw_complex* f_signal;
             fftw_complex* f_transform;
             fftw_plan f_plan;

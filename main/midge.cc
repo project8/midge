@@ -1,5 +1,6 @@
 #include "lexer.hh"
 #include "compiler.hh"
+#include "core_message.hh"
 #include "root_builder.hh"
 using namespace midge;
 
@@ -29,13 +30,13 @@ int main( int p_count, char** p_values )
     }
     catch( const error& t_error )
     {
-        cout << "error occurred during input:" << endl;
-        cout << "  " << t_error.what() << endl;
+        msg_error( coremsg, "error occurred during input:" << ret );
+        msg_error( coremsg, "  " << t_error.what() << eom );
         return -1;
     }
     catch( ... )
     {
-        cout << "an unknown error occurred during input" << endl;
+        msg_error( coremsg, "unknown error occurred during input" << eom );
         return -1;
     }
 
@@ -47,13 +48,13 @@ int main( int p_count, char** p_values )
     }
     catch( const error& t_error )
     {
-        cout << "error occurred during execution:" << endl;
-        cout << "  " << t_error.what() << endl;
+        msg_error( coremsg, "error occurred during execution:" << ret );
+        msg_error( coremsg, "  " << t_error.what() << eom );
         return -1;
     }
     catch( ... )
     {
-        cout << "an unknown error occurred during execution" << endl;
+        msg_error( coremsg, "unknown error occurred during execution" << eom );
         return -1;
     }
 

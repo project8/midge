@@ -27,7 +27,8 @@
     "rt_rf_power_transformer" :
     {
         "name" : "rt_rf",
-        "impedance_ohm" : 50.0
+        "impedance_ohm" : 50.0,
+        "window_hamming" : {}
     },
 
     "rt_ascii_consumer" :

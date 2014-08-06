@@ -20,8 +20,15 @@ namespace midge
 
         private:
             count_t f_size;
+
             complex_t* f_in;
+            real_t f_in_interval;
+            real_t f_in_time;
+
             complex_t* f_out;
+            real_t f_out_interval;
+            real_t f_out_time;
+
             fftw_plan f_plan;
             real_t f_norm;
 

@@ -28,5 +28,19 @@
     protected:\
         x_type f_##x_variable;
 
+#define composable( x_type, x_variable )\
+    public:\
+        void set_##x_variable( x_type* p_variable )\
+        {\
+            f_##x_variable = p_variable;\
+            return;\
+        }\
+        x_type* get_##x_variable() const\
+        {\
+            return f_##x_variable;\
+        }\
+    protected:\
+        x_type* f_##x_variable;
+
 
 #endif

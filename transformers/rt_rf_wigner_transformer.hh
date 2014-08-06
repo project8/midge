@@ -4,7 +4,9 @@
 #include "transformer.hh"
 #include "rt_data.hh"
 #include "rf_data.hh"
+#include "window.hh"
 #include "typelist.hh"
+#include "macros.hh"
 
 #include "fftw3.h"
 
@@ -19,24 +21,27 @@ namespace midge
             virtual ~rt_rf_wigner_transformer();
 
         public:
-            void set_offset( const count_t& p_offset );
-            const count_t& get_offset() const;
-
-            void set_length( const count_t& p_length );
-            const count_t& get_length() const;
+            accessible( count_t, offset )
+            accessible( count_t, length )
+            composable( window, window );
 
         private:
-            count_t f_offset;
-            count_t f_length;
-
             count_t f_in_size;
             count_t f_out_size;
             count_t f_under;
-            count_t f_nyquist;
+            count_t f_center;
             count_t f_over;
-            real_t f_norm;
+
             real_t* f_in;
+            real_t f_in_interval;
+            real_t f_in_time;
+
             real_t* f_out;
+            real_t f_out_interval;
+            real_t f_out_time;
+
+            const real_t* f_multiplier;
+
             fftw_complex* f_signal;
             fftw_complex* f_transform;
             fftw_complex* f_analytic;
@@ -45,6 +50,7 @@ namespace midge
             fftw_plan f_forward;
             fftw_plan f_backward;
             fftw_plan f_final;
+            real_t f_norm;
 
         protected:
             bool start_transformer();
