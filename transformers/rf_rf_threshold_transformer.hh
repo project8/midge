@@ -7,6 +7,7 @@
 #include "macros.hh"
 
 #include "TFile.h"
+#include "TObjString.h"
 #include "TTree.h"
 
 #include <list>
@@ -25,7 +26,6 @@ namespace midge
         public:
             accessible( string, threshold_file )
             accessible( string, background_file )
-            accessible( string, background_name )
             accessible( real_t, threshold )
             accessible( real_t, minimum_frequency )
             accessible( real_t, maximum_frequency )
@@ -37,6 +37,7 @@ namespace midge
 
         private:
             TFile* f_stream;
+            TObjString* f_label;
             TTree* f_tree;
             real_t f_time;
             real_t f_frequency;

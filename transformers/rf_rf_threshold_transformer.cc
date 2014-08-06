@@ -13,7 +13,6 @@ namespace midge
     rf_rf_threshold_transformer::rf_rf_threshold_transformer() :
             f_threshold_file( "" ),
             f_background_file( "" ),
-            f_background_name( "" ),
             f_threshold( -1. ),
             f_minimum_frequency( numeric_limits< real_t >::min() ),
             f_maximum_frequency( numeric_limits< real_t >::max() ),
@@ -65,6 +64,9 @@ namespace midge
         }
 
         f_stream = new TFile( f_threshold_file.c_str(), "RECREATE" );
+
+        f_label = new TObjString( "midge_threshold" );
+
         f_tree = new TTree( get_name().c_str(), get_name().c_str() );
         f_tree->SetDirectory( f_stream );
         f_tree->Branch( "time", &f_time );
@@ -81,13 +83,19 @@ namespace midge
         TFile* t_stream = new TFile( f_background_file.c_str(), "READ" );
         if( t_stream->IsZombie() == true )
         {
-            throw error() << "cannot read background file <" << f_background_file << ">";
+            throw error() << "cannot read background file";
         }
 
-        TTree* t_tree = (TTree*) (t_stream->Get( f_background_name.c_str() ));
+        TObjString* t_label = (TObjString*) (t_stream->Get( "midge_background" ) );
+        if( t_label == NULL )
+        {
+            throw error() << "background file has no label named <midge_background>";
+        }
+
+        TTree* t_tree = (TTree*) (t_stream->Get( "background" ));
         if( t_tree == NULL )
         {
-            throw error() << "cannot read background tree <" << f_background_name << ">";
+            throw error() << "cannot read background tree";
         }
 
         real_t t_frequency;
@@ -164,6 +172,7 @@ namespace midge
     bool rf_rf_threshold_transformer::stop_transformer()
     {
         f_stream->cd();
+        f_label->Write();
         f_tree->Write();
         f_stream->Close();
         delete f_stream;

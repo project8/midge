@@ -22,6 +22,7 @@ namespace midge
             f_size( 0 ),
             f_interval( 1. ),
             f_in( NULL ),
+            f_multiplier( NULL ),
             f_average( NULL ),
             f_background( NULL ),
             f_count( 0 )
@@ -42,14 +43,20 @@ namespace midge
 
         f_label = new TObjString( "midge_background" );
 
-        f_tree = new TTree( get_name().c_str(), get_name().c_str() );
+        f_tree = new TTree( "background", "background" );
         f_tree->Branch( "frequency", &f_frequency_point, 64000, 99 );
         f_tree->Branch( "value", &f_value_point, 64000, 99 );
 
         f_size = in< 0 >()->get_size();
         f_interval = in< 0 >()->get_interval();
         f_in = in< 0 >()->raw();
-        f_count = 0;
+
+        if( f_window == NULL )
+        {
+            throw error() << "rf background consumer window unset";
+        }
+        f_window->initialize( 2 * f_length + 1 );
+        f_multiplier = f_window->raw();
 
         f_average = new real_t[ f_size ];
         for( count_t t_index = 0; t_index < f_size; t_index++ )
@@ -57,11 +64,13 @@ namespace midge
             f_average[ t_index ] = 0.;
         }
 
-        if( f_window == NULL )
+        f_background = new real_t[ f_size ];
+        for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
-            f_window = new window();
+            f_background[ t_index ] = 0.;
         }
-        f_window->initialize( f_size );
+
+        f_count = 0;
 
         return true;
     }
@@ -79,10 +88,28 @@ namespace midge
 
     bool rf_background_consumer::stop_consumer()
     {
+        f_average[ 0 ] = f_average[ 1 ];
+        f_average[ f_size - 1] = f_average[ f_size - 2 ];
+
+        register real_t t_norm = 1. / (f_count * f_window->sum());
+        register real_t t_value;
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
+            t_value = 0.;
+            for( count_t t_sub = 0; t_sub < 2 * f_length + 1; t_sub++ )
+            {
+                if( t_index + t_sub < f_length )
+                {
+                    continue;
+                }
+                if( t_index + t_sub >= f_length + f_size )
+                {
+                    continue;
+                }
+                t_value += f_average[ t_index + t_sub - f_length ] * f_multiplier[ t_sub ] * t_norm;
+            }
             f_frequency_point = t_index * f_interval;
-            f_value_point = f_average[ t_index ] / f_count;
+            f_value_point = t_value;
             f_tree->Fill();
         }
 
@@ -98,7 +125,7 @@ namespace midge
 
             TFile* t_file = new TFile( f_file.c_str(), "READ" );
 
-            TTree* t_tree = (TTree*) (t_file->Get( get_name().c_str() ));
+            TTree* t_tree = (TTree*) (t_file->Get( "background" ));
             Long64_t t_entries = t_tree->GetEntries();
             real_t t_frequency;
             real_t t_value;

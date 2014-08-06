@@ -8,7 +8,6 @@ namespace midge
         rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_name, "name" ) +
         rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_threshold_file, "threshold_file" ) +
         rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_background_file, "background_file" ) +
-        rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_background_name, "background_name" ) +
         rf_rf_threshold_transformer_builder::numerical< real_t >( &rf_rf_threshold_transformer::set_threshold, "threshold" ) +
         rf_rf_threshold_transformer_builder::numerical< real_t >( &rf_rf_threshold_transformer::set_minimum_frequency, "minimum_frequency" ) +
         rf_rf_threshold_transformer_builder::numerical< real_t >( &rf_rf_threshold_transformer::set_maximum_frequency, "maximum_frequency" ) +

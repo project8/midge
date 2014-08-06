@@ -6,7 +6,7 @@
 
     "rf_data" :
     {
-        "name" : "spectrum_data"
+        "name" : "power_data"
     },
 
     "rt_monarch_producer" :
@@ -22,16 +22,23 @@
     "rt_rf_power_transformer" :
     {
         "name" : "power",
-        "impedance_ohm" : 50
+        "impedance_ohm" : 50,
+        "window_hamming" :
+        {
+        }
     },
 
-    "rf_average_root_consumer" :
+    "rf_background_consumer" :
     {
-        "name" : "spectrum",
+        "name" : "background",
         "file" : "trap_background.root",
+        "length" : 30,
+        "window_hanning" :
+        {
+        },
         "plot" : true,
-        "plot_key" : "spectrum_canvas",
-        "plot_name" : "spectrum_histogram",
+        "plot_key" : "background_canvas",
+        "plot_name" : "background_histogram",
         "chart_title" : "Trap Off Power",
         "axis_title" : "Power [watt]"
     },
@@ -43,8 +50,8 @@
 
     "join" : "signal.out_0:signal_data.in",
     "join" : "signal_data.out:power.in_0",
-    "join" : "power.out_0:spectrum_data.in",
-    "join" : "spectrum_data.out:spectrum.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:background.in_0",
     "join" : "control.out_0:signal",
 
     "run" : "control"

@@ -140,6 +140,10 @@ namespace midge
         t_histogram->SetDirectory( NULL );
         for( count_t t_index = 0; t_index < p_x.values().size(); t_index++ )
         {
+            if( p_y.values().at( t_index ) != p_y.values().at( t_index ) )
+            {
+                continue;
+            }
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ) );
         }
 
@@ -189,6 +193,10 @@ namespace midge
         t_histogram->SetDirectory( NULL );
         for( count_t t_index = 0; t_index < p_z.values().size(); t_index++ )
         {
+            if( p_z.values().at( t_index ) != p_z.values().at( t_index ) )
+            {
+                continue;
+            }
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ), p_z.values().at( t_index ) );
         }
 

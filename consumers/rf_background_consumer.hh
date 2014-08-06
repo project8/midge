@@ -40,9 +40,11 @@ namespace midge
 
             count_t f_size;
             real_t f_interval;
-            real_t* f_in;
-            real_t* f_average;
+            const real_t* f_in;
+
             const real_t* f_multiplier;
+
+            real_t* f_average;
             real_t* f_background;
             count_t f_count;
 

@@ -27,30 +27,38 @@
     "rt_rf_power_transformer" :
     {
         "name" : "power",
-        "impedance_ohm" : 50
+        "impedance_ohm" : 50,
+        "window_hamming" :
+        {
+        }
     },
 
-    "cluster_controller" :
+    "rf_rf_threshold_transformer" :
     {
-        "name" : "cluster",
-        "candidate_file" : "trap_candidates.root",
+        "name" : "threshold",
+        "threshold_file" : "trap_threshold.root",
         "background_file" : "trap_background.root",
-        "background_name" : "spectrum",
+        "threshold" : 4.0,
         "minimum_frequency" : 41.0e6,
         "maximum_frequency" : 48.0e6,
-        "stride" : 4096,
-        "threshold" : 3.75,
         "plot" : true,
-        "plot_title" : "Candidates",
+        "plot_key" : "analysis_canvas",
+        "plot_name" : "threshold_histogram",
+        "chart_title" : "Thresholds",
         "axis_title" : "Excess Power Ratio"
+    },
+
+    "void_controller" :
+    {
+        "name" : "control"
     },
 
     "join" : "signal.out_0:signal_data.in",
     "join" : "signal_data.out:power.in_0",
     "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:control.in_1",
-    "join" : "signal_data.out:control.in_0",
-    "join" : "cluster.out_0:signal",
+    "join" : "power_data.out:threshold.in_0",
+    "join" : "threshold.out_0:threshold_data.in",
+    "join" : "control.out_0:signal",
 
-    "run" : "cluster"
+    "run" : "control"
 }

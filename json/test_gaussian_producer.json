@@ -25,7 +25,9 @@
     {
         "name" : "rt_rf",
         "impedance_ohm" : 50.0,
-        "window_welch" : {}
+        "window_welch" :
+        {
+        }
     },
 
     "rt_ascii_consumer" :
@@ -59,17 +61,6 @@
         "plot_key" : "rf_root_consumer_canvas",
         "plot_name" : "rf_root_consumer",
         "chart_title" : "Test Gaussian Producer Power",
-        "axis_title" : "Power [watt]"
-    },
-
-    "rf_average_root_consumer" :
-    {
-        "name" : "rfra_out",
-        "file" : "test_gaussian_producer.spectrum.root",
-        "plot" : true,
-        "plot_key" : "rf_average_root_consumer_canvas",
-        "plot_name" : "rf_average_root_consumer",
-        "chart_title" : "Test Gaussian Producer Spectrum Power",
         "axis_title" : "Power [watt]"
     },
 

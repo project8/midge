@@ -27,7 +27,9 @@
     {
         "name" : "rt_rf",
         "impedance_ohm" : 50.0,
-        "window_rectangular" : {}
+        "window_rectangular" : 
+        {
+        }
     },
 
     "rt_ascii_consumer" :
@@ -64,17 +66,6 @@
         "axis_title" : "Power [watt]"
     },
 
-    "rf_average_root_consumer" :
-    {
-        "name" : "rfra_out",
-        "file" : "test_harmonic_producer.spectrum.root",
-        "plot" : true,
-        "plot_key" : "rf_average_root_consumer_canvas",
-        "plot_name" : "rf_average_root_consumer",
-        "chart_title" : "Test Harmonic Producer Spectrum",
-        "axis_title" : "Power [watt]"
-    },
-
     "count_controller" :
     {
         "name" : "c",
@@ -88,7 +79,6 @@
     "join" : "rt_rf.out_0:rf.in",
     "join" : "rf.out:rfa_out.in_0",
     "join" : "rf.out:rfr_out.in_0",
-    "join" : "rf.out:rfra_out.in_0",
     "join" : "c.out_0:rt_in",
 
     "run" : "c"
