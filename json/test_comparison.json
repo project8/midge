@@ -119,6 +119,8 @@
     "rf_root_consumer" :
     {
         "name" : "rfp_out",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
         "file" : "test_comparison.power.root",
         "plot" : true,
         "plot_key" : "rfp_out_canvas",
@@ -130,12 +132,14 @@
     "rf_root_consumer" :
     {
         "name" : "rfw_out",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
         "file" : "test_comparison.wigner.root",
         "plot" : true,
         "plot_key" : "rfw_out_canvas",
         "plot_name" : "rfw_out_histogram",
         "chart_title" : "Test Comparision Wigner-Ville Distribution",
-        "axis_title" : "Power [arb]"
+        "axis_title" : "Spectral Density [arb]"
     },
 
     "count_controller" :

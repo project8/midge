@@ -4,6 +4,7 @@
 #include "window_welch_builder.hh"
 #include "window_hanning_builder.hh"
 #include "window_hamming_builder.hh"
+#include "window_blackman_builder.hh"
 #include "root_builder.hh"
 
 namespace midge
@@ -17,6 +18,7 @@ namespace midge
         rt_rf_power_transformer_builder::object< window_welch >( &rt_rf_power_transformer::set_window, "window_welch" ) +
         rt_rf_power_transformer_builder::object< window_hanning >( &rt_rf_power_transformer::set_window, "window_hanning" ) +
         rt_rf_power_transformer_builder::object< window_hamming >( &rt_rf_power_transformer::set_window, "window_hamming" ) +
+        rt_rf_power_transformer_builder::object< window_blackman >( &rt_rf_power_transformer::set_window, "window_blackman" ) +
         root_builder::object< rt_rf_power_transformer >( &root::add, "rt_rf_power_transformer" );
 
 }

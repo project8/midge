@@ -125,6 +125,7 @@ set( midge_math_headers
 	window_welch.hh
 	window_hanning.hh
 	window_hamming.hh
+	window_blackman.hh
 )
 set( midge_math_sources
 	window.cc
@@ -133,6 +134,7 @@ set( midge_math_sources
 	window_welch.cc
 	window_hanning.cc
 	window_hamming.cc
+	window_blackman.cc
 )
 
 midge_library( math )
@@ -409,6 +411,7 @@ set( midge_bindings_headers
 	window_welch_builder.hh
 	window_hanning_builder.hh
 	window_hamming_builder.hh
+	window_blackman_builder.hh
 	rt_data_builder.hh
 	rf_data_builder.hh
 	ct_data_builder.hh

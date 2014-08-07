@@ -215,9 +215,11 @@ namespace midge
             }
         }
 
+        // update active lines
+
         // update active clusters
 
-        //msg_warning( coremsg, "** updating active clusters **" << eom );
+        msg_debug( coremsg, "** updating active clusters **" << eom );
 
         stack< cluster_it > t_up_stack;
         stack< cluster_it > t_down_stack;
@@ -226,29 +228,29 @@ namespace midge
         {
             t_cluster = *t_it;
 
-            //msg_warning( coremsg, "**   updating active cluster <" << t_cluster->id() << "> **" << eom );
+            msg_debug( coremsg, "**   updating active cluster <" << t_cluster->id() << "> **" << eom );
             t_cluster->update();
 
             if( t_cluster->current_score() < f_cluster_score_down )
             {
-                if( t_cluster->maximum_score() > f_cluster_score_up )
+                if( t_cluster->score() > f_cluster_score_up )
                 {
-                    //msg_warning( coremsg, "**   promoting active cluster <" << t_cluster->id() << "> **" << eom );
+                    msg_debug( coremsg, "**   promoting active cluster <" << t_cluster->id() << "> **" << eom );
                     t_up_stack.push( t_it );
                 }
                 else
                 {
-                    //msg_warning( coremsg, "**   demoting active cluster <" << t_cluster->id() << "> **" << eom );
+                    msg_debug( coremsg, "**   demoting active cluster <" << t_cluster->id() << "> **" << eom );
                     t_down_stack.push( t_it );
                 }
 
                 continue;
             }
 
-            //msg_warning( coremsg, "**   ignoring active cluster <" << t_cluster->id() << "> **" << eom );
+            msg_debug( coremsg, "**   ignoring active cluster <" << t_cluster->id() << "> **" << eom );
         }
 
-        //msg_warning( coremsg, "** active clusters updated **" << eom );
+        msg_debug( coremsg, "** active clusters updated **" << eom );
 
         while( t_up_stack.empty() == false )
         {
@@ -266,23 +268,23 @@ namespace midge
             delete t_cluster;
         }
 
-        //msg_warning( coremsg, "** creating new clusters **" << eom );
+        msg_debug( coremsg, "** creating new clusters **" << eom );
 
         // create new clusters
         for( count_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
         {
             if( f_signal[ t_index ] > 0. )
             {
-                //msg_warning( coremsg, "**   adding new cluster at <" << t_index * f_interval << "> **" << eom );
+                msg_debug( coremsg, "**   adding new cluster at <" << t_index * f_interval << "> **" << eom );
 
                 t_cluster = new cluster( t_index );
                 f_active_clusters.push_back( t_cluster );
 
-                //msg_warning( coremsg, "**   cluster at <" << t_index * f_interval << "> added **" << eom );
+                msg_debug( coremsg, "**   cluster at <" << t_index * f_interval << "> added **" << eom );
             }
         }
 
-        //msg_warning( coremsg, "** new clusters created **" << eom );
+        msg_debug( coremsg, "** new clusters created **" << eom );
 
         return true;
     }
@@ -304,10 +306,10 @@ namespace midge
             t_it = f_active_clusters.begin();
             t_cluster = (*t_it);
 
-            if( t_cluster->maximum_score() > f_cluster_score_up )
+            if( t_cluster->score() > f_cluster_score_up )
             {
                 f_tree_id = t_cluster->id();
-                f_tree_score = t_cluster->maximum_score();
+                f_tree_score = t_cluster->score();
                 for( t_index = 0; t_index < t_cluster->values().size(); t_index++ )
                 {
                     f_tree_time = t_cluster->times()[ t_index ];
@@ -327,7 +329,7 @@ namespace midge
             t_cluster = (*t_it);
 
             f_tree_id = t_cluster->id();
-            f_tree_score = t_cluster->maximum_score();
+            f_tree_score = t_cluster->score();
             for( t_index = 0; t_index < t_cluster->values().size(); t_index++ )
             {
                 f_tree_time = t_cluster->times()[ t_index ];
@@ -459,6 +461,10 @@ namespace midge
         return true;
     }
 
+    //*******
+    //cluster
+    //*******
+
     void rf_candidate_consumer::cluster::set_time( real_t* p_time )
     {
         s_time = p_time;
@@ -533,81 +539,85 @@ namespace midge
     real_t rf_candidate_consumer::cluster::s_gap_power = 0.;
     count_t rf_candidate_consumer::cluster::s_id = 0;
 
-    rf_candidate_consumer::cluster::cluster( const count_t& p_index ) :
-            f_start_time( *s_time ),
-            f_start_frequency( p_index * s_interval ),
-            f_numerator_sum( 0. ),
-            f_denominator_sum( 0. ),
-            f_add_score_sum( 0. ),
-            f_gap_score_sum( 0. ),
-            f_gap_score( 0. ),
-            f_gap_count( 0. ),
+    rf_candidate_consumer::cluster::cluster( const real_t& p_time, const real_t& p_frequency ) :
             f_id( s_id++ ),
-            f_current_score( 0. ),
-            f_maximum_score( 0. ),
+            f_count( 0. ),
+            f_score( 0. ),
+            f_start_time( p_time ),
+            f_stop_time( p_time ),
+            f_frequency( p_frequency ),
             f_times(),
             f_frequencies(),
-            f_values()
+            f_values(),
+            f_w_sum( 0. ),
+            f_wt_sum( 0. ),
+            f_wf_sum( 0. ),
+            f_add_count_sum( 0. ),
+            f_add_score_sum( 0. ),
+            f_gap_count_sum( 0. ),
+            f_gap_score_sum( 0. ),
+            f_gap_count_current( 0. ),
+            f_gap_score_current( 0. )
     {
-        //msg_warning( coremsg, "cluster <" << f_id << "> created" << eom );
-        //msg_warning( coremsg, "  time <" << f_start_time << ">" << eom );
-        //msg_warning( coremsg, "  frequency <" << f_start_frequency << ">" << eom );
+        msg_debug( coremsg, "cluster <" << f_id << "> created" << eom );msg_debug( coremsg, "  time <" << f_start_time << ">" << eom );msg_debug( coremsg, "  frequency <" << f_start_frequency << ">" << eom );
 
         update();
     }
     rf_candidate_consumer::cluster::~cluster()
     {
-        //msg_warning( coremsg, "cluster <" << f_id << "> destroyed" << eom );
+        msg_debug( coremsg, "cluster <" << f_id << "> destroyed" << eom );
     }
 
     void rf_candidate_consumer::cluster::update()
     {
-        //msg_warning( coremsg, "cluster <" << f_id << "> updating" << eom );
+        msg_debug( coremsg, "cluster <" << f_id << "> updating" << eom );
 
         count_t t_index;
         bool_t t_found = false;
-        real_t t_current_time = *s_time;
-        real_t t_current_intercept = s_slope * (t_current_time - f_start_time);
-        real_t t_current_frequency = f_start_frequency + t_current_intercept;
 
-        //msg_warning( coremsg, "  current time is <" << t_current_time << ">" << eom );
-        //msg_warning( coremsg, "  current intercept is <" << t_current_intercept << ">" << eom );
-        //msg_warning( coremsg, "  current frequency is <" << t_current_frequency << ">" << eom );
+        real_t t_current_time = *s_time;
+        real_t t_current_frequency = f_frequency + s_slope * (f_stop_time - f_start_time);
+
+        msg_debug( coremsg, "  current time is <" << t_current_time << ">" << eom );
+        msg_debug( coremsg, "  current frequency is <" << t_current_frequency << ">" << eom );
 
         // compute the minimum usable index this round
-        count_t t_min_index = (count_t) (ceil( (f_start_frequency + s_slope * (*s_time - f_start_time) - 2. * s_spread) / s_interval ));
+        count_t t_min_index = (count_t) (ceil( (t_current_frequency - 2. * s_spread) / s_interval ));
         if( t_min_index < s_min_index )
         {
             t_min_index = s_min_index;
         }
-        //msg_warning( coremsg, "  minimum frequency <" << t_min_index * s_interval << ">" << eom );
+        msg_debug( coremsg, "  minimum frequency <" << t_min_index * s_interval << ">" << eom );
 
         // compute the maximum usable index this round
-        count_t t_max_index = (count_t) (floor( (f_start_frequency + s_slope * (*s_time - f_start_time) + 2. * s_spread) / s_interval ));
+        count_t t_max_index = (count_t) (floor( (t_current_frequency + 2. * s_spread) / s_interval ));
         if( t_max_index > s_max_index )
         {
             t_max_index = s_max_index;
         }
-        //msg_warning( coremsg, "  maximum frequency <" << t_max_index * s_interval << ">" << eom );
+        msg_debug( coremsg, "  maximum frequency <" << t_max_index * s_interval << ">" << eom );
 
-        //msg_warning( coremsg, "  finding points" << eom );
+        msg_debug( coremsg, "  finding points" << eom );
 
         // accumulate points
         register real_t t_point_value;
+        register real_t t_point_time;
         register real_t t_point_frequency;
         for( t_index = t_min_index; t_index <= t_max_index; t_index++ )
         {
             t_point_value = s_signal[ t_index ];
+            t_point_time = t_current_time - f_start_time;
             t_point_frequency = t_index * s_interval;
             if( t_point_value > 0. )
             {
                 t_found = true;
                 s_signal[ t_index ] = -1.;
 
-                //msg_warning( coremsg, "    accumulating point at time <" << t_current_time << "> and frequency <" << t_point_frequency << "> with value <" << t_point_value << ">" << eom );
+                msg_debug( coremsg, "    accumulating point at time <" << t_current_time << "> and frequency <" << t_point_frequency << "> with value <" << t_point_value << ">" << eom );
 
-                f_numerator_sum += t_point_value * (t_point_frequency - t_current_intercept);
-                f_denominator_sum += t_point_value;
+                f_w_sum += t_point_value;
+                f_wt_sum += t_point_value * t_point_time;
+                f_wf_sum += t_point_value * t_point_frequency;
 
                 f_times.push_back( t_current_time );
                 f_frequencies.push_back( t_point_frequency );
@@ -615,71 +625,85 @@ namespace midge
             }
         }
 
-        // if points were found, recompute the center frequency and maximum_score
+        // if points were found, recompute the center frequency and score
         if( t_found == true )
         {
-            //msg_warning( coremsg, "  found points" << eom );
+            msg_debug( coremsg, "  found points" << eom );
 
-            f_start_frequency = f_numerator_sum / f_denominator_sum;
-            t_current_frequency = f_start_frequency + t_current_intercept;
+            f_stop_time = t_current_time;
+            f_frequency = (f_wf_sum - s_slope * f_wt_sum) / f_w_sum;
+            t_current_frequency = f_frequency + s_slope * (f_stop_time - f_start_time);
 
-            //msg_warning( coremsg, "  start frequency is now <" << f_start_frequency << ">" << eom );
-            //msg_warning( coremsg, "  current frequency is now <" << t_current_frequency << ">" << eom );
+            msg_debug( coremsg, "  frequency is now <" << f_frequency << ">" << eom );
+            msg_debug( coremsg, "  current frequency is now <" << t_current_frequency << ">" << eom );
 
             register real_t t_score_time;
             register real_t t_score_frequency;
             register real_t t_score_value;
-            register real_t t_score = 0.;
             for( t_index = 0; t_index < f_values.size(); t_index++ )
             {
                 t_score_time = f_times.at( t_index );
                 t_score_frequency = f_frequencies.at( t_index );
                 t_score_value = f_values.at( t_index );
-                t_score += s_add_coefficient * pow( t_score_value, s_add_power ) * (.5 + .5 * cos( M_PI * (t_score_frequency - t_current_frequency) / (2. * s_spread) ));
+
+                f_add_count_sum += 1.;
+                f_add_score_sum += s_add_coefficient * pow( t_score_value, s_add_power ) * (.5 + .5 * cos( M_PI * (t_score_frequency - f_frequency + s_slope * (t_score_time - f_start_time)) / (2. * s_spread) ));
             }
 
-            f_add_score_sum = t_score;
-            f_gap_score_sum += f_gap_score;
-            f_gap_count = 0.;
-            f_gap_score = 0.;
+            f_gap_count_sum += f_gap_count_current;
+            f_gap_score_sum += f_gap_score_current;
+            f_gap_count_current = 0.;
+            f_gap_score_current = 0.;
 
-            //msg_warning( coremsg, "  add maximum_score sum is <" << f_add_score_sum << ">" << eom );
-            //msg_warning( coremsg, "  gap maximum_score sum is <" << f_gap_score_sum << ">" << eom );
+            msg_debug( coremsg, "  add count sum is <" << f_add_count_sum << ">" << eom );
+            msg_debug( coremsg, "  add score sum is <" << f_add_score_sum << ">" << eom );
+            msg_debug( coremsg, "  gap count sum is <" << f_gap_count_sum << ">" << eom );
+            msg_debug( coremsg, "  gap score sum is <" << f_gap_score_sum << ">" << eom );
         }
         else
         {
-            //msg_warning( coremsg, "  found no points" << eom );
+            msg_debug( coremsg, "  found no points" << eom );
 
-            f_gap_count += 1.;
-            f_gap_score = s_gap_coefficient * pow( f_gap_count, s_gap_power );
+            f_gap_count_current += 1.;
+            f_gap_score_current = s_gap_coefficient * f_add_count_sum * pow( f_gap_count_current, s_gap_power );
 
-            //msg_warning( coremsg, "  gap count is <" << f_gap_count << ">" << eom );
-            //msg_warning( coremsg, "  gap maximum_score is <" << f_gap_score << ">" << eom );
+            msg_debug( coremsg, "  gap count is <" << f_gap_count << ">" << eom );
+            msg_debug( coremsg, "  gap score is <" << f_gap_score << ">" << eom );
         }
 
-        f_current_score = f_add_score_sum - f_gap_score_sum - f_gap_score;
+        f_count = f_add_count_sum - f_gap_count_sum - f_gap_count_current;
+        f_score = f_add_score_sum - f_gap_score_sum - f_gap_score_current;
 
-        if( f_current_score > f_maximum_score )
-        {
-            f_maximum_score = f_current_score;
-        }
-
-        //msg_warning( coremsg, "  maximum_score is <" << f_score << ">" << eom );
+        msg_debug( coremsg, "  count is <" << f_count << ">" << eom );
+        msg_debug( coremsg, "  score is <" << f_score << ">" << eom );
 
         return;
     }
 
-    const count_t& rf_candidate_consumer::cluster::id()
+    const count_t& rf_candidate_consumer::cluster::id() const
     {
         return f_id;
     }
-    const real_t& rf_candidate_consumer::cluster::current_score()
+    const real_t& rf_candidate_consumer::cluster::count() const
     {
-        return f_current_score;
+        return f_count;
     }
-    const real_t& rf_candidate_consumer::cluster::maximum_score()
+    const real_t& rf_candidate_consumer::cluster::score() const
     {
-        return f_maximum_score;
+        return f_score;
+    }
+
+    const real_t& rf_candidate_consumer::cluster::start_time() const
+    {
+        return f_start_time;
+    }
+    const real_t& rf_candidate_consumer::cluster::stop_time() const
+    {
+        return f_stop_time;
+    }
+    const real_t& rf_candidate_consumer::cluster::frequency() const
+    {
+        return f_frequency;
     }
 
     const vector< real_t >& rf_candidate_consumer::cluster::times() const
@@ -693,6 +717,120 @@ namespace midge
     const vector< real_t >& rf_candidate_consumer::cluster::values() const
     {
         return f_values;
+    }
+
+    //****
+    //line
+    //****
+
+    void rf_candidate_consumer::line::set_time( real_t* p_time )
+    {
+        s_time = p_time;
+        return;
+    }
+    void rf_candidate_consumer::line::set_signal( real_t* p_signal )
+    {
+        s_signal = p_signal;
+        return;
+    }
+    void rf_candidate_consumer::line::set_interval( const real_t& p_interval )
+    {
+        s_interval = p_interval;
+        return;
+    }
+    void rf_candidate_consumer::line::set_min_index( const count_t& p_min_index )
+    {
+        s_min_index = p_min_index;
+        return;
+    }
+    void rf_candidate_consumer::line::set_max_index( const count_t& p_max_index )
+    {
+        s_max_index = p_max_index;
+        return;
+    }
+    void rf_candidate_consumer::line::set_tolerance( const real_t& p_tolerance )
+    {
+        s_tolerance = p_tolerance;
+        return;
+    }
+    void rf_candidate_consumer::line::set_add_coefficient( const real_t& p_add_coefficient )
+    {
+        s_add_coefficient = p_add_coefficient;
+        return;
+    }
+    void rf_candidate_consumer::line::set_add_power( const real_t& p_add_power )
+    {
+        s_add_power = p_add_power;
+        return;
+    }
+    void rf_candidate_consumer::line::set_gap_coefficient( const real_t& p_gap_coefficient )
+    {
+        s_gap_coefficient = p_gap_coefficient;
+        return;
+    }
+    void rf_candidate_consumer::line::set_gap_power( const real_t& p_gap_power )
+    {
+        s_gap_power = p_gap_power;
+        return;
+    }
+    void rf_candidate_consumer::line::set_id( const count_t& p_id )
+    {
+        s_id = p_id;
+        return;
+    }
+
+    real_t* rf_candidate_consumer::line::s_time = NULL;
+    real_t* rf_candidate_consumer::line::s_signal = NULL;
+    real_t rf_candidate_consumer::line::s_interval = 1.;
+    count_t rf_candidate_consumer::line::s_min_index = 0;
+    count_t rf_candidate_consumer::line::s_max_index = 0;
+    real_t rf_candidate_consumer::line::s_tolerance = 1.;
+    real_t rf_candidate_consumer::line::s_add_coefficient = 1.;
+    real_t rf_candidate_consumer::line::s_add_power = 0.;
+    real_t rf_candidate_consumer::line::s_gap_coefficient = 2.;
+    real_t rf_candidate_consumer::line::s_gap_power = 0.;
+    count_t rf_candidate_consumer::line::s_id = 0;
+
+    rf_candidate_consumer::line::line( const cluster& p_cluster ) :
+            f_id( s_id++ ),
+            f_count( 0. ),
+            f_score( 0. ),
+            f_correlation( 0. ),
+            f_deviation( 0. ),
+            f_start_time( p_cluster.start_time() ),
+            f_stop_time( p_cluster.stop_time() ),
+            f_frequency( p_cluster.frequency() ),
+            f_slope( 0. ),
+            f_times( p_cluster.times() ),
+            f_frequencies( p_cluster.frequencies() ),
+            f_values( p_cluster.values() ),
+            f_w_sum( 0. ),
+            f_wt_sum( 0. ),
+            f_wf_sum( 0. ),
+            f_wtt_sum( 0. ),
+            f_wff_sum( 0. ),
+            f_wtf_sum( 0. ),
+            f_add_count_sum( 0. ),
+            f_add_score_sum( 0. ),
+            f_gap_count_sum( 0. ),
+            f_gap_score_sum( 0. ),
+            f_gap_count_current( 0. ),
+            f_gap_score_current( 0. )
+    {
+        count_t t_index;
+
+        register real_t t_score_time;
+        register real_t t_score_frequency;
+        register real_t t_score_value;
+        for( t_index = 0; t_index < f_values.size(); t_index++ )
+        {
+            t_score_time = f_times.at( t_index );
+            t_score_frequency = f_frequencies.at( t_index );
+            t_score_value = f_values.at( t_index );
+
+            f_add_count_sum += 1.;
+            f_add_score_sum += s_add_coefficient * pow( t_score_value, s_add_power ) * (.5 + .5 * cos( M_PI * (t_score_frequency - t_current_frequency) / (2. * s_spread) ));
+        }
     }
 
 }

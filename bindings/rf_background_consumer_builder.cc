@@ -4,6 +4,7 @@
 #include "window_welch_builder.hh"
 #include "window_hanning_builder.hh"
 #include "window_hamming_builder.hh"
+#include "window_blackman_builder.hh"
 #include "root_builder.hh"
 
 namespace midge
@@ -18,6 +19,7 @@ namespace midge
         rf_background_consumer_builder::object< window_welch >( &rf_background_consumer::set_window, "window_welch" ) +
         rf_background_consumer_builder::object< window_hanning >( &rf_background_consumer::set_window, "window_hanning" ) +
         rf_background_consumer_builder::object< window_hamming >( &rf_background_consumer::set_window, "window_hamming" ) +
+        rf_background_consumer_builder::object< window_blackman >( &rf_background_consumer::set_window, "window_blackman" ) +
         rf_background_consumer_builder::boolean< bool_t >( &rf_background_consumer::set_plot, "plot" ) +
         rf_background_consumer_builder::lingual< string >( &rf_background_consumer::set_plot_key, "plot_key" ) +
         rf_background_consumer_builder::lingual< string >( &rf_background_consumer::set_plot_name, "plot_name" ) +

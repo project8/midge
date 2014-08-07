@@ -28,7 +28,7 @@
     {
         "name" : "rt_rf",
         "impedance_ohm" : 50.0,
-        "window_hamming" :
+        "window_blackman" :
         {
         }
     },
@@ -59,6 +59,8 @@
     "rf_root_consumer" :
     {
         "name" : "rfr_out",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
         "file" : "test_chirp_producer.power.root",
         "plot" : true,
         "plot_key" : "rf_root_consumer_canvas",

@@ -58,6 +58,8 @@
     "rf_root_consumer" :
     {
         "name" : "rfr_out",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
         "file" : "test_harmonic_producer.power.root",
         "plot" : true,
         "plot_key" : "rf_root_consumer_canvas",

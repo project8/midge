@@ -112,40 +112,139 @@ namespace midge
                     static count_t s_id;
 
                 public:
-                    cluster( const count_t& p_index );
+                    cluster( const real_t& p_time, const real_t& p_frequency );
                     ~cluster();
 
                 public:
                     void update();
 
-                    const count_t& id();
-                    const real_t& current_score();
-                    const real_t& maximum_score();
+                    const count_t& id() const;
+                    const real_t& count() const;
+                    const real_t& score() const;
+
+                    const real_t& start_time() const;
+                    const real_t& stop_time() const;
+                    const real_t& frequency() const;
 
                     const vector< real_t >& times() const;
                     const vector< real_t >& frequencies() const;
                     const vector< real_t >& values() const;
 
                 private:
-                    real_t f_start_time;
-                    real_t f_start_frequency;
-                    real_t f_numerator_sum;
-                    real_t f_denominator_sum;
-                    real_t f_add_score_sum;
-                    real_t f_gap_score_sum;
-                    real_t f_gap_score;
-                    real_t f_gap_count;
-
                     count_t f_id;
-                    real_t f_current_score;
-                    real_t f_maximum_score;
+                    real_t f_count;
+                    real_t f_score;
+
+                    real_t f_start_time;
+                    real_t f_stop_time;
+                    real_t f_frequency;
 
                     vector< real_t > f_times;
                     vector< real_t > f_frequencies;
                     vector< real_t > f_values;
+
+                    real_t f_w_sum;
+                    real_t f_wt_sum;
+                    real_t f_wf_sum;
+
+                    real_t f_add_count_sum;
+                    real_t f_add_score_sum;
+                    real_t f_gap_count_sum;
+                    real_t f_gap_score_sum;
+                    real_t f_gap_count_current;
+                    real_t f_gap_score_current;
             };
 
             typedef list< cluster* > cluster_list;
+            typedef cluster_list::iterator cluster_it;
+            typedef cluster_list::const_iterator cluster_cit;
+
+            cluster_list f_active_clusters;
+            cluster_list f_completed_clusters;
+
+        private:
+            class line
+            {
+                public:
+                    static void set_time( real_t* p_time );
+                    static void set_signal( real_t* p_signal );
+                    static void set_interval( const real_t& p_interval );
+                    static void set_min_index( const count_t& p_size );
+                    static void set_max_index( const count_t& p_size );
+                    static void set_tolerance( const real_t& p_tolerance );
+                    static void set_add_coefficient( const real_t& p_add_coefficient );
+                    static void set_add_power( const real_t& p_add_power );
+                    static void set_gap_coefficient( const real_t& p_gap_coefficient );
+                    static void set_gap_power( const real_t& p_gap_power );
+                    static void set_id( const count_t& p_id );
+
+                private:
+                    static real_t* s_time;
+                    static real_t* s_signal;
+                    static count_t s_min_index;
+                    static count_t s_max_index;
+                    static real_t s_interval;
+                    static real_t s_tolerance;
+                    static real_t s_add_coefficient;
+                    static real_t s_add_power;
+                    static real_t s_gap_coefficient;
+                    static real_t s_gap_power;
+                    static count_t s_id;
+
+                public:
+                    line( const cluster& p_cluster );
+                    ~line();
+
+                public:
+                    void update();
+
+                    const count_t& id() const;
+                    const real_t& count() const;
+                    const real_t& score() const;
+                    const real_t& correlation() const;
+                    const real_t& deviation() const;
+
+                    const real_t& start_time() const;
+                    const real_t& stop_time() const;
+                    const real_t& frequency() const;
+                    const real_t& slope() const;
+
+                    const vector< real_t >& times() const;
+                    const vector< real_t >& frequencies() const;
+                    const vector< real_t >& values() const;
+
+                private:
+                    count_t f_id;
+                    real_t f_count;
+                    real_t f_score;
+                    real_t f_correlation;
+                    real_t f_deviation;
+
+                    real_t f_start_time;
+                    real_t f_stop_time;
+                    real_t f_frequency;
+                    real_t f_slope;
+
+                    vector< real_t > f_times;
+                    vector< real_t > f_frequencies;
+                    vector< real_t > f_values;
+
+                    real_t f_w_sum;
+                    real_t f_wt_sum;
+                    real_t f_wf_sum;
+                    real_t f_wtt_sum;
+                    real_t f_wff_sum;
+                    real_t f_wtf_sum;
+
+                    real_t f_add_count_sum;
+                    real_t f_add_score_sum;
+                    real_t f_gap_count_sum;
+                    real_t f_gap_score_sum;
+                    real_t f_gap_count_current;
+                    real_t f_gap_score_current;
+            };
+
+            typedef list< line* > line_list;
             typedef cluster_list::iterator cluster_it;
             typedef cluster_list::const_iterator cluster_cit;
 

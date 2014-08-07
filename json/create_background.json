@@ -32,8 +32,8 @@
     {
         "name" : "background",
         "file" : "trap_background.root",
-        "length" : 30,
-        "window_hanning" :
+        "length" : 0,
+        "window_rectangular" :
         {
         },
         "plot" : true,

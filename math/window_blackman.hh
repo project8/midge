@@ -1,10 +1,21 @@
-#ifndef __h_
-#define __h_
+#ifndef _midge_window_blackman_hh_
+#define _midge_window_blackman_hh_
 
+#include "window.hh"
 
+namespace midge
+{
 
+    class window_blackman :
+        public window
+    {
+        public:
+            window_blackman();
+            virtual ~window_blackman();
 
+        protected:
+            void fill( const count_t& p_size, real_t*& p_raw );
+    };
+}
 
 #endif
-
-//a0 = 7938/18608, a1 = 9240/18608, a2 = 1430/18608
