@@ -9,11 +9,6 @@
         "name" : "power_data"
     },
 
-    "rf_data" :
-    {
-        "name" : "threshold_data"
-    },
-
     "rt_monarch_producer" :
     {
         "name" : "signal",
@@ -33,19 +28,32 @@
         }
     },
 
-    "rf_rf_threshold_transformer" :
+    "rf_candidate_consumer" :
     {
-        "name" : "threshold",
+        "name" : "candidate",
         "threshold_file" : "trap_threshold.root",
+        "cluster_file" : "trap_cluster.root",
         "background_file" : "trap_background.root",
         "threshold" : 3.8,
-        "minimum_frequency" : 41.0e6,
-        "maximum_frequency" : 48.0e6,
+        "frequency_minimum" : 41.0e6,
+        "frequency_maximum" : 48.0e6,
+        "cluster_slope" : 400.0e6,
+        "cluster_spread" : 40e3,
+        "cluster_add_coefficient" : 5.0,
+        "cluster_add_power" : 0.5,
+        "cluster_gap_coefficient" : 0.2,
+        "cluster_gap_power" : 2.5,
+        "cluster_score_up" : 50.0,
+        "cluster_score_down" : 0.0,
         "plot" : true,
-        "plot_key" : "analysis_canvas",
-        "plot_name" : "threshold_histogram",
-        "chart_title" : "Thresholds",
-        "axis_title" : "Excess Power Ratio"
+        "plot_threshold_key" : "threshold_canvas",
+        "plot_threshold_name" : "threshold_histogram",
+        "chart_threshold_title" : "Thresholds",
+        "axis_threshold_title" : "Excess Power Ratio",
+        "plot_cluster_key" : "cluster_canvas",
+        "plot_cluster_name" : "cluster_histogram",
+        "chart_cluster_title" : "Clusters",
+        "axis_cluster_title" : "Cluster Score"
     },
 
     "void_controller" :
@@ -56,8 +64,7 @@
     "join" : "signal.out_0:signal_data.in",
     "join" : "signal_data.out:power.in_0",
     "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:threshold.in_0",
-    "join" : "threshold.out_0:threshold_data.in",
+    "join" : "power_data.out:candidate.in_0",
     "join" : "control.out_0:signal",
 
     "run" : "control"

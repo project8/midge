@@ -72,7 +72,7 @@ namespace midge
             count_t f_frequency_minimum_index;
             count_t f_frequency_maximum_index;
             real_t f_minimum_time;
-            real_t f_current_time;
+            real_t f_maximum_time;
             count_t f_count;
 
         protected:
@@ -119,8 +119,8 @@ namespace midge
                     void update();
 
                     const count_t& id();
-                    const real_t& maximum_score();
                     const real_t& current_score();
+                    const real_t& maximum_score();
 
                     const vector< real_t >& times() const;
                     const vector< real_t >& frequencies() const;
@@ -137,8 +137,8 @@ namespace midge
                     real_t f_gap_count;
 
                     count_t f_id;
-                    real_t f_maximum_score;
                     real_t f_current_score;
+                    real_t f_maximum_score;
 
                     vector< real_t > f_times;
                     vector< real_t > f_frequencies;

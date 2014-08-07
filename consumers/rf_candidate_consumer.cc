@@ -2,9 +2,6 @@
 
 #include "plot.hh"
 
-#include <limits>
-using std::numeric_limits;
-
 #include <stack>
 using std::stack;
 
@@ -16,8 +13,8 @@ namespace midge
     rf_candidate_consumer::rf_candidate_consumer() :
             f_threshold_file( "" ),
             f_background_file( "" ),
-            f_frequency_minimum( numeric_limits< real_t >::min() ),
-            f_frequency_maximum( numeric_limits< real_t >::max() ),
+            f_frequency_minimum( 0. ),
+            f_frequency_maximum( 0. ),
             f_threshold( -1. ),
             f_cluster_slope( 0. ),
             f_cluster_spread( 1. ),
@@ -53,9 +50,9 @@ namespace midge
             f_signal( NULL ),
             f_background( NULL ),
             f_frequency_minimum_index( 0 ),
-            f_frequency_maximum_index( numeric_limits< count_t >::max() ),
+            f_frequency_maximum_index( 0 ),
             f_minimum_time( 0. ),
-            f_current_time( 0. ),
+            f_maximum_time( 0. ),
             f_count( 0 ),
             f_active_clusters( 0 ),
             f_completed_clusters( 0 )
@@ -163,10 +160,10 @@ namespace midge
         f_frequency_minimum_index = (count_t) (round( f_frequency_minimum / f_interval ));
         f_frequency_maximum_index = (count_t) (round( f_frequency_maximum / f_interval ));
         f_minimum_time = 0.;
-        f_current_time = 0.;
+        f_maximum_time = 0.;
         f_count = 0;
 
-        cluster::set_time( &f_current_time );
+        cluster::set_time( &f_maximum_time );
         cluster::set_signal( f_signal );
         cluster::set_interval( f_interval );
         cluster::set_min_index( f_frequency_minimum_index );
@@ -190,7 +187,7 @@ namespace midge
         }
         else
         {
-            f_current_time = in< 0 >()->get_time();
+            f_maximum_time = in< 0 >()->get_time();
         }
         f_count++;
 
@@ -202,16 +199,16 @@ namespace midge
         {
             t_in = f_in[ t_index ];
             t_background = f_background[ t_index ];
-            t_value = ((t_in - t_background) / t_background) - f_threshold;
-            if( t_value < 0. )
+            t_value = ((t_in - t_background) / t_background);
+            if( t_value < f_threshold )
             {
                 f_signal[ t_index ] = -1.;
             }
             else
             {
-                f_signal[ t_index ] = t_value;
+                f_signal[ t_index ] = t_value + 1.;
 
-                f_tree_time = in< 0 >()->get_time();
+                f_tree_time = f_maximum_time;
                 f_tree_frequency = f_interval * t_index;
                 f_tree_value = t_value;
                 f_threshold_tree->Fill();
@@ -232,17 +229,19 @@ namespace midge
             //msg_warning( coremsg, "**   updating active cluster <" << t_cluster->id() << "> **" << eom );
             t_cluster->update();
 
-            if( t_cluster->maximum_score() > f_cluster_score_up )
+            if( t_cluster->current_score() < f_cluster_score_down )
             {
-                //msg_warning( coremsg, "**   promoting active cluster <" << t_cluster->id() << "> **" << eom );
-                t_up_stack.push( t_it );
-                continue;
-            }
+                if( t_cluster->maximum_score() > f_cluster_score_up )
+                {
+                    //msg_warning( coremsg, "**   promoting active cluster <" << t_cluster->id() << "> **" << eom );
+                    t_up_stack.push( t_it );
+                }
+                else
+                {
+                    //msg_warning( coremsg, "**   demoting active cluster <" << t_cluster->id() << "> **" << eom );
+                    t_down_stack.push( t_it );
+                }
 
-            if( t_cluster->maximum_score() < f_cluster_score_down )
-            {
-                //msg_warning( coremsg, "**   demoting active cluster <" << t_cluster->id() << "> **" << eom );
-                t_down_stack.push( t_it );
                 continue;
             }
 
@@ -305,14 +304,17 @@ namespace midge
             t_it = f_active_clusters.begin();
             t_cluster = (*t_it);
 
-            f_tree_id = t_cluster->id();
-            f_tree_score = t_cluster->maximum_score();
-            for( t_index = 0; t_index < t_cluster->values().size(); t_index++ )
+            if( t_cluster->maximum_score() > f_cluster_score_up )
             {
-                f_tree_time = t_cluster->times()[ t_index ];
-                f_tree_frequency = t_cluster->frequencies()[ t_index ];
-                f_tree_value = t_cluster->values()[ t_index ];
-                f_cluster_tree->Fill();
+                f_tree_id = t_cluster->id();
+                f_tree_score = t_cluster->maximum_score();
+                for( t_index = 0; t_index < t_cluster->values().size(); t_index++ )
+                {
+                    f_tree_time = t_cluster->times()[ t_index ];
+                    f_tree_frequency = t_cluster->frequencies()[ t_index ];
+                    f_tree_value = t_cluster->values()[ t_index ];
+                    f_cluster_tree->Fill();
+                }
             }
 
             delete t_cluster;
@@ -346,25 +348,19 @@ namespace midge
 
         if( f_plot == true )
         {
-            real_t t_time;
-            real_t t_frequency;
-            real_t t_value;
-            count_t t_id;
-            real_t t_score;
-
             TFile* t_threshold_file = new TFile( f_threshold_file.c_str(), "READ" );
 
             TTree* t_threshold_tree = (TTree*) (t_threshold_file->Get( get_name().c_str() ));
             Long64_t t_threshold_entries = t_threshold_tree->GetEntries();
-            t_threshold_tree->SetBranchAddress( "time", &t_time );
-            t_threshold_tree->SetBranchAddress( "frequency", &t_frequency );
-            t_threshold_tree->SetBranchAddress( "value", &t_value );
+            t_threshold_tree->SetBranchAddress( "time", &f_tree_time );
+            t_threshold_tree->SetBranchAddress( "frequency", &f_tree_frequency );
+            t_threshold_tree->SetBranchAddress( "value", &f_tree_value );
 
             plot::abscissa t_threshold_times( t_threshold_entries );
             t_threshold_times.title() = string( "Time [sec]" );
             t_threshold_times.count() = f_count;
             t_threshold_times.low() = f_minimum_time;
-            t_threshold_times.high() = f_current_time;
+            t_threshold_times.high() = f_maximum_time;
 
             plot::abscissa t_threshold_frequencies( t_threshold_entries );
             t_threshold_frequencies.title() = string( "Frequency [Hz]" );
@@ -379,9 +375,9 @@ namespace midge
             {
                 t_threshold_tree->GetEntry( t_index );
 
-                t_threshold_times.values().at( t_index ) = t_time;
-                t_threshold_frequencies.values().at( t_index ) = t_frequency;
-                t_threshold_values.values().at( t_index ) = t_value;
+                t_threshold_times.values().at( t_index ) = f_tree_time;
+                t_threshold_frequencies.values().at( t_index ) = f_tree_frequency;
+                t_threshold_values.values().at( t_index ) = f_tree_value;
             }
 
             t_threshold_file->Close();
@@ -393,17 +389,17 @@ namespace midge
 
             TTree* t_cluster_tree = (TTree*) (t_cluster_file->Get( get_name().c_str() ));
             Long64_t t_cluster_entries = t_cluster_tree->GetEntries();
-            t_cluster_tree->SetBranchAddress( "time", &t_time );
-            t_cluster_tree->SetBranchAddress( "frequency", &t_frequency );
-            t_cluster_tree->SetBranchAddress( "value", &t_value );
-            t_cluster_tree->SetBranchAddress( "id", &t_id );
-            t_cluster_tree->SetBranchAddress( "score", &t_score );
+            t_cluster_tree->SetBranchAddress( "time", &f_tree_time );
+            t_cluster_tree->SetBranchAddress( "frequency", &f_tree_frequency );
+            t_cluster_tree->SetBranchAddress( "value", &f_tree_value );
+            t_cluster_tree->SetBranchAddress( "id", &f_tree_id );
+            t_cluster_tree->SetBranchAddress( "score", &f_tree_score );
 
             plot::abscissa t_cluster_times( t_cluster_entries );
             t_cluster_times.title() = string( "Time [sec]" );
             t_cluster_times.count() = f_count;
             t_cluster_times.low() = f_minimum_time;
-            t_cluster_times.high() = f_current_time;
+            t_cluster_times.high() = f_maximum_time;
 
             plot::abscissa t_cluster_frequencies( t_cluster_entries );
             t_cluster_frequencies.title() = string( "Frequency [Hz]" );
@@ -418,9 +414,9 @@ namespace midge
             {
                 t_cluster_tree->GetEntry( t_index );
 
-                t_cluster_times.values().at( t_index ) = t_time;
-                t_cluster_frequencies.values().at( t_index ) = t_frequency;
-                t_cluster_values.values().at( t_index ) = t_score;
+                t_cluster_times.values().at( t_index ) = f_tree_time;
+                t_cluster_frequencies.values().at( t_index ) = f_tree_frequency;
+                t_cluster_values.values().at( t_index ) = f_tree_id % 49 + 1;
             }
 
             t_cluster_file->Close();
@@ -442,9 +438,9 @@ namespace midge
         f_background = NULL;
 
         f_frequency_minimum_index = 0;
-        f_frequency_maximum_index = numeric_limits< count_t >::max();
+        f_frequency_maximum_index = 0;
         f_minimum_time = 0.;
-        f_current_time = 0.;
+        f_maximum_time = 0.;
         f_count = 0;
 
         cluster::set_time( NULL );
@@ -547,7 +543,8 @@ namespace midge
             f_gap_score( 0. ),
             f_gap_count( 0. ),
             f_id( s_id++ ),
-            f_score( 0. ),
+            f_current_score( 0. ),
+            f_maximum_score( 0. ),
             f_times(),
             f_frequencies(),
             f_values()
@@ -638,7 +635,7 @@ namespace midge
                 t_score_time = f_times.at( t_index );
                 t_score_frequency = f_frequencies.at( t_index );
                 t_score_value = f_values.at( t_index );
-                t_score += s_add_coefficient * pow( t_score_value * (.5 + .5 * cos( M_PI * (t_score_frequency - t_current_frequency) / (2. * s_spread) )), s_add_power );
+                t_score += s_add_coefficient * pow( t_score_value, s_add_power ) * (.5 + .5 * cos( M_PI * (t_score_frequency - t_current_frequency) / (2. * s_spread) ));
             }
 
             f_add_score_sum = t_score;
@@ -660,7 +657,12 @@ namespace midge
             //msg_warning( coremsg, "  gap maximum_score is <" << f_gap_score << ">" << eom );
         }
 
-        f_score = f_add_score_sum - f_gap_score_sum - f_gap_score;
+        f_current_score = f_add_score_sum - f_gap_score_sum - f_gap_score;
+
+        if( f_current_score > f_maximum_score )
+        {
+            f_maximum_score = f_current_score;
+        }
 
         //msg_warning( coremsg, "  maximum_score is <" << f_score << ">" << eom );
 
@@ -671,9 +673,13 @@ namespace midge
     {
         return f_id;
     }
+    const real_t& rf_candidate_consumer::cluster::current_score()
+    {
+        return f_current_score;
+    }
     const real_t& rf_candidate_consumer::cluster::maximum_score()
     {
-        return f_score;
+        return f_maximum_score;
     }
 
     const vector< real_t >& rf_candidate_consumer::cluster::times() const

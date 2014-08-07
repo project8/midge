@@ -1,0 +1,87 @@
+{
+    "rt_data" :
+    {
+        "name" : "signal_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "wigner_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "power_data"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "signal",
+        "file" : "trap_on.egg",
+        "minimum_time" : 0.123,
+        "maximum_time" : 0.128,
+        "size" : 32768,
+        "stride" : 1024
+    },
+
+    "rt_rf_wigner_transformer" :
+    {
+        "name" : "wigner",
+        "offset" : 16384,
+        "length" : 16383,
+        "window_hanning" :
+        {
+        }
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "power",
+        "impedance_ohm" : 50,
+        "window_rectangular" :
+        {
+        }
+    },
+
+    "rf_root_consumer" :
+    {
+        "name" : "wigner_output",
+        "frequency_minimum" : 50.0e6,
+        "frequency_maximum" : 56.0e6,
+        "file" : "trap_wigner.root",
+        "plot" : true,
+        "plot_key" : "wigner_canvas",
+        "plot_name" : "wigner_histogram",
+        "chart_title" : "Wigner-Ville Distribution",
+        "axis_title" : "Power [arb]"
+    },
+
+    "rf_root_consumer" :
+    {
+        "name" : "power_output",
+        "frequency_minimum" : 50.0e6,
+        "frequency_maximum" : 56.0e6,
+        "file" : "trap_power.root",
+        "plot" : true,
+        "plot_key" : "power_canvas",
+        "plot_name" : "power_histogram",
+        "chart_title" : "Wigner-Ville Distribution",
+        "axis_title" : "Power [arb]"
+    },
+
+    "void_controller" :
+    {
+        "name" : "control"
+    },
+
+    "join" : "signal.out_0:signal_data.in",
+    "join" : "signal_data.out:wigner.in_0",
+    "join" : "wigner.out_0:wigner_data.in",
+    "join" : "wigner_data.out:wigner_output.in_0",
+    "join" : "signal_data.out:power.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:power_output.in_0",
+    "join" : "control.out_0:signal",
+
+    "run" : "control"
+}

@@ -88,25 +88,28 @@ namespace midge
 
     bool rf_background_consumer::stop_consumer()
     {
-        f_average[ 0 ] = f_average[ 1 ];
-        f_average[ f_size - 1] = f_average[ f_size - 2 ];
+        //f_average[ 0 ] = f_average[ 1 ];
+        //f_average[ f_size - 1] = f_average[ f_size - 2 ];
 
-        register real_t t_norm = 1. / (f_count * f_window->sum());
+        register real_t t_sum;
         register real_t t_value;
         for( count_t t_index = 0; t_index < f_size; t_index++ )
         {
+            t_sum = f_window->sum();
             t_value = 0.;
             for( count_t t_sub = 0; t_sub < 2 * f_length + 1; t_sub++ )
             {
                 if( t_index + t_sub < f_length )
                 {
+                    t_sum -= f_multiplier[ t_sub ];
                     continue;
                 }
                 if( t_index + t_sub >= f_length + f_size )
                 {
+                    t_sum -= f_multiplier[ t_sub ];
                     continue;
                 }
-                t_value += f_average[ t_index + t_sub - f_length ] * f_multiplier[ t_sub ] * t_norm;
+                t_value += f_average[ t_index + t_sub - f_length ] * f_multiplier[ t_sub ] / (f_count * t_sum);
             }
             f_frequency_point = t_index * f_interval;
             f_value_point = t_value;

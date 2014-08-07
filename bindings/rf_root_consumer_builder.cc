@@ -6,6 +6,8 @@ namespace midge
 
     static const int s_rf_root_consumer =
         rf_root_consumer_builder::lingual< string >( &rf_root_consumer::set_name, "name" ) +
+        rf_root_consumer_builder::numerical< real_t >( &rf_root_consumer::set_frequency_minimum, "frequency_minimum" ) +
+        rf_root_consumer_builder::numerical< real_t >( &rf_root_consumer::set_frequency_maximum, "frequency_maximum" ) +
         rf_root_consumer_builder::lingual< string >( &rf_root_consumer::set_file, "file" ) +
         rf_root_consumer_builder::boolean< bool_t >( &rf_root_consumer::set_plot, "plot" ) +
         rf_root_consumer_builder::lingual< string >( &rf_root_consumer::set_plot_key, "plot_key" ) +
