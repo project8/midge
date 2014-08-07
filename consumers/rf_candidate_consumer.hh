@@ -119,18 +119,16 @@ namespace midge
                     void update();
 
                     const count_t& id();
-                    const real_t& score();
+                    const real_t& maximum_score();
+                    const real_t& current_score();
 
                     const vector< real_t >& times() const;
                     const vector< real_t >& frequencies() const;
                     const vector< real_t >& values() const;
 
                 private:
-                    real_t compute_add_score();
-                    real_t compute_frequency();
-
-                    real_t f_time;
-                    real_t f_frequency;
+                    real_t f_start_time;
+                    real_t f_start_frequency;
                     real_t f_numerator_sum;
                     real_t f_denominator_sum;
                     real_t f_add_score_sum;
@@ -139,7 +137,8 @@ namespace midge
                     real_t f_gap_count;
 
                     count_t f_id;
-                    real_t f_score;
+                    real_t f_maximum_score;
+                    real_t f_current_score;
 
                     vector< real_t > f_times;
                     vector< real_t > f_frequencies;
