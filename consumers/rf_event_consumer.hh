@@ -1,5 +1,5 @@
-#ifndef _midge_rf_candidate_consumer_hh_
-#define _midge_rf_candidate_consumer_hh_
+#ifndef _midge_rf_event_consumer_hh_
+#define _midge_rf_event_consumer_hh_
 
 #include "consumer.hh"
 #include "rf_data.hh"
@@ -16,12 +16,12 @@ using std::list;
 namespace midge
 {
 
-    class rf_candidate_consumer :
-        public _consumer< rf_candidate_consumer, typelist_1( rf_data ) >
+    class rf_event_consumer :
+        public _consumer< rf_event_consumer, typelist_1( rf_data ) >
     {
         public:
-            rf_candidate_consumer();
-            ~rf_candidate_consumer();
+            rf_event_consumer();
+            ~rf_event_consumer();
 
         public:
             accessible( string, ratio_file )
@@ -29,7 +29,7 @@ namespace midge
             accessible( real_t, frequency_minimum )
             accessible( real_t, frequency_maximum )
             accessible( string, cluster_file )
-            accessible( real_t, cluster_threshold )
+            accessible( real_t, cluster_add_ratio )
             accessible( real_t, cluster_slope )
             accessible( real_t, cluster_spread )
             accessible( real_t, cluster_add_coefficient )
@@ -37,14 +37,15 @@ namespace midge
             accessible( real_t, cluster_gap_coefficient )
             accessible( real_t, cluster_gap_power )
             accessible( string, line_file )
-            accessible( real_t, line_threshold )
+            accessible( real_t, line_start_score )
+            accessible( real_t, line_stop_score )
             accessible( real_t, line_tolerance )
             accessible( real_t, line_add_coefficient )
             accessible( real_t, line_add_power )
             accessible( real_t, line_gap_coefficient )
             accessible( real_t, line_gap_power )
             accessible( string, event_file )
-            accessible( real_t, event_threshold )
+            accessible( real_t, event_time_tolerance )
             accessible( bool_t, plot )
             accessible( string, plot_ratio_key )
             accessible( string, plot_ratio_name )
@@ -199,7 +200,7 @@ namespace midge
             typedef cluster_list::iterator cluster_it;
             typedef cluster_list::const_iterator cluster_cit;
 
-            cluster_list f_active_clusters;
+            cluster_list f_candidate_clusters;
             cluster_list f_complete_clusters;
 
         private:
@@ -300,6 +301,7 @@ namespace midge
             typedef line_list::iterator line_it;
             typedef line_list::const_iterator line_cit;
 
+            line_list f_candidate_lines;
             line_list f_active_lines;
             line_list f_complete_lines;
     };

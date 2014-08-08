@@ -1,32 +1,37 @@
 {
     "rt_data" :
     {
-        "name" : "event_signal_0_data"
+        "name" : "signal_0_data"
     },
 
     "rt_data" :
     {
-        "name" : "event_signal_1_data"
+        "name" : "signal_1_data"
     },
 
     "rt_data" :
     {
-        "name" : "event_signal_data"
+        "name" : "signal_data"
     },
 
     "rt_data" :
     {
-        "name" : "event_noise_data"
+        "name" : "noise_data"
     },
 
     "rt_data" :
     {
-        "name" : "event_sum_data"
+        "name" : "sum_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "power_data"
     },
 
      "rt_chirp_producer" :
     {
-        "name" : "event_signal_0",
+        "name" : "signal_0",
         "power_dbm" : -30.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 200.0e6,
@@ -41,7 +46,7 @@
 
      "rt_chirp_producer" :
     {
-        "name" : "event_signal_1",
+        "name" : "signal_1",
         "power_dbm" : -30.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 200.0e6,
@@ -56,7 +61,7 @@
 
     "rt_gaussian_producer" :
     {
-        "name" : "event_noise",
+        "name" : "noise",
         "power_dbm" : -12.0,
         "impedance_ohm" : 50.0,
         "start_sec" : 0.0e-4,
@@ -69,17 +74,17 @@
 
     "rt_rt_sum_transformer" :
     {
-        "name" : "event_signal_sum"
+        "name" : "signal_sum"
     },
 
     "rt_rt_sum_transformer" :
     {
-        "name" : "event_sum"
+        "name" : "sum"
     },
 
     "rt_monarch_consumer" :
     {
-        "name" : "event_monarch",
+        "name" : "monarch",
         "file" : "simulation_event_signal.egg",
         "bits" : 8,
         "length" : 5000,
@@ -90,7 +95,7 @@
 
     "rt_root_consumer" :
     {
-        "name" : "event_root",
+        "name" : "root",
         "file" : "simulation_event_signal.root",
         "plot" : true,
         "plot_key" : "event_root_canvas",
@@ -99,25 +104,50 @@
         "axis_title" : "Signal [volt]"
     },
 
-    "void_controller" :
+    "rt_rf_power_transformer" :
     {
-        "name" : "event_controller"
+        "name" : "power",
+        "impedance_ohm" : 50.0,
+        "window_blackman" : 
+        {
+        }
     },
 
-    "join" : "event_signal_0.out_0:event_signal_0_data.in",
-    "join" : "event_signal_0_data.out:event_signal_sum.in_0",
-    "join" : "event_signal_1.out_0:event_signal_1_data.in",
-    "join" : "event_signal_1_data.out:event_signal_sum.in_1",
-    "join" : "event_signal_sum.out_0:event_signal_data.in",
-    "join" : "event_signal_data.out:event_sum.in_0",
-    "join" : "event_noise.out_0:event_noise_data.in",
-    "join" : "event_noise_data.out:event_sum.in_1",
-    "join" : "event_sum.out_0:event_sum_data.in",
-    "join" : "event_sum_data.out:event_root.in_0",
-    "join" : "event_sum_data.out:event_monarch.in_0",
-    "join" : "event_controller.out_0:event_signal_0",
-    "join" : "event_controller.out_1:event_signal_1",
-    "join" : "event_controller.out_2:event_noise",
+    "rf_root_consumer" :
+    {
+        "name" : "waterfall",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
+        "file" : "simulation_event_waterfall.root",
+        "plot" : true,
+        "plot_key" : "waterfall_canvas",
+        "plot_name" : "waterfall_histogram",
+        "chart_title" : "Simulated Event",
+        "axis_title" : "Power [watt]"
+    },
 
-    "run" : "event_controller"
+    "void_controller" :
+    {
+        "name" : "controller"
+    },
+
+    "join" : "signal_0.out_0:signal_0_data.in",
+    "join" : "signal_0_data.out:signal_sum.in_0",
+    "join" : "signal_1.out_0:signal_1_data.in",
+    "join" : "signal_1_data.out:signal_sum.in_1",
+    "join" : "signal_sum.out_0:signal_data.in",
+    "join" : "signal_data.out:sum.in_0",
+    "join" : "noise.out_0:noise_data.in",
+    "join" : "noise_data.out:sum.in_1",
+    "join" : "sum.out_0:sum_data.in",
+    "join" : "sum_data.out:root.in_0",
+    "join" : "sum_data.out:monarch.in_0",
+    "join" : "sum_data.out:power.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:waterfall.in_0",
+    "join" : "controller.out_0:signal_0",
+    "join" : "controller.out_1:signal_1",
+    "join" : "controller.out_2:noise",
+
+    "run" : "controller"
 }

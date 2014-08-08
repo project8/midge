@@ -1,25 +1,30 @@
 {
     "rt_data" :
     {
-        "name" : "background_noise_data"
+        "name" : "noise_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "power_data"
     },
 
     "rt_gaussian_producer" :
     {
-        "name" : "background_noise",
+        "name" : "noise",
         "power_dbm" : -12.0,
         "impedance_ohm" : 50.0,
         "start_sec" : 0.0e-4,
         "stop_sec" : 2.0e-4,
         "interval" : 1.0e-9,
-        "seed" : 51385,
+        "seed" : 112383,
         "size" : 1000,
         "stride" : 1000
     },
 
     "rt_monarch_consumer" :
     {
-        "name" : "background_monarch",
+        "name" : "monarch",
         "file" : "simulation_background_signal.egg",
         "bits" : 8,
         "length" : 5000,
@@ -30,24 +35,49 @@
 
     "rt_root_consumer" :
     {
-        "name" : "background_root",
+        "name" : "root",
         "file" : "simulation_background_signal.root",
         "plot" : true,
-        "plot_key" : "background_root_canvas",
-        "plot_name" : "background_root_histogram",
+        "plot_key" : "root_canvas",
+        "plot_name" : "root_histogram",
         "chart_title" : "Simulated Background",
         "axis_title" : "Signal [volt]"
     },
 
-    "void_controller" :
+    "rt_rf_power_transformer" :
     {
-        "name" : "background_controller"
+        "name" : "power",
+        "impedance_ohm" : 50.0,
+        "window_blackman" : 
+        {
+        }
     },
 
-    "join" : "background_noise.out_0:background_noise_data.in",
-    "join" : "background_noise_data.out:background_root.in_0",
-    "join" : "background_noise_data.out:background_monarch.in_0",
-    "join" : "background_controller.out_0:background_noise",
+    "rf_root_consumer" :
+    {
+        "name" : "waterfall",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
+        "file" : "simulation_background_waterfall.root",
+        "plot" : true,
+        "plot_key" : "waterfall_canvas",
+        "plot_name" : "waterfall_histogram",
+        "chart_title" : "Simulated Background",
+        "axis_title" : "Power [watt]"
+    },
 
-    "run" : "background_controller"
+    "void_controller" :
+    {
+        "name" : "controller"
+    },
+
+    "join" : "noise.out_0:noise_data.in",
+    "join" : "noise_data.out:root.in_0",
+    "join" : "noise_data.out:monarch.in_0",
+    "join" : "noise_data.out:power.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:waterfall.in_0",
+    "join" : "controller.out_0:noise",
+
+    "run" : "controller"
 }

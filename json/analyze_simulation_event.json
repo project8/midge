@@ -12,7 +12,7 @@
     "rt_monarch_producer" :
     {
         "name" : "signal",
-        "file" : "trap_simulation_event_signal.egg",
+        "file" : "simulation_event_signal.egg",
         "minimum_time" : 0.0e-4,
         "maximum_time" : 2.0e-4,
         "size" : 1000,
@@ -28,30 +28,31 @@
         }
     },
 
-    "rf_candidate_consumer" :
+    "rf_event_consumer" :
     {
-        "name" : "candidate",
-        "ratio_file" : "trap_simulation_ratio.root",
-        "background_file" : "trap_simulation_background.root",
+        "name" : "event",
+        "ratio_file" : "simulation_ratio.root",
+        "background_file" : "simulation_background.root",
         "frequency_minimum" : 0.0e6,
         "frequency_maximum" : 500.0e6,
-        "cluster_file" : "trap_simulation_cluster.root",
-        "cluster_threshold" : 3.0,
-        "cluster_slope" : 1.875e12,
+        "cluster_file" : "simulation_cluster.root",
+        "cluster_add_ratio" : 2.8,
+        "cluster_slope" : 1.25e12,
         "cluster_spread" : 2.0e6,
         "cluster_add_coefficient" : 1.0,
         "cluster_add_power" : 1.0,
-        "cluster_gap_coefficient" : 1.0,
-        "cluster_gap_power" : 2.0,
-        "line_file" : "trap_simulation_line.root",
-        "line_threshold" : 70.0,
+        "cluster_gap_coefficient" : 2.0,
+        "cluster_gap_power" : 2.2,
+        "line_file" : "simulation_line.root",
+        "line_start_score" : 70.0,
+        "line_stop_score" : 300.0,
         "line_tolerance" : 1.5,
         "line_add_coefficient" : 1.0,
         "line_add_power" : 1.0,
         "line_gap_coefficient" : 2.0,
         "line_gap_power" : 2.0,
-        "event_file" : "trap_simulation_event.root",
-        "event_threshold" : 130.0,
+        "event_file" : "simulation_event.root",
+        "event_time_tolerance" : 1.0,
         "plot" : true,
         "plot_ratio_key" : "ratio_canvas",
         "plot_ratio_name" : "ratio_histogram",
@@ -79,7 +80,7 @@
     "join" : "signal.out_0:signal_data.in",
     "join" : "signal_data.out:power.in_0",
     "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:candidate.in_0",
+    "join" : "power_data.out:event.in_0",
     "join" : "control.out_0:signal",
 
     "run" : "control"

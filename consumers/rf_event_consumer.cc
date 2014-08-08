@@ -1,4 +1,4 @@
-#include "rf_candidate_consumer.hh"
+#include "rf_event_consumer.hh"
 
 #include "plot.hh"
 
@@ -10,13 +10,13 @@ using std::stack;
 namespace midge
 {
 
-    rf_candidate_consumer::rf_candidate_consumer() :
+    rf_event_consumer::rf_event_consumer() :
             f_ratio_file( "" ),
             f_background_file( "" ),
             f_frequency_minimum( 0. ),
             f_frequency_maximum( 0. ),
             f_cluster_file( "" ),
-            f_cluster_threshold( -1. ),
+            f_cluster_add_ratio( -1. ),
             f_cluster_slope( 0. ),
             f_cluster_spread( 1. ),
             f_cluster_add_coefficient( 1. ),
@@ -24,14 +24,15 @@ namespace midge
             f_cluster_gap_coefficient( 2. ),
             f_cluster_gap_power( 0. ),
             f_line_file( "" ),
-            f_line_threshold( 100. ),
+            f_line_start_score( 100. ),
+            f_line_stop_score( 100. ),
             f_line_tolerance( 1. ),
             f_line_add_coefficient( 1. ),
             f_line_add_power( 0. ),
             f_line_gap_coefficient( 2. ),
             f_line_gap_power( 0. ),
             f_event_file( "" ),
-            f_event_threshold( 0. ),
+            f_event_time_tolerance( 0. ),
             f_plot( false ),
             f_plot_ratio_key( "" ),
             f_plot_ratio_name( "" ),
@@ -74,17 +75,18 @@ namespace midge
             f_minimum_time( 0. ),
             f_maximum_time( 0. ),
             f_count( 0 ),
-            f_active_clusters(),
+            f_candidate_clusters(),
             f_complete_clusters(),
+            f_candidate_lines(),
             f_active_lines(),
             f_complete_lines()
     {
     }
-    rf_candidate_consumer::~rf_candidate_consumer()
+    rf_event_consumer::~rf_event_consumer()
     {
     }
 
-    bool rf_candidate_consumer::start_consumer()
+    bool rf_event_consumer::start_consumer()
     {
         if( f_plot == true )
         {
@@ -126,7 +128,7 @@ namespace midge
             f_line_tree->Branch( "time", &f_tree_time );
             f_line_tree->Branch( "duration", &f_tree_duration );
             f_line_tree->Branch( "frequency", &f_tree_frequency );
-            f_line_tree->Branch( "slope", &f_tree_frequency );
+            f_line_tree->Branch( "slope", &f_tree_slope );
             f_line_tree->Branch( "correlation", &f_tree_correlation );
             f_line_tree->Branch( "deviation", &f_tree_deviation );
         }
@@ -231,8 +233,10 @@ namespace midge
         return true;
     }
 
-    bool rf_candidate_consumer::execute_consumer()
+    bool rf_event_consumer::execute_consumer()
     {
+        msg_warning( coremsg, "** START **" << eom );
+
         if( f_count == 0 )
         {
             f_minimum_time = in< 0 >()->get_time();
@@ -252,7 +256,7 @@ namespace midge
             t_in = f_in[ t_index ];
             t_background = f_background[ t_index ];
             t_ratio = ((t_in - t_background) / t_background);
-            if( t_ratio < f_cluster_threshold )
+            if( t_ratio < f_cluster_add_ratio )
             {
                 f_ratio[ t_index ] = -1.;
             }
@@ -267,8 +271,9 @@ namespace midge
             }
         }
 
-        msg_warning( coremsg, "** updating active lines **" << eom );
+        msg_warning( coremsg, "** updating lines **" << eom );
         stack< line_it > t_line_complete_stack;
+        stack< line_it > t_line_active_stack;
         line* t_line;
         for( line_it t_it = f_active_lines.begin(); t_it != f_active_lines.end(); t_it++ )
         {
@@ -277,46 +282,61 @@ namespace midge
             msg_warning( coremsg, "**   updating active line <" << t_line->id() << "> **" << eom );
             t_line->update();
 
-            if( t_line->score() < 0. )
+            if( t_line->score() < f_line_stop_score )
             {
                 msg_warning( coremsg, "**   will complete active line <" << t_line->id() << "> **" << eom );
                 t_line_complete_stack.push( t_it );
             }
         }
-        msg_warning( coremsg, "** active lines updated **" << eom );
+        for( line_it t_it = f_candidate_lines.begin(); t_it != f_candidate_lines.end(); t_it++ )
+        {
+            t_line = *t_it;
 
-        msg_warning( coremsg, "** updating active clusters **" << eom );
-        stack< cluster_it > t_cluster_promote_stack;
-        stack< cluster_it > t_cluster_demote_stack;
+            msg_warning( coremsg, "**   updating candidate line <" << t_line->id() << "> **" << eom );
+            t_line->update();
+
+            if( t_line->score() > f_line_stop_score )
+            {
+                msg_warning( coremsg, "**   will activate candidate line <" << t_line->id() << "> **" << eom );
+                t_line_active_stack.push( t_it );
+            }
+        }
+        msg_warning( coremsg, "** lines updated **" << eom );
+
+        msg_warning( coremsg, "** updating clusters **" << eom );
+        stack< cluster_it > t_cluster_complete_stack;
+        stack< cluster_it > t_cluster_discard_stack;
         cluster* t_cluster;
-        for( cluster_it t_it = f_active_clusters.begin(); t_it != f_active_clusters.end(); t_it++ )
+        for( cluster_it t_it = f_candidate_clusters.begin(); t_it != f_candidate_clusters.end(); t_it++ )
         {
             t_cluster = *t_it;
 
-            msg_warning( coremsg, "**   updating active cluster <" << t_cluster->id() << "> **" << eom );
+            msg_warning( coremsg, "**   updating candidate cluster <" << t_cluster->id() << "> **" << eom );
             t_cluster->update();
 
-            if( t_cluster->score() > f_line_threshold )
+            if( t_cluster->score() > f_line_start_score )
             {
-                msg_warning( coremsg, "**   will promote active cluster <" << t_cluster->id() << "> **" << eom );
-                t_cluster_promote_stack.push( t_it );
+                msg_warning( coremsg, "**   will complete candidate cluster <" << t_cluster->id() << "> **" << eom );
+                t_cluster_complete_stack.push( t_it );
             }
 
             if( t_cluster->score() < 0. )
             {
-                msg_warning( coremsg, "**   will demote active cluster <" << t_cluster->id() << "> **" << eom );
-                t_cluster_demote_stack.push( t_it );
+                msg_warning( coremsg, "**   will discard candidate cluster <" << t_cluster->id() << "> **" << eom );
+                t_cluster_discard_stack.push( t_it );
             }
         }
-        msg_warning( coremsg, "** active clusters updated **" << eom );
+        msg_warning( coremsg, "** clusters updated **" << eom );
 
         msg_warning( coremsg, "** completing lines **" << eom );
         while( t_line_complete_stack.empty() == false )
         {
             t_line = *(t_line_complete_stack.top());
+            f_complete_lines.push_back( t_line );
+            msg_warning( coremsg, "**   completing line <" << t_line->id() << "> **" << eom );
+
             f_active_lines.erase( t_line_complete_stack.top() );
             t_line_complete_stack.pop();
-            f_complete_lines.push_back( t_line );
 
             if( f_line_stream != NULL )
             {
@@ -346,17 +366,33 @@ namespace midge
                 }
                 f_line_stream->cd();
                 t_line_ratio_tree->Write();
+
+                msg_warning( coremsg, "**   completed line <" << t_line->id() << "> **" << eom );
             }
         }
 
-        msg_warning( coremsg, "** promoting clusters **" << eom );
-        while( t_cluster_promote_stack.empty() == false )
+        msg_warning( coremsg, "** activating lines **" << eom );
+        while( t_line_active_stack.empty() == false )
         {
-            t_cluster = *(t_cluster_promote_stack.top());
-            f_active_clusters.erase( t_cluster_promote_stack.top() );
-            t_cluster_promote_stack.pop();
-            f_active_lines.push_back( new line( *t_cluster ) );
+            t_line = *(t_line_active_stack.top());
+            f_active_lines.push_back( t_line );
+            msg_warning( coremsg, "**   activating line <" << t_line->id() << "> **" << eom );
+
+            f_candidate_lines.erase( t_line_active_stack.top());
+            t_line_active_stack.pop();
+        }
+
+        msg_warning( coremsg, "** completing clusters **" << eom );
+        while( t_cluster_complete_stack.empty() == false )
+        {
+            t_cluster = *(t_cluster_complete_stack.top());
             f_complete_clusters.push_back( t_cluster );
+            msg_warning( coremsg, "**   completing cluster <" << t_cluster->id() << "> **" << eom );
+
+            f_candidate_clusters.erase( t_cluster_complete_stack.top() );
+            t_cluster_complete_stack.pop();
+
+            f_candidate_lines.push_back( new line( *t_cluster ) );
 
             if( f_cluster_stream != NULL )
             {
@@ -384,31 +420,37 @@ namespace midge
                 f_cluster_stream->cd();
                 t_cluster_ratio_tree->Write();
             }
+
+            msg_warning( coremsg, "**   completed cluster <" << t_cluster->id() << "> **" << eom );
         }
 
-        msg_warning( coremsg, "** demoting clusters **" << eom );
-        while( t_cluster_demote_stack.empty() == false )
+        msg_warning( coremsg, "** discarding clusters **" << eom );
+        while( t_cluster_discard_stack.empty() == false )
         {
-            t_cluster = *(t_cluster_demote_stack.top());
-            f_active_clusters.erase( t_cluster_demote_stack.top() );
-            t_cluster_demote_stack.pop();
+            t_cluster = *(t_cluster_discard_stack.top());
+            msg_warning( coremsg, "**   discarding cluster <" << t_cluster->id() << "> **" << eom );
+
+            f_candidate_clusters.erase( t_cluster_discard_stack.top() );
+            t_cluster_discard_stack.pop();
+
             delete t_cluster;
         }
 
-        msg_warning( coremsg, "** promoting ratios **" << eom );
+        msg_warning( coremsg, "** adding clusters **" << eom );
         for( count_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
         {
             if( f_ratio[ t_index ] > 0. )
             {
                 t_cluster = new cluster( f_maximum_time, t_index * f_interval );
-                f_active_clusters.push_back( t_cluster );
+                f_candidate_clusters.push_back( t_cluster );
             }
         }
 
+        msg_warning( coremsg, "** FINISH **" << eom );
         return true;
     }
 
-    bool rf_candidate_consumer::stop_consumer()
+    bool rf_event_consumer::stop_consumer()
     {
         f_ratio_stream->cd();
         f_ratio_label->Write();
@@ -453,6 +495,13 @@ namespace midge
             f_active_lines.pop_front();
             delete t_line;
         }
+        while( f_candidate_lines.empty() == false )
+        {
+            t_line_it = f_candidate_lines.begin();
+            t_line = (*t_line_it);
+            f_candidate_lines.pop_front();
+            delete t_line;
+        }
 
         cluster_it t_cluster_it;
         cluster* t_cluster;
@@ -463,11 +512,11 @@ namespace midge
             f_complete_clusters.pop_front();
             delete t_cluster;
         }
-        while( f_active_clusters.empty() == false )
+        while( f_candidate_clusters.empty() == false )
         {
-            t_cluster_it = f_active_clusters.begin();
+            t_cluster_it = f_candidate_clusters.begin();
             t_cluster = (*t_cluster_it);
-            f_active_clusters.pop_front();
+            f_candidate_clusters.pop_front();
             delete t_cluster;
         }
 
@@ -717,81 +766,81 @@ namespace midge
     //cluster
     //*******
 
-    void rf_candidate_consumer::cluster::set_time( real_t* p_time )
+    void rf_event_consumer::cluster::set_time( real_t* p_time )
     {
         s_time = p_time;
         return;
     }
-    void rf_candidate_consumer::cluster::set_ratio( real_t* p_ratio )
+    void rf_event_consumer::cluster::set_ratio( real_t* p_ratio )
     {
         s_ratio = p_ratio;
         return;
     }
-    void rf_candidate_consumer::cluster::set_interval( const real_t& p_interval )
+    void rf_event_consumer::cluster::set_interval( const real_t& p_interval )
     {
         s_interval = p_interval;
         return;
     }
-    void rf_candidate_consumer::cluster::set_min_index( const count_t& p_min_index )
+    void rf_event_consumer::cluster::set_min_index( const count_t& p_min_index )
     {
         s_min_index = p_min_index;
         return;
     }
-    void rf_candidate_consumer::cluster::set_max_index( const count_t& p_max_index )
+    void rf_event_consumer::cluster::set_max_index( const count_t& p_max_index )
     {
         s_max_index = p_max_index;
         return;
     }
-    void rf_candidate_consumer::cluster::set_slope( const real_t& p_slope )
+    void rf_event_consumer::cluster::set_slope( const real_t& p_slope )
     {
         s_slope = p_slope;
         return;
     }
-    void rf_candidate_consumer::cluster::set_spread( const real_t& p_spread )
+    void rf_event_consumer::cluster::set_spread( const real_t& p_spread )
     {
         s_spread = p_spread;
         return;
     }
-    void rf_candidate_consumer::cluster::set_add_coefficient( const real_t& p_add_coefficient )
+    void rf_event_consumer::cluster::set_add_coefficient( const real_t& p_add_coefficient )
     {
         s_add_coefficient = p_add_coefficient;
         return;
     }
-    void rf_candidate_consumer::cluster::set_add_power( const real_t& p_add_power )
+    void rf_event_consumer::cluster::set_add_power( const real_t& p_add_power )
     {
         s_add_power = p_add_power;
         return;
     }
-    void rf_candidate_consumer::cluster::set_gap_coefficient( const real_t& p_gap_coefficient )
+    void rf_event_consumer::cluster::set_gap_coefficient( const real_t& p_gap_coefficient )
     {
         s_gap_coefficient = p_gap_coefficient;
         return;
     }
-    void rf_candidate_consumer::cluster::set_gap_power( const real_t& p_gap_power )
+    void rf_event_consumer::cluster::set_gap_power( const real_t& p_gap_power )
     {
         s_gap_power = p_gap_power;
         return;
     }
-    void rf_candidate_consumer::cluster::set_id( const count_t& p_id )
+    void rf_event_consumer::cluster::set_id( const count_t& p_id )
     {
         s_id = p_id;
         return;
     }
 
-    real_t* rf_candidate_consumer::cluster::s_time = NULL;
-    real_t* rf_candidate_consumer::cluster::s_ratio = NULL;
-    real_t rf_candidate_consumer::cluster::s_interval = 1.;
-    count_t rf_candidate_consumer::cluster::s_min_index = 0;
-    count_t rf_candidate_consumer::cluster::s_max_index = 0;
-    real_t rf_candidate_consumer::cluster::s_slope = 0.;
-    real_t rf_candidate_consumer::cluster::s_spread = 1.;
-    real_t rf_candidate_consumer::cluster::s_add_coefficient = 1.;
-    real_t rf_candidate_consumer::cluster::s_add_power = 0.;
-    real_t rf_candidate_consumer::cluster::s_gap_coefficient = 2.;
-    real_t rf_candidate_consumer::cluster::s_gap_power = 0.;
-    count_t rf_candidate_consumer::cluster::s_id = 0;
+    real_t* rf_event_consumer::cluster::s_time = NULL;
+    real_t* rf_event_consumer::cluster::s_ratio = NULL;
+    real_t rf_event_consumer::cluster::s_interval = 1.;
+    count_t rf_event_consumer::cluster::s_min_index = 0;
+    count_t rf_event_consumer::cluster::s_max_index = 0;
+    real_t rf_event_consumer::cluster::s_slope = 0.;
+    real_t rf_event_consumer::cluster::s_spread = 1.;
+    real_t rf_event_consumer::cluster::s_add_coefficient = 1.;
+    real_t rf_event_consumer::cluster::s_add_power = 0.;
+    real_t rf_event_consumer::cluster::s_gap_coefficient = 2.;
+    real_t rf_event_consumer::cluster::s_gap_power = 0.;
+    count_t rf_event_consumer::cluster::s_id = 0;
 
-    rf_candidate_consumer::cluster::cluster( const real_t& p_time, const real_t& p_frequency ) :
+    rf_event_consumer::cluster::cluster( const real_t& p_time, const real_t& p_frequency ) :
             f_id( s_id++ ),
             f_count( 0. ),
             f_score( 0. ),
@@ -819,12 +868,12 @@ namespace midge
 
         update();
     }
-    rf_candidate_consumer::cluster::~cluster()
+    rf_event_consumer::cluster::~cluster()
     {
         msg_warning( coremsg, "cluster <" << f_id << "> destroyed" << eom );
     }
 
-    void rf_candidate_consumer::cluster::update()
+    void rf_event_consumer::cluster::update()
     {
         msg_warning( coremsg, "cluster <" << f_id << "> updating:" << eom );
 
@@ -1020,45 +1069,45 @@ namespace midge
         return;
     }
 
-    const count_t& rf_candidate_consumer::cluster::id() const
+    const count_t& rf_event_consumer::cluster::id() const
     {
         return f_id;
     }
-    const real_t& rf_candidate_consumer::cluster::count() const
+    const real_t& rf_event_consumer::cluster::count() const
     {
         return f_count;
     }
-    const real_t& rf_candidate_consumer::cluster::score() const
+    const real_t& rf_event_consumer::cluster::score() const
     {
         return f_score;
     }
 
-    const real_t& rf_candidate_consumer::cluster::time() const
+    const real_t& rf_event_consumer::cluster::time() const
     {
         return f_time;
     }
-    const real_t& rf_candidate_consumer::cluster::duration() const
+    const real_t& rf_event_consumer::cluster::duration() const
     {
         return f_duration;
     }
-    const real_t& rf_candidate_consumer::cluster::frequency() const
+    const real_t& rf_event_consumer::cluster::frequency() const
     {
         return f_frequency;
     }
 
-    const vector< real_t >& rf_candidate_consumer::cluster::times() const
+    const vector< real_t >& rf_event_consumer::cluster::times() const
     {
         return f_times;
     }
-    const vector< real_t >& rf_candidate_consumer::cluster::frequencies() const
+    const vector< real_t >& rf_event_consumer::cluster::frequencies() const
     {
         return f_frequencies;
     }
-    const vector< real_t >& rf_candidate_consumer::cluster::ratios() const
+    const vector< real_t >& rf_event_consumer::cluster::ratios() const
     {
         return f_ratios;
     }
-    const vector< real_t >& rf_candidate_consumer::cluster::gaps() const
+    const vector< real_t >& rf_event_consumer::cluster::gaps() const
     {
         return f_gaps;
     }
@@ -1067,75 +1116,75 @@ namespace midge
     //line
     //****
 
-    void rf_candidate_consumer::line::set_time( real_t* p_time )
+    void rf_event_consumer::line::set_time( real_t* p_time )
     {
         s_time = p_time;
         return;
     }
-    void rf_candidate_consumer::line::set_ratio( real_t* p_ratio )
+    void rf_event_consumer::line::set_ratio( real_t* p_ratio )
     {
         s_ratio = p_ratio;
         return;
     }
-    void rf_candidate_consumer::line::set_interval( const real_t& p_interval )
+    void rf_event_consumer::line::set_interval( const real_t& p_interval )
     {
         s_interval = p_interval;
         return;
     }
-    void rf_candidate_consumer::line::set_min_index( const count_t& p_min_index )
+    void rf_event_consumer::line::set_min_index( const count_t& p_min_index )
     {
         s_min_index = p_min_index;
         return;
     }
-    void rf_candidate_consumer::line::set_max_index( const count_t& p_max_index )
+    void rf_event_consumer::line::set_max_index( const count_t& p_max_index )
     {
         s_max_index = p_max_index;
         return;
     }
-    void rf_candidate_consumer::line::set_tolerance( const real_t& p_tolerance )
+    void rf_event_consumer::line::set_tolerance( const real_t& p_tolerance )
     {
         s_tolerance = p_tolerance;
         return;
     }
-    void rf_candidate_consumer::line::set_add_coefficient( const real_t& p_add_coefficient )
+    void rf_event_consumer::line::set_add_coefficient( const real_t& p_add_coefficient )
     {
         s_add_coefficient = p_add_coefficient;
         return;
     }
-    void rf_candidate_consumer::line::set_add_power( const real_t& p_add_power )
+    void rf_event_consumer::line::set_add_power( const real_t& p_add_power )
     {
         s_add_power = p_add_power;
         return;
     }
-    void rf_candidate_consumer::line::set_gap_coefficient( const real_t& p_gap_coefficient )
+    void rf_event_consumer::line::set_gap_coefficient( const real_t& p_gap_coefficient )
     {
         s_gap_coefficient = p_gap_coefficient;
         return;
     }
-    void rf_candidate_consumer::line::set_gap_power( const real_t& p_gap_power )
+    void rf_event_consumer::line::set_gap_power( const real_t& p_gap_power )
     {
         s_gap_power = p_gap_power;
         return;
     }
-    void rf_candidate_consumer::line::set_id( const count_t& p_id )
+    void rf_event_consumer::line::set_id( const count_t& p_id )
     {
         s_id = p_id;
         return;
     }
 
-    real_t* rf_candidate_consumer::line::s_time = NULL;
-    real_t* rf_candidate_consumer::line::s_ratio = NULL;
-    real_t rf_candidate_consumer::line::s_interval = 1.;
-    count_t rf_candidate_consumer::line::s_min_index = 0;
-    count_t rf_candidate_consumer::line::s_max_index = 0;
-    real_t rf_candidate_consumer::line::s_tolerance = 1.;
-    real_t rf_candidate_consumer::line::s_add_coefficient = 1.;
-    real_t rf_candidate_consumer::line::s_add_power = 0.;
-    real_t rf_candidate_consumer::line::s_gap_coefficient = 2.;
-    real_t rf_candidate_consumer::line::s_gap_power = 0.;
-    count_t rf_candidate_consumer::line::s_id = 0;
+    real_t* rf_event_consumer::line::s_time = NULL;
+    real_t* rf_event_consumer::line::s_ratio = NULL;
+    real_t rf_event_consumer::line::s_interval = 1.;
+    count_t rf_event_consumer::line::s_min_index = 0;
+    count_t rf_event_consumer::line::s_max_index = 0;
+    real_t rf_event_consumer::line::s_tolerance = 1.;
+    real_t rf_event_consumer::line::s_add_coefficient = 1.;
+    real_t rf_event_consumer::line::s_add_power = 0.;
+    real_t rf_event_consumer::line::s_gap_coefficient = 2.;
+    real_t rf_event_consumer::line::s_gap_power = 0.;
+    count_t rf_event_consumer::line::s_id = 0;
 
-    rf_candidate_consumer::line::line( const cluster& p_cluster ) :
+    rf_event_consumer::line::line( const cluster& p_cluster ) :
             f_id( s_id++ ),
             f_count( 0. ),
             f_score( 0. ),
@@ -1225,7 +1274,6 @@ namespace midge
         msg_warning( coremsg, "    add count sum is <" << f_add_count_sum << ">" << eom );
         msg_warning( coremsg, "    add score sum is <" << f_add_score_sum << ">" << eom );
 
-        //update gap score
         msg_warning( coremsg, "  calculating gap score:" << eom );
         for( t_index = 0; t_index < f_gaps.size(); t_index++ )
         {
@@ -1244,12 +1292,12 @@ namespace midge
         msg_warning( coremsg, "    score is <" << f_score << ">" << eom );
 
     }
-    rf_candidate_consumer::line::~line()
+    rf_event_consumer::line::~line()
     {
         msg_warning( coremsg, "line <" << f_id << "> destroyed" << eom );
     }
 
-    void rf_candidate_consumer::line::update()
+    void rf_event_consumer::line::update()
     {
         msg_warning( coremsg, "line <" << f_id << "> updating:" << eom );
 
@@ -1484,57 +1532,57 @@ namespace midge
         return;
     }
 
-    const count_t& rf_candidate_consumer::line::id() const
+    const count_t& rf_event_consumer::line::id() const
     {
         return f_id;
     }
-    const real_t& rf_candidate_consumer::line::count() const
+    const real_t& rf_event_consumer::line::count() const
     {
         return f_count;
     }
-    const real_t& rf_candidate_consumer::line::score() const
+    const real_t& rf_event_consumer::line::score() const
     {
         return f_score;
     }
 
-    const real_t& rf_candidate_consumer::line::time() const
+    const real_t& rf_event_consumer::line::time() const
     {
         return f_time;
     }
-    const real_t& rf_candidate_consumer::line::duration() const
+    const real_t& rf_event_consumer::line::duration() const
     {
         return f_duration;
     }
-    const real_t& rf_candidate_consumer::line::frequency() const
+    const real_t& rf_event_consumer::line::frequency() const
     {
         return f_frequency;
     }
-    const real_t& rf_candidate_consumer::line::slope() const
+    const real_t& rf_event_consumer::line::slope() const
     {
         return f_slope;
     }
-    const real_t& rf_candidate_consumer::line::correlation() const
+    const real_t& rf_event_consumer::line::correlation() const
     {
         return f_correlation;
     }
-    const real_t& rf_candidate_consumer::line::deviation() const
+    const real_t& rf_event_consumer::line::deviation() const
     {
         return f_deviation;
     }
 
-    const vector< real_t >& rf_candidate_consumer::line::times() const
+    const vector< real_t >& rf_event_consumer::line::times() const
     {
         return f_times;
     }
-    const vector< real_t >& rf_candidate_consumer::line::frequencies() const
+    const vector< real_t >& rf_event_consumer::line::frequencies() const
     {
         return f_frequencies;
     }
-    const vector< real_t >& rf_candidate_consumer::line::ratios() const
+    const vector< real_t >& rf_event_consumer::line::ratios() const
     {
         return f_ratios;
     }
-    const vector< real_t >& rf_candidate_consumer::line::gaps() const
+    const vector< real_t >& rf_event_consumer::line::gaps() const
     {
         return f_gaps;
     }

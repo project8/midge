@@ -34,6 +34,12 @@ int main( int p_count, char** p_values )
         msg_error( coremsg, "  " << t_error.what() << eom );
         return -1;
     }
+    catch( const exception& t_exception )
+    {
+        msg_error( coremsg, "exception occurred during execution:" << ret );
+        msg_error( coremsg, "  " << t_exception.what() << eom );
+        return -1;
+    }
     catch( ... )
     {
         msg_error( coremsg, "unknown error occurred during input" << eom );
@@ -50,6 +56,12 @@ int main( int p_count, char** p_values )
     {
         msg_error( coremsg, "error occurred during execution:" << ret );
         msg_error( coremsg, "  " << t_error.what() << eom );
+        return -1;
+    }
+    catch( const exception& t_exception )
+    {
+        msg_error( coremsg, "exception occurred during execution:" << ret );
+        msg_error( coremsg, "  " << t_exception.what() << eom );
         return -1;
     }
     catch( ... )

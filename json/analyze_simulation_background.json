@@ -32,8 +32,8 @@
     {
         "name" : "background",
         "file" : "simulation_background.root",
-        "length" : 25,
-        "window_bartlett" :
+        "length" : 75,
+        "window_hanning" :
         {
         },
         "plot" : true,
@@ -52,7 +52,6 @@
     "join" : "signal_data.out:power.in_0",
     "join" : "power.out_0:power_data.in",
     "join" : "power_data.out:background.in_0",
-    "join" : "power_data.out:waterfall.in_0",
     "join" : "control.out_0:signal",
 
     "run" : "control"
