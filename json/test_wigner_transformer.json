@@ -1,0 +1,172 @@
+{
+    "rt_data" :
+    {
+        "name" : "rtc0"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rtc1"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rtc"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rtg"
+    },
+
+    "rt_data" :
+    {
+        "name" : "rts"
+    },
+
+    "rf_data" :
+    {
+        "name" : "rfw"
+    },
+
+    "rf_data" :
+    {
+        "name" : "rfp"
+    },
+
+    "rt_chirp_producer" :
+    {
+        "name" : "rtc0_in",
+        "power_dbm" : 0.0,
+        "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 100.0e6,
+        "stop_frequency_hz" : 200.0e6,
+        "phase_deg" : -90.0,
+        "start_sec" : 4000.0e-9,
+        "stop_sec" : 14000.0e-9,
+        "interval" : 1.0e-9,
+        "size" : 1000,
+        "stride" : 10
+    },
+
+    "rt_chirp_producer" :
+    {
+        "name" : "rtc1_in",
+        "power_dbm" : 0.0,
+        "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 250.0e6,
+        "stop_frequency_hz" : 400.0e6,
+        "phase_deg" : -90.0,
+        "start_sec" : 14000.0e-9,
+        "stop_sec" : 17000.0e-9,
+        "interval" : 1.0e-9,
+        "size" : 1000,
+        "stride" : 10
+    },
+
+    "rt_gaussian_producer" :
+    {
+        "name" : "rtg_in",
+        "power_dbm" : 0.0,
+        "impedance_ohm" : 50.0,
+        "start_sec" : 2000.0e-9,
+        "stop_sec" : 18000.0e-9,
+        "interval" : 1.0e-9,
+        "size" : 1000,
+        "stride" : 10
+    },
+
+    "rt_rt_sum_transformer" :
+    {
+        "name" : "rtc_in"
+    },
+
+    "rt_rt_sum_transformer" :
+    {
+        "name" : "rts_in"
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "rt_rfp",
+        "impedance_ohm" : 50.0,
+        "window_hamming" :
+        {
+        }
+    },
+
+    "rt_rf_wigner_transformer" :
+    {
+        "name" : "rt_rfw",
+        "offset" : 500,
+        "length" : 399,
+        "window_welch" :
+        {
+        }
+    },
+
+    "rt_root_consumer" :
+    {
+        "name" : "rt_out",
+        "file" : "test_comparison.signal.root",
+        "plot" : true,
+        "plot_key" : "rt_out_canvas",
+        "plot_name" : "rt_out_histogram",
+        "chart_title" : "Test Comparision Signal",
+        "axis_title" : "Signal [volt]"
+    },
+
+    "rf_root_consumer" :
+    {
+        "name" : "rfp_out",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
+        "file" : "test_comparison.power.root",
+        "plot" : true,
+        "plot_key" : "rfp_out_canvas",
+        "plot_name" : "rfp_out_histogram",
+        "chart_title" : "Test Comparision Power Spectrum",
+        "axis_title" : "Power [watt]"
+    },
+
+    "rf_root_consumer" :
+    {
+        "name" : "rfw_out",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
+        "file" : "test_comparison.wigner.root",
+        "plot" : true,
+        "plot_key" : "rfw_out_canvas",
+        "plot_name" : "rfw_out_histogram",
+        "chart_title" : "Test Comparision Wigner-Ville Distribution",
+        "axis_title" : "Spectral Density [arb]"
+    },
+
+    "count_controller" :
+    {
+        "name" : "c",
+        "count" : 1901
+    },
+
+    "join" : "rtc0_in.out_0:rtc0.in",
+    "join" : "rtc1_in.out_0:rtc1.in",
+    "join" : "rtc0.out:rtc_in.in_0",
+    "join" : "rtc1.out:rtc_in.in_1",
+    "join" : "rtc_in.out_0:rtc.in",
+    "join" : "rtg_in.out_0:rtg.in",
+    "join" : "rtc.out:rts_in.in_0",
+    "join" : "rtg.out:rts_in.in_1",
+    "join" : "rts_in.out_0:rts.in",
+    "join" : "rts.out:rt_out.in_0",
+    "join" : "rts.out:rt_rfp.in_0",
+    "join" : "rts.out:rt_rfw.in_0",
+    "join" : "rt_rfp.out_0:rfp.in",
+    "join" : "rt_rfw.out_0:rfw.in",
+    "join" : "rfp.out:rfp_out.in_0",
+    "join" : "rfw.out:rfw_out.in_0",
+    "join" : "c.out_0:rtc0_in",
+    "join" : "c.out_1:rtc1_in",
+    "join" : "c.out_2:rtg_in",
+
+    "run" : "c"
+}

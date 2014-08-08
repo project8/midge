@@ -554,12 +554,21 @@ set( midge_json_files
 	test_builder.json
 	test_fourier_transformer.json
 	test_analytic_transformer.json
+	test_power_transformer.json
+	test_wigner_transformer.json
 	test_harmonic_producer.json
 	test_chirp_producer.json
 	test_gaussian_producer.json
-	test_comparison.json
 	test_monarch.json
-	test_analysis.json
+	generate_simulation_background.json
+	generate_simulation_events.json
+	generate_simulation.json
+	analyze_simulation_background.json
+	analyze_simulation_events.json
+	analyze_simulation.json
+	analyze_background.json
+	analyze_events.json
+	analyze.json
 )
 
 midge_configurations( json )
