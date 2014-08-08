@@ -5,8 +5,11 @@
 #include "node.hh"
 
 #include "TApplication.h"
+#include "TStyle.h"
+#include "TColor.h"
 #include "TCanvas.h"
 #include "TAxis.h"
+#include "TGraph.h"
 #include "TH1D.h"
 #include "TH2D.h"
 
@@ -35,8 +38,11 @@ namespace midge
             class ordinate
             {
                 public:
+                    ordinate();
                     ordinate( const count_t& t_size );
                     ~ordinate();
+
+                    void operator()( const count_t& t_size );
 
                 public:
                     string& title();
@@ -46,7 +52,6 @@ namespace midge
                     const data& values() const;
 
                 private:
-                    ordinate();
                     ordinate( const ordinate& );
 
                     string f_title;
@@ -56,8 +61,11 @@ namespace midge
             class abscissa
             {
                 public:
+                    abscissa();
                     abscissa( const count_t& t_size );
                     ~abscissa();
+
+                    void operator()( const count_t& t_size );
 
                 public:
                     string& title();
@@ -76,7 +84,6 @@ namespace midge
                     const data& values() const;
 
                 private:
-                    abscissa();
                     abscissa( const abscissa& );
 
                     string f_title;
@@ -109,6 +116,14 @@ namespace midge
                 const abscissa& p_y_axis,
                 const ordinate& p_z_values
             );
+            void graph_two_dimensional
+            (
+                const string& p_key,
+                const string& p_name,
+                const string& p_title,
+                const abscissa& p_x_axis,
+                const abscissa& p_y_axis
+            );
             void finalize();
 
         private:
@@ -133,6 +148,12 @@ namespace midge
             typedef th2_vector::const_iterator th2_cit;
 
             th2_vector f_th2s;
+
+            typedef vector< TGraph* > graph_vector;
+            typedef graph_vector::iterator graph_it;
+            typedef graph_vector::const_iterator graph_cit;
+
+            graph_vector f_graphs;
     };
 
 }

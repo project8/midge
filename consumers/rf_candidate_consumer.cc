@@ -53,9 +53,9 @@ namespace midge
             f_event_stream( NULL ),
             f_event_label( NULL ),
             f_event_tree( NULL ),
-            f_tree_ratio_time( 0. ),
-            f_tree_ratio_frequency( 0. ),
-            f_tree_ratio_value( 0. ),
+            f_tree_data_time( 0. ),
+            f_tree_data_frequency( 0. ),
+            f_tree_data_ratio( 0. ),
             f_tree_id( 0 ),
             f_tree_score( 0. ),
             f_tree_time( 0. ),
@@ -97,9 +97,9 @@ namespace midge
             f_ratio_label = new TObjString( "midge_ratios" );
             f_ratio_tree = new TTree( "ratios", "ratios" );
             f_ratio_tree->SetDirectory( f_ratio_stream );
-            f_ratio_tree->Branch( "time", &f_tree_ratio_time );
-            f_ratio_tree->Branch( "frequency", &f_tree_ratio_frequency );
-            f_ratio_tree->Branch( "value", &f_tree_ratio_value );
+            f_ratio_tree->Branch( "time", &f_tree_data_time );
+            f_ratio_tree->Branch( "frequency", &f_tree_data_frequency );
+            f_ratio_tree->Branch( "ratio", &f_tree_data_ratio );
         }
 
         if( f_cluster_file.size() > 0 )
@@ -218,6 +218,7 @@ namespace midge
 
         line::set_time( &f_maximum_time );
         line::set_ratio( f_ratio );
+        line::set_interval( f_interval );
         line::set_min_index( f_frequency_minimum_index );
         line::set_max_index( f_frequency_maximum_index );
         line::set_tolerance( f_line_tolerance );
@@ -259,9 +260,9 @@ namespace midge
             {
                 f_ratio[ t_index ] = t_ratio;
 
-                f_tree_ratio_time = f_maximum_time;
-                f_tree_ratio_frequency = f_interval * t_index;
-                f_tree_ratio_value = t_ratio;
+                f_tree_data_time = f_maximum_time;
+                f_tree_data_frequency = f_interval * t_index;
+                f_tree_data_ratio = t_ratio;
                 f_ratio_tree->Fill();
             }
         }
@@ -295,13 +296,13 @@ namespace midge
             msg_warning( coremsg, "**   updating active cluster <" << t_cluster->id() << "> **" << eom );
             t_cluster->update();
 
-            if( t_cluster->score() < 0. )
+            if( t_cluster->score() > f_line_threshold )
             {
                 msg_warning( coremsg, "**   will promote active cluster <" << t_cluster->id() << "> **" << eom );
                 t_cluster_promote_stack.push( t_it );
             }
 
-            if( t_cluster->score() > f_line_threshold )
+            if( t_cluster->score() < 0. )
             {
                 msg_warning( coremsg, "**   will demote active cluster <" << t_cluster->id() << "> **" << eom );
                 t_cluster_demote_stack.push( t_it );
@@ -323,23 +324,24 @@ namespace midge
                 f_tree_score = t_line->score();
                 f_tree_time = t_line->time();
                 f_tree_duration = t_line->duration();
-                f_tree_frequency = t_line->slope();
+                f_tree_frequency = t_line->frequency();
+                f_tree_slope = t_line->slope();
                 f_tree_correlation = t_line->correlation();
                 f_tree_deviation = t_line->deviation();
                 f_line_tree->Fill();
 
                 stringstream t_name;
-                t_name << "line_" << f_tree_id << "_ratios";
+                t_name << "line_" << f_tree_id << "_data";
                 TTree* t_line_ratio_tree = new TTree( t_name.str().c_str(), t_name.str().c_str() );
                 t_line_ratio_tree->SetDirectory( f_line_stream );
-                t_line_ratio_tree->Branch( "time", &f_tree_ratio_time );
-                t_line_ratio_tree->Branch( "frequency", &f_tree_ratio_frequency );
-                t_line_ratio_tree->Branch( "value", &f_tree_ratio_value );
+                t_line_ratio_tree->Branch( "time", &f_tree_data_time );
+                t_line_ratio_tree->Branch( "frequency", &f_tree_data_frequency );
+                t_line_ratio_tree->Branch( "ratio", &f_tree_data_ratio );
                 for( count_t t_index = 0; t_index < t_line->ratios().size(); t_index++ )
                 {
-                    f_tree_ratio_time = t_line->times().at( t_index );
-                    f_tree_ratio_frequency = t_line->frequencies().at( t_index );
-                    f_tree_ratio_value = t_line->ratios().at( t_index );
+                    f_tree_data_time = t_line->times().at( t_index );
+                    f_tree_data_frequency = t_line->frequencies().at( t_index );
+                    f_tree_data_ratio = t_line->ratios().at( t_index );
                     t_line_ratio_tree->Fill();
                 }
                 f_line_stream->cd();
@@ -362,20 +364,21 @@ namespace midge
                 f_tree_score = t_cluster->score();
                 f_tree_time = t_cluster->time();
                 f_tree_duration = t_cluster->duration();
+                f_tree_frequency = t_cluster->frequency();
                 f_cluster_tree->Fill();
 
                 stringstream t_name;
-                t_name << "cluster_" << f_tree_id << "_ratios";
+                t_name << "cluster_" << f_tree_id << "_data";
                 TTree* t_cluster_ratio_tree = new TTree( t_name.str().c_str(), t_name.str().c_str() );
                 t_cluster_ratio_tree->SetDirectory( f_cluster_stream );
-                t_cluster_ratio_tree->Branch( "time", &f_tree_ratio_time );
-                t_cluster_ratio_tree->Branch( "frequency", &f_tree_ratio_frequency );
-                t_cluster_ratio_tree->Branch( "value", &f_tree_ratio_value );
+                t_cluster_ratio_tree->Branch( "time", &f_tree_data_time );
+                t_cluster_ratio_tree->Branch( "frequency", &f_tree_data_frequency );
+                t_cluster_ratio_tree->Branch( "ratio", &f_tree_data_ratio );
                 for( count_t t_index = 0; t_index < t_cluster->ratios().size(); t_index++ )
                 {
-                    f_tree_ratio_time = t_cluster->times().at( t_index );
-                    f_tree_ratio_frequency = t_cluster->frequencies().at( t_index );
-                    f_tree_ratio_value = t_cluster->ratios().at( t_index );
+                    f_tree_data_time = t_cluster->times().at( t_index );
+                    f_tree_data_frequency = t_cluster->frequencies().at( t_index );
+                    f_tree_data_ratio = t_cluster->ratios().at( t_index );
                     t_cluster_ratio_tree->Fill();
                 }
                 f_cluster_stream->cd();
@@ -476,9 +479,9 @@ namespace midge
                 TFile* t_threshold_file = new TFile( f_ratio_file.c_str(), "READ" );
                 TTree* t_threshold_tree = (TTree*) (t_threshold_file->Get( "ratios" ));
                 Long64_t t_threshold_entries = t_threshold_tree->GetEntries();
-                t_threshold_tree->SetBranchAddress( "time", &f_tree_ratio_time );
-                t_threshold_tree->SetBranchAddress( "frequency", &f_tree_ratio_frequency );
-                t_threshold_tree->SetBranchAddress( "value", &f_tree_ratio_value );
+                t_threshold_tree->SetBranchAddress( "time", &f_tree_data_time );
+                t_threshold_tree->SetBranchAddress( "frequency", &f_tree_data_frequency );
+                t_threshold_tree->SetBranchAddress( "ratio", &f_tree_data_ratio );
 
                 plot::abscissa t_threshold_times( t_threshold_entries );
                 t_threshold_times.title() = string( "Time [sec]" );
@@ -499,9 +502,9 @@ namespace midge
                 {
                     t_threshold_tree->GetEntry( t_index );
 
-                    t_threshold_times.values().at( t_index ) = f_tree_ratio_time;
-                    t_threshold_frequencies.values().at( t_index ) = f_tree_ratio_frequency;
-                    t_threshold_values.values().at( t_index ) = f_tree_ratio_value;
+                    t_threshold_times.values().at( t_index ) = f_tree_data_time;
+                    t_threshold_frequencies.values().at( t_index ) = f_tree_data_frequency;
+                    t_threshold_values.values().at( t_index ) = f_tree_data_ratio;
                 }
 
                 t_threshold_file->Close();
@@ -521,48 +524,75 @@ namespace midge
                 t_cluster_tree->SetBranchAddress( "duration", &f_tree_duration );
                 t_cluster_tree->SetBranchAddress( "frequency", &f_tree_frequency );
 
-                plot::abscissa t_cluster_times( t_cluster_entries );
-                t_cluster_times.title() = string( "Time [sec]" );
-                t_cluster_times.count() = f_count;
-                t_cluster_times.low() = f_minimum_time;
-                t_cluster_times.high() = f_maximum_time;
-
-                plot::abscissa t_cluster_frequencies( t_cluster_entries );
-                t_cluster_frequencies.title() = string( "Frequency [Hz]" );
-                t_cluster_frequencies.count() = f_frequency_maximum_index - f_frequency_minimum_index + 1;
-                t_cluster_frequencies.low() = f_frequency_minimum_index * f_interval;
-                t_cluster_frequencies.high() = f_frequency_maximum_index * f_interval;
-
-                plot::ordinate t_cluster_values( t_cluster_entries );
-                t_cluster_values.title() = f_axis_cluster_title;
-
-                TTree* t_cluster_ratio_tree;
-                Long64_t t_cluster_ratio_entries;
-                stringstream t_cluster_ratio_name;
+                TTree* t_cluster_data_tree;
+                Long64_t t_cluster_data_entries;
+                stringstream t_cluster_data_name;
+                plot::abscissa t_cluster_data_times;
+                plot::abscissa t_cluster_data_frequencies;
+                plot::ordinate t_cluster_data_values;
+                plot::abscissa t_cluster_times;
+                plot::abscissa t_cluster_frequencies;
                 for( Long64_t t_cluster_index = 0; t_cluster_index < t_cluster_entries; t_cluster_index++ )
                 {
                     t_cluster_tree->GetEntry( t_cluster_index );
-                    t_cluster_ratio_name << "cluster_" << f_tree_id << "_ratios";
-                    t_cluster_ratio_tree = (TTree*) (t_cluster_file->Get( t_cluster_ratio_name.str().c_str() ) );
-                    t_cluster_ratio_entries = t_cluster_ratio_tree->GetEntries();
-                    t_cluster_ratio_tree->SetBranchAddress( "time", &f_tree_ratio_time );
-                    t_cluster_ratio_tree->SetBranchAddress( "frequency", &f_tree_ratio_frequency );
-                    t_cluster_ratio_tree->SetBranchAddress( "value", &f_tree_ratio_value );
-                    for( Long64_t t_cluster_ratio_index = 0; t_cluster_ratio_index < t_cluster_ratio_entries; t_cluster_ratio_index++ )
+
+                    t_cluster_data_name << "cluster_" << f_tree_id << "_data";
+
+                    t_cluster_data_tree = (TTree*) (t_cluster_file->Get( t_cluster_data_name.str().c_str() ) );
+                    t_cluster_data_entries = t_cluster_data_tree->GetEntries();
+                    t_cluster_data_tree->SetBranchAddress( "time", &f_tree_data_time );
+                    t_cluster_data_tree->SetBranchAddress( "frequency", &f_tree_data_frequency );
+                    t_cluster_data_tree->SetBranchAddress( "ratio", &f_tree_data_ratio );
+
+                    t_cluster_data_times( t_cluster_data_entries );
+                    t_cluster_data_times.title() = string( "Time [sec]" );
+                    t_cluster_data_times.count() = f_count;
+                    t_cluster_data_times.low() = f_minimum_time;
+                    t_cluster_data_times.high() = f_maximum_time;
+
+                    t_cluster_data_frequencies( t_cluster_data_entries );
+                    t_cluster_data_frequencies.title() = string( "Frequency [Hz]" );
+                    t_cluster_data_frequencies.count() = f_frequency_maximum_index - f_frequency_minimum_index + 1;
+                    t_cluster_data_frequencies.low() = f_frequency_minimum_index * f_interval;
+                    t_cluster_data_frequencies.high() = f_frequency_maximum_index * f_interval;
+
+                    t_cluster_data_values( t_cluster_data_entries );
+                    t_cluster_data_values.title() = f_axis_cluster_title;
+
+                    for( Long64_t t_cluster_data_index = 0; t_cluster_data_index < t_cluster_data_entries; t_cluster_data_index++ )
                     {
-                        t_cluster_ratio_tree->GetEntry( t_cluster_ratio_index );
-                        t_cluster_times.values().at( t_cluster_index ) = f_tree_ratio_time;
-                        t_cluster_frequencies.values().at( t_cluster_index ) = f_tree_ratio_frequency;
-                        t_cluster_values.values().at( t_cluster_index ) = f_tree_score;
+                        t_cluster_data_tree->GetEntry( t_cluster_data_index );
+                        t_cluster_data_times.values().at( t_cluster_data_index ) = f_tree_data_time;
+                        t_cluster_data_frequencies.values().at( t_cluster_data_index ) = f_tree_data_frequency;
+                        t_cluster_data_values.values().at( t_cluster_data_index ) = f_tree_score;
                     }
-                    t_cluster_ratio_name.str( "" );
-                    t_cluster_ratio_name.clear();
+
+                    plot::get_instance()->plot_two_dimensional( f_plot_cluster_key, f_plot_cluster_name, f_chart_cluster_title, t_cluster_data_times, t_cluster_data_frequencies, t_cluster_data_values );
+
+                    t_cluster_times( 2 );
+                    t_cluster_times.title() = string( "Time [sec]" );
+                    t_cluster_times.count() = f_count;
+                    t_cluster_times.low() = f_minimum_time;
+                    t_cluster_times.high() = f_maximum_time;
+                    t_cluster_times.values().at( 0 ) = f_tree_time;
+                    t_cluster_times.values().at( 1 ) = f_tree_time + f_tree_duration;
+
+                    t_cluster_frequencies( 2 );
+                    t_cluster_frequencies.title() = string( "Frequency [Hz]" );
+                    t_cluster_frequencies.count() = f_frequency_maximum_index - f_frequency_minimum_index + 1;
+                    t_cluster_frequencies.low() = f_frequency_minimum_index * f_interval;
+                    t_cluster_frequencies.high() = f_frequency_maximum_index * f_interval;
+                    t_cluster_frequencies.values().at( 0 ) = f_tree_frequency;
+                    t_cluster_frequencies.values().at( 1 ) = f_tree_frequency + f_cluster_slope * f_tree_duration;
+
+                    plot::get_instance()->graph_two_dimensional( f_plot_cluster_key, f_plot_cluster_name, f_chart_cluster_title, t_cluster_times, t_cluster_frequencies );
+
+                    t_cluster_data_name.str( "" );
+                    t_cluster_data_name.clear();
                 }
 
                 t_cluster_file->Close();
                 delete t_cluster_file;
-
-                plot::get_instance()->plot_two_dimensional( f_plot_cluster_key, f_plot_cluster_name, f_chart_cluster_title, t_cluster_times, t_cluster_frequencies, t_cluster_values );
             }
 
             if( f_line_file.size() > 0 )
@@ -579,48 +609,73 @@ namespace midge
                 t_line_tree->SetBranchAddress( "correlation", &f_tree_correlation );
                 t_line_tree->SetBranchAddress( "deviation", &f_tree_deviation );
 
-                plot::abscissa t_line_times( t_line_entries );
-                t_line_times.title() = string( "Time [sec]" );
-                t_line_times.count() = f_count;
-                t_line_times.low() = f_minimum_time;
-                t_line_times.high() = f_maximum_time;
-
-                plot::abscissa t_line_frequencies( t_line_entries );
-                t_line_frequencies.title() = string( "Frequency [Hz]" );
-                t_line_frequencies.count() = f_frequency_maximum_index - f_frequency_minimum_index + 1;
-                t_line_frequencies.low() = f_frequency_minimum_index * f_interval;
-                t_line_frequencies.high() = f_frequency_maximum_index * f_interval;
-
-                plot::ordinate t_line_values( t_line_entries );
-                t_line_values.title() = f_axis_line_title;
-
-                TTree* t_line_ratio_tree;
-                Long64_t t_line_ratio_entries;
-                stringstream t_line_ratio_name;
+                TTree* t_line_data_tree;
+                Long64_t t_line_data_entries;
+                stringstream t_line_data_name;
+                plot::abscissa t_line_data_times;
+                plot::abscissa t_line_data_frequencies;
+                plot::ordinate t_line_data_values;
+                plot::abscissa t_line_times;
+                plot::abscissa t_line_frequencies;
                 for( Long64_t t_line_index = 0; t_line_index < t_line_entries; t_line_index++ )
                 {
                     t_line_tree->GetEntry( t_line_index );
-                    t_line_ratio_name << "line_" << f_tree_id << "_ratios";
-                    t_line_ratio_tree = (TTree*) (t_line_file->Get( t_line_ratio_name.str().c_str() ) );
-                    t_line_ratio_entries = t_line_ratio_tree->GetEntries();
-                    t_line_ratio_tree->SetBranchAddress( "time", &f_tree_ratio_time );
-                    t_line_ratio_tree->SetBranchAddress( "frequency", &f_tree_ratio_frequency );
-                    t_line_ratio_tree->SetBranchAddress( "value", &f_tree_ratio_value );
-                    for( Long64_t t_line_ratio_index = 0; t_line_ratio_index < t_line_ratio_entries; t_line_ratio_index++ )
+                    t_line_data_name << "line_" << f_tree_id << "_data";
+                    t_line_data_tree = (TTree*) (t_line_file->Get( t_line_data_name.str().c_str() ) );
+                    t_line_data_entries = t_line_data_tree->GetEntries();
+                    t_line_data_tree->SetBranchAddress( "time", &f_tree_data_time );
+                    t_line_data_tree->SetBranchAddress( "frequency", &f_tree_data_frequency );
+                    t_line_data_tree->SetBranchAddress( "ratio", &f_tree_data_ratio );
+
+                    t_line_data_times( t_line_data_entries );
+                    t_line_data_times.title() = string( "Time [sec]" );
+                    t_line_data_times.count() = f_count;
+                    t_line_data_times.low() = f_minimum_time;
+                    t_line_data_times.high() = f_maximum_time;
+
+                    t_line_data_frequencies( t_line_data_entries );
+                    t_line_data_frequencies.title() = string( "Frequency [Hz]" );
+                    t_line_data_frequencies.count() = f_frequency_maximum_index - f_frequency_minimum_index + 1;
+                    t_line_data_frequencies.low() = f_frequency_minimum_index * f_interval;
+                    t_line_data_frequencies.high() = f_frequency_maximum_index * f_interval;
+
+                    t_line_data_values( t_line_data_entries );
+                    t_line_data_values.title() = f_axis_line_title;
+
+                    for( Long64_t t_line_data_index = 0; t_line_data_index < t_line_data_entries; t_line_data_index++ )
                     {
-                        t_line_ratio_tree->GetEntry( t_line_ratio_index );
-                        t_line_times.values().at( t_line_index ) = f_tree_ratio_time;
-                        t_line_frequencies.values().at( t_line_index ) = f_tree_ratio_frequency;
-                        t_line_values.values().at( t_line_index ) = f_tree_score;
+                        t_line_data_tree->GetEntry( t_line_data_index );
+                        t_line_data_times.values().at( t_line_data_index ) = f_tree_data_time;
+                        t_line_data_frequencies.values().at( t_line_data_index ) = f_tree_data_frequency;
+                        t_line_data_values.values().at( t_line_data_index ) = f_tree_score;
                     }
-                    t_line_ratio_name.str( "" );
-                    t_line_ratio_name.clear();
+
+                    plot::get_instance()->plot_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_data_times, t_line_data_frequencies, t_line_data_values );
+
+                    t_line_times( 2 );
+                    t_line_times.title() = string( "Time [sec]" );
+                    t_line_times.count() = f_count;
+                    t_line_times.low() = f_minimum_time;
+                    t_line_times.high() = f_maximum_time;
+                    t_line_times.values().at( 0 ) = f_tree_time;
+                    t_line_times.values().at( 1 ) = f_tree_time + f_tree_duration;
+
+                    t_line_frequencies( 2 );
+                    t_line_frequencies.title() = string( "Frequency [Hz]" );
+                    t_line_frequencies.count() = f_frequency_maximum_index - f_frequency_minimum_index + 1;
+                    t_line_frequencies.low() = f_frequency_minimum_index * f_interval;
+                    t_line_frequencies.high() = f_frequency_maximum_index * f_interval;
+                    t_line_frequencies.values().at( 0 ) = f_tree_frequency;
+                    t_line_frequencies.values().at( 1 ) = f_tree_frequency + f_tree_slope * f_tree_duration;
+
+                    plot::get_instance()->graph_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_times, t_line_frequencies );
+
+                    t_line_data_name.str( "" );
+                    t_line_data_name.clear();
                 }
 
                 t_line_file->Close();
                 delete t_line_file;
-
-                plot::get_instance()->plot_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_times, t_line_frequencies, t_line_values );
             }
 
             plot::get_instance()->finalize();
@@ -797,7 +852,7 @@ namespace midge
         msg_warning( coremsg, "  maximum frequency is <" << t_max_index * s_interval << ">" << eom );
 
         msg_warning( coremsg, "  accumulating points:" << eom );
-        register bool_t t_point_found;
+        register bool_t t_point_found = false;
         register real_t t_point_ratio;
         register real_t t_point_frequency;
         for( t_index = t_min_index; t_index <= t_max_index; t_index++ )
@@ -1147,7 +1202,7 @@ namespace midge
         t_dev_stat += f_frequency * f_frequency * f_w_sum;
         t_dev_stat -= 2. * f_slope * f_wtf_sum;
         t_dev_stat -= 2. * f_frequency * f_wf_sum;
-        t_dev_stat -= 2. * f_slope * f_frequency * f_wt_sum;
+        t_dev_stat += 2. * f_slope * f_frequency * f_wt_sum;
         f_deviation = sqrt( t_dev_stat / f_w_sum );
         msg_warning( coremsg, "    time is <" << f_time << ">" << eom );
         msg_warning( coremsg, "    duration is <" << f_duration << ">" << eom );
@@ -1177,7 +1232,7 @@ namespace midge
             t_init_gap = f_gaps.at( t_index );
 
             f_gap_count_sum += t_init_gap;
-            f_gap_score_sum += s_gap_coefficient * pow( t_init_ratio, s_gap_power );
+            f_gap_score_sum += s_gap_coefficient * pow( t_init_gap, s_gap_power );
         }
         msg_warning( coremsg, "    gap count sum is <" << f_gap_count_sum << ">" << eom );
         msg_warning( coremsg, "    gap score sum is <" << f_gap_score_sum << ">" << eom );
@@ -1222,7 +1277,7 @@ namespace midge
         msg_warning( coremsg, "  maximum frequency is <" << t_max_index * s_interval << ">" << eom );
 
         msg_warning( coremsg, "  accumulating points:" << eom );
-        register bool_t t_point_found;
+        register bool_t t_point_found = false;
         register real_t t_point_ratio;
         register real_t t_point_frequency;
         for( t_index = t_min_index; t_index <= t_max_index; t_index++ )
@@ -1307,7 +1362,7 @@ namespace midge
             t_dev_stat += f_frequency * f_frequency * f_w_sum;
             t_dev_stat -= 2. * f_slope * f_wtf_sum;
             t_dev_stat -= 2. * f_frequency * f_wf_sum;
-            t_dev_stat -= 2. * f_slope * f_frequency * f_wt_sum;
+            t_dev_stat += 2. * f_slope * f_frequency * f_wt_sum;
             f_deviation = sqrt( t_dev_stat / f_w_sum );
 
             f_duration = (t_current_time - f_time);
@@ -1316,7 +1371,7 @@ namespace midge
             msg_warning( coremsg, "    frequency is now <" << f_frequency << ">" << eom );
             msg_warning( coremsg, "    current frequency is now <" << t_current_frequency << ">" << eom );
             msg_warning( coremsg, "    slope is now <" << f_slope << ">" << eom );
-            msg_warning( coremsg, "    correlation is now<" << f_correlation << ">" << eom );
+            msg_warning( coremsg, "    correlation is now <" << f_correlation << ">" << eom );
             msg_warning( coremsg, "    deviation is now <" << f_deviation << ">" << eom );
 
             msg_warning( coremsg, "  recalculating add score:" << eom );
@@ -1357,7 +1412,7 @@ namespace midge
             t_dev_stat += f_frequency * f_frequency * f_w_sum;
             t_dev_stat -= 2. * f_slope * f_wtf_sum;
             t_dev_stat -= 2. * f_frequency * f_wf_sum;
-            t_dev_stat -= 2. * f_slope * f_frequency * f_wt_sum;
+            t_dev_stat += 2. * f_slope * f_frequency * f_wt_sum;
             f_deviation = sqrt( t_dev_stat / f_w_sum );
 
             f_duration = (t_current_time - f_time);
@@ -1366,7 +1421,7 @@ namespace midge
             msg_warning( coremsg, "    frequency is now <" << f_frequency << ">" << eom );
             msg_warning( coremsg, "    current frequency is now <" << t_current_frequency << ">" << eom );
             msg_warning( coremsg, "    slope is now <" << f_slope << ">" << eom );
-            msg_warning( coremsg, "    correlation is now<" << f_correlation << ">" << eom );
+            msg_warning( coremsg, "    correlation is now <" << f_correlation << ">" << eom );
             msg_warning( coremsg, "    deviation is now <" << f_deviation << ">" << eom );
 
             msg_warning( coremsg, "  recalculating add score:" << eom );

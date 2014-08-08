@@ -1,58 +1,6 @@
 {
     "rt_data" :
     {
-        "name" : "background_noise_data"
-    },
-
-    "rt_gaussian_producer" :
-    {
-        "name" : "background_noise",
-        "power_dbm" : -12.0,
-        "impedance_ohm" : 50.0,
-        "start_sec" : 0.0e-4,
-        "stop_sec" : 2.0e-4,
-        "interval" : 1.0e-9,
-        "seed" : 51385,
-        "size" : 1000,
-        "stride" : 1000
-    },
-
-    "rt_monarch_consumer" :
-    {
-        "name" : "background_monarch",
-        "file" : "simulation_background_signal.egg",
-        "bits" : 8,
-        "length" : 5000,
-        "voltage_minimum" : -0.25,
-        "voltage_maximum" : 0.25,
-        "duration" : 2.0e-4
-    },
-
-    "rt_root_consumer" :
-    {
-        "name" : "background_root",
-        "file" : "simulation_background_signal.root",
-        "plot" : true,
-        "plot_key" : "background_root_canvas",
-        "plot_name" : "background_root_histogram",
-        "chart_title" : "Simulated Background",
-        "axis_title" : "Signal [volt]"
-    },
-
-    "void_controller" :
-    {
-        "name" : "background_controller"
-    },
-
-    "join" : "background_noise.out_0:background_noise_data.in",
-    "join" : "background_noise_data.out:background_root.in_0",
-    "join" : "background_noise_data.out:background_monarch.in_0",
-    "join" : "background_controller.out_0:background_noise",
-
-    "run" : "background_controller",
-
-    "rt_data" :
-    {
         "name" : "event_signal_0_data"
     },
 

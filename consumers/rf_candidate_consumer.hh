@@ -80,9 +80,9 @@ namespace midge
             TObjString* f_event_label;
             TTree* f_event_tree;
 
-            real_t f_tree_ratio_time;
-            real_t f_tree_ratio_frequency;
-            real_t f_tree_ratio_value;
+            real_t f_tree_data_time;
+            real_t f_tree_data_frequency;
+            real_t f_tree_data_ratio;
             count_t f_tree_id;
             real_t f_tree_score;
             real_t f_tree_time;

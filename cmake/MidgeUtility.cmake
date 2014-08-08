@@ -45,17 +45,17 @@ macro( midge_executables name )
 	
 endmacro( midge_executables )
 
-##############################################
-# macro to define and install configurations #
-##############################################
+####################################
+# macro to define and install json #
+####################################
 
-macro( midge_configurations name )
+macro( midge_json name )
 
 	foreach( base ${midge_${name}_files} )
 		list( APPEND midge_${name}_file_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_${name}_directory}/${base} )
 	endforeach( base )
 	
-	install( FILES ${midge_${name}_file_files} DESTINATION config )
+	install( FILES ${midge_${name}_file_files} DESTINATION json )
 	
-endmacro( midge_configurations )
+endmacro( midge_json )
 

@@ -561,14 +561,14 @@ set( midge_json_files
 	test_gaussian_producer.json
 	test_monarch.json
 	generate_simulation_background.json
-	generate_simulation_events.json
+	generate_simulation_event.json
 	generate_simulation.json
 	analyze_simulation_background.json
-	analyze_simulation_events.json
+	analyze_simulation_event.json
 	analyze_simulation.json
 	analyze_background.json
-	analyze_events.json
+	analyze_event.json
 	analyze.json
 )
 
-midge_configurations( json )
+midge_json( json )

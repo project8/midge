@@ -1,0 +1,86 @@
+{
+    "rt_data" :
+    {
+        "name" : "signal_data"
+    },
+
+    "rf_data" :
+    {
+        "name" : "power_data"
+    },
+
+    "rt_monarch_producer" :
+    {
+        "name" : "signal",
+        "file" : "trap_simulation_event_signal.egg",
+        "minimum_time" : 0.0e-4,
+        "maximum_time" : 2.0e-4,
+        "size" : 1000,
+        "stride" : 1000
+    },
+
+    "rt_rf_power_transformer" :
+    {
+        "name" : "power",
+        "impedance_ohm" : 50,
+        "window_blackman" :
+        {
+        }
+    },
+
+    "rf_candidate_consumer" :
+    {
+        "name" : "candidate",
+        "ratio_file" : "trap_simulation_ratio.root",
+        "background_file" : "trap_simulation_background.root",
+        "frequency_minimum" : 0.0e6,
+        "frequency_maximum" : 500.0e6,
+        "cluster_file" : "trap_simulation_cluster.root",
+        "cluster_threshold" : 3.0,
+        "cluster_slope" : 1.875e12,
+        "cluster_spread" : 2.0e6,
+        "cluster_add_coefficient" : 1.0,
+        "cluster_add_power" : 1.0,
+        "cluster_gap_coefficient" : 1.0,
+        "cluster_gap_power" : 2.0,
+        "line_file" : "trap_simulation_line.root",
+        "line_threshold" : 70.0,
+        "line_tolerance" : 1.5,
+        "line_add_coefficient" : 1.0,
+        "line_add_power" : 1.0,
+        "line_gap_coefficient" : 2.0,
+        "line_gap_power" : 2.0,
+        "event_file" : "trap_simulation_event.root",
+        "event_threshold" : 130.0,
+        "plot" : true,
+        "plot_ratio_key" : "ratio_canvas",
+        "plot_ratio_name" : "ratio_histogram",
+        "chart_ratio_title" : "Thresholds",
+        "axis_ratio_title" : "Excess Power Ratio",
+        "plot_cluster_key" : "cluster_canvas",
+        "plot_cluster_name" : "cluster_histogram",
+        "chart_cluster_title" : "Clusters",
+        "axis_cluster_title" : "Cluster Score",
+        "plot_line_key" : "line_canvas",
+        "plot_line_name" : "line_histogram",
+        "chart_line_title" : "Lines",
+        "axis_line_title" : "Line Score",
+        "plot_event_key" : "event_canvas",
+        "plot_event_name" : "event_histogram",
+        "chart_event_title" : "Events",
+        "axis_event_title" : "Event Score"
+    },
+
+    "void_controller" :
+    {
+        "name" : "control"
+    },
+
+    "join" : "signal.out_0:signal_data.in",
+    "join" : "signal_data.out:power.in_0",
+    "join" : "power.out_0:power_data.in",
+    "join" : "power_data.out:candidate.in_0",
+    "join" : "control.out_0:signal",
+
+    "run" : "control"
+}

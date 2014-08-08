@@ -8,13 +8,24 @@ using std::numeric_limits;
 namespace midge
 {
 
+    plot::ordinate::ordinate() :
+            f_title( "" ),
+            f_values()
+    {
+    }
     plot::ordinate::ordinate( const count_t& p_size ) :
             f_title( "" ),
-            f_values( p_size )
+            f_values( p_size, 0. )
     {
     }
     plot::ordinate::~ordinate()
     {
+    }
+
+    void plot::ordinate::operator()( const count_t& p_size )
+    {
+        f_values.clear();
+        f_values.resize( p_size, 0. );
     }
 
     string& plot::ordinate::title()
@@ -35,16 +46,30 @@ namespace midge
         return f_values;
     }
 
+    plot::abscissa::abscissa() :
+            f_title( "" ),
+            f_count( 0 ),
+            f_low( 0. ),
+            f_high( 0. ),
+            f_values()
+    {
+    }
     plot::abscissa::abscissa( const count_t& p_size ) :
             f_title( "" ),
             f_count( 0 ),
             f_low( 0. ),
             f_high( 0. ),
-            f_values( p_size )
+            f_values( p_size, 0. )
     {
     }
     plot::abscissa::~abscissa()
     {
+    }
+
+    void plot::abscissa::operator()( const count_t& p_size )
+    {
+        f_values.clear();
+        f_values.resize( p_size, 0. );
     }
 
     string& plot::abscissa::title()
@@ -97,7 +122,8 @@ namespace midge
             f_application( NULL ),
             f_canvases(),
             f_th1s(),
-            f_th2s()
+            f_th2s(),
+            f_graphs()
     {
 
     }
@@ -115,6 +141,10 @@ namespace midge
         {
             delete *t_it;
         }
+        for( graph_it t_it = f_graphs.begin(); t_it != f_graphs.end(); ++t_it )
+        {
+            delete *t_it;
+        }
         delete f_application;
     }
     void plot::initialize()
@@ -122,6 +152,24 @@ namespace midge
         if( (f_count++ == 0) && (f_application == NULL) )
         {
             f_application = new TApplication( "", 0, NULL );
+
+            const count_t t_points = 5;
+            const count_t t_contours = 255;
+
+            real_t t_stops[ t_points ] =
+            { 0.00, 0.34, 0.61, 0.84, 1.00 };
+
+            real_t t_red[ t_points ] =
+            { 0.00, 0.00, 0.87, 1.00, 0.51 };
+
+            real_t t_green[ t_points ] =
+            { 0.00, 0.81, 1.00, 0.20, 0.00 };
+
+            real_t t_blue[ t_points ] =
+            { 0.51, 1.00, 0.12, 0.00, 0.00 };
+
+            TColor::CreateGradientColorTable( t_points, t_stops, t_red, t_green, t_blue, t_contours );
+            gStyle->SetNumberContours( t_contours );
         }
         return;
     }
@@ -147,23 +195,23 @@ namespace midge
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ) );
         }
 
-        t_histogram->SetStats( kFALSE );
-        t_histogram->SetTitle( p_title.c_str() );
-        t_histogram->GetXaxis()->SetTitle( p_x.title().c_str() );
-        t_histogram->GetYaxis()->SetTitle( p_y.title().c_str() );
-
         TCanvas* t_canvas;
         canvas_it t_it = f_canvases.find( p_key );
         if( t_it != f_canvases.end() )
         {
             t_canvas = t_it->second;
             t_canvas->cd( 0 );
-            t_histogram->Draw( "LP,SAME" );
+            t_histogram->SetStats( kFALSE );
+            t_histogram->Draw( "LP SAME" );
         }
         else
         {
             TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
             t_canvas->cd( 0 );
+            t_histogram->SetStats( kFALSE );
+            t_histogram->SetTitle( p_title.c_str() );
+            t_histogram->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_histogram->GetYaxis()->SetTitle( p_y.title().c_str() );
             t_histogram->Draw( "LP" );
             f_canvases.insert( canvas_entry( p_key, t_canvas ) );
         }
@@ -200,11 +248,54 @@ namespace midge
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ), p_z.values().at( t_index ) );
         }
 
-        t_histogram->SetStats( kFALSE );
-        t_histogram->SetTitle( p_title.c_str() );
-        t_histogram->GetXaxis()->SetTitle( p_x.title().c_str() );
-        t_histogram->GetYaxis()->SetTitle( p_y.title().c_str() );
-        t_histogram->GetZaxis()->SetTitle( p_z.title().c_str() );
+        TCanvas* t_canvas;
+        canvas_it t_it = f_canvases.find( p_key );
+        if( t_it != f_canvases.end() )
+        {
+            t_canvas = t_it->second;
+            t_canvas->cd( 0 );
+            t_histogram->SetStats( kFALSE );
+            t_histogram->Draw( "COL SAME" );
+        }
+        else
+        {
+            TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
+            t_canvas->cd( 0 );
+            TH1F* t_frame = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, p_y.low() - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, p_y.high() + .5 * t_y_increment );
+            t_frame->SetTitle( p_title.c_str() );
+            t_frame->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_frame->GetYaxis()->SetTitle( p_y.title().c_str() );
+            t_frame->GetZaxis()->SetTitle( p_z.title().c_str() );
+            t_histogram->SetStats( kFALSE );
+            t_histogram->Draw( "COLZ SAME" );
+            f_canvases.insert( canvas_entry( p_key, t_canvas ) );
+        }
+
+        f_th2s.push_back( t_histogram );
+
+        return;
+    }
+    void plot::graph_two_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const abscissa& p_y )
+    {
+        if( p_y.values().size() != p_x.values().size() )
+        {
+            throw error() << "time frequency plotter was given z values with size <" << p_y.values().size() << "> and x values with size <" << p_x.values().size() << ">";
+        }
+
+        msg_normal( coremsg, "making two dimensional graph <" << p_name << ">" << eom );
+
+        real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
+        real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
+
+        TGraph* t_graph = new TGraph();
+        for( count_t t_index = 0; t_index < p_y.values().size(); t_index++ )
+        {
+            if( p_y.values().at( t_index ) != p_y.values().at( t_index ) )
+            {
+                continue;
+            }
+            t_graph->SetPoint( t_index, p_x.values().at( t_index ), p_y.values().at( t_index ) );
+        }
 
         TCanvas* t_canvas;
         canvas_it t_it = f_canvases.find( p_key );
@@ -212,17 +303,21 @@ namespace midge
         {
             t_canvas = t_it->second;
             t_canvas->cd( 0 );
-            t_histogram->Draw( "COLZ,SAME" );
+            t_graph->Draw( "L" );
         }
         else
         {
             TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
             t_canvas->cd( 0 );
-            t_histogram->Draw( "COLZ" );
+            TH1F* t_frame = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, p_y.low() - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, p_y.high() + .5 * t_y_increment );
+            t_frame->SetTitle( p_title.c_str() );
+            t_frame->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_frame->GetYaxis()->SetTitle( p_y.title().c_str() );
+            t_graph->Draw( "L" );
             f_canvases.insert( canvas_entry( p_key, t_canvas ) );
         }
 
-        f_th2s.push_back( t_histogram );
+        f_graphs.push_back( t_graph );
 
         return;
     }

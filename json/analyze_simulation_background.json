@@ -12,7 +12,7 @@
     "rt_monarch_producer" :
     {
         "name" : "signal",
-        "file" : "trap_simulation.egg",
+        "file" : "simulation_background_signal.egg",
         "minimum_time" : 0.0,
         "maximum_time" : 1.0,
         "size" : 1000,
@@ -23,7 +23,7 @@
     {
         "name" : "power",
         "impedance_ohm" : 50,
-        "window_hamming" :
+        "window_blackman" :
         {
         }
     },
@@ -31,26 +31,15 @@
     "rf_background_consumer" :
     {
         "name" : "background",
-        "file" : "trap_simulation_background.root",
-        "length" : 30,
+        "file" : "simulation_background.root",
+        "length" : 25,
         "window_bartlett" :
         {
         },
         "plot" : true,
         "plot_key" : "background_canvas",
         "plot_name" : "background_histogram",
-        "chart_title" : "Trap Off Power",
-        "axis_title" : "Power [watt]"
-    },
-
-    "rf_root_consumer" :
-    {
-        "name" : "waterfall",
-        "file" : "trap_simulation_waterfall.root",
-        "plot" : true,
-        "plot_key" : "rf_root_consumer_canvas",
-        "plot_name" : "rf_root_consumer",
-        "chart_title" : "Test Chirp Producer Power",
+        "chart_title" : "Background Spectrum",
         "axis_title" : "Power [watt]"
     },
 
