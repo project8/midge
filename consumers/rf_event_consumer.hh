@@ -30,16 +30,16 @@ namespace midge
             accessible( string, file_background )
             accessible( real_t, frequency_minimum )
             accessible( real_t, frequency_maximum )
-            accessible( real_t, cluster_add_ratio )
+            accessible( real_t, candidate_ratio_threshold )
             accessible( real_t, cluster_window )
             accessible( real_t, cluster_add_coefficient )
             accessible( real_t, cluster_add_power )
             accessible( real_t, cluster_gap_coefficient )
             accessible( real_t, cluster_gap_power )
-            accessible( real_t, line_start_score )
+            accessible( real_t, cluster_score_threshold )
+            accessible( real_t, cluster_correlation_threshold )
             accessible( real_t, line_stop_score )
-            accessible( real_t, line_window )
-            accessible( real_t, line_width )
+            accessible( real_t, line_tolerance )
             accessible( real_t, line_add_coefficient )
             accessible( real_t, line_add_power )
             accessible( real_t, line_gap_coefficient )
@@ -244,8 +244,7 @@ namespace midge
                     static void set_interval( const real_t& p_interval );
                     static void set_min_index( const count_t& p_size );
                     static void set_max_index( const count_t& p_size );
-                    static void set_window( const real_t& p_window );
-                    static void set_width( const real_t& p_width );
+                    static void set_tolerance( const real_t& p_tolerance );
                     static void set_add_coefficient( const real_t& p_add_coefficient );
                     static void set_add_power( const real_t& p_add_power );
                     static void set_gap_coefficient( const real_t& p_gap_coefficient );
@@ -258,8 +257,7 @@ namespace midge
                     static count_t s_min_index;
                     static count_t s_max_index;
                     static real_t s_interval;
-                    static real_t s_window;
-                    static real_t s_width;
+                    static real_t s_tolerance;
                     static real_t s_add_coefficient;
                     static real_t s_add_power;
                     static real_t s_gap_coefficient;

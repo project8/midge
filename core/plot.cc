@@ -120,7 +120,7 @@ namespace midge
     plot::plot() :
             f_count( 0 ),
             f_application( NULL ),
-            f_canvases(),
+            f_plots(),
             f_th1s(),
             f_th2s(),
             f_graphs()
@@ -129,9 +129,9 @@ namespace midge
     }
     plot::~plot()
     {
-        for( canvas_it t_it = f_canvases.begin(); t_it != f_canvases.end(); ++t_it )
+        for( plot_it t_it = f_plots.begin(); t_it != f_plots.end(); ++t_it )
         {
-            delete t_it->second;
+            delete t_it->second.first;
         }
         for( th1_it t_it = f_th1s.begin(); t_it != f_th1s.end(); ++t_it )
         {
@@ -205,26 +205,35 @@ namespace midge
             }
             t_histogram->Fill( p_x.values().at( t_index ), p_y.values().at( t_index ) );
         }
+        real_t t_y_low = t_histogram->GetMinimum();
+        real_t t_y_high = t_histogram->GetMaximum();
+        real_t t_y_increment = (t_y_high - t_y_low) / 8.;
 
         TCanvas* t_canvas;
-        canvas_it t_canvas_it = f_canvases.find( p_key );
-        if( t_canvas_it != f_canvases.end() )
+        TH1* t_axes;
+        plot_it t_plot_it = f_plots.find( p_key );
+        if( t_plot_it != f_plots.end() )
         {
-            t_canvas = t_canvas_it->second;
+            t_canvas = t_plot_it->second.first;
             t_canvas->cd( 0 );
+            t_axes = t_plot_it->second.second;
+            t_axes->SetTitle( p_title.c_str() );
+            t_axes->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_axes->GetYaxis()->SetTitle( p_y.title().c_str() );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "LP SAME" );
         }
         else
         {
-            TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
+            t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
             t_canvas->cd( 0 );
+            t_axes = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, t_y_low - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, t_y_high + .5 * t_y_increment );
             t_histogram->SetStats( kFALSE );
             t_histogram->SetTitle( p_title.c_str() );
             t_histogram->GetXaxis()->SetTitle( p_x.title().c_str() );
             t_histogram->GetYaxis()->SetTitle( p_y.title().c_str() );
             t_histogram->Draw( "LP" );
-            f_canvases.insert( canvas_entry( p_key, t_canvas ) );
+            f_plots.insert( plot_entry( p_key, plot_pair( t_canvas, t_axes ) ) );
         }
 
         return;
@@ -259,7 +268,6 @@ namespace midge
             f_th2s.insert( th2_entry( p_name, t_histogram ) );
         }
 
-
         for( count_t t_index = 0; t_index < p_z.values().size(); t_index++ )
         {
             if( p_z.values().at( t_index ) != p_z.values().at( t_index ) )
@@ -270,26 +278,32 @@ namespace midge
         }
 
         TCanvas* t_canvas;
-        canvas_it t_canvas_it = f_canvases.find( p_key );
-        if( t_canvas_it != f_canvases.end() )
+        TH1* t_axes;
+        plot_it t_plot_it = f_plots.find( p_key );
+        if( t_plot_it != f_plots.end() )
         {
-            t_canvas = t_canvas_it->second;
+            t_canvas = t_plot_it->second.first;
             t_canvas->cd( 0 );
+            t_axes = t_plot_it->second.second;
+            t_axes->SetTitle( p_title.c_str() );
+            t_axes->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_axes->GetYaxis()->SetTitle( p_y.title().c_str() );
+            t_axes->GetZaxis()->SetTitle( p_z.title().c_str() );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "COL SAME" );
         }
         else
         {
-            TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
+            t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
             t_canvas->cd( 0 );
-            TH1F* t_frame = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, p_y.low() - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, p_y.high() + .5 * t_y_increment );
-            t_frame->SetTitle( p_title.c_str() );
-            t_frame->GetXaxis()->SetTitle( p_x.title().c_str() );
-            t_frame->GetYaxis()->SetTitle( p_y.title().c_str() );
-            t_frame->GetZaxis()->SetTitle( p_z.title().c_str() );
+            t_axes = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, p_y.low() - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, p_y.high() + .5 * t_y_increment );
+            t_axes->SetTitle( p_title.c_str() );
+            t_axes->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_axes->GetYaxis()->SetTitle( p_y.title().c_str() );
+            t_axes->GetZaxis()->SetTitle( p_z.title().c_str() );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "COLZ SAME" );
-            f_canvases.insert( canvas_entry( p_key, t_canvas ) );
+            f_plots.insert( plot_entry( p_key, plot_pair( t_canvas, t_axes ) ) );
         }
 
         return;
@@ -319,30 +333,36 @@ namespace midge
         }
 
         TCanvas* t_canvas;
-        canvas_it t_it = f_canvases.find( p_key );
-        if( t_it != f_canvases.end() )
+        TH1* t_axes;
+        plot_it t_plot_it = f_plots.find( p_key );
+        if( t_plot_it != f_plots.end() )
         {
-            t_canvas = t_it->second;
+            t_canvas = t_plot_it->second.first;
             t_canvas->cd( 0 );
+            t_axes = t_plot_it->second.second;
+            t_axes->SetTitle( p_title.c_str() );
+            t_axes->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_axes->GetYaxis()->SetTitle( p_y.title().c_str() );
+            t_axes->GetZaxis()->SetTitle( "FUCK" );
             t_graph->Draw( "L" );
         }
         else
         {
-            TCanvas* t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
+            t_canvas = new TCanvas( p_key.c_str(), p_key.c_str(), 0, 0, 1024, 768 );
             t_canvas->cd( 0 );
-            TH1F* t_frame = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, p_y.low() - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, p_y.high() + .5 * t_y_increment );
-            t_frame->SetTitle( p_title.c_str() );
-            t_frame->GetXaxis()->SetTitle( p_x.title().c_str() );
-            t_frame->GetYaxis()->SetTitle( p_y.title().c_str() );
+            t_axes = t_canvas->DrawFrame( p_x.low() - .5 * t_x_increment, p_y.low() - .5 * t_y_increment, p_x.high() + .5 * t_x_increment, p_y.high() + .5 * t_y_increment );
+            t_axes->SetTitle( p_title.c_str() );
+            t_axes->GetXaxis()->SetTitle( p_x.title().c_str() );
+            t_axes->GetYaxis()->SetTitle( p_y.title().c_str() );
             t_graph->Draw( "L" );
-            f_canvases.insert( canvas_entry( p_key, t_canvas ) );
+            f_plots.insert( plot_entry( p_key, plot_pair( t_canvas, t_axes ) ) );
         }
 
         return;
     }
     void plot::finalize()
     {
-        if( (--f_count == 0) && (f_canvases.size() != 0) )
+        if( (--f_count == 0) && (f_plots.size() != 0) )
         {
             f_application->Run( kTRUE );
         }

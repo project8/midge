@@ -17,16 +17,16 @@ namespace midge
             f_file_background( "" ),
             f_frequency_minimum( 0. ),
             f_frequency_maximum( 0. ),
-            f_cluster_add_ratio( -1. ),
+            f_candidate_ratio_threshold( -1. ),
             f_cluster_window( 1. ),
             f_cluster_add_coefficient( 1. ),
             f_cluster_add_power( 0. ),
             f_cluster_gap_coefficient( 2. ),
             f_cluster_gap_power( 0. ),
-            f_line_start_score( 100. ),
+            f_cluster_score_threshold( 100. ),
+            f_cluster_correlation_threshold( 1. ),
             f_line_stop_score( 100. ),
-            f_line_window( 1. ),
-            f_line_width( 1. ),
+            f_line_tolerance( 1. ),
             f_line_add_coefficient( 1. ),
             f_line_add_power( 0. ),
             f_line_gap_coefficient( 2. ),
@@ -191,8 +191,7 @@ namespace midge
         line::set_interval( f_interval );
         line::set_min_index( f_frequency_minimum_index );
         line::set_max_index( f_frequency_maximum_index );
-        line::set_window( f_line_window );
-        line::set_width( f_line_width );
+        line::set_tolerance( f_line_tolerance );
         line::set_add_coefficient( f_line_add_coefficient );
         line::set_add_power( f_line_add_power );
         line::set_gap_coefficient( f_line_gap_coefficient );
@@ -221,14 +220,14 @@ namespace midge
         {
             t_in = f_in[ t_index ];
             t_background = f_background[ t_index ];
-            t_ratio = ((t_in - t_background) / t_background);
-            if( t_ratio < f_cluster_add_ratio )
+            t_ratio = (t_in - t_background) / t_background;
+            if( t_ratio < f_candidate_ratio_threshold )
             {
                 f_ratio[ t_index ] = -1.;
             }
             else
             {
-                f_ratio[ t_index ] = t_ratio - f_cluster_add_ratio;
+                f_ratio[ t_index ] = t_ratio - f_candidate_ratio_threshold;
 
                 f_ratio_time = f_maximum_time;
                 f_ratio_frequency = f_interval * t_index;
@@ -283,7 +282,7 @@ namespace midge
             //msg_warning( coremsg, "**   updating candidate cluster <" << t_cluster->id() << "> **" << eom );
             t_cluster->update();
 
-            if( t_cluster->score() > f_line_start_score )
+            if( (t_cluster->score() > f_cluster_score_threshold) && (t_cluster->correlation() > f_cluster_correlation_threshold) )
             {
                 //msg_warning( coremsg, "**   will complete candidate cluster <" << t_cluster->id() << "> **" << eom );
                 f_cluster_complete_stack.push( t_cluster_it );
@@ -353,7 +352,7 @@ namespace midge
             f_active_lines.push_back( t_line );
             //msg_warning( coremsg, "**   activating line <" << t_line->id() << "> **" << eom );
 
-            f_candidate_lines.erase( f_line_active_stack.top());
+            f_candidate_lines.erase( f_line_active_stack.top() );
             f_line_active_stack.pop();
         }
 
@@ -513,8 +512,7 @@ namespace midge
         line::set_interval( 1. );
         line::set_min_index( 0 );
         line::set_max_index( 0 );
-        line::set_window( 1. );
-        line::set_width( 1. );
+        line::set_tolerance( 1. );
         line::set_add_coefficient( 1. );
         line::set_add_power( 0. );
         line::set_gap_coefficient( 2. );
@@ -605,7 +603,7 @@ namespace midge
     }
     void rf_event_consumer::plot_cluster_data()
     {
-        if( (f_plot_any == true) && (f_plot_cluster == true ))
+        if( (f_plot_any == true) && (f_plot_cluster == true) )
         {
             cluster* t_cluster;
 
@@ -744,7 +742,7 @@ namespace midge
     }
     void rf_event_consumer::plot_line_data()
     {
-        if( (f_plot_any == true) && (f_plot_line == true ))
+        if( (f_plot_any == true) && (f_plot_line == true) )
         {
             line* t_line;
 
@@ -786,7 +784,7 @@ namespace midge
     }
     void rf_event_consumer::plot_line_lines()
     {
-        if( (f_plot_any == true) && (f_plot_line == true ))
+        if( (f_plot_any == true) && (f_plot_line == true) )
         {
             plot::abscissa t_line_line_times;
             plot::abscissa t_line_line_frequencies;
@@ -977,7 +975,7 @@ namespace midge
     }
     void rf_event_consumer::plot_event_data()
     {
-        if( (f_plot_any == true) && (f_plot_event == true ))
+        if( (f_plot_any == true) && (f_plot_event == true) )
         {
             event* t_event;
 
@@ -1026,7 +1024,7 @@ namespace midge
     }
     void rf_event_consumer::plot_event_lines()
     {
-        if( (f_plot_any == true) && (f_plot_event == true ))
+        if( (f_plot_any == true) && (f_plot_event == true) )
         {
             plot::abscissa t_event_line_times;
             plot::abscissa t_event_line_frequencies;
@@ -1202,90 +1200,126 @@ namespace midge
         register real_t t_point_frequency;
         register real_t t_point_ratio;
 
-        pair< count_t, count_t > t_indices( (count_t) (floor( (f_frequency - s_window) / s_interval )), (count_t) (ceil( (f_frequency + s_window) / s_interval )) );
-        if( t_indices.first < s_min_index )
+        register real_t t_init_frequency = f_frequency;
+        register real_t t_init_min = t_init_frequency - s_window;
+        register real_t t_init_max = t_init_frequency + s_window;
+        register real_t t_init_dev_stat;
+        register real_t t_init_deviation = 0.;
+
+        pair< count_t, count_t > t_current_indices( (count_t) (floor( t_init_min / s_interval )), (count_t) (ceil( t_init_max / s_interval )) );
+        if( t_current_indices.first < s_min_index )
         {
-            t_indices.first = s_min_index;
+            t_current_indices.first = s_min_index;
         }
-        if( t_indices.second > s_max_index )
+        if( t_current_indices.second > s_max_index )
         {
-            t_indices.second = s_max_index;
+            t_current_indices.second = s_max_index;
         }
 
-        register real_t t_init_r_sum;
-        register real_t t_init_rf_sum;
-        register real_t t_init_rff_sum;
-        register real_t t_init_frequency = f_frequency;
-        pair< count_t, count_t > t_init_indices;
+        pair< count_t, count_t > t_next_indices;
+
+        register real_t t_loop_r_sum;
+        register real_t t_loop_rf_sum;
+        register real_t t_loop_rff_sum;
         while( true )
         {
             //msg_warning( coremsg, "  initializing:" << eom );
-            //msg_warning( coremsg, "    current center is <" << t_init_frequency << ">" << eom );
-            //msg_warning( coremsg, "    current minimum is <" << t_indices.first * s_interval << ">" << eom );
-            //msg_warning( coremsg, "    current maximum is <" << t_indices.second * s_interval << ">" << eom );
+            //msg_warning( coremsg, "    init frequency is <" << t_init_frequency << ">" << eom );
+            //msg_warning( coremsg, "    init min is <" << t_init_min << ">" << eom );
+            //msg_warning( coremsg, "    init max is <" << t_init_max << ">" << eom );
+            //msg_warning( coremsg, "    init deviation is <" << t_init_deviation << ">" << eom );
 
-            t_init_r_sum = 0.;
-            t_init_rf_sum = 0.;
-            t_init_rff_sum = 0.;
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            t_loop_r_sum = 0.;
+            t_loop_rf_sum = 0.;
+            t_loop_rff_sum = 0.;
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
-                t_point_ratio = s_ratio[ t_index ];
-                if( t_point_ratio > 0. )
+                if( t_point_frequency < t_init_min )
                 {
-                    t_init_r_sum += t_point_ratio;
-                    t_init_rf_sum += t_point_ratio * t_point_frequency;
-                    t_init_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
+                    continue;
                 }
+                if( t_point_frequency > t_init_max )
+                {
+                    continue;
+                }
+
+                t_point_ratio = s_ratio[ t_index ];
+                if( t_point_ratio < 0. )
+                {
+                    continue;
+                }
+
+                t_loop_r_sum += t_point_ratio;
+                t_loop_rf_sum += t_point_ratio * t_point_frequency;
+                t_loop_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
             }
 
-            t_init_frequency = t_init_rf_sum / t_init_r_sum;
+            t_init_frequency = t_loop_rf_sum / t_loop_r_sum;
+            t_init_min = t_init_frequency - s_window;
+            t_init_max = t_init_frequency + s_window;
 
-            t_init_indices.first = (count_t) (floor( (t_init_frequency - s_window) / s_interval ));
-            if( t_init_indices.first < s_min_index )
+            t_init_dev_stat = t_loop_rff_sum;
+            t_init_dev_stat += t_init_frequency * t_init_frequency * t_loop_r_sum;
+            t_init_dev_stat -= 2. * t_init_frequency * t_loop_rf_sum;
+            t_init_deviation = sqrt( t_init_dev_stat / t_loop_r_sum );
+
+            t_next_indices.first = (count_t) (floor( t_init_min / s_interval ));
+            if( t_next_indices.first < s_min_index )
             {
-                t_init_indices.first = s_min_index;
+                t_next_indices.first = s_min_index;
             }
-            t_init_indices.second = (count_t) (ceil( (t_init_frequency + s_window) / s_interval ));
-            if( t_init_indices.second > s_max_index )
+            t_next_indices.second = (count_t) (ceil( t_init_max / s_interval ));
+            if( t_next_indices.second > s_max_index )
             {
-                t_init_indices.second = s_max_index;
+                t_next_indices.second = s_max_index;
             }
 
-            if( t_indices == t_init_indices )
+            if( t_current_indices == t_next_indices )
             {
                 break;
             }
             else
             {
-                t_indices = t_init_indices;
+                t_current_indices = t_next_indices;
             }
         }
 
         f_frequency = t_init_frequency;
-        f_r_sum = t_init_r_sum;
-        f_rf_sum = t_init_rf_sum;
-        f_rff_sum = t_init_rff_sum;
+        f_deviation = t_init_deviation;
+        f_r_sum = t_loop_r_sum;
+        f_rf_sum = t_loop_rf_sum;
+        f_rff_sum = t_loop_rff_sum;
 
-        for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+        for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
         {
             t_point_ratio = s_ratio[ t_index ];
             t_point_frequency = t_index * s_interval;
-            if( t_point_ratio > 0. )
+            s_ratio[ t_index ] = -1.;
+
+            if( t_point_frequency < t_init_min )
             {
-                s_ratio[ t_index ] = -1.;
-
-                f_add_occupation_sum += 1.;
-                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - f_frequency );
-
-                f_times.push_back( f_time );
-                f_frequencies.push_back( t_point_frequency );
-                f_ratios.push_back( t_point_ratio );
+                continue;
             }
+            if( t_point_frequency > t_init_max )
+            {
+                continue;
+            }
+            if( t_point_ratio < 0. )
+            {
+                continue;
+            }
+
+            f_add_occupation_sum += 1.;
+            f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - f_frequency );
+
+            f_times.push_back( f_time );
+            f_frequencies.push_back( t_point_frequency );
+            f_ratios.push_back( t_point_ratio );
         }
 
-        f_occupation = f_add_occupation_sum - f_gap_occupation_sum - f_gap_occupation_current;
-        f_score = f_add_score_sum - f_gap_score_sum - f_gap_score_current;
+        f_occupation = f_add_occupation_sum;
+        f_score = f_add_score_sum;
 
         for( t_index = f_scores.size(); t_index < f_times.size(); t_index++ )
         {
@@ -1313,58 +1347,61 @@ namespace midge
         register real_t t_point_time = *s_time;
         register real_t t_point_duration = t_point_time - f_time;
         register real_t t_point_frequency;
-        register real_t t_point_center = f_frequency + f_slope * t_point_duration;
-        register real_t t_point_min = t_point_center - s_window;
-        register real_t t_point_max = t_point_center + s_window;
         register real_t t_point_ratio;
 
-        pair< count_t, count_t > t_indices( (count_t) (floor( t_point_min / s_interval )), (count_t) (ceil( t_point_max / s_interval )) );
-        if( t_indices.first < s_min_index )
-        {
-            t_indices.first = s_min_index;
-        }
-        if( t_indices.second > s_max_index )
-        {
-            t_indices.second = s_max_index;
-        }
-
-        register bool_t t_update_add;
-        register real_t t_update_r_sum;
-        register real_t t_update_rt_sum;
-        register real_t t_update_rf_sum;
-        register real_t t_update_rtt_sum;
-        register real_t t_update_rff_sum;
-        register real_t t_update_rtf_sum;
         register real_t t_update_tt_stat;
         register real_t t_update_ff_stat;
         register real_t t_update_tf_stat;
         register real_t t_update_ttf_stat;
         register real_t t_update_dev_stat;
-        register real_t t_update_frequency;
-        register real_t t_update_slope;
-        pair< count_t, count_t > t_update_indices;
+        register real_t t_update_frequency = f_frequency;
+        register real_t t_update_slope = f_slope;
+        register real_t t_update_correlation = f_correlation;
+        register real_t t_update_deviation = f_deviation;
+        register real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+        register real_t t_update_min = t_update_center - s_window;
+        register real_t t_update_max = t_update_center + s_window;
+
+        pair< count_t, count_t > t_current_indices( (count_t) (floor( t_update_min / s_interval )), (count_t) (ceil( t_update_max / s_interval )) );
+        if( t_current_indices.first < s_min_index )
+        {
+            t_current_indices.first = s_min_index;
+        }
+        if( t_current_indices.second > s_max_index )
+        {
+            t_current_indices.second = s_max_index;
+        }
+        pair< count_t, count_t > t_next_indices;
+
+        register bool_t t_loop_add;
+        register real_t t_loop_r_sum;
+        register real_t t_loop_rt_sum;
+        register real_t t_loop_rf_sum;
+        register real_t t_loop_rtt_sum;
+        register real_t t_loop_rff_sum;
+        register real_t t_loop_rtf_sum;
         while( true )
         {
             //msg_warning( coremsg, "  updating:" << eom );
-            //msg_warning( coremsg, "    current center is <" << t_point_center << ">" << eom );
-            //msg_warning( coremsg, "    current minimum is <" << t_indices.first * s_interval << ">" << eom );
-            //msg_warning( coremsg, "    current_maximum is <" << t_indices.second * s_interval << ">" << eom );
+            //msg_warning( coremsg, "    update center is <" << t_update_center << ">" << eom );
+            //msg_warning( coremsg, "    update min is <" << t_update_min << ">" << eom );
+            //msg_warning( coremsg, "    update max is <" << t_update_max << ">" << eom );
 
-            t_update_add = false;
-            t_update_r_sum = f_r_sum;
-            t_update_rt_sum = f_rt_sum;
-            t_update_rf_sum = f_rf_sum;
-            t_update_rtt_sum = f_rtt_sum;
-            t_update_rff_sum = f_rff_sum;
-            t_update_rtf_sum = f_rtf_sum;
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            t_loop_add = false;
+            t_loop_r_sum = f_r_sum;
+            t_loop_rt_sum = f_rt_sum;
+            t_loop_rf_sum = f_rf_sum;
+            t_loop_rtt_sum = f_rtt_sum;
+            t_loop_rff_sum = f_rff_sum;
+            t_loop_rtf_sum = f_rtf_sum;
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
-                if( t_point_frequency < t_point_min )
+                if( t_point_frequency < t_update_min )
                 {
                     continue;
                 }
-                if( t_point_frequency > t_point_max )
+                if( t_point_frequency > t_update_max )
                 {
                     continue;
                 }
@@ -1375,62 +1412,65 @@ namespace midge
                     continue;
                 }
 
-                t_update_add = true;
-                t_update_r_sum += t_point_ratio;
-                t_update_rt_sum += t_point_ratio * t_point_duration;
-                t_update_rf_sum += t_point_ratio * t_point_frequency;
-                t_update_rtt_sum += t_point_ratio * t_point_duration * t_point_duration;
-                t_update_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
-                t_update_rtf_sum += t_point_ratio * t_point_duration * t_point_frequency;
+                t_loop_add = true;
+                t_loop_r_sum += t_point_ratio;
+                t_loop_rt_sum += t_point_ratio * t_point_duration;
+                t_loop_rf_sum += t_point_ratio * t_point_frequency;
+                t_loop_rtt_sum += t_point_ratio * t_point_duration * t_point_duration;
+                t_loop_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
+                t_loop_rtf_sum += t_point_ratio * t_point_duration * t_point_frequency;
             }
 
-            if( t_update_add == false )
+            if( t_loop_add == false )
             {
                 break;
             }
 
-            t_update_tt_stat = t_update_r_sum * t_update_rtt_sum - t_update_rt_sum * t_update_rt_sum;
-            t_update_ff_stat = t_update_r_sum * t_update_rff_sum - t_update_rf_sum * t_update_rf_sum;
-            t_update_tf_stat = t_update_r_sum * t_update_rtf_sum - t_update_rt_sum * t_update_rf_sum;
-            t_update_ttf_stat = t_update_rtt_sum * t_update_rf_sum - t_update_rt_sum * t_update_rtf_sum;
+            t_update_tt_stat = t_loop_r_sum * t_loop_rtt_sum - t_loop_rt_sum * t_loop_rt_sum;
+            t_update_ff_stat = t_loop_r_sum * t_loop_rff_sum - t_loop_rf_sum * t_loop_rf_sum;
+            t_update_tf_stat = t_loop_r_sum * t_loop_rtf_sum - t_loop_rt_sum * t_loop_rf_sum;
+            t_update_ttf_stat = t_loop_rtt_sum * t_loop_rf_sum - t_loop_rt_sum * t_loop_rtf_sum;
 
             t_update_frequency = t_update_ttf_stat / t_update_tt_stat;
             t_update_slope = t_update_tf_stat / t_update_tt_stat;
 
-            t_update_dev_stat = t_update_rff_sum;
-            t_update_dev_stat += t_update_slope * t_update_slope * t_update_rtt_sum;
-            t_update_dev_stat += t_update_frequency * t_update_frequency * t_update_r_sum;
-            t_update_dev_stat -= 2. * t_update_slope * t_update_rtf_sum;
-            t_update_dev_stat -= 2. * t_update_frequency * t_update_rf_sum;
-            t_update_dev_stat += 2. * t_update_slope * t_update_frequency * t_update_rt_sum;
+            t_update_dev_stat = t_loop_rff_sum;
+            t_update_dev_stat += t_update_slope * t_update_slope * t_loop_rtt_sum;
+            t_update_dev_stat += t_update_frequency * t_update_frequency * t_loop_r_sum;
+            t_update_dev_stat -= 2. * t_update_slope * t_loop_rtf_sum;
+            t_update_dev_stat -= 2. * t_update_frequency * t_loop_rf_sum;
+            t_update_dev_stat += 2. * t_update_slope * t_update_frequency * t_loop_rt_sum;
 
-            t_point_center = t_update_frequency + t_update_slope * t_point_duration;
-            t_point_min = t_point_center - s_window;
-            t_point_max = t_point_center + s_window;
+            t_update_correlation = sqrt( (t_update_tf_stat * t_update_tf_stat) / (t_update_tt_stat * t_update_ff_stat) );
+            t_update_deviation = sqrt( t_update_dev_stat / t_loop_r_sum );
 
-            t_update_indices.first = (count_t) (floor( (t_point_center - s_window) / s_interval ));
-            if( t_update_indices.first < s_min_index )
+            t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+            t_update_min = t_update_center - s_window;
+            t_update_max = t_update_center + s_window;
+
+            t_next_indices.first = (count_t) (floor( t_update_min / s_interval ));
+            if( t_next_indices.first < s_min_index )
             {
-                t_update_indices.first = s_min_index;
+                t_next_indices.first = s_min_index;
             }
 
-            t_update_indices.second = (count_t) (ceil( (t_point_center + s_window) / s_interval ));
-            if( t_update_indices.second > s_max_index )
+            t_next_indices.second = (count_t) (ceil( t_update_max / s_interval ));
+            if( t_next_indices.second > s_max_index )
             {
-                t_update_indices.second = s_max_index;
+                t_next_indices.second = s_max_index;
             }
 
-            if( t_indices == t_update_indices )
+            if( t_current_indices == t_next_indices )
             {
                 break;
             }
             else
             {
-                t_indices = t_update_indices;
+                t_current_indices = t_next_indices;
             }
         }
 
-        if( t_update_add == true )
+        if( t_loop_add == true )
         {
             if( f_state == e_in_add )
             {
@@ -1477,15 +1517,15 @@ namespace midge
             f_duration = t_point_duration;
             f_frequency = t_update_frequency;
             f_slope = t_update_slope;
-            f_correlation = (t_update_tf_stat * t_update_tf_stat) / (t_update_tt_stat * t_update_ff_stat);
-            f_deviation = sqrt( t_update_dev_stat / t_update_r_sum );
-            f_r_sum = t_update_r_sum;
-            f_rt_sum = t_update_rt_sum;
-            f_rf_sum = t_update_rf_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rff_sum = t_update_rff_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rtf_sum = t_update_rtf_sum;
+            f_correlation = t_update_correlation;
+            f_deviation = t_update_deviation;
+            f_r_sum = t_loop_r_sum;
+            f_rt_sum = t_loop_rt_sum;
+            f_rf_sum = t_loop_rf_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rff_sum = t_loop_rff_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rtf_sum = t_loop_rtf_sum;
             //msg_warning( coremsg, "    duration is <" << f_duration << ">" << eom );
             //msg_warning( coremsg, "    frequency is <" << f_frequency << ">" << eom );
             //msg_warning( coremsg, "    slope is <" << f_slope << ">" << eom );
@@ -1493,28 +1533,27 @@ namespace midge
             //msg_warning( coremsg, "    deviation is <" << f_deviation << ">" << eom );
 
             //msg_warning( coremsg, "  updating scores:" << eom );
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
-                if( t_point_frequency < t_point_min )
-                {
-                    continue;
-                }
-                if( t_point_frequency > t_point_max )
-                {
-                    continue;
-                }
-
                 t_point_ratio = s_ratio[ t_index ];
+                s_ratio[ t_index ] = -1.;
+
+                if( t_point_frequency < t_update_min )
+                {
+                    continue;
+                }
+                if( t_point_frequency > t_update_max )
+                {
+                    continue;
+                }
                 if( t_point_ratio < 0. )
                 {
                     continue;
                 }
 
-                s_ratio[ t_index ] = -1.;
-
                 f_add_occupation_sum += 1.;
-                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_point_center );
+                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_update_center );
 
                 f_times.push_back( t_point_time );
                 f_frequencies.push_back( t_point_frequency );
@@ -1540,15 +1579,15 @@ namespace midge
             f_duration = t_point_duration;
             f_frequency = t_update_frequency;
             f_slope = t_update_slope;
-            f_correlation = (t_update_tf_stat * t_update_tf_stat) / (t_update_tt_stat * t_update_ff_stat);
-            f_deviation = sqrt( t_update_dev_stat / t_update_r_sum );
-            f_r_sum = t_update_r_sum;
-            f_rt_sum = t_update_rt_sum;
-            f_rf_sum = t_update_rf_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rff_sum = t_update_rff_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rtf_sum = t_update_rtf_sum;
+            f_correlation = t_update_correlation;
+            f_deviation = t_update_deviation;
+            f_r_sum = t_loop_r_sum;
+            f_rt_sum = t_loop_rt_sum;
+            f_rf_sum = t_loop_rf_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rff_sum = t_loop_rff_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rtf_sum = t_loop_rtf_sum;
             //msg_warning( coremsg, "    duration is <" << f_duration << ">" << eom );
             //msg_warning( coremsg, "    frequency is <" << f_frequency << ">" << eom );
             //msg_warning( coremsg, "    slope is <" << f_slope << ">" << eom );
@@ -1556,28 +1595,27 @@ namespace midge
             //msg_warning( coremsg, "    deviation is <" << f_deviation << ">" << eom );
 
             //msg_warning( coremsg, " updating scores:" << eom );
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
-                if( t_point_frequency < t_point_min )
-                {
-                    continue;
-                }
-                if( t_point_frequency > t_point_max )
-                {
-                    continue;
-                }
-
                 t_point_ratio = s_ratio[ t_index ];
+                s_ratio[ t_index ] = -1.;
+
+                if( t_point_frequency < t_update_min )
+                {
+                    continue;
+                }
+                if( t_point_frequency > t_update_max )
+                {
+                    continue;
+                }
                 if( t_point_ratio < 0. )
                 {
                     continue;
                 }
 
-                s_ratio[ t_index ] = -1.;
-
                 f_add_occupation_sum += 1.;
-                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_point_center );
+                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_update_center );
 
                 f_times.push_back( t_point_time );
                 f_frequencies.push_back( t_point_frequency );
@@ -1693,7 +1731,7 @@ namespace midge
 
     real_t rf_event_consumer::cluster::weight( const real_t& p_frequency ) const
     {
-        if( p_frequency > 1. *s_window )
+        if( p_frequency > 1. * s_window )
         {
             return 0.;
         }
@@ -1733,14 +1771,9 @@ namespace midge
         s_max_index = p_max_index;
         return;
     }
-    void rf_event_consumer::line::set_window( const real_t& p_window )
+    void rf_event_consumer::line::set_tolerance( const real_t& p_tolerance )
     {
-        s_window = p_window;
-        return;
-    }
-    void rf_event_consumer::line::set_width( const real_t& p_width )
-    {
-        s_width = p_width;
+        s_tolerance = p_tolerance;
         return;
     }
     void rf_event_consumer::line::set_add_coefficient( const real_t& p_add_coefficient )
@@ -1774,8 +1807,7 @@ namespace midge
     real_t rf_event_consumer::line::s_interval = 1.;
     count_t rf_event_consumer::line::s_min_index = 0;
     count_t rf_event_consumer::line::s_max_index = 0;
-    real_t rf_event_consumer::line::s_window = 1.;
-    real_t rf_event_consumer::line::s_width = 1.;
+    real_t rf_event_consumer::line::s_tolerance = 1.;
     real_t rf_event_consumer::line::s_add_coefficient = 1.;
     real_t rf_event_consumer::line::s_add_power = 0.;
     real_t rf_event_consumer::line::s_gap_coefficient = 2.;
@@ -1788,8 +1820,8 @@ namespace midge
             f_duration( p_cluster.duration() ),
             f_frequency( p_cluster.frequency() ),
             f_slope( p_cluster.slope() ),
-            f_correlation( 0. ),
-            f_deviation( 0. ),
+            f_correlation( p_cluster.correlation() ),
+            f_deviation( p_cluster.deviation() ),
             f_occupation( 0. ),
             f_score( 0. ),
             f_times(),
@@ -1819,23 +1851,9 @@ namespace midge
         register real_t t_point_frequency;
         register real_t t_point_ratio;
         register real_t t_point_center;
-        register real_t t_point_width_max;
-        register real_t t_point_width_min;
+        register real_t t_point_max;
+        register real_t t_point_min;
 
-        set< count_t > t_indices;
-        for( t_index = 0; t_index < p_cluster.times().size(); t_index++ )
-        {
-            t_indices.insert( t_index );
-        }
-
-        register real_t t_init_t_min;
-        register real_t t_init_t_max;
-        register real_t t_init_r_sum;
-        register real_t t_init_rt_sum;
-        register real_t t_init_rf_sum;
-        register real_t t_init_rtt_sum;
-        register real_t t_init_rff_sum;
-        register real_t t_init_rtf_sum;
         register real_t t_init_tt_stat;
         register real_t t_init_ff_stat;
         register real_t t_init_tf_stat;
@@ -1845,7 +1863,25 @@ namespace midge
         register real_t t_init_duration = f_duration;
         register real_t t_init_frequency = f_frequency;
         register real_t t_init_slope = f_slope;
-        set< count_t > t_init_indices;
+        register real_t t_init_correlation = f_correlation;
+        register real_t t_init_deviation = f_deviation;
+
+        set< count_t > t_current_indices;
+        for( t_index = 0; t_index < p_cluster.times().size(); t_index++ )
+        {
+            t_current_indices.insert( t_index );
+        }
+
+        set< count_t > t_next_indices;
+
+        register real_t t_loop_t_min;
+        register real_t t_loop_t_max;
+        register real_t t_loop_r_sum;
+        register real_t t_loop_rt_sum;
+        register real_t t_loop_rf_sum;
+        register real_t t_loop_rtt_sum;
+        register real_t t_loop_rff_sum;
+        register real_t t_loop_rtf_sum;
         while( true )
         {
             //msg_warning( coremsg, "  initializing:" << eom );
@@ -1853,15 +1889,15 @@ namespace midge
             //msg_warning( coremsg, "    frequency is <" << t_init_frequency << ">" << eom );
             //msg_warning( coremsg, "    slope is <" << t_init_slope << ">" << eom );
 
-            t_init_t_min = numeric_limits< real_t >::max();
-            t_init_t_max = numeric_limits< real_t >::min();
-            t_init_r_sum = 0.;
-            t_init_rt_sum = 0.;
-            t_init_rf_sum = 0.;
-            t_init_rtt_sum = 0.;
-            t_init_rff_sum = 0.;
-            t_init_rtf_sum = 0.;
-            t_init_indices.clear();
+            t_loop_t_min = numeric_limits< real_t >::max();
+            t_loop_t_max = numeric_limits< real_t >::min();
+            t_loop_r_sum = 0.;
+            t_loop_rt_sum = 0.;
+            t_loop_rf_sum = 0.;
+            t_loop_rtt_sum = 0.;
+            t_loop_rff_sum = 0.;
+            t_loop_rtf_sum = 0.;
+            t_next_indices.clear();
             for( t_index = 0; t_index < p_cluster.times().size(); t_index++ )
             {
                 t_point_time = p_cluster.times().at( t_index );
@@ -1869,70 +1905,74 @@ namespace midge
                 t_point_frequency = p_cluster.frequencies().at( t_index );
                 t_point_ratio = p_cluster.ratios().at( t_index );
                 t_point_center = t_init_frequency + t_init_slope * t_point_duration;
-                t_point_width_max = t_point_center + s_width;
-                t_point_width_min = t_point_center - s_width;
+                t_point_max = t_point_center + s_tolerance * t_init_deviation;
+                t_point_min = t_point_center - s_tolerance * t_init_deviation;
 
-                if( t_point_frequency > t_point_width_max )
+                if( t_point_frequency > t_point_max )
                 {
                     continue;
                 }
 
-                if( t_point_frequency < t_point_width_min )
+                if( t_point_frequency < t_point_min )
                 {
                     continue;
                 }
 
-                t_init_t_min = t_init_t_min < t_point_time ? t_init_t_min : t_point_time;
-                t_init_t_max = t_init_t_max > t_point_time ? t_init_t_max : t_point_time;
-                t_init_r_sum += t_point_ratio;
-                t_init_rt_sum += t_point_ratio * t_point_duration;
-                t_init_rf_sum += t_point_ratio * t_point_frequency;
-                t_init_rtt_sum += t_point_ratio * t_point_duration * t_point_duration;
-                t_init_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
-                t_init_rtf_sum += t_point_ratio * t_point_duration * t_point_frequency;
+                t_loop_t_min = t_loop_t_min < t_point_time ? t_loop_t_min : t_point_time;
+                t_loop_t_max = t_loop_t_max > t_point_time ? t_loop_t_max : t_point_time;
+                t_loop_r_sum += t_point_ratio;
+                t_loop_rt_sum += t_point_ratio * t_point_duration;
+                t_loop_rf_sum += t_point_ratio * t_point_frequency;
+                t_loop_rtt_sum += t_point_ratio * t_point_duration * t_point_duration;
+                t_loop_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
+                t_loop_rtf_sum += t_point_ratio * t_point_duration * t_point_frequency;
 
-                t_init_indices.insert( t_index );
+                t_next_indices.insert( t_index );
             }
 
-            if( t_init_indices.size() == 0 )
+            if( t_next_indices.size() == 0 )
             {
                 break;
             }
 
-            t_init_tt_stat = t_init_r_sum * t_init_rtt_sum - t_init_rt_sum * t_init_rt_sum;
-            t_init_ff_stat = t_init_r_sum * t_init_rff_sum - t_init_rf_sum * t_init_rf_sum;
-            t_init_tf_stat = t_init_r_sum * t_init_rtf_sum - t_init_rt_sum * t_init_rf_sum;
-            t_init_ttf_stat = t_init_rtt_sum * t_init_rf_sum - t_init_rt_sum * t_init_rtf_sum;
+            t_init_time = t_loop_t_min;
+            t_init_duration = t_loop_t_max - t_loop_t_min;
 
-            t_init_time = t_init_t_min;
-            t_init_duration = t_init_t_max - t_init_t_min;
+            t_init_tt_stat = t_loop_r_sum * t_loop_rtt_sum - t_loop_rt_sum * t_loop_rt_sum;
+            t_init_ff_stat = t_loop_r_sum * t_loop_rff_sum - t_loop_rf_sum * t_loop_rf_sum;
+            t_init_tf_stat = t_loop_r_sum * t_loop_rtf_sum - t_loop_rt_sum * t_loop_rf_sum;
+            t_init_ttf_stat = t_loop_rtt_sum * t_loop_rf_sum - t_loop_rt_sum * t_loop_rtf_sum;
+
             t_init_frequency = t_init_ttf_stat / t_init_tt_stat;
             t_init_slope = t_init_tf_stat / t_init_tt_stat;
 
-            t_init_dev_stat = t_init_rff_sum;
-            t_init_dev_stat += t_init_slope * t_init_slope * t_init_rtt_sum;
-            t_init_dev_stat += t_init_frequency * t_init_frequency * t_init_r_sum;
-            t_init_dev_stat -= 2. * t_init_slope * t_init_rtf_sum;
-            t_init_dev_stat -= 2. * t_init_frequency * t_init_rf_sum;
-            t_init_dev_stat += 2. * t_init_slope * t_init_frequency * t_init_rt_sum;
+            t_init_dev_stat = t_loop_rff_sum;
+            t_init_dev_stat += t_init_slope * t_init_slope * t_loop_rtt_sum;
+            t_init_dev_stat += t_init_frequency * t_init_frequency * t_loop_r_sum;
+            t_init_dev_stat -= 2. * t_init_slope * t_loop_rtf_sum;
+            t_init_dev_stat -= 2. * t_init_frequency * t_loop_rf_sum;
+            t_init_dev_stat += 2. * t_init_slope * t_init_frequency * t_loop_rt_sum;
 
-            set< count_t >::iterator t_it = t_indices.begin();
-            while( t_it != t_indices.end() )
+            t_init_correlation = sqrt( (t_init_tf_stat * t_init_tf_stat) / (t_init_tt_stat * t_init_ff_stat) );
+            t_init_deviation = sqrt( t_init_dev_stat / t_loop_r_sum );
+
+            set< count_t >::iterator t_it = t_current_indices.begin();
+            while( t_it != t_current_indices.end() )
             {
-                if( t_init_indices.find( *t_it ) == t_init_indices.end() )
+                if( t_next_indices.find( *t_it ) == t_next_indices.end() )
                 {
                     break;
                 }
                 t_it++;
             }
 
-            if( t_it == t_indices.end() )
+            if( t_it == t_current_indices.end() )
             {
                 break;
             }
             else
             {
-                t_indices = t_init_indices;
+                t_current_indices = t_next_indices;
             }
         }
 
@@ -1940,17 +1980,17 @@ namespace midge
         f_duration = t_init_duration;
         f_frequency = t_init_frequency;
         f_slope = t_init_slope;
-        f_correlation = (t_init_tf_stat * t_init_tf_stat) / (t_init_tt_stat * t_init_ff_stat);
-        f_deviation = sqrt( t_init_dev_stat / t_init_r_sum );
-        f_r_sum = t_init_r_sum;
-        f_rt_sum = t_init_rt_sum;
-        f_rf_sum = t_init_rf_sum;
-        f_rtt_sum = t_init_rtt_sum;
-        f_rff_sum = t_init_rff_sum;
-        f_rtt_sum = t_init_rtt_sum;
-        f_rtf_sum = t_init_rtf_sum;
+        f_correlation = t_init_correlation;
+        f_deviation = t_init_deviation;
+        f_r_sum = t_loop_r_sum;
+        f_rt_sum = t_loop_rt_sum;
+        f_rf_sum = t_loop_rf_sum;
+        f_rtt_sum = t_loop_rtt_sum;
+        f_rff_sum = t_loop_rff_sum;
+        f_rtt_sum = t_loop_rtt_sum;
+        f_rtf_sum = t_loop_rtf_sum;
 
-        for( set< count_t >::iterator t_it = t_indices.begin(); t_it != t_indices.end(); t_it++ )
+        for( set< count_t >::iterator t_it = t_current_indices.begin(); t_it != t_current_indices.end(); t_it++ )
         {
             t_index = *t_it;
             t_point_time = p_cluster.times().at( t_index );
@@ -2002,62 +2042,61 @@ namespace midge
         register real_t t_point_time = *s_time;
         register real_t t_point_duration = t_point_time - f_time;
         register real_t t_point_frequency;
-        register real_t t_point_center = f_frequency + f_slope * t_point_duration;
-        register real_t t_point_window_min = t_point_center - s_window;
-        register real_t t_point_window_max = t_point_center + s_window;
-        register real_t t_point_width_min = t_point_center - s_width;
-        register real_t t_point_width_max = t_point_center + s_width;
         register real_t t_point_ratio;
 
-        pair< count_t, count_t > t_indices( (count_t) (floor( t_point_window_min / s_interval )), (count_t) (ceil( t_point_window_max / s_interval )) );
-        if( t_indices.first < s_min_index )
-        {
-            t_indices.first = s_min_index;
-        }
-        if( t_indices.second > s_max_index )
-        {
-            t_indices.second = s_max_index;
-        }
-
-        register bool_t t_update_add;
-        register real_t t_update_r_sum;
-        register real_t t_update_rt_sum;
-        register real_t t_update_rf_sum;
-        register real_t t_update_rtt_sum;
-        register real_t t_update_rff_sum;
-        register real_t t_update_rtf_sum;
         register real_t t_update_tt_stat;
         register real_t t_update_ff_stat;
         register real_t t_update_tf_stat;
         register real_t t_update_ttf_stat;
         register real_t t_update_dev_stat;
-        register real_t t_update_frequency;
-        register real_t t_update_slope;
-        pair< count_t, count_t > t_update_indices;
+        register real_t t_update_frequency = f_frequency;
+        register real_t t_update_slope = f_slope;
+        register real_t t_update_correlation = f_correlation;
+        register real_t t_update_deviation = f_deviation;
+        register real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+        register real_t t_update_min = t_update_center - s_tolerance * f_deviation;
+        register real_t t_update_max = t_update_center + s_tolerance * f_deviation;
+
+        pair< count_t, count_t > t_current_indices( (count_t) (floor( t_update_min / s_interval )), (count_t) (ceil( t_update_max / s_interval )) );
+        if( t_current_indices.first < s_min_index )
+        {
+            t_current_indices.first = s_min_index;
+        }
+        if( t_current_indices.second > s_max_index )
+        {
+            t_current_indices.second = s_max_index;
+        }
+        pair< count_t, count_t > t_next_indices;
+
+        register bool_t t_loop_add;
+        register real_t t_loop_r_sum;
+        register real_t t_loop_rt_sum;
+        register real_t t_loop_rf_sum;
+        register real_t t_loop_rtt_sum;
+        register real_t t_loop_rff_sum;
+        register real_t t_loop_rtf_sum;
         while( true )
         {
             //msg_warning( coremsg, "  updating:" << eom );
-            //msg_warning( coremsg, "    current center is <" << t_point_center << ">" << eom );
-            //msg_warning( coremsg, "    current window minimum is <" << t_point_window_min << ">" << eom );
-            //msg_warning( coremsg, "    current window maximum is <" << t_point_window_max << ">" << eom );
-            //msg_warning( coremsg, "    current width minimum is <" << t_point_width_min << ">" << eom );
-            //msg_warning( coremsg, "    current width maximum is <" << t_point_width_max << ">" << eom );
+            //msg_warning( coremsg, "    update center is <" << t_update_center << ">" << eom );
+            //msg_warning( coremsg, "    update min is <" << t_update_min << ">" << eom );
+            //msg_warning( coremsg, "    update max is <" << t_update_max << ">" << eom );
 
-            t_update_add = false;
-            t_update_r_sum = f_r_sum;
-            t_update_rt_sum = f_rt_sum;
-            t_update_rf_sum = f_rf_sum;
-            t_update_rtt_sum = f_rtt_sum;
-            t_update_rff_sum = f_rff_sum;
-            t_update_rtf_sum = f_rtf_sum;
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            t_loop_add = false;
+            t_loop_r_sum = f_r_sum;
+            t_loop_rt_sum = f_rt_sum;
+            t_loop_rf_sum = f_rf_sum;
+            t_loop_rtt_sum = f_rtt_sum;
+            t_loop_rff_sum = f_rff_sum;
+            t_loop_rtf_sum = f_rtf_sum;
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
-                if( t_point_frequency < t_point_width_min )
+                if( t_point_frequency < t_update_min )
                 {
                     continue;
                 }
-                if( t_point_frequency > t_point_width_max )
+                if( t_point_frequency > t_update_max )
                 {
                     continue;
                 }
@@ -2067,64 +2106,66 @@ namespace midge
                 {
                     continue;
                 }
-                t_update_add = true;
-                t_update_r_sum += t_point_ratio;
-                t_update_rt_sum += t_point_ratio * t_point_duration;
-                t_update_rf_sum += t_point_ratio * t_point_frequency;
-                t_update_rtt_sum += t_point_ratio * t_point_duration * t_point_duration;
-                t_update_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
-                t_update_rtf_sum += t_point_ratio * t_point_duration * t_point_frequency;
+
+                t_loop_add = true;
+                t_loop_r_sum += t_point_ratio;
+                t_loop_rt_sum += t_point_ratio * t_point_duration;
+                t_loop_rf_sum += t_point_ratio * t_point_frequency;
+                t_loop_rtt_sum += t_point_ratio * t_point_duration * t_point_duration;
+                t_loop_rff_sum += t_point_ratio * t_point_frequency * t_point_frequency;
+                t_loop_rtf_sum += t_point_ratio * t_point_duration * t_point_frequency;
             }
 
-            if( t_update_add == false )
+            if( t_loop_add == false )
             {
                 break;
             }
 
-            t_update_tt_stat = t_update_r_sum * t_update_rtt_sum - t_update_rt_sum * t_update_rt_sum;
-            t_update_ff_stat = t_update_r_sum * t_update_rff_sum - t_update_rf_sum * t_update_rf_sum;
-            t_update_tf_stat = t_update_r_sum * t_update_rtf_sum - t_update_rt_sum * t_update_rf_sum;
-            t_update_ttf_stat = t_update_rtt_sum * t_update_rf_sum - t_update_rt_sum * t_update_rtf_sum;
+            t_update_tt_stat = t_loop_r_sum * t_loop_rtt_sum - t_loop_rt_sum * t_loop_rt_sum;
+            t_update_ff_stat = t_loop_r_sum * t_loop_rff_sum - t_loop_rf_sum * t_loop_rf_sum;
+            t_update_tf_stat = t_loop_r_sum * t_loop_rtf_sum - t_loop_rt_sum * t_loop_rf_sum;
+            t_update_ttf_stat = t_loop_rtt_sum * t_loop_rf_sum - t_loop_rt_sum * t_loop_rtf_sum;
 
             t_update_frequency = t_update_ttf_stat / t_update_tt_stat;
             t_update_slope = t_update_tf_stat / t_update_tt_stat;
 
-            t_update_dev_stat = t_update_rff_sum;
-            t_update_dev_stat += t_update_slope * t_update_slope * t_update_rtt_sum;
-            t_update_dev_stat += t_update_frequency * t_update_frequency * t_update_r_sum;
-            t_update_dev_stat -= 2. * t_update_slope * t_update_rtf_sum;
-            t_update_dev_stat -= 2. * t_update_frequency * t_update_rf_sum;
-            t_update_dev_stat += 2. * t_update_slope * t_update_frequency * t_update_rt_sum;
+            t_update_dev_stat = t_loop_rff_sum;
+            t_update_dev_stat += t_update_slope * t_update_slope * t_loop_rtt_sum;
+            t_update_dev_stat += t_update_frequency * t_update_frequency * t_loop_r_sum;
+            t_update_dev_stat -= 2. * t_update_slope * t_loop_rtf_sum;
+            t_update_dev_stat -= 2. * t_update_frequency * t_loop_rf_sum;
+            t_update_dev_stat += 2. * t_update_slope * t_update_frequency * t_loop_rt_sum;
 
-            t_point_center = t_update_frequency + t_update_slope * t_point_duration;
-            t_point_window_min = t_point_center - s_window;
-            t_point_window_max = t_point_center + s_window;
-            t_point_width_min = t_point_center - s_width;
-            t_point_width_max = t_point_center + s_width;
+            t_update_correlation = sqrt( (t_update_tf_stat * t_update_tf_stat) / (t_update_tt_stat * t_update_ff_stat) );
+            t_update_deviation = sqrt( t_update_dev_stat / t_loop_r_sum );
 
-            t_update_indices.first = (count_t) (floor( t_point_window_min / s_interval ));
-            if( t_update_indices.first < s_min_index )
+            t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+            t_update_min = t_update_center - s_tolerance * f_deviation;
+            t_update_max = t_update_center + s_tolerance * f_deviation;
+
+            t_next_indices.first = (count_t) (floor( t_update_min / s_interval ));
+            if( t_next_indices.first < s_min_index )
             {
-                t_update_indices.first = s_min_index;
+                t_next_indices.first = s_min_index;
             }
 
-            t_update_indices.second = (count_t) (ceil( t_point_window_max / s_interval ));
-            if( t_update_indices.second > s_max_index )
+            t_next_indices.second = (count_t) (ceil( t_update_max / s_interval ));
+            if( t_next_indices.second > s_max_index )
             {
-                t_update_indices.second = s_max_index;
+                t_next_indices.second = s_max_index;
             }
 
-            if( t_indices == t_update_indices )
+            if( t_current_indices == t_next_indices )
             {
                 break;
             }
             else
             {
-                t_indices = t_update_indices;
+                t_current_indices = t_next_indices;
             }
         }
 
-        if( t_update_add == true )
+        if( t_loop_add == true )
         {
             if( f_state == e_in_add )
             {
@@ -2145,10 +2186,6 @@ namespace midge
         }
         else
         {
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
-            {
-                s_ratio[ t_index ] = -1.;
-            }
             if( f_state == e_in_add )
             {
                 f_state = e_to_gap;
@@ -2175,15 +2212,15 @@ namespace midge
             f_duration = t_point_duration;
             f_frequency = t_update_frequency;
             f_slope = t_update_slope;
-            f_correlation = (t_update_tf_stat * t_update_tf_stat) / (t_update_tt_stat * t_update_ff_stat);
-            f_deviation = sqrt( t_update_dev_stat / t_update_r_sum );
-            f_r_sum = t_update_r_sum;
-            f_rt_sum = t_update_rt_sum;
-            f_rf_sum = t_update_rf_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rff_sum = t_update_rff_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rtf_sum = t_update_rtf_sum;
+            f_correlation = t_update_correlation;
+            f_deviation = t_update_deviation;
+            f_r_sum = t_loop_r_sum;
+            f_rt_sum = t_loop_rt_sum;
+            f_rf_sum = t_loop_rf_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rff_sum = t_loop_rff_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rtf_sum = t_loop_rtf_sum;
             //msg_warning( coremsg, "    duration is <" << f_duration << ">" << eom );
             //msg_warning( coremsg, "    frequency is <" << f_frequency << ">" << eom );
             //msg_warning( coremsg, "    slope is <" << f_slope << ">" << eom );
@@ -2191,17 +2228,17 @@ namespace midge
             //msg_warning( coremsg, "    deviation is <" << f_deviation << ">" << eom );
 
             //msg_warning( coremsg, "  updating scores:" << eom );
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
                 t_point_ratio = s_ratio[ t_index ];
                 s_ratio[ t_index ] = -1.;
 
-                if( t_point_frequency < t_point_width_min )
+                if( t_point_frequency < t_update_min )
                 {
                     continue;
                 }
-                if( t_point_frequency > t_point_width_max )
+                if( t_point_frequency > t_update_max )
                 {
                     continue;
                 }
@@ -2211,7 +2248,7 @@ namespace midge
                 }
 
                 f_add_occupation_sum += 1.;
-                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_point_center );
+                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_update_center );
 
                 f_times.push_back( t_point_time );
                 f_frequencies.push_back( t_point_frequency );
@@ -2237,15 +2274,15 @@ namespace midge
             f_duration = t_point_duration;
             f_frequency = t_update_frequency;
             f_slope = t_update_slope;
-            f_correlation = (t_update_tf_stat * t_update_tf_stat) / (t_update_tt_stat * t_update_ff_stat);
-            f_deviation = sqrt( t_update_dev_stat / t_update_r_sum );
-            f_r_sum = t_update_r_sum;
-            f_rt_sum = t_update_rt_sum;
-            f_rf_sum = t_update_rf_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rff_sum = t_update_rff_sum;
-            f_rtt_sum = t_update_rtt_sum;
-            f_rtf_sum = t_update_rtf_sum;
+            f_correlation = t_update_correlation;
+            f_deviation = t_update_deviation;
+            f_r_sum = t_loop_r_sum;
+            f_rt_sum = t_loop_rt_sum;
+            f_rf_sum = t_loop_rf_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rff_sum = t_loop_rff_sum;
+            f_rtt_sum = t_loop_rtt_sum;
+            f_rtf_sum = t_loop_rtf_sum;
             //msg_warning( coremsg, "    duration is <" << f_duration << ">" << eom );
             //msg_warning( coremsg, "    frequency is <" << f_frequency << ">" << eom );
             //msg_warning( coremsg, "    slope is <" << f_slope << ">" << eom );
@@ -2253,17 +2290,17 @@ namespace midge
             //msg_warning( coremsg, "    deviation is <" << f_deviation << ">" << eom );
 
             //msg_warning( coremsg, " updating scores:" << eom );
-            for( t_index = t_indices.first; t_index <= t_indices.second; t_index++ )
+            for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
                 t_point_frequency = t_index * s_interval;
                 t_point_ratio = s_ratio[ t_index ];
                 s_ratio[ t_index ] = -1.;
 
-                if( t_point_frequency < t_point_width_min )
+                if( t_point_frequency < t_update_min )
                 {
                     continue;
                 }
-                if( t_point_frequency > t_point_width_max )
+                if( t_point_frequency > t_update_max )
                 {
                     continue;
                 }
@@ -2273,7 +2310,7 @@ namespace midge
                 }
 
                 f_add_occupation_sum += 1.;
-                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_point_center );
+                f_add_score_sum += s_add_coefficient * pow( t_point_ratio + 1., s_add_power ) * weight( t_point_frequency - t_update_center );
 
                 f_times.push_back( t_point_time );
                 f_frequencies.push_back( t_point_frequency );
@@ -2389,15 +2426,15 @@ namespace midge
 
     real_t rf_event_consumer::line::weight( const real_t& p_frequency ) const
     {
-        if( p_frequency > 1. * s_window * f_deviation )
+        if( p_frequency > 1. * s_tolerance * f_deviation )
         {
             return 0.;
         }
-        if( p_frequency < -1. * s_window * f_deviation )
+        if( p_frequency < -1. * s_tolerance * f_deviation )
         {
             return 0.;
         }
-        return (.5 + .5 * cos( M_PI * p_frequency / (s_width * f_deviation) ));
+        return (.5 + .5 * cos( M_PI * p_frequency / (s_tolerance * f_deviation) ));
     }
 
     //*****
@@ -2413,14 +2450,14 @@ namespace midge
     count_t rf_event_consumer::event::s_id = 0;
 
     rf_event_consumer::event::event( const line& p_line ) :
-        f_id( s_id++ ),
-        f_time( p_line.time() ),
-        f_duration( p_line.duration() ),
-        f_line_times( 2, 0. ),
-        f_line_frequencies( 2, 0. ),
-        f_data_times( p_line.times() ),
-        f_data_frequencies( p_line.frequencies() ),
-        f_data_ratios( p_line.ratios() )
+            f_id( s_id++ ),
+            f_time( p_line.time() ),
+            f_duration( p_line.duration() ),
+            f_line_times( 2, 0. ),
+            f_line_frequencies( 2, 0. ),
+            f_data_times( p_line.times() ),
+            f_data_frequencies( p_line.frequencies() ),
+            f_data_ratios( p_line.ratios() )
     {
         f_line_times.at( 0 ) = p_line.time();
         f_line_times.at( 1 ) = p_line.time() + p_line.duration();

@@ -9,16 +9,16 @@ namespace midge
         rf_event_consumer_builder::lingual< string >( &rf_event_consumer::set_file_background, "file_background" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_frequency_minimum, "frequency_minimum" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_frequency_maximum, "frequency_maximum" ) +
-        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_add_ratio, "cluster_add_ratio" ) +
+        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_candidate_ratio_threshold, "candidate_ratio_threshold" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_window, "cluster_window" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_add_coefficient, "cluster_add_coefficient" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_add_power, "cluster_add_power" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_gap_coefficient, "cluster_gap_coefficient" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_gap_power, "cluster_gap_power" ) +
-        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_start_score, "line_start_score" ) +
+        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_score_threshold, "cluster_score_threshold" ) +
+        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_cluster_correlation_threshold, "cluster_correlation_threshold" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_stop_score, "line_stop_score" ) +
-        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_window, "line_window" ) +
-        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_width, "line_width" ) +
+        rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_tolerance, "line_tolerance" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_add_coefficient, "line_add_coefficient" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_add_power, "line_add_power" ) +
         rf_event_consumer_builder::numerical< real_t >( &rf_event_consumer::set_line_gap_coefficient, "line_gap_coefficient" ) +

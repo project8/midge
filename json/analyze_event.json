@@ -13,17 +13,17 @@
     {
         "name" : "signal",
         "file" : "data_event_signal.egg",
-        "minimum_time" : 0.308,
-        "maximum_time" : 0.325,
+        "minimum_time" : 0.420,
+        "maximum_time" : 0.480,
         "size" : 8192,
-        "stride" : 2048
+        "stride" : 1024
     },
 
     "rt_rf_power_transformer" :
     {
         "name" : "power",
         "impedance_ohm" : 50,
-        "window_blackman" :
+        "window_rectangular" :
         {
         }
     },
@@ -34,17 +34,17 @@
         "file_background" : "data_background.root",
         "frequency_minimum" : 40.0e6,
         "frequency_maximum" : 70.0e6,
-        "cluster_add_ratio" : 3.0,
-        "cluster_window" : 50.0e3,
-        "cluster_add_coefficient" : 2.0,
-        "cluster_add_power" : 0.5,
+        "candidate_ratio_threshold" : 0.7,
+        "cluster_window" : 60.0e3,
+        "cluster_add_coefficient" : 1.0,
+        "cluster_add_power" : 1.0,
         "cluster_gap_coefficient" : 0.2,
         "cluster_gap_power" : 2.0,
-        "line_start_score" : 75.0,
-        "line_stop_score" : 1.0,
-        "line_window" : 50.0e3,
-        "line_width" : 50.0e3,
-        "line_add_coefficient" : 5.0,
+        "cluster_score_threshold" : 100,
+        "cluster_correlation_threshold" : 0.95,
+        "line_stop_score" : 10.0,
+        "line_tolerance" : 1.8,
+        "line_add_coefficient" : 15.0,
         "line_add_power" : 1.0,
         "line_gap_coefficient" : 0.2,
         "line_gap_power" : 3.0,
@@ -54,7 +54,7 @@
         "plot_ratio" : true,
         "plot_ratio_key" : "ratio_canvas",
         "plot_ratio_name" : "ratio_histogram",
-        "chart_ratio_title" : "Thresholds",
+        "chart_ratio_title" : "Ratios",
         "axis_ratio_title" : "Excess Power Ratio",
         "file_cluster" : "data_cluster.root",
         "plot_cluster" : true,

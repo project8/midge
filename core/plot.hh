@@ -13,11 +13,14 @@
 #include "TH1D.h"
 #include "TH2D.h"
 
-#include <set>
-using std::set;
-
 #include <vector>
 using std::vector;
+
+#include <map>
+using std::map;
+
+#include <utility>
+using std::pair;
 
 namespace midge
 {
@@ -130,12 +133,13 @@ namespace midge
             count_t f_count;
             TApplication* f_application;
 
-            typedef map< string, TCanvas* > canvas_map;
-            typedef canvas_map::iterator canvas_it;
-            typedef canvas_map::const_iterator canvas_cit;
-            typedef canvas_map::value_type canvas_entry;
+            typedef pair< TCanvas*, TH1* > plot_pair;
+            typedef map< string, pair< TCanvas*, TH1* > > plot_map;
+            typedef plot_map::iterator plot_it;
+            typedef plot_map::const_iterator plot_cit;
+            typedef plot_map::value_type plot_entry;
 
-            canvas_map f_canvases;
+            plot_map f_plots;
 
             typedef map< string, TH1D* > th1_map;
             typedef th1_map::iterator th1_it;
