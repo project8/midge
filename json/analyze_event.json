@@ -1,5 +1,5 @@
 {
-    "rt_data" :
+        "rt_data" :
     {
         "name" : "signal_data"
     },
@@ -12,48 +12,68 @@
     "rt_monarch_producer" :
     {
         "name" : "signal",
-        "file" : "trap_on.egg",
+        "file" : "data_event_signal.egg",
         "minimum_time" : 0.308,
-        "maximum_time" : 0.317,
+        "maximum_time" : 0.325,
         "size" : 8192,
-        "stride" : 4096
+        "stride" : 2048
     },
 
     "rt_rf_power_transformer" :
     {
         "name" : "power",
         "impedance_ohm" : 50,
-        "window_hamming" :
+        "window_blackman" :
         {
         }
     },
 
-    "rf_candidate_consumer" :
+    "rf_event_consumer" :
     {
-        "name" : "candidate",
-        "threshold_file" : "trap_threshold.root",
-        "cluster_file" : "trap_cluster.root",
-        "background_file" : "trap_background.root",
-        "threshold" : 3.8,
-        "frequency_minimum" : 41.0e6,
-        "frequency_maximum" : 48.0e6,
-        "cluster_slope" : 400.0e6,
-        "cluster_spread" : 40e3,
-        "cluster_add_coefficient" : 5.0,
+        "name" : "event",
+        "file_background" : "data_background.root",
+        "frequency_minimum" : 40.0e6,
+        "frequency_maximum" : 70.0e6,
+        "cluster_add_ratio" : 3.0,
+        "cluster_window" : 50.0e3,
+        "cluster_add_coefficient" : 2.0,
         "cluster_add_power" : 0.5,
         "cluster_gap_coefficient" : 0.2,
-        "cluster_gap_power" : 2.5,
-        "cluster_score_up" : 50.0,
-        "cluster_score_down" : 0.0,
-        "plot" : true,
-        "plot_threshold_key" : "threshold_canvas",
-        "plot_threshold_name" : "threshold_histogram",
-        "chart_threshold_title" : "Thresholds",
-        "axis_threshold_title" : "Excess Power Ratio",
+        "cluster_gap_power" : 2.0,
+        "line_start_score" : 75.0,
+        "line_stop_score" : 1.0,
+        "line_window" : 50.0e3,
+        "line_width" : 50.0e3,
+        "line_add_coefficient" : 5.0,
+        "line_add_power" : 1.0,
+        "line_gap_coefficient" : 0.2,
+        "line_gap_power" : 3.0,
+        "event_time_tolerance" : 2.0e-4,
+        "plot_any" : true,
+        "file_ratio" : "data_ratio.root",
+        "plot_ratio" : true,
+        "plot_ratio_key" : "ratio_canvas",
+        "plot_ratio_name" : "ratio_histogram",
+        "chart_ratio_title" : "Thresholds",
+        "axis_ratio_title" : "Excess Power Ratio",
+        "file_cluster" : "data_cluster.root",
+        "plot_cluster" : true,
         "plot_cluster_key" : "cluster_canvas",
         "plot_cluster_name" : "cluster_histogram",
         "chart_cluster_title" : "Clusters",
-        "axis_cluster_title" : "Cluster Score"
+        "axis_cluster_title" : "Cluster Score",
+        "file_line" : "data_line.root",
+        "plot_line" : true,
+        "plot_line_key" : "line_canvas",
+        "plot_line_name" : "line_histogram",
+        "chart_line_title" : "Lines",
+        "axis_line_title" : "Line Score",
+        "file_event" : "data_event.root",
+        "plot_event" : true,
+        "plot_event_key" : "event_canvas",
+        "plot_event_name" : "event_histogram",
+        "chart_event_title" : "Events",
+        "axis_event_title" : "Event Score"
     },
 
     "void_controller" :
@@ -64,7 +84,7 @@
     "join" : "signal.out_0:signal_data.in",
     "join" : "signal_data.out:power.in_0",
     "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:candidate.in_0",
+    "join" : "power_data.out:event.in_0",
     "join" : "control.out_0:signal",
 
     "run" : "control"

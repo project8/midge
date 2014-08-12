@@ -137,23 +137,26 @@ namespace midge
 
             canvas_map f_canvases;
 
-            typedef vector< TH1D* > th1_vector;
-            typedef th1_vector::iterator th1_it;
-            typedef th1_vector::const_iterator th1_cit;
+            typedef map< string, TH1D* > th1_map;
+            typedef th1_map::iterator th1_it;
+            typedef th1_map::const_iterator th1_cit;
+            typedef th1_map::value_type th1_entry;
 
-            th1_vector f_th1s;
+            th1_map f_th1s;
 
-            typedef vector< TH2D* > th2_vector;
-            typedef th2_vector::iterator th2_it;
-            typedef th2_vector::const_iterator th2_cit;
+            typedef map< string, TH2D* > th2_map;
+            typedef th2_map::iterator th2_it;
+            typedef th2_map::const_iterator th2_cit;
+            typedef th2_map::value_type th2_entry;
 
-            th2_vector f_th2s;
+            th2_map f_th2s;
 
-            typedef vector< TGraph* > graph_vector;
-            typedef graph_vector::iterator graph_it;
-            typedef graph_vector::const_iterator graph_cit;
+            typedef map< string, TGraph* > graph_map;
+            typedef graph_map::iterator graph_it;
+            typedef graph_map::const_iterator graph_cit;
+            typedef graph_map::value_type graph_entry;
 
-            graph_vector f_graphs;
+            graph_map f_graphs;
     };
 
 }

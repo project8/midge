@@ -135,15 +135,15 @@ namespace midge
         }
         for( th1_it t_it = f_th1s.begin(); t_it != f_th1s.end(); ++t_it )
         {
-            delete *t_it;
+            delete t_it->second;
         }
         for( th2_it t_it = f_th2s.begin(); t_it != f_th2s.end(); ++t_it )
         {
-            delete *t_it;
+            delete t_it->second;
         }
         for( graph_it t_it = f_graphs.begin(); t_it != f_graphs.end(); ++t_it )
         {
-            delete *t_it;
+            delete t_it->second;
         }
         delete f_application;
     }
@@ -180,12 +180,23 @@ namespace midge
             throw error() << "plot one dimensional was given x values with size <" << p_x.values().size() << "> and y values with size <" << p_y.values().size() << ">";
         }
 
-        msg_normal( coremsg, "making one dimensional plot <" << p_name << ">" << eom );
+        msg_normal( coremsg, "making one dimensional plot <" << p_key << "> on canvas <" << p_key << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
 
-        TH1D* t_histogram = new TH1D( p_name.c_str(), p_name.c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment );
-        t_histogram->SetDirectory( NULL );
+        TH1D* t_histogram;
+        th1_it t_hist_it = f_th1s.find( p_name );
+        if( t_hist_it != f_th1s.end() )
+        {
+            t_histogram = t_hist_it->second;
+        }
+        else
+        {
+            t_histogram = new TH1D( p_name.c_str(), p_name.c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment );
+            t_histogram->SetDirectory( NULL );
+            f_th1s.insert( th1_entry( p_name, t_histogram ) );
+        }
+
         for( count_t t_index = 0; t_index < p_x.values().size(); t_index++ )
         {
             if( p_y.values().at( t_index ) != p_y.values().at( t_index ) )
@@ -196,10 +207,10 @@ namespace midge
         }
 
         TCanvas* t_canvas;
-        canvas_it t_it = f_canvases.find( p_key );
-        if( t_it != f_canvases.end() )
+        canvas_it t_canvas_it = f_canvases.find( p_key );
+        if( t_canvas_it != f_canvases.end() )
         {
-            t_canvas = t_it->second;
+            t_canvas = t_canvas_it->second;
             t_canvas->cd( 0 );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "LP SAME" );
@@ -215,8 +226,6 @@ namespace midge
             t_histogram->Draw( "LP" );
             f_canvases.insert( canvas_entry( p_key, t_canvas ) );
         }
-
-        f_th1s.push_back( t_histogram );
 
         return;
     }
@@ -237,8 +246,20 @@ namespace midge
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
 
-        TH2D* t_histogram = new TH2D( p_name.c_str(), p_name.c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment, p_y.count(), p_y.low() - .5 * t_y_increment, p_y.high() + .5 * t_y_increment );
-        t_histogram->SetDirectory( NULL );
+        TH2D* t_histogram;
+        th2_it t_hist_it = f_th2s.find( p_name );
+        if( t_hist_it != f_th2s.end() )
+        {
+            t_histogram = t_hist_it->second;
+        }
+        else
+        {
+            t_histogram = new TH2D( p_name.c_str(), p_name.c_str(), p_x.count(), p_x.low() - .5 * t_x_increment, p_x.high() + .5 * t_x_increment, p_y.count(), p_y.low() - .5 * t_y_increment, p_y.high() + .5 * t_y_increment );
+            t_histogram->SetDirectory( NULL );
+            f_th2s.insert( th2_entry( p_name, t_histogram ) );
+        }
+
+
         for( count_t t_index = 0; t_index < p_z.values().size(); t_index++ )
         {
             if( p_z.values().at( t_index ) != p_z.values().at( t_index ) )
@@ -249,10 +270,10 @@ namespace midge
         }
 
         TCanvas* t_canvas;
-        canvas_it t_it = f_canvases.find( p_key );
-        if( t_it != f_canvases.end() )
+        canvas_it t_canvas_it = f_canvases.find( p_key );
+        if( t_canvas_it != f_canvases.end() )
         {
-            t_canvas = t_it->second;
+            t_canvas = t_canvas_it->second;
             t_canvas->cd( 0 );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "COL SAME" );
@@ -271,8 +292,6 @@ namespace midge
             f_canvases.insert( canvas_entry( p_key, t_canvas ) );
         }
 
-        f_th2s.push_back( t_histogram );
-
         return;
     }
     void plot::graph_two_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const abscissa& p_y )
@@ -288,13 +307,15 @@ namespace midge
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
 
         TGraph* t_graph = new TGraph();
+        f_graphs.insert( graph_entry( p_name, t_graph ) );
+
         for( count_t t_index = 0; t_index < p_y.values().size(); t_index++ )
         {
             if( p_y.values().at( t_index ) != p_y.values().at( t_index ) )
             {
                 continue;
             }
-            t_graph->SetPoint( t_index, p_x.values().at( t_index ), p_y.values().at( t_index ) );
+            t_graph->SetPoint( t_graph->GetN(), p_x.values().at( t_index ), p_y.values().at( t_index ) );
         }
 
         TCanvas* t_canvas;
@@ -316,8 +337,6 @@ namespace midge
             t_graph->Draw( "L" );
             f_canvases.insert( canvas_entry( p_key, t_canvas ) );
         }
-
-        f_graphs.push_back( t_graph );
 
         return;
     }
