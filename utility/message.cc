@@ -50,7 +50,11 @@ namespace midge
             f_terminal_severity( messages::get_instance()->get_terminal_severity() ),
             f_terminal_stream( messages::get_instance()->get_terminal_stream() ),
             f_log_severity( messages::get_instance()->get_log_severity() ),
-            f_log_stream( messages::get_instance()->get_log_stream() )
+            f_log_stream( messages::get_instance()->get_log_stream() ),
+
+            f_outer(),
+            f_inner(),
+            f_threads()
     {
         f_message_line.setf( messages::get_instance()->get_format(), std::ios::floatfield );
         f_message_line.precision( messages::get_instance()->GetPrecision() );
@@ -114,18 +118,18 @@ namespace midge
     {
         if( (f_severity <= f_terminal_severity) && (f_terminal_stream != NULL) && (f_terminal_stream->good() == true) )
         {
-            for( vector< pair< string, char > >::iterator It = f_message_lines.begin(); It != f_message_lines.end(); It++ )
+            for( vector< string >::iterator t_it = f_message_lines.begin(); t_it != f_message_lines.end(); t_it++ )
             {
-                (*f_terminal_stream) << this->*f_color_prefix << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << It->first << f_system_suffix << this->*f_color_suffix << It->second;
+                (*f_terminal_stream) << this->*f_color_prefix << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << (*t_it) << f_system_suffix << this->*f_color_suffix << "\n";
             }
             (*f_terminal_stream).flush();
         }
 
         if( (f_severity <= f_log_severity) && (f_log_stream != NULL) && (f_log_stream->good() == true) )
         {
-            for( vector< pair< string, char > >::iterator It = f_message_lines.begin(); It != f_message_lines.end(); It++ )
+            for( vector< string >::iterator t_it = f_message_lines.begin(); t_it != f_message_lines.end(); t_it++ )
             {
-                (*f_log_stream) << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << It->first << f_system_suffix << "\n";
+                (*f_log_stream) << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << *t_it << f_system_suffix << "\n";
             }
             (*f_log_stream).flush();
         }
@@ -145,18 +149,18 @@ namespace midge
 
     void message::shutdown()
     {
-        const size_t MaxFrameCount = 512;
-        void* FrameArray[ MaxFrameCount ];
-        const size_t FrameCount = backtrace( FrameArray, MaxFrameCount );
-        char** FrameSymbols = backtrace_symbols( FrameArray, FrameCount );
+        const size_t t_max_frames = 512;
+        void* t_frame_array[ t_max_frames ];
+        const size_t t_frame_count = backtrace( t_frame_array, t_max_frames );
+        char** t_frame_symbols = backtrace_symbols( t_frame_array, t_frame_count );
 
         if( (f_severity <= f_terminal_severity) && (f_terminal_stream != NULL) && (f_terminal_stream->good() == true) )
         {
             (*f_terminal_stream) << this->*f_color_prefix << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] shutting down..." << f_system_suffix << this->*f_color_suffix << '\n';
             (*f_terminal_stream) << this->*f_color_prefix << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] stack trace:" << f_system_suffix << this->*f_color_suffix << '\n';
-            for( size_t Index = 0; Index < FrameCount; Index++ )
+            for( size_t Index = 0; Index < t_frame_count; Index++ )
             {
-                (*f_terminal_stream) << this->*f_color_prefix << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << FrameSymbols[ Index ] << f_system_suffix << this->*f_color_suffix << '\n';
+                (*f_terminal_stream) << this->*f_color_prefix << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << t_frame_symbols[ Index ] << f_system_suffix << this->*f_color_suffix << '\n';
             }
             (*f_terminal_stream).flush();
         }
@@ -165,14 +169,14 @@ namespace midge
         {
             (*f_log_stream) << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] shutting down..." << f_system_suffix << '\n';
             (*f_log_stream) << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] stack trace:" << f_system_suffix << '\n';
-            for( size_t Index = 0; Index < FrameCount; Index++ )
+            for( size_t t_index = 0; t_index < t_frame_count; t_index++ )
             {
-                (*f_log_stream) << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << FrameSymbols[ Index ] << f_system_suffix << '\n';
+                (*f_log_stream) << f_system_prefix << "[" << f_system_description << " " << this->*f_description << " message] " << t_frame_symbols[ t_index ] << f_system_suffix << '\n';
             }
             (*f_log_stream).flush();
         }
 
-        free( FrameSymbols );
+        free( t_frame_symbols );
         exit( -1 );
 
         return;
@@ -206,6 +210,51 @@ namespace midge
     void message::set_log_stream( ostream* aLogStream )
     {
         f_log_stream = aLogStream;
+        return;
+    }
+
+    void message::acquire()
+    {
+        bool_t t_flag;
+        f_outer.lock();
+        if( f_threads.find( pthread_self() ) == f_threads.end() )
+        {
+            f_threads.insert( pthread_self() );
+            t_flag = true;
+        }
+        else
+        {
+            t_flag = false;
+        }
+        f_outer.unlock();
+
+        if( t_flag == true )
+        {
+            f_inner.lock();
+        }
+
+        return;
+    }
+    void message::release()
+    {
+        bool_t t_flag;
+        f_outer.lock();
+        if( f_threads.find( pthread_self() ) == f_threads.end() )
+        {
+            t_flag = false;
+        }
+        else
+        {
+            f_threads.erase( pthread_self() );
+            t_flag = true;
+        }
+        f_outer.unlock();
+
+        if( t_flag == true )
+        {
+            f_inner.unlock();
+        }
+
         return;
     }
 

@@ -91,6 +91,9 @@ set( midge_utility_headers
 	singleton.hh
 	error.hh
 	message.hh
+	utility_message.hh
+	mutex.hh
+	thread.hh
 	types.hh
 	typenull.hh
 	typenode.hh
@@ -104,6 +107,9 @@ set( midge_utility_headers
 set( midge_utility_sources
 	error.cc
 	message.cc
+	utility_message.cc
+	mutex.cc
+	thread.cc
 )
 
 midge_library( utility )
@@ -521,6 +527,9 @@ set( midge_test_directory
 	test
 )
 set( midge_test_programs
+	test_temp
+	test_message
+	test_thread
 	test_lexer_reporter
 	test_lexer_serializer
 	test_lexer_compiler_reporter

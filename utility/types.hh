@@ -11,6 +11,8 @@ namespace midge
 {
     typedef bool bool_t;
     typedef uint64_t count_t;
+    typedef uint8_t state_t;
+    typedef int64_t pos_t;
     typedef double real_t;
     typedef double complex_t[2];
 }

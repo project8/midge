@@ -1,6 +1,14 @@
 #ifndef _midge_message_hh_
 #define _midge_message_hh_
 
+#include "types.hh"
+#include "mutex.hh"
+
+#include <pthread.h>
+
+#include <set>
+using std::set;
+
 #include <vector>
 using std::vector;
 
@@ -22,24 +30,15 @@ using std::ostream;
 #include <iomanip>
 using std::setprecision;
 using std::fixed;
-using std::scientific;
 
 namespace midge
 {
 
-    class message_newline
+    class message_line
     {
     };
 
-    class message_overline
-    {
-    };
-
-    class message_newline_end
-    {
-    };
-
-    class message_overline_end
+    class message_end
     {
     };
 
@@ -50,10 +49,8 @@ namespace midge
     static const message_severity s_warning = 1;
     static const message_severity s_normal = 2;
     static const message_severity s_debug = 3;
-    static const message_newline ret = message_newline();
-    static const message_overline rret = message_overline();
-    static const message_newline_end eom = message_newline_end();
-    static const message_overline_end reom = message_overline_end();
+    static const message_line ret = message_line();
+    static const message_end eom = message_end();
 
     class message
     {
@@ -84,11 +81,9 @@ namespace midge
             message& operator()( const message_severity& );
 
             template< class XPrintable >
-            message& operator<<( const XPrintable& aFragment );
-            message& operator<<( const message_newline& );
-            message& operator<<( const message_overline& );
-            message& operator<<( const message_newline_end& );
-            message& operator<<( const message_overline_end& );
+            message& operator<<( const XPrintable& p_fragment );
+            message& operator<<( const message_line& );
+            message& operator<<( const message_end& );
 
         private:
             void set_severity( const message_severity& aSeverity );
@@ -128,7 +123,7 @@ namespace midge
             string message::*f_color_suffix;
 
             stringstream f_message_line;
-            vector< pair< string, char > > f_message_lines;
+            vector< string > f_message_lines;
 
             //********
             //settings
@@ -147,48 +142,53 @@ namespace midge
             ostream* f_terminal_stream;
             message_severity f_log_severity;
             ostream* f_log_stream;
+
+            void acquire();
+            void release();
+            mutex f_outer;
+            mutex f_inner;
+            set< pthread_t > f_threads;
     };
 
     inline message& message::operator()( const message_severity& aSeverity )
     {
+        acquire();
+
         set_severity( aSeverity );
+
         return *this;
     }
 
     template< class XPrintable >
     message& message::operator<<( const XPrintable& aFragment )
     {
+        acquire();
+
         f_message_line << aFragment;
+
         return *this;
     }
-    inline message& message::operator<<( const message_newline& )
+    inline message& message::operator<<( const message_line& )
     {
-        f_message_lines.push_back( pair< string, char >( f_message_line.str(), '\n' ) );
+        acquire();
+
+        f_message_lines.push_back( f_message_line.str() );
         f_message_line.clear();
         f_message_line.str( "" );
+
         return *this;
     }
-    inline message& message::operator<<( const message_overline& )
+    inline message& message::operator<<( const message_end& )
     {
-        f_message_lines.push_back( pair< string, char >( f_message_line.str(), '\r' ) );
-        f_message_line.clear();
-        f_message_line.str( "" );
-        return *this;
-    }
-    inline message& message::operator<<( const message_newline_end& )
-    {
-        f_message_lines.push_back( pair< string, char >( f_message_line.str(), '\n' ) );
-        f_message_line.clear();
-        f_message_line.str( "" );
-        flush();
-        return *this;
-    }
-    inline message& message::operator<<( const message_overline_end& )
-    {
-        f_message_lines.push_back( pair< string, char >( f_message_line.str(), '\r' ) );
+        acquire();
+
+        f_message_lines.push_back( f_message_line.str() );
         f_message_line.clear();
         f_message_line.str( "" );
         flush();
+
+        release();
+
         return *this;
     }
 

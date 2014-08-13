@@ -23,7 +23,7 @@
     {
         "name" : "power",
         "impedance_ohm" : 50,
-        "window_blackman" :
+        "window_rectangular" :
         {
         }
     },
