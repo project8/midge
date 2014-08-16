@@ -1,22 +1,28 @@
 #include "root.hh"
 
+#include "input.hh"
+#include "output.hh"
+#include "error.hh"
+
+#include "core_message.hh"
+
 namespace midge
 {
 
     root::root() :
-            f_map()
+            f_nodes()
     {
     }
     root::~root()
     {
         node* t_node;
-        map_it_t t_it;
-        for( t_it = f_map.begin(); t_it != f_map.end(); t_it++ )
+        node_it_t t_it;
+        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
             t_node = t_it->second;
             t_node->finalize();
         }
-        for( t_it = f_map.begin(); t_it != f_map.end(); t_it++ )
+        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
             t_node = t_it->second;
             delete (t_node);
@@ -25,12 +31,12 @@ namespace midge
 
     void root::add( node* p_node )
     {
-        string t_name = p_node->get_name();
-        map_it_t t_it = f_map.find( t_name );
-        if( t_it == f_map.end() )
+        string_t t_name = p_node->get_name();
+        node_it_t t_it = f_nodes.find( t_name );
+        if( t_it == f_nodes.end() )
         {
             p_node->initialize();
-            f_map.insert( map_entry_t( t_name, p_node ) );
+            f_nodes.insert( node_entry_t( t_name, p_node ) );
             msg_normal( coremsg, "added node <" << t_name << ">" << eom );
         }
         else
@@ -39,39 +45,39 @@ namespace midge
         }
         return;
     }
-    void root::join( const string& p_string )
+    void root::join( const string_t& p_string )
     {
-        string t_first_node_string( "" );
+        string_t t_first_node_string( "" );
         node* t_first_node;
-        string t_first_out_string( "" );
-        link* t_first_out;
-        string t_second_node_string( "" );
+        string_t t_first_out_string( "" );
+        output* t_first_out;
+        string_t t_second_node_string( "" );
         node* t_second_node;
-        string t_second_in_string( "" );
-        link* t_second_in;
+        string_t t_second_in_string( "" );
+        input* t_second_in;
 
         size_t t_first_pos;
         size_t t_second_pos;
-        string t_first_argument;
-        string t_second_argument;
+        string_t t_first_argument;
+        string_t t_second_argument;
 
-        t_first_pos = p_string.find( s_separator );
-        if( t_first_pos != string::npos )
+        t_first_pos = p_string.find( s_connector );
+        if( t_first_pos != string_t::npos )
         {
-            t_second_pos = p_string.find( s_separator, t_first_pos + s_separator.length() );
-            if( t_second_pos == string::npos )
+            t_second_pos = p_string.find( s_connector, t_first_pos + s_connector.length() );
+            if( t_second_pos == string_t::npos )
             {
                 t_first_argument = p_string.substr( 0, t_first_pos );
-                t_second_argument = p_string.substr( t_first_pos + 1, string::npos );
+                t_second_argument = p_string.substr( t_first_pos + 1, string_t::npos );
 
                 t_first_pos = t_first_argument.find( s_designator );
-                if( t_first_pos != string::npos )
+                if( t_first_pos != string_t::npos )
                 {
                     t_second_pos = t_first_argument.find( s_designator, t_first_pos + s_designator.length() );
-                    if( t_second_pos == string::npos )
+                    if( t_second_pos == string_t::npos )
                     {
                         t_first_node_string = t_first_argument.substr( 0, t_first_pos );
-                        t_first_out_string = t_first_argument.substr( t_first_pos + 1, string::npos );
+                        t_first_out_string = t_first_argument.substr( t_first_pos + 1, string_t::npos );
                     }
                     else
                     {
@@ -81,17 +87,18 @@ namespace midge
                 }
                 else
                 {
-                    t_first_node_string = t_first_argument;
+                    throw error() << "root join found no designators in first argument <" << t_first_argument << ">";
+                    return;
                 }
 
                 t_first_pos = t_second_argument.find( s_designator );
-                if( t_first_pos != string::npos )
+                if( t_first_pos != string_t::npos )
                 {
                     t_second_pos = t_second_argument.find( s_designator, t_first_pos + s_designator.length() );
-                    if( t_second_pos == string::npos )
+                    if( t_second_pos == string_t::npos )
                     {
                         t_second_node_string = t_second_argument.substr( 0, t_first_pos );
-                        t_second_in_string = t_second_argument.substr( t_first_pos + 1, string::npos );
+                        t_second_in_string = t_second_argument.substr( t_first_pos + 1, string_t::npos );
                     }
                     else
                     {
@@ -101,170 +108,124 @@ namespace midge
                 }
                 else
                 {
-                    t_second_node_string = t_second_argument;
-                }
-
-                if( (t_first_out_string.length() > 0) && (t_second_in_string.length() > 0) )
-                {
-                    map_it_t t_first_it = f_map.find( t_first_node_string );
-                    if( t_first_it == f_map.end() )
-                    {
-                        throw error() << "root join found no first node with name <" << t_first_node_string << ">";
-                        return;
-                    }
-                    t_first_node = t_first_it->second;
-
-                    map_it_t t_second_it = f_map.find( t_second_node_string );
-                    if( t_second_it == f_map.end() )
-                    {
-                        throw error() << "root join found no second node with name <" << t_second_node_string << ">";
-                        return;
-                    }
-                    t_second_node = t_second_it->second;
-
-                    t_first_out = t_first_node->out( t_first_out_string );
-                    if( t_first_out == NULL )
-                    {
-                        throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
-                        return;
-                    }
-                    t_first_out->set_argument( t_second_node );
-                    t_first_out->connect();
-
-                    t_second_in = t_second_node->in( t_second_in_string );
-                    if( t_second_in == NULL )
-                    {
-                        throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
-                        return;
-                    }
-                    t_second_in->set_argument( t_first_node );
-                    t_second_in->connect();
-
-                    msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
-
+                    throw error() << "root join found no designators in second argument <" << t_second_argument << ">";
                     return;
                 }
 
-                if( t_first_out_string.length() > 0 )
+                node_it_t t_first_it = f_nodes.find( t_first_node_string );
+                if( t_first_it == f_nodes.end() )
                 {
-                    map_it_t t_first_it = f_map.find( t_first_node_string );
-                    if( t_first_it == f_map.end() )
-                    {
-                        throw error() << "root join found no first node with name <" << t_first_node_string << ">";
-                        return;
-                    }
-                    t_first_node = t_first_it->second;
+                    throw error() << "root join found no first node with name <" << t_first_node_string << ">";
+                    return;
+                }
+                t_first_node = t_first_it->second;
 
-                    map_it_t t_second_it = f_map.find( t_second_node_string );
-                    if( t_second_it == f_map.end() )
-                    {
-                        throw error() << "root join found no second node with name <" << t_second_node_string << ">";
-                        return;
-                    }
-                    t_second_node = t_second_it->second;
+                node_it_t t_second_it = f_nodes.find( t_second_node_string );
+                if( t_second_it == f_nodes.end() )
+                {
+                    throw error() << "root join found no second node with name <" << t_second_node_string << ">";
+                    return;
+                }
+                t_second_node = t_second_it->second;
 
-                    t_first_out = t_first_node->out( t_first_out_string );
-                    if( t_first_out == NULL )
-                    {
-                        throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
-                        return;
-                    }
-                    t_first_out->set_argument( t_second_node );
-                    t_first_out->connect();
-
-                    msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << ">" << eom );
-
+                t_first_out = t_first_node->out( t_first_out_string );
+                if( t_first_out == NULL )
+                {
+                    throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
                     return;
                 }
 
-                if( t_second_in_string.length() > 0 )
+                t_second_in = t_second_node->in( t_second_in_string );
+                if( t_second_in == NULL )
                 {
-                    map_it_t t_first_it = f_map.find( t_first_node_string );
-                    if( t_first_it == f_map.end() )
-                    {
-                        throw error() << "root join found no first node with name <" << t_first_node_string << ">";
-                        return;
-                    }
-                    t_first_node = t_first_it->second;
-
-                    map_it_t t_second_it = f_map.find( t_second_node_string );
-                    if( t_second_it == f_map.end() )
-                    {
-                        throw error() << "root join found no second node with name <" << t_second_node_string << ">";
-                        return;
-                    }
-                    t_second_node = t_second_it->second;
-
-                    t_second_in = t_second_node->in( t_second_in_string );
-                    if( t_second_in == NULL )
-                    {
-                        throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
-                        return;
-                    }
-                    t_second_in->set_argument( t_first_node );
-                    t_second_in->connect();
-
-                    msg_normal( coremsg, "joined <" << t_first_node_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
-
+                    throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
                     return;
                 }
+                t_second_in->set( t_first_out->get() );
 
-                throw error() << "root join found no links in string <" << p_string << ">";
+                msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+
                 return;
             }
             else
             {
-                throw error() << "root join found multiple separators in string <" << p_string << ">";
+                throw error() << "root join found multiple connectors in string_t <" << p_string << ">";
                 return;
             }
         }
         else
         {
-            throw error() << "root join found no separator in string <" << p_string << ">";
+            throw error() << "root join found no connector in string_t <" << p_string << ">";
             return;
         }
     }
-    void root::run( const string& p_string )
+    void root::run( const string_t& p_string )
     {
-        map_it_t t_it = f_map.find( p_string );
-        if( t_it != f_map.end() )
-        {
-            node* t_node = t_it->second;
-            count_t t_count = 0;
+        size_t t_start_pos;
+        size_t t_separator_pos;
+        string t_argument;
+        string t_node_name;
+        node_it_t t_node_it;
+        node* t_node;
+        thread* t_thread;
 
-            msg_normal( coremsg,  "starting <" << p_string << ">" << eom );
-            if( t_node->start() == false )
+        t_start_pos = 0;
+        t_argument = p_string;
+        while( true )
+        {
+            t_separator_pos = t_argument.find( s_separator, t_start_pos );
+
+            t_node_name = t_argument.substr( t_start_pos, t_separator_pos - t_start_pos );
+            t_argument = t_argument.substr( t_separator_pos + s_separator.size(), string_t::npos );
+
+            if( t_node_name.size() == 0 )
             {
+                throw error() << "root run found node name with length zero in argument <" << p_string << ">";
                 return;
             }
 
-            while( true )
+            t_node_it = f_nodes.find( t_node_name );
+            if( t_node_it == f_nodes.end() )
             {
-                if( t_count % 1000 == 0 )
-                {
-                    msg_normal( coremsg,  "executing <" << t_count << ">" << eom );
-                }
-                if( t_node->execute() == false )
-                {
-                    break;
-                }
-                t_count++;
+                throw error() << "root run found no node with name <" << t_node_name << ">";
             }
 
-            msg_normal( coremsg,  "stopping <" << p_string << ">" << eom );
-            if( t_node->stop() == false )
+            msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
+            t_node = t_node_it->second;
+            t_thread = new thread();
+            t_thread->start( t_node, &node::execute );
+            f_threads.push_back( t_thread );
+
+            if( t_separator_pos == string_t::npos )
             {
-                return;
+                break;
             }
         }
-        else
+
+        msg_normal( coremsg, "starting threads..." << eom );
+        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
         {
-            throw error() << "root run found no node with name <" << p_string << ">";
+            (*t_it)->start();
         }
+
+        msg_normal( coremsg, "joining threads..." << eom );
+        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
+        {
+            (*t_it)->join();
+        }
+
+        msg_normal( coremsg, "...done" << eom );
+        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
+        {
+            delete (*t_it);
+        }
+        f_threads.clear();
+
         return;
     }
 
-    const string root::s_separator = string( ":" );
-    const string root::s_designator = string( "." );
+    const string_t root::s_connector = string_t( ":" );
+    const string_t root::s_designator = string_t( "." );
+    const string_t root::s_separator = string_t( ":" );
 
 }

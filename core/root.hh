@@ -4,10 +4,13 @@
 #include "core_message.hh"
 
 #include "node.hh"
-#include "link.hh"
+#include "thread.hh"
 
 #include <map>
 using std::map;
+
+#include <vector>
+using std::vector;
 
 namespace midge
 {
@@ -24,15 +27,22 @@ namespace midge
             void run( const string& p_string );
 
         private:
-            typedef map< string, node* > map_t;
-            typedef map_t::iterator map_it_t;
-            typedef map_t::const_iterator map_cit_t;
-            typedef map_t::value_type map_entry_t;
+            typedef map< string, node* > node_map_t;
+            typedef node_map_t::iterator node_it_t;
+            typedef node_map_t::const_iterator node_cit_t;
+            typedef node_map_t::value_type node_entry_t;
 
-            map_t f_map;
+            node_map_t f_nodes;
 
-            static const string s_separator;
+            typedef vector< thread* > thread_vector_t;
+            typedef thread_vector_t::iterator thread_it_t;
+            typedef thread_vector_t::const_iterator thread_cit_t;
+
+            thread_vector_t f_threads;
+
+            static const string s_connector;
             static const string s_designator;
+            static const string s_separator;
     };
 }
 

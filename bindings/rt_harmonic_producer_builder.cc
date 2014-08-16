@@ -12,9 +12,10 @@ namespace midge
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_phase_deg, "phase_deg" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_start_sec, "start_sec" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_stop_sec, "stop_sec" ) +
-        rt_harmonic_producer_builder::numerical< count_t >( &rt_harmonic_producer::set_stride, "stride" ) +
+        rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_interval_sec, "interval_sec" ) +
+        rt_harmonic_producer_builder::numerical< count_t >( &rt_harmonic_producer::set_length, "length" ) +
         rt_harmonic_producer_builder::numerical< count_t >( &rt_harmonic_producer::set_size, "size" ) +
-        rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_interval, "interval" ) +
+        rt_harmonic_producer_builder::numerical< count_t >( &rt_harmonic_producer::set_stride, "stride" ) +
         root_builder::object< rt_harmonic_producer >( &root::add, "rt_harmonic_producer" );
 
 }

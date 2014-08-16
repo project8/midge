@@ -1,5 +1,5 @@
 #include "plot.hh"
-
+#include "error.hh"
 #include "core_message.hh"
 
 #include <limits>
@@ -37,11 +37,11 @@ namespace midge
         return f_title;
     }
 
-    plot::data& plot::ordinate::values()
+    plot::values_t& plot::ordinate::values()
     {
         return f_values;
     }
-    const plot::data& plot::ordinate::values() const
+    const plot::values_t& plot::ordinate::values() const
     {
         return f_values;
     }
@@ -108,11 +108,11 @@ namespace midge
         return f_high;
     }
 
-    plot::data& plot::abscissa::values()
+    plot::values_t& plot::abscissa::values()
     {
         return f_values;
     }
-    const plot::data& plot::abscissa::values() const
+    const plot::values_t& plot::abscissa::values() const
     {
         return f_values;
     }

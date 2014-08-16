@@ -20,8 +20,9 @@ namespace midge
         class stream
         {
             public:
-                static const state_t s_started = 0;
-                static const state_t s_stopped = 1;
+                static const state_t s_idle;
+                static const state_t s_started;
+                static const state_t s_stopped;
 
             public:
                 stream()
@@ -31,9 +32,13 @@ namespace midge
                 {
                 }
 
-                virtual void state( state_t p_state ) = 0;
-                virtual state_t state() const = 0;
+                virtual stream& operator>( state_t& p_state ) = 0;
+                virtual stream& operator<( const state_t& p_state ) = 0;
         };
+
+        const state_t stream::s_idle = 0;
+        const state_t stream::s_started = 1;
+        const state_t stream::s_stopped = 2;
 
         template< class x_type >
         class read_stream :
@@ -64,8 +69,8 @@ namespace midge
                 {
                 }
 
-                virtual write_stream< x_type >& operator<<( x_type*& p_pointer ) = 0;
                 virtual write_stream< x_type >& operator>>( x_type*& p_pointer ) = 0;
+                virtual write_stream< x_type >& operator<<( x_type*& p_pointer ) = 0;
         };
 
         template< class x_type >
@@ -73,59 +78,56 @@ namespace midge
         {
             public:
                 buffer() :
-                        f_guard(),
-                        f_state( stream::s_stopped ),
                         f_length( 0 ),
-                        f_data( NULL ),
+                        f_write_state( stream::s_idle ),
+                        f_write_state_mutex(),
                         f_write_stream( NULL ),
                         f_read_count( 0 ),
-                        f_read_guards( NULL ),
+                        f_read_state( NULL ),
+                        f_read_state_mutexes( NULL ),
+                        f_read_data( NULL ),
+                        f_read_data_mutexes( NULL ),
                         f_read_streams( NULL )
                 {
                 }
                 ~buffer()
                 {
+                    delete f_write_stream;
+
                     for( count_t t_index = 0; t_index < f_length; t_index++ )
                     {
-                        delete f_data[ t_index ];
+                        delete f_read_state[ t_index ];
                     }
-                    delete[] f_data;
+                    delete[] f_read_state;
 
-                    delete f_write_stream;
+                    for( count_t t_index = 0; t_index < f_length; t_index++ )
+                    {
+                        delete f_read_data[ t_index ];
+                    }
+                    delete[] f_read_data;
+
                     for( count_t t_read_index = 0; t_read_index < f_read_count; t_read_index++ )
                     {
+                        delete[] f_read_state_mutexes[ t_read_index ];
+                        delete[] f_read_data_mutexes[ t_read_index ];
                         delete f_read_streams[ t_read_index ];
-                        delete[] f_read_guards[ t_read_index ];
                     }
+                    delete[] f_read_state_mutexes;
+                    delete[] f_read_data_mutexes;
                     delete[] f_read_streams;
-                    delete[] f_read_guards;
                 }
 
-                void initialize( const count_t& p_length, x_type* (*p_constructor)() )
+                void initialize( const count_t& p_length, state_t* (p_state_factory)(), x_type* (*p_data_factory)() )
                 {
                     f_length = p_length;
-                    f_data = new x_type*[ p_length ];
+                    f_read_state = new state_t*[ p_length ];
+                    f_read_data = new x_type*[ p_length ];
                     for( count_t t_index = 0; t_index < p_length; t_index++ )
                     {
-                        f_data[ t_index ] = (*p_constructor)();
+                        f_read_state[ t_index ] = (*p_state_factory)();
+                        f_read_data[ t_index ] = (*p_data_factory)();
                     }
                     return;
-                }
-
-                void state( state_t p_state )
-                {
-                    f_guard.lock();
-                    f_state = p_state;
-                    f_guard.unlock();
-                    return;
-                }
-                state_t state() const
-                {
-                    state_t t_state;
-                    f_guard.lock();
-                    t_state = f_state;
-                    f_guard.unlock();
-                    return t_state;
                 }
 
                 write_stream< x_type >* write()
@@ -137,33 +139,37 @@ namespace midge
                 {
                     count_t t_new_read_index = f_read_count;
                     count_t t_new_read_count = f_read_count + 1;
-                    mutex** t_new_read_guards = new mutex*[ t_new_read_count ];
+                    mutex** t_new_read_state_mutexes = new mutex*[ t_new_read_count ];
+                    mutex** t_new_read_data_mutexes = new mutex*[ t_new_read_count ];
                     buffer_read_stream** t_new_read_streams = new buffer_read_stream*[ t_new_read_count ];
 
                     for( count_t t_index = 0; t_index < f_read_count; t_index++ )
                     {
-                        t_new_read_guards[ t_index ] = f_read_guards[ t_index ];
+                        t_new_read_state_mutexes[ t_index ] = f_read_state_mutexes[ t_index ];
+                        t_new_read_data_mutexes[ t_index ] = f_read_data_mutexes[ t_index ];
                         t_new_read_streams[ t_index ] = f_read_streams[ t_index ];
                     }
 
                     f_read_count = t_new_read_count;
 
-                    delete[] f_read_guards;
-                    f_read_guards = t_new_read_guards;
-                    f_read_guards[ t_new_read_index ] = new mutex[ f_length ];
-                    f_read_guards[ t_new_read_index ][ 0 ].lock();
+                    delete[] f_read_state_mutexes;
+                    f_read_state_mutexes = t_new_read_state_mutexes;
+                    f_read_state_mutexes[ t_new_read_index ] = new mutex[ f_length ];
+                    f_read_state_mutexes[ t_new_read_index ][ 0 ].lock();
+
+                    delete[] f_read_data_mutexes;
+                    f_read_data_mutexes = t_new_read_data_mutexes;
+                    f_read_data_mutexes[ t_new_read_index ] = new mutex[ f_length ];
+                    f_read_data_mutexes[ t_new_read_index ][ 0 ].lock();
 
                     delete[] f_read_streams;
                     f_read_streams = t_new_read_streams;
-                    f_read_streams[ t_new_read_index ] = new buffer_read_stream( this, t_new_read_index );
+                    f_read_streams[ t_new_read_index ] = new buffer_read_stream( this );
                     return f_read_streams[ t_new_read_index ];
                 }
 
             protected:
-                mutable mutex f_guard;
-                state_t f_state;
                 count_t f_length;
-                x_type** f_data;
 
             protected:
                 class buffer_write_stream :
@@ -172,42 +178,60 @@ namespace midge
                     public:
                         buffer_write_stream( buffer* p_buffer ) :
                                 f_buffer( *p_buffer ),
-                                f_current_index( 0 ),
-                                f_next_index( 0 )
+                                f_current_state_index( 0 ),
+                                f_next_state_index( 0 ),
+                                f_current_data_index( 0 ),
+                                f_next_data_index( 0 )
                         {
                         }
                         virtual ~buffer_write_stream()
                         {
                         }
 
-                        void state( state_t p_state )
+                        write_stream< x_type >& operator>( state_t& p_state )
                         {
-                            f_buffer.f_guard.lock();
-                            f_buffer.f_state = p_state;
-                            f_buffer.f_guard.unlock();
-                        }
-                        state_t state() const
-                        {
-                            state_t t_state;
-                            f_buffer.f_guard.lock();
-                            t_state = f_buffer.f_state;
-                            f_buffer.f_guard.unlock();
-                            return t_state;
-                        }
+                            f_buffer.f_write_state_mutex.lock();
+                            p_state = f_buffer.f_write_state;
+                            f_buffer.f_write_state_mutex.unlock();
 
-                        write_stream< x_type >& operator>>( x_type*& p_pointer )
+                            return *this;
+                        }
+                        write_stream< x_type >& operator<( const state_t& p_state )
                         {
-                            if( ++f_next_index == f_buffer.f_length )
+                            if( ++f_next_state_index == f_buffer.f_length )
                             {
-                                f_next_index = 0;
+                                f_next_state_index = 0;
                             }
 
                             for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                             {
-                                f_buffer.f_read_guards[ t_index ][ f_next_index ].lock();
+                                f_buffer.f_read_state_mutexes[ t_index ][ f_next_state_index ].lock();
                             }
 
-                            p_pointer = f_buffer.f_data[ f_current_index ];
+                            *(f_buffer.f_read_state[ f_current_state_index ]) = p_state;
+
+                            for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                            {
+                                f_buffer.f_read_state_mutexes[ t_index ][ f_current_state_index ].unlock();
+                            }
+
+                            f_current_state_index = f_next_state_index;
+
+                            return *this;
+                        }
+                        write_stream< x_type >& operator>>( x_type*& p_pointer )
+                        {
+                            if( ++f_next_data_index == f_buffer.f_length )
+                            {
+                                f_next_data_index = 0;
+                            }
+
+                            for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                            {
+                                f_buffer.f_read_data_mutexes[ t_index ][ f_next_data_index ].lock();
+                            }
+
+                            p_pointer = f_buffer.f_read_data[ f_current_data_index ];
 
                             return *this;
                         }
@@ -215,20 +239,24 @@ namespace midge
                         {
                             for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                             {
-                                f_buffer.f_read_guards[ t_index ][ f_current_index ].unlock();
+                                f_buffer.f_read_data_mutexes[ t_index ][ f_current_data_index ].unlock();
                             }
 
-                            f_current_index = f_next_index;
+                            f_current_data_index = f_next_data_index;
 
                             return *this;
                         }
 
                     private:
                         buffer& f_buffer;
-                        count_t f_current_index;
-                        count_t f_next_index;
+                        count_t f_current_state_index;
+                        count_t f_next_state_index;
+                        count_t f_current_data_index;
+                        count_t f_next_data_index;
                 };
 
+                state_t f_write_state;
+                mutex f_write_state_mutex;
                 buffer_write_stream* f_write_stream;
 
             protected:
@@ -236,46 +264,55 @@ namespace midge
                     public read_stream< x_type >
                 {
                     public:
-                        buffer_read_stream( buffer* p_buffer, const count_t& p_index ) :
+                        buffer_read_stream( buffer* p_buffer ) :
                                 f_buffer( *p_buffer ),
-                                f_stream_index( p_index ),
-                                f_current_index( 0 )
+                                f_stream_index( f_buffer.f_read_count - 1 ),
+                                f_current_state_index( 0 ),
+                                f_current_data_index( 0 )
                         {
                         }
                         virtual ~buffer_read_stream()
                         {
                         }
 
-                        void state( state_t p_state )
+                        read_stream< x_type >& operator>( state_t& p_state )
                         {
-                            f_buffer.f_guard.lock();
-                            f_buffer.f_state = p_state;
-                            f_buffer.f_guard.unlock();
-                        }
-                        state_t state() const
-                        {
-                            state_t t_state;
-                            f_buffer.f_guard.lock();
-                            t_state = f_buffer.f_state;
-                            f_buffer.f_guard.unlock();
-                            return t_state;
-                        }
+                            f_buffer.f_read_state_mutexes[ f_stream_index ][ f_current_state_index ].lock();
 
+                            p_state = *(f_buffer.f_read_state[ f_current_state_index ]);
+
+                            f_buffer.f_read_state_mutexes[ f_stream_index ][ f_current_state_index ].unlock();
+
+                            if( ++f_current_state_index == f_buffer.f_length )
+                            {
+                                f_current_state_index = 0;
+                            }
+
+                            return *this;
+                        }
+                        read_stream< x_type >& operator<( const state_t& p_state )
+                        {
+                            f_buffer.f_write_state_mutex.lock();
+                            f_buffer.f_write_state = p_state;
+                            f_buffer.f_write_state_mutex.unlock();
+
+                            return *this;
+                        }
                         read_stream< x_type >& operator>>( const x_type*& p_pointer )
                         {
-                            f_buffer.f_read_guards[ f_stream_index ][ f_current_index ].lock();
+                            f_buffer.f_read_data_mutexes[ f_stream_index ][ f_current_data_index ].lock();
 
-                            p_pointer = f_buffer.f_data[ f_current_index ];
+                            p_pointer = f_buffer.f_read_data[ f_current_data_index ];
 
                             return *this;
                         }
                         read_stream< x_type >& operator<<( const x_type*& )
                         {
-                            f_buffer.f_read_guards[ f_stream_index ][ f_current_index ].unlock();
+                            f_buffer.f_read_data_mutexes[ f_stream_index ][ f_current_data_index ].unlock();
 
-                            if( ++f_current_index == f_buffer.f_length )
+                            if( ++f_current_data_index == f_buffer.f_length )
                             {
-                                f_current_index = 0;
+                                f_current_data_index = 0;
                             }
 
                             return *this;
@@ -284,11 +321,15 @@ namespace midge
                     private:
                         buffer& f_buffer;
                         count_t f_stream_index;
-                        count_t f_current_index;
+                        count_t f_current_state_index;
+                        count_t f_current_data_index;
                 };
 
                 count_t f_read_count;
-                mutex** f_read_guards;
+                state_t** f_read_state;
+                mutex** f_read_state_mutexes;
+                x_type** f_read_data;
+                mutex** f_read_data_mutexes;
                 buffer_read_stream** f_read_streams;
 
         };
@@ -310,30 +351,36 @@ namespace midge
 
                 void execute()
                 {
+
+                    count_t t_count = 0;
+                    count_t t_sleep;
+                    state_t t_state;
                     double* t_value;
                     while( true )
                     {
-                        f_stream >> t_value;
-                        (*t_value) = gsl_ran_flat( f_rng, 0., 10. );
-
-                        if( f_stream.state() == stream::s_stopped )
+                        f_stream > t_state;
+                        testmsg( s_normal ) << "writer <" << f_seed << "> pulling a state of <" << t_state << "> at <" << t_count << ">" << eom;
+                        if( t_state == stream::s_stopped )
                         {
                             testmsg( s_normal ) << "writer <" << f_seed << "> stopping" << eom;
-                            f_stream << t_value;
+                            f_stream < stream::s_stopped;
                             break;
                         }
-
                         if( gsl_ran_flat( f_rng, 0., 20. ) < 1. )
                         {
                             testmsg( s_normal ) << "writer <" << f_seed << "> initiates stop" << eom;
-                            f_stream.state( stream::s_stopped );
-                            f_stream << t_value;
+                            f_stream < stream::s_stopped;
                             break;
                         }
+                        f_stream < stream::s_started;
 
-                        testmsg( s_normal ) << "writer <" << f_seed << "> pushing a value of <" << *t_value << ">" << eom;
+                        f_stream >> t_value;
+                        (*t_value) = gsl_ran_flat( f_rng, 0., 10. );
+                        testmsg( s_normal ) << "writer <" << f_seed << "> pushing a value of <" << *t_value << "> at <" << t_count << ">" << eom;
                         f_stream << t_value;
-                        usleep( 1000000 );
+                        t_sleep = (count_t) (round(gsl_ran_flat( f_rng, 50000., 150000. )));
+                        usleep( t_sleep );
+                        t_count++;
                     }
                     return;
                 }
@@ -361,27 +408,36 @@ namespace midge
 
                 void execute()
                 {
+                    count_t t_count = 0;
+                    count_t t_sleep;
+                    state_t t_state;
                     const double* t_value;
                     while( true )
                     {
-                        f_stream >> t_value;
-                        if( f_stream.state() == stream::s_stopped )
+
+                        f_stream > t_state;
+                        testmsg( s_normal ) << "  reader <" << f_seed << "> pulling a state of <" << t_state << "> at <" << t_count << ">" << eom;
+                        if( t_state == stream::s_stopped )
                         {
-                            testmsg( s_normal ) << "reader <" << f_seed << "> stopping" << eom;
-                            f_stream << t_value;
+                            testmsg( s_normal ) << "  reader <" << f_seed << "> stopping" << eom;
+                            f_stream < stream::s_stopped;
                             break;
                         }
 
                         if( gsl_ran_flat( f_rng, 0., 20. ) < 1. )
                         {
-                            testmsg( s_normal ) << "reader <" << f_seed << "> initiates stop" << eom;
-                            f_stream.state( stream::s_stopped );
-                            f_stream << t_value;
+                            testmsg( s_normal ) << "  reader <" << f_seed << "> initiates stop" << eom;
+                            f_stream < stream::s_stopped;
                             break;
                         }
+                        //f_stream < stream::s_started;
 
-                        testmsg( s_normal ) << "  reader <" << f_seed << "> pulling a value of <" << *t_value << ">" << eom;
+                        f_stream >> t_value;
+                        testmsg( s_normal ) << "  reader <" << f_seed << "> pulling a value of <" << *t_value << "> at <" << t_count << ">" << eom;
                         f_stream << t_value;
+                        t_sleep = (count_t) (round(gsl_ran_flat( f_rng, 200000., 600000. )));
+                        usleep( t_sleep );
+                        t_count++;
                     }
                     return;
                 }
@@ -398,6 +454,12 @@ namespace midge
             (*t_real) = 0.;
             return t_real;
         }
+        state_t* new_state()
+        {
+            state_t* t_state = new state_t;
+            (*t_state) = stream::s_idle;
+            return t_state;
+        }
     }
 }
 
@@ -407,7 +469,7 @@ using namespace midge::test;
 int main()
 {
     buffer< real_t > t_buffer;
-    t_buffer.initialize( 10, &new_real );
+    t_buffer.initialize( 10, &new_state, &new_real );
 
     writer t_dan_writer( &t_buffer, 51385 );
     reader t_katie_reader( &t_buffer, 82284 );
@@ -421,8 +483,6 @@ int main()
     t_erin_thread.start( &t_erin_reader, &reader::execute );
     t_susanne_thread.start( &t_susanne_reader, &reader::execute );
     t_rose_thread.start( &t_rose_reader, &reader::execute );
-
-    t_buffer.state( stream::s_started );
 
     t_dan_thread.start();
     t_katie_thread.start();

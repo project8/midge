@@ -2,7 +2,7 @@
 #define _midge_plot_hh_
 
 #include "singleton.hh"
-#include "node.hh"
+#include "types.hh"
 
 #include "TApplication.h"
 #include "TStyle.h"
@@ -33,9 +33,9 @@ namespace midge
             friend class singleton< plot > ;
 
         public:
-            typedef vector< real_t > data;
-            typedef vector< real_t >::iterator data_it;
-            typedef vector< real_t >::const_iterator data_cit;
+            typedef vector< real_t > values_t;
+            typedef vector< real_t >::iterator value_it;
+            typedef vector< real_t >::const_iterator value_cit;
 
         public:
             class ordinate
@@ -48,17 +48,17 @@ namespace midge
                     void operator()( const count_t& t_size );
 
                 public:
-                    string& title();
-                    const string& title() const;
+                    string_t& title();
+                    const string_t& title() const;
 
-                    data& values();
-                    const data& values() const;
+                    values_t& values();
+                    const values_t& values() const;
 
                 private:
                     ordinate( const ordinate& );
 
-                    string f_title;
-                    data f_values;
+                    string_t f_title;
+                    values_t f_values;
             };
 
             class abscissa
@@ -71,8 +71,8 @@ namespace midge
                     void operator()( const count_t& t_size );
 
                 public:
-                    string& title();
-                    const string& title() const;
+                    string_t& title();
+                    const string_t& title() const;
 
                     count_t& count();
                     const count_t& count() const;
@@ -83,17 +83,17 @@ namespace midge
                     real_t& high();
                     const real_t& high() const;
 
-                    data& values();
-                    const data& values() const;
+                    values_t& values();
+                    const values_t& values() const;
 
                 private:
                     abscissa( const abscissa& );
 
-                    string f_title;
+                    string_t f_title;
                     count_t f_count;
                     real_t f_low;
                     real_t f_high;
-                    data f_values;
+                    values_t f_values;
             };
 
         private:
@@ -104,26 +104,26 @@ namespace midge
             void initialize();
             void plot_one_dimensional
             (
-                const string& p_key,
-                const string& p_name,
-                const string& p_title,
+                const string_t& p_key,
+                const string_t& p_name,
+                const string_t& p_title,
                 const abscissa& p_x_axis,
                 const ordinate& p_y_values
             );
             void plot_two_dimensional
             (
-                const string& p_key,
-                const string& p_name,
-                const string& p_title,
+                const string_t& p_key,
+                const string_t& p_name,
+                const string_t& p_title,
                 const abscissa& p_x_axis,
                 const abscissa& p_y_axis,
                 const ordinate& p_z_values
             );
             void graph_two_dimensional
             (
-                const string& p_key,
-                const string& p_name,
-                const string& p_title,
+                const string_t& p_key,
+                const string_t& p_name,
+                const string_t& p_title,
                 const abscissa& p_x_axis,
                 const abscissa& p_y_axis
             );
@@ -134,28 +134,28 @@ namespace midge
             TApplication* f_application;
 
             typedef pair< TCanvas*, TH1* > plot_pair;
-            typedef map< string, pair< TCanvas*, TH1* > > plot_map;
+            typedef map< string_t, pair< TCanvas*, TH1* > > plot_map;
             typedef plot_map::iterator plot_it;
             typedef plot_map::const_iterator plot_cit;
             typedef plot_map::value_type plot_entry;
 
             plot_map f_plots;
 
-            typedef map< string, TH1D* > th1_map;
+            typedef map< string_t, TH1D* > th1_map;
             typedef th1_map::iterator th1_it;
             typedef th1_map::const_iterator th1_cit;
             typedef th1_map::value_type th1_entry;
 
             th1_map f_th1s;
 
-            typedef map< string, TH2D* > th2_map;
+            typedef map< string_t, TH2D* > th2_map;
             typedef th2_map::iterator th2_it;
             typedef th2_map::const_iterator th2_cit;
             typedef th2_map::value_type th2_entry;
 
             th2_map f_th2s;
 
-            typedef map< string, TGraph* > graph_map;
+            typedef map< string_t, TGraph* > graph_map;
             typedef graph_map::iterator graph_it;
             typedef graph_map::const_iterator graph_cit;
             typedef graph_map::value_type graph_entry;

@@ -24,16 +24,12 @@ namespace midge
 
         private:
             ofstream f_stream;
+            count_t f_current;
 
-            count_t f_size;
-            real_t f_interval;
-            const real_t* f_in;
-            count_t f_index;
-
-        protected:
-            bool start_consumer();
-            bool execute_consumer();
-            bool stop_consumer();
+        public:
+            void initialize();
+            void execute();
+            void finalize();
     };
 
 }

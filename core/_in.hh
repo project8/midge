@@ -2,9 +2,14 @@
 #define _midge_in_hh_
 
 #include "node.hh"
+#include "_stream.hh"
+#include "_input.hh"
 
 #include <sstream>
 using std::stringstream;
+
+#include <vector>
+using std::vector;
 
 namespace midge
 {
@@ -14,40 +19,32 @@ namespace midge
         virtual public node
     {
         public:
-            _in( node** p_table ) :
-                    f_in( NULL ),
-                    f_table( p_table )
+            _in() :
+                    f_in( NULL )
             {
                 stringstream t_name;
                 t_name << "in_" << x_index;
-
-                node::in( &_in< x_type, x_index >::in, t_name.str() );
+                node::in( new _input< _in< x_type, x_index >, x_type >( this, &_in< x_type, x_index >::in ), t_name.str() );
             }
             virtual ~_in()
             {
             }
 
         public:
-            void in( x_type* p_in )
+            void in( const _stream< x_type >* p_in )
             {
                 f_in = p_in;
-                f_table[ x_index ] = p_in;
                 return;
             }
 
         protected:
-            x_type* get()
+            const _stream< x_type >& get_stream()
             {
-                return f_in;
-            }
-            const x_type* get() const
-            {
-                return f_in;
+                return *f_in;
             }
 
         private:
-            x_type* f_in;
-            node** f_table;
+            const _stream< x_type >* f_in;
     };
 }
 

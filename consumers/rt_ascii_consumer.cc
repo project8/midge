@@ -8,64 +8,88 @@ namespace midge
     rt_ascii_consumer::rt_ascii_consumer() :
             f_file( "" ),
             f_stream(),
-            f_size( 0 ),
-            f_interval( 1. ),
-            f_in( NULL ),
-            f_index( 0 )
+            f_current( 0 )
     {
     }
     rt_ascii_consumer::~rt_ascii_consumer()
     {
     }
 
-    bool rt_ascii_consumer::start_consumer()
+    void rt_ascii_consumer::initialize()
     {
-        f_stream.open( f_file, std::ios_base::trunc );
-
-        f_size = in< 0 >()->get_size();
-        f_interval = in< 0 >()->get_interval();
-        f_in = in< 0 >()->raw();
-        f_index = 0;
-
-        return true;
+        return;
     }
 
-    bool rt_ascii_consumer::execute_consumer()
+    void rt_ascii_consumer::execute()
     {
+        const rt_data* t_data;
+        const real_t* t_raw;
+        count_t t_size;
+        real_t t_interval;
+        real_t t_time;
+        state_t t_state;
         count_t t_index;
+        count_t t_next;
 
-        count_t t_next = (count_t) (round( in< 0 >()->get_time() / f_interval ));
-
-        if( t_next < f_index )
+        while( true )
         {
-            for( t_index = f_index; t_index < t_next + f_size; t_index++ )
+            in_stream< 0 >() > t_state;
+            if( t_state == stream::s_start )
             {
-                f_stream << t_index * f_interval << " " << f_in[ t_index - t_next ] << "\n";
+                f_stream.open( f_file, std::ios_base::trunc );
+                f_current = 0;
+                in_stream< 0 >()++;
+                continue;
+            }
+            if( t_state == stream::s_run )
+            {
+                in_stream< 0 >() >> t_data;
+                t_raw = t_data->raw();
+                t_size = t_data->get_size();
+                t_interval = t_data->get_interval();
+                t_time = t_data->get_time();
+
+                t_next = (count_t) (round( t_time / t_interval ));
+
+                if( t_next < f_current )
+                {
+                    for( t_index = f_current; t_index < t_next + t_size; t_index++ )
+                    {
+                        f_stream << t_index * t_interval << " " << t_raw[ t_index - t_next ] << "\n";
+                    }
+                }
+                else
+                {
+                    for( t_index = t_next; t_index < t_next + t_size; t_index++ )
+                    {
+                        f_stream << t_index * t_interval << " " << t_raw[ t_index - t_next ] << "\n";
+                    }
+                }
+
+                f_current = t_next + t_size;
+
+                in_stream< 0 >() << t_data;
+                continue;
+            }
+            if( t_state == stream::s_stop )
+            {
+                f_stream.close();
+                f_current = 0;
+                in_stream< 0 >()++;
+                continue;
+            }
+            if( t_state == stream::s_exit )
+            {
+                break;
             }
         }
-        else
-        {
-            for( t_index = t_next; t_index < t_next + f_size; t_index++ )
-            {
-                f_stream << t_index * f_interval << " " << f_in[ t_index - t_next ] << "\n";
-            }
-        }
 
-        f_index = t_next + f_size;
-
-        return true;
+        return;
     }
 
-    bool rt_ascii_consumer::stop_consumer()
+    void rt_ascii_consumer::finalize()
     {
-        f_stream.close();
-
-        f_size = 0;
-        f_interval = 1.;
-        f_in = NULL;
-        f_index = 0;
-
-        return true;
+        return;
     }
 
 }
