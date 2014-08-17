@@ -1,22 +1,15 @@
 {
-    "rt_data" :
-    {
-        "name" : "rt"
-    },
-
-    "rf_data" :
-    {
-        "name" : "rf"
-    },
-
     "rt_gaussian_producer" :
     {
         "name" : "rt_in",
         "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
+        "begin_sec" : 0.0e-9,
+        "end_sec" : 20000.0e-9,
         "start_sec" : 2000.0e-9,
         "stop_sec" : 18000.0e-9,
-        "interval" : 1.0e-9,
+        "interval_sec" : 1.0e-9,
+        "length" : 100,
         "size" : 1000,
         "stride" : 10
     },
@@ -25,9 +18,10 @@
     {
         "name" : "rt_rf",
         "impedance_ohm" : 50.0,
-        "window_welch" :
+        "window_rectangular" : 
         {
-        }
+        },
+        "length" : 100
     },
 
     "rt_ascii_consumer" :
@@ -36,51 +30,15 @@
         "file" : "test_gaussian_producer.signal.txt"
     },
 
-    "rt_root_consumer" :
-    {
-        "name" : "rtr_out",
-        "file" : "test_gaussian_producer.signal.root",
-        "plot" : true,
-        "plot_key" : "rt_root_consumer_canvas",
-        "plot_name" : "rt_root_consumer",
-        "chart_title" : "Test Gaussian Producer Signal",
-        "axis_title" : "Signal [volt]"
-    },
-
     "rf_ascii_consumer" :
     {
         "name" : "rfa_out",
-        "file" : "test_gaussian_producer.power.txt"
+        "file" : "test_gaussian_producer.spectrum.txt"
     },
 
-    "rf_root_consumer" :
-    {
-        "name" : "rfr_out",
-        "frequency_minimum" : 0.0e6,
-        "frequency_maximum" : 500.0e6,
-        "file" : "test_gaussian_producer.power.root",
-        "plot" : true,
-        "plot_key" : "rf_root_consumer_canvas",
-        "plot_name" : "rf_root_consumer",
-        "chart_title" : "Test Gaussian Producer Power",
-        "axis_title" : "Power [watt]"
-    },
+    "join" : "rt_in.out_0:rta_out.in_0",
+    "join" : "rt_in.out_0:rt_rf.in_0",
+    "join" : "rt_rf.out_0:rfa_out.in_0",
 
-    "count_controller" :
-    {
-        "name" : "c",
-        "count" : 1901
-    },
-
-    "join" : "rt_in.out_0:rt.in",
-    "join" : "rt.out:rta_out.in_0",
-    "join" : "rt.out:rtr_out.in_0",
-    "join" : "rt.out:rt_rf.in_0",
-    "join" : "rt_rf.out_0:rf.in",
-    "join" : "rf.out:rfa_out.in_0",
-    "join" : "rf.out:rfr_out.in_0",
-    "join" : "rf.out:rfa_out.in_0",
-    "join" : "c.out_0:rt_in",
-
-    "run" : "c"
+    "run" : "rt_in:rta_out:rt_rf:rfa_out"
 }

@@ -6,9 +6,12 @@
         "impedance_ohm" : 50.0,
         "frequency_hz" : 100.0e6,
         "phase_deg" : 60.0,
+        "begin_sec" : 0.0e-9,
+        "end_sec" : 20000.0e-9,
         "start_sec" : 2000.0e-9,
         "stop_sec" : 18000.0e-9,
-        "interval" : 1.0e-9,
+        "interval_sec" : 1.0e-9,
+        "length" : 100,
         "size" : 1000,
         "stride" : 10
     },
@@ -19,7 +22,8 @@
         "impedance_ohm" : 50.0,
         "window_rectangular" : 
         {
-        }
+        },
+        "length" : 100
     },
 
     "rt_ascii_consumer" :
@@ -28,43 +32,15 @@
         "file" : "test_harmonic_producer.signal.txt"
     },
 
-    "rt_root_consumer" :
-    {
-        "name" : "rtr_out",
-        "file" : "test_harmonic_producer.signal.root",
-        "plot" : true,
-        "plot_key" : "rt_root_consumer_canvas",
-        "plot_name" : "rt_root_consumer",
-        "chart_title" : "Test Harmonic Producer Signal",
-        "axis_title" : "Signal [volt]"
-    },
-
     "rf_ascii_consumer" :
     {
         "name" : "rfa_out",
-        "file" : "test_harmonic_producer.power.txt"
-    },
-
-    "rf_root_consumer" :
-    {
-        "name" : "rfr_out",
-        "frequency_minimum" : 0.0e6,
-        "frequency_maximum" : 500.0e6,
-        "file" : "test_harmonic_producer.power.root",
-        "plot" : true,
-        "plot_key" : "rf_root_consumer_canvas",
-        "plot_name" : "rf_root_consumer",
-        "chart_title" : "Test Harmonic Producer Power",
-        "axis_title" : "Power [watt]"
+        "file" : "test_harmonic_producer.spectrum.txt"
     },
 
     "join" : "rt_in.out_0:rta_out.in_0",
-    "join" : "rt.out:rtr_out.in_0",
-    "join" : "rt.out:rt_rf.in_0",
-    "join" : "rt_rf.out_0:rf.in",
-    "join" : "rf.out:rfa_out.in_0",
-    "join" : "rf.out:rfr_out.in_0",
-    "join" : "c.out_0:rt_in",
+    "join" : "rt_in.out_0:rt_rf.in_0",
+    "join" : "rt_rf.out_0:rfa_out.in_0",
 
-    "run" : "c"
+    "run" : "rt_in:rta_out:rt_rf:rfa_out"
 }

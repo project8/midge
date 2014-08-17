@@ -1,6 +1,6 @@
 #include "types.hh"
 #include "error.hh"
-#include "utility_message.hh"
+#include "utilmsg.hh"
 
 static const string s_separator( "," );
 

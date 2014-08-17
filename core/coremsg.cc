@@ -1,3 +1,3 @@
-#include "core_message.hh"
+#include "coremsg.hh"
 
 message_define( coremsg, core, core )

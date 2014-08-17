@@ -1,6 +1,6 @@
 #include "plot.hh"
 #include "error.hh"
-#include "core_message.hh"
+#include "coremsg.hh"
 
 #include <limits>
 using std::numeric_limits;

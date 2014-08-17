@@ -1,7 +1,7 @@
 #ifndef _midge_root_hh_
 #define _midge_root_hh_
 
-#include "core_message.hh"
+#include "coremsg.hh"
 
 #include "node.hh"
 #include "thread.hh"

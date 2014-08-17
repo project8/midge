@@ -5,6 +5,7 @@
 #include "rf_data.hh"
 #include "cf_data.hh"
 #include "typelist.hh"
+#include "macros.hh"
 
 namespace midge
 {
@@ -17,28 +18,19 @@ namespace midge
             virtual ~cf_rf_transformer();
 
         public:
-            typedef enum
-            {
-                e_real = 0,
-                e_imaginary = 1,
-                e_modulus = 2,
-                e_argument = 3
-            } mode;
-
-            void set_mode( const string& p_string );
-            const mode& get_mode() const;
-
-        private:
-            mode f_mode;
-
-            count_t f_size;
-            const complex_t* f_in;
-            real_t* f_out;
+            accessible( string_t, mode )
+            accessible( count_t, length );
 
         protected:
-            bool start_transformer();
-            bool execute_transformer();
-            bool stop_transformer();
+            void initialize();
+            void execute();
+            void finalize();
+
+        private:
+            void real( const complex_t& p_complex, real_t& p_real );
+            void imaginary( const complex_t& p_complex, real_t& p_real );
+            void modulus( const complex_t& p_complex, real_t& p_real );
+            void argument( const complex_t& p_complex, real_t& p_real );
     };
 }
 

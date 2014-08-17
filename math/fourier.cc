@@ -7,20 +7,19 @@ namespace midge
             f_mutex()
     {
     }
-
     fourier::~fourier()
     {
     }
 
-    fftw_complex* fourier::allocate( const count_t& p_size )
+    complex_t* fourier::allocate_complex( const count_t& p_size )
     {
-        fftw_complex* t_pointer;
+        complex_t* t_pointer;
         f_mutex.lock();
         t_pointer = fftw_alloc_complex( p_size );
         f_mutex.unlock();
         return t_pointer;
     }
-    void fourier::free( fftw_complex* p_pointer )
+    void fourier::free_complex( complex_t* p_pointer )
     {
         f_mutex.lock();
         fftw_free( p_pointer );
@@ -28,38 +27,54 @@ namespace midge
         return;
     }
 
-    fftw_plan fourier::forward( const count_t& p_size, fftw_complex* p_input, fftw_complex* p_output )
+    real_t* fourier::allocate_real( const count_t& p_size )
     {
-        fftw_plan t_pointer;
+        real_t* t_pointer;
+        f_mutex.lock();
+        t_pointer = fftw_alloc_real( p_size );
+        f_mutex.unlock();
+        return t_pointer;
+    }
+    void fourier::free_real( real_t* p_pointer )
+    {
+        f_mutex.lock();
+        fftw_free( p_pointer );
+        f_mutex.unlock();
+        return;
+    }
+
+    fourier_t* fourier::forward( const count_t& p_size, complex_t* p_input, complex_t* p_output )
+    {
+        fourier_t* t_pointer;
         f_mutex.lock();
         t_pointer = fftw_plan_dft_1d( p_size, p_input, p_output, FFTW_FORWARD, FFTW_MEASURE );
         f_mutex.unlock();
         return t_pointer;
     }
-    fftw_plan fourier::backward( const count_t& p_size, fftw_complex* p_input, fftw_complex* p_output )
+    fourier_t* fourier::backward( const count_t& p_size, complex_t* p_input, complex_t* p_output )
     {
-        fftw_plan t_pointer;
+        fourier_t* t_pointer;
         f_mutex.lock();
         t_pointer = fftw_plan_dft_1d( p_size, p_input, p_output, FFTW_BACKWARD, FFTW_MEASURE );
         f_mutex.unlock();
         return t_pointer;
     }
-    void fourier::destroy( fftw_plan p_pointer )
+    void fourier::destroy( fourier_t* p_fourier )
     {
         f_mutex.lock();
-        fftw_destroy_plan( p_pointer );
+        fftw_destroy_plan( p_fourier );
         f_mutex.unlock();
         return;
     }
 
-    void fourier::execute( fftw_plan p_plan )
+    void fourier::execute( fourier_t* p_fourier )
     {
-        fftw_execute( p_plan );
+        fftw_execute( p_fourier );
         return;
     }
-    void fourier::execute( fftw_plan p_plan, fftw_complex* p_input, fftw_complex* p_output )
+    void fourier::execute( fourier_t* p_fourier, complex_t* p_input, complex_t* p_output )
     {
-        fftw_execute_dft( p_plan, p_input, p_output );
+        fftw_execute_dft( p_fourier, p_input, p_output );
         return;
     }
 

@@ -23,12 +23,13 @@ namespace midge
     void rt_rf_power_transformer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
-        out_buffer< 0 >().set_name( get_name() + string( "_out_0" ) );
+        out_buffer< 0 >().set_name( get_name() );
 
         if( f_window == NULL )
         {
             throw error() << "rt rf power transformer window unset";
         }
+
         return;
     }
 
@@ -56,9 +57,9 @@ namespace midge
         const real_t* t_window;
 
         fourier* t_fourier = fourier::get_instance();
-        fftw_complex* t_signal = NULL;
-        fftw_complex* t_transform = NULL;
-        fftw_plan t_plan = NULL;
+        complex_t* t_signal = NULL;
+        complex_t* t_transform = NULL;
+        fourier_t* t_generator = NULL;
 
         real_t t_power_watt;
         real_t t_power_dbm;
@@ -93,9 +94,9 @@ namespace midge
                 t_norm = 1. / (f_impedance_ohm * f_window->sum() * f_window->sum());
                 t_window = f_window->raw();
 
-                t_signal = t_fourier->allocate( t_in_size );
-                t_transform = t_fourier->allocate( t_in_size );
-                t_plan = t_fourier->forward( t_in_size, t_signal, t_transform );
+                t_signal = t_fourier->allocate_complex( t_in_size );
+                t_transform = t_fourier->allocate_complex( t_in_size );
+                t_generator = t_fourier->forward( t_in_size, t_signal, t_transform );
 
                 t_out_data->set_size( t_out_size );
                 t_out_data->set_time_interval( t_time_interval );
@@ -126,7 +127,7 @@ namespace midge
                     t_signal[ t_index ][ 1 ] = 0.;
                 }
 
-                t_fourier->execute( t_plan );
+                t_fourier->execute( t_generator );
 
                 t_power_watt = (t_transform[ 0 ][ 0 ] * t_transform[ 0 ][ 0 ] + t_transform[ 0 ][ 1 ] * t_transform[ 0 ][ 1 ]) * t_norm;
                 //t_power_dbm = 10. * log10( t_power_watt ) + 30.;
@@ -151,9 +152,9 @@ namespace midge
             }
             if( t_in_state == stream::s_stop )
             {
-                t_fourier->free( t_signal );
-                t_fourier->free( t_transform );
-                t_fourier->destroy( t_plan );
+                t_fourier->free_complex( t_signal );
+                t_fourier->free_complex( t_transform );
+                t_fourier->destroy( t_generator );
 
                 out_stream< 0 >().state( stream::s_stop );
                 t_index = out_stream< 0 >()++;
@@ -174,7 +175,11 @@ namespace midge
 
     void rt_rf_power_transformer::finalize()
     {
+        out_buffer< 0 >().finalize();
+
         delete f_window;
+
+        return;
     }
 
 }

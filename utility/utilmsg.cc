@@ -1,3 +1,3 @@
-#include "utility_message.hh"
+#include "utilmsg.hh"
 
 message_define( utilmsg, utility, utility )

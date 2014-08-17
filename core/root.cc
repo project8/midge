@@ -4,7 +4,9 @@
 #include "output.hh"
 #include "error.hh"
 
-#include "core_message.hh"
+#include "coremsg.hh"
+
+#include <unistd.h>
 
 namespace midge
 {
@@ -207,6 +209,8 @@ namespace midge
         {
             (*t_it)->start();
         }
+
+        usleep( 100000 );
 
         msg_normal( coremsg, "joining threads..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )

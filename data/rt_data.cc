@@ -1,6 +1,6 @@
 #include "rt_data.hh"
 
-#include <cstdlib>
+#include "fourier.hh"
 
 namespace midge
 {
@@ -36,9 +36,9 @@ namespace midge
 
         if( f_raw != NULL )
         {
-            free( f_raw );
+            fourier::get_instance()->free_real( f_raw );
         }
-        f_raw = (real_t*) (malloc( f_size * sizeof(real_t) ));
+        f_raw = fourier::get_instance()->allocate_real( f_size );
 
         return;
     }

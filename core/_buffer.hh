@@ -26,6 +26,29 @@ namespace midge
             }
             ~_buffer()
             {
+            }
+
+        public:
+            accessible( string_t, name )
+
+        public:
+            void initialize( const count_t& p_length )
+            {
+                f_length = p_length;
+                f_read_state = new state_t[ f_length ];
+                f_read_data = new x_type*[ f_length ];
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                {
+                    f_read_state[ t_index ] = stream::s_none;
+                    f_read_data[ t_index ] = new x_type();
+                }
+
+                f_write_stream = new _write_stream( *this );
+
+                return;
+            }
+            void finalize()
+            {
                 delete f_write_stream;
 
                 for( count_t t_index = 0; t_index < f_length; t_index++ )
@@ -49,30 +72,8 @@ namespace midge
                 delete[] f_read_streams;
             }
 
-        public:
-        accessible( string_t, name )
-
-        public:
-            void initialize( const count_t& p_length )
-            {
-                f_length = p_length;
-                f_read_state = new state_t[ f_length ];
-                f_read_data = new x_type*[ f_length ];
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
-                {
-                    f_read_state[ t_index ] = stream::s_none;
-                    f_read_data[ t_index ] = new x_type();
-                }
-
-                return;
-            }
-
             _stream< x_type >* write()
             {
-                if( f_write_stream == NULL )
-                {
-                    f_write_stream = new _write_stream( *this );
-                }
                 return f_write_stream;
             }
             _stream< x_type >* read()
@@ -112,6 +113,7 @@ namespace midge
                 public:
                     _write_stream( _buffer& p_buffer ) :
                             f_buffer( p_buffer ),
+                            f_count( 0 ),
                             f_current_index( 0 ),
                             f_next_index( 0 )
                     {
@@ -137,6 +139,11 @@ namespace midge
                             f_buffer.f_read_mutexes[ t_index ][ f_current_index ].unlock();
                         }
 
+                        if( ++f_count % 1000 == 0 )
+                        {
+                            msg_normal( coremsg, "  <" << f_count << "> through <" << f_buffer.get_name() << ">..." << eom );
+                        }
+
                         f_current_index = f_next_index;
 
                         return f_current_index;
@@ -158,12 +165,6 @@ namespace midge
                     {
                         return f_buffer.f_read_data[ f_current_index ];
                     }
-                    void data( x_type* p_pointer )
-                    {
-                        f_buffer.f_read_data[ f_current_index ] = p_pointer;
-                        return;
-                    }
-
                     const x_type* data() const
                     {
                         throw error() << "const data on a buffer write stream is not permitted";
@@ -172,6 +173,7 @@ namespace midge
 
                 private:
                     _buffer& f_buffer;
+                    mutable count_t f_count;
                     mutable count_t f_current_index;
                     mutable count_t f_next_index;
             };
@@ -227,12 +229,6 @@ namespace midge
                         throw error() << "non-const data on a buffer read stream is not permitted";
                         return NULL;
                     }
-                    void data( x_type * )
-                    {
-                        throw error() << "non-const data on a buffer read stream is not permitted";
-                        return;
-                    }
-
                     const x_type* data() const
                     {
                         return f_buffer.f_read_data[ f_current_index ];

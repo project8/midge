@@ -1,84 +1,137 @@
 #include "rt_ct_transformer.hh"
 
+#include <cmath>
+
 namespace midge
 {
 
     rt_ct_transformer::rt_ct_transformer() :
-            f_mode( e_real ),
-            f_size( 0 ),
-            f_in( NULL ),
-            f_out( NULL )
+            f_mode( "real" ),
+            f_length( 10 )
     {
     }
     rt_ct_transformer::~rt_ct_transformer()
     {
     }
 
-    void rt_ct_transformer::set_mode( const string& p_string )
+    void rt_ct_transformer::initialize()
     {
-        if( p_string == string( "real" ) )
-        {
-            f_mode = e_real;
-            return;
-        }
+        out_buffer< 0 >().initialize( f_length );
+        out_buffer< 0 >().set_name( get_name() );
 
-        if( p_string == string( "imaginary" ) )
-        {
-            f_mode = e_imaginary;
-            return;
-        }
-
-        throw error() << "rt->ct transformer got mode <" << p_string << "> which may only be one of { real, imaginary }";
         return;
     }
-    const rt_ct_transformer::mode& rt_ct_transformer::get_mode() const
-    {
-        return f_mode;
-    }
 
-    bool rt_ct_transformer::start_transformer()
+    void rt_ct_transformer::execute()
     {
-        out< 0 >()->set_size( in< 0 >()->get_size() );
-        out< 0 >()->set_interval( in< 0 >()->get_interval() );
+        count_t t_index;
 
-        f_size = in< 0 >()->get_size();
-        f_in = in< 0 >()->raw();
-        f_out = out< 0 >()->raw();
+        state_t t_in_state;
+        const rt_data* t_in_data;
+        const real_t* t_in_raw;
 
-        return true;
-    }
-    bool rt_ct_transformer::execute_transformer()
-    {
-        switch( f_mode )
+        ct_data* t_out_data;
+        complex_t* t_out_raw;
+
+        count_t t_size;
+        real_t t_time_interval;
+        count_t t_time_index;
+
+        void (rt_ct_transformer::*t_converter)( const real_t&, complex_t& );
+
+        if( f_mode == string( "real" ) )
         {
-            case e_real :
-                for( count_t t_index = 0; t_index < f_size; t_index++ )
-                {
-                    f_out[ t_index ][ 0 ] = f_in[ t_index ];
-                    f_out[ t_index ][ 1 ] = 0.;
-                }
-                break;
-
-            case e_imaginary :
-                for( count_t t_index = 0; t_index < f_size; t_index++ )
-                {
-                    f_out[ t_index ][ 0 ] = 0.;
-                    f_out[ t_index ][ 1 ] = f_in[ t_index ];
-                }
-                break;
+            t_converter = &rt_ct_transformer::real;
+        }
+        else if( f_mode == string( "imaginary" ) )
+        {
+            t_converter = &rt_ct_transformer::imaginary;
+        }
+        else
+        {
+            throw error() << "ct rt transformer <" << get_name() << "> got bad mode string <" << f_mode << ">";
+            return;
         }
 
-        out< 0 >()->set_time( in< 0 >()->get_time() );
+        while( true )
+        {
+            in_stream< 0 >()++;
+            t_in_state = in_stream< 0 >().state();
+            t_in_data = in_stream< 0 >().data();
+            t_out_data = out_stream< 0 >().data();
 
-        return true;
+            if( t_in_state == stream::s_start )
+            {
+                t_size = t_in_data->get_size();
+                t_time_interval = t_in_data->get_time_interval();
+                t_time_index = t_in_data->get_time_index();
+
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
+
+                out_stream< 0 >().state( stream::s_start );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_run )
+            {
+                t_time_index = t_in_data->get_time_index();
+                t_in_raw = t_in_data->raw();
+
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
+                t_out_raw = t_out_data->raw();
+
+                for( t_index = 0; t_index < t_size; t_index++ )
+                {
+                    (this->*t_converter)( t_in_raw[ t_index ], t_out_raw[ t_index ] );
+                }
+
+                out_stream< 0 >().state( stream::s_run );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_stop )
+            {
+                out_stream< 0 >().state( stream::s_stop );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_exit )
+            {
+                out_stream< 0 >().state( stream::s_exit );
+                t_index = out_stream< 0 >()++;
+
+                break;
+            }
+        }
+
+        return;
     }
-    bool rt_ct_transformer::stop_transformer()
-    {
-        f_size = 0;
-        f_in = NULL;
-        f_out = NULL;
 
-        return true;
+    void rt_ct_transformer::finalize()
+    {
+        out_buffer< 0 >().finalize();
+
+        return;
+    }
+
+    void rt_ct_transformer::real( const real_t& p_real, complex_t& p_complex )
+    {
+        p_complex[ 0 ] = p_real;
+        p_complex[ 1 ] = 0.;
+        return;
+    }
+    void rt_ct_transformer::imaginary( const real_t& p_real, complex_t& p_complex )
+    {
+        p_complex[ 0 ] = 0.;
+        p_complex[ 1 ] = p_real;
+        return;
     }
 
 }

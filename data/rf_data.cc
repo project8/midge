@@ -1,6 +1,6 @@
 #include "rf_data.hh"
 
-#include "core_message.hh"
+#include "fourier.hh"
 
 namespace midge
 {
@@ -34,10 +34,13 @@ namespace midge
         {
             return;
         }
-
         f_size = p_size;
-        delete[] f_raw;
-        f_raw = new real_t[ f_size ];
+
+        if( f_raw != NULL )
+        {
+            fourier::get_instance()->free_real( f_raw );
+        }
+        f_raw = fourier::get_instance()->allocate_real( f_size );
 
         return;
     }

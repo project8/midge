@@ -1,6 +1,6 @@
 #include "lexer.hh"
 #include "compiler.hh"
-#include "core_message.hh"
+#include "coremsg.hh"
 #include "root_builder.hh"
 using namespace midge;
 

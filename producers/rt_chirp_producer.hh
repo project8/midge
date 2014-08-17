@@ -16,65 +16,24 @@ namespace midge
             virtual ~rt_chirp_producer();
 
         public:
-            void set_power_dbm( const real_t& p_power );
-            const real_t& get_power_dbm() const;
-
-            void set_impedance_ohm( const real_t& p_impedance );
-            const real_t& get_impedance_ohm() const;
-
-            void set_start_frequency_hz( const real_t& p_frequency );
-            const real_t& get_start_frequency_hz() const;
-
-            void set_stop_frequency_hz( const real_t& p_frequency );
-            const real_t& get_stop_frequency_hz() const;
-
-            void set_phase_deg( const real_t& p_phase );
-            const real_t& get_phase_deg() const;
-
-            void set_start_sec( const real_t& p_start );
-            const real_t& get_start_sec() const;
-
-            void set_stop_sec( const real_t& p_stop );
-            const real_t& get_stop_sec() const;
-
-            void set_stride( const count_t& p_stride );
-            const count_t& get_stride() const;
-
-            void set_size( const count_t& p_size );
-            const count_t& get_size() const;
-
-            void set_interval( const real_t& p_interval );
-            const real_t& get_interval() const;
-
-        private:
-            real_t f_power_dbm;
-            real_t f_impedance_ohm;
-            real_t f_start_frequency_hz;
-            real_t f_stop_frequency_hz;
-            real_t f_phase_deg;
-            real_t f_start_sec;
-            real_t f_stop_sec;
-            count_t f_stride;
-            count_t f_size;
-            real_t f_interval;
-
-            count_t f_start;
-            count_t f_stop;
-            real_t f_amplitude;
-            real_t f_linear;
-            real_t f_quadratic;
-            real_t f_phase;
-
-            real_t* f_out;
-            count_t f_index;
-            count_t f_next;
+            accessible( real_t, power_dbm )
+            accessible( real_t, impedance_ohm )
+            accessible( real_t, start_frequency_hz )
+            accessible( real_t, stop_frequency_hz )
+            accessible( real_t, phase_deg )
+            accessible( real_t, begin_sec )
+            accessible( real_t, end_sec )
+            accessible( real_t, start_sec )
+            accessible( real_t, stop_sec )
+            accessible( real_t, interval_sec )
+            accessible( count_t, length )
+            accessible( count_t, size )
+            accessible( count_t, stride )
 
         protected:
-            void initialize_producer();
-            bool start_producer();
-            bool execute_producer();
-            bool stop_producer();
-            void finalize_producer();
+            void initialize();
+            void execute();
+            void finalize();
     };
 }
 

@@ -10,6 +10,8 @@
 namespace midge
 {
 
+    typedef struct fftw_plan_s fourier_t;
+
     class fourier :
         public singleton< fourier >
     {
@@ -21,15 +23,18 @@ namespace midge
             virtual ~fourier();
 
         public:
-            fftw_complex* allocate( const count_t& p_size );
-            void free( fftw_complex* );
+            real_t* allocate_real( const count_t& p_size );
+            void free_real( real_t* p_pointer );
 
-            fftw_plan forward( const count_t& p_size, fftw_complex* p_input, fftw_complex* p_output );
-            fftw_plan backward( const count_t& p_size, fftw_complex* p_input, fftw_complex* p_output );
-            void destroy( fftw_plan p_plan );
+            complex_t* allocate_complex( const count_t& p_size );
+            void free_complex( complex_t* p_pointer );
 
-            void execute( fftw_plan p_plan );
-            void execute( fftw_plan p_plan, fftw_complex* p_input, fftw_complex* p_output );
+            fourier_t* forward( const count_t& p_size, complex_t* p_input, complex_t* p_output );
+            fourier_t* backward( const count_t& p_size, complex_t* p_input, complex_t* p_output );
+            void destroy( fourier_t* p_fourier );
+
+            void execute( fourier_t* p_fourier );
+            void execute( fourier_t* p_fourier, complex_t* p_input, complex_t* p_output );
 
         private:
             mutex f_mutex;

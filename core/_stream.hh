@@ -17,8 +17,6 @@ namespace midge
 
         public:
             virtual x_type* data() = 0;
-            virtual void data( x_type* p_pointer ) = 0;
-
             virtual const x_type* data() const = 0;
     };
 

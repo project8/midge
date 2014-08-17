@@ -27,8 +27,7 @@ namespace midge
     void rt_harmonic_producer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
-        out_buffer< 0 >().set_name( get_name() + string( "_out_0" ) );
-
+        out_buffer< 0 >().set_name( get_name() );
         return;
     }
 
@@ -54,10 +53,10 @@ namespace midge
         t_out_data = out_stream< 0 >().data();
         t_out_data->set_size( f_size );
         t_out_data->set_time_interval( f_interval_sec );
-        t_out_data->set_time_index( t_first_unwritten_index );
+        t_out_data->set_time_index( 0 );
 
         out_stream< 0 >().state( stream::s_start );
-        t_index = out_stream< 0 >()++;
+        out_stream< 0 >()++;
 
         t_first_unwritten_index = 0;
         t_first_requested_index = t_begin;
@@ -66,10 +65,10 @@ namespace midge
             if( t_first_unwritten_index >= t_end )
             {
                 out_stream< 0 >().state( stream::s_stop );
-                t_index = out_stream< 0 >()++;
+                out_stream< 0 >()++;
 
                 out_stream< 0 >().state( stream::s_exit );
-                t_index = out_stream< 0 >()++;
+                out_stream< 0 >()++;
 
                 break;
             }
@@ -118,7 +117,7 @@ namespace midge
             t_previous_raw = t_current_raw;
 
             out_stream< 0 >().state( stream::s_run );
-            t_index = out_stream< 0 >()++;
+            out_stream< 0 >()++;
         }
 
         return;
@@ -126,6 +125,7 @@ namespace midge
 
     void rt_harmonic_producer::finalize()
     {
+        out_buffer< 0 >().finalize();
         return;
     }
 

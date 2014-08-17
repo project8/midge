@@ -95,7 +95,7 @@ set( midge_utility_headers
 	singleton.hh
 	error.hh
 	message.hh
-	utility_message.hh
+	utilmsg.hh
 	mutex.hh
 	thread.hh
 	types.hh
@@ -111,7 +111,7 @@ set( midge_utility_headers
 set( midge_utility_sources
 	error.cc
 	message.cc
-	utility_message.cc
+	utilmsg.cc
 	mutex.cc
 	thread.cc
 )
@@ -130,6 +130,7 @@ set( midge_math_directory
 )
 set( midge_math_headers
 	fourier.hh
+	random.hh
 	window.hh
 	window_rectangular.hh
 	window_bartlett.hh
@@ -140,6 +141,7 @@ set( midge_math_headers
 )
 set( midge_math_sources
 	fourier.cc
+	random.cc
 	window.cc
 	window_rectangular.cc
 	window_bartlett.cc
@@ -163,7 +165,7 @@ set( midge_core_directory
 	core
 )
 set( midge_core_headers
-	core_message.hh
+	coremsg.hh
 	stream.hh
 	_stream.hh
 	input.hh
@@ -181,7 +183,7 @@ set( midge_core_headers
 	plot.hh
 )
 set( midge_core_sources
-	core_message.cc
+	coremsg.cc
 	stream.cc
 	input.cc
 	output.cc
@@ -210,14 +212,14 @@ set( midge_data_directory
 set( midge_data_headers
 	rt_data.hh
 	rf_data.hh
-	#ct_data.hh
-	#cf_data.hh
+	ct_data.hh
+	cf_data.hh
 )
 set( midge_data_sources
 	rt_data.cc
 	rf_data.cc
-	#ct_data.cc
-	#cf_data.cc
+	ct_data.cc
+	cf_data.cc
 )
 
 midge_library( data )
@@ -237,14 +239,14 @@ set( midge_producers_directory
 )
 set( midge_producers_headers
 	rt_harmonic_producer.hh
-	#rt_chirp_producer.hh
-	#rt_gaussian_producer.hh
+	rt_chirp_producer.hh
+	rt_gaussian_producer.hh
 	#rt_monarch_producer.hh
 )
 set( midge_producers_sources
 	rt_harmonic_producer.cc
-	#rt_chirp_producer.cc
-	#rt_gaussian_producer.cc
+	rt_chirp_producer.cc
+	rt_gaussian_producer.cc
 	#rt_monarch_producer.cc
 )
 
@@ -298,10 +300,10 @@ set( midge_transformers_directory
 	transformers
 )
 set( midge_transformers_headers
-	#rt_ct_transformer.hh
-	#rf_cf_transformer.hh
-	#ct_rt_transformer.hh
-	#cf_rf_transformer.hh
+	rt_ct_transformer.hh
+	rf_cf_transformer.hh
+	ct_rt_transformer.hh
+	cf_rf_transformer.hh
 	#rt_rt_sum_transformer.hh
 	#ct_ct_sum_transformer.hh
 	#ct_cf_fourier_transformer.hh
@@ -312,10 +314,10 @@ set( midge_transformers_headers
 	#rf_rf_threshold_transformer.hh
 )
 set( midge_transformers_sources
-	#rt_ct_transformer.cc
-	#rf_cf_transformer.cc
-	#ct_rt_transformer.cc
-	#cf_rf_transformer.cc
+	rt_ct_transformer.cc
+	rf_cf_transformer.cc
+	ct_rt_transformer.cc
+	cf_rf_transformer.cc
 	#rt_rt_sum_transformer.cc
 	#ct_ct_sum_transformer.cc
 	#ct_cf_fourier_transformer.cc
@@ -399,13 +401,9 @@ set( midge_bindings_headers
 	window_hanning_builder.hh
 	window_hamming_builder.hh
 	window_blackman_builder.hh
-	#rt_data_builder.hh
-	#rf_data_builder.hh
-	#ct_data_builder.hh
-	#cf_data_builder.hh
 	rt_harmonic_producer_builder.hh
-	#rt_chirp_producer_builder.hh
-	#rt_gaussian_producer_builder.hh
+	rt_chirp_producer_builder.hh
+	rt_gaussian_producer_builder.hh
 	#rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
@@ -414,10 +412,10 @@ set( midge_bindings_headers
 	#rt_monarch_consumer_builder.hh
 	#rf_background_consumer_builder.hh
 	#rf_event_consumer_builder.hh
-	#rt_ct_transformer_builder.hh
-	#rf_cf_transformer_builder.hh
-	#ct_rt_transformer_builder.hh
-	#cf_rf_transformer_builder.hh
+	rt_ct_transformer_builder.hh
+	rf_cf_transformer_builder.hh
+	ct_rt_transformer_builder.hh
+	cf_rf_transformer_builder.hh
 	#rt_rt_sum_transformer_builder.hh
 	#ct_ct_sum_transformer_builder.hh
 	#ct_cf_fourier_transformer_builder.hh
@@ -429,13 +427,9 @@ set( midge_bindings_headers
 )
 set( midge_bindings_sources
 	root_builder.cc
-	#rt_data_builder.cc
-	#rf_data_builder.cc
-	#ct_data_builder.cc
-	#cf_data_builder.cc
 	rt_harmonic_producer_builder.cc
-	#rt_chirp_producer_builder.cc
-	#rt_gaussian_producer_builder.cc
+	rt_chirp_producer_builder.cc
+	rt_gaussian_producer_builder.cc
 	#rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
@@ -444,10 +438,10 @@ set( midge_bindings_sources
 	#rt_monarch_consumer_builder.cc
 	#rf_background_consumer_builder.cc
 	#rf_event_consumer_builder.cc
-	#rt_ct_transformer_builder.cc
-	#rf_cf_transformer_builder.cc
-	#ct_rt_transformer_builder.cc
-	#cf_rf_transformer_builder.cc
+	rt_ct_transformer_builder.cc
+	rf_cf_transformer_builder.cc
+	ct_rt_transformer_builder.cc
+	cf_rf_transformer_builder.cc
 	#rt_rt_sum_transformer_builder.cc
 	#ct_ct_sum_transformer_builder.cc
 	#ct_cf_fourier_transformer_builder.cc
@@ -482,7 +476,7 @@ set( midge_main_programs
 	midge
 )
 
-#midge_executables( main )
+midge_executables( main )
 
 ########
 # test #
@@ -514,14 +508,12 @@ set( midge_test_programs
 	test_lexer_compiler_serializer
 	test_builder
 	test_run_string_processing
-	#test_real
-	#test_complex
 	#test_fourier_transformer
 	#test_analytic_transformer
 	#test_wigner_transformer
 	test_harmonic_producer
-	#test_chirp_producer
-	#test_gaussian_producer
+	test_chirp_producer
+	test_gaussian_producer
 )
 
 midge_executables( test )
