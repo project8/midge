@@ -1,13 +1,15 @@
 #include "rt_data.hh"
 
+#include <cstdlib>
+
 namespace midge
 {
 
     rt_data::rt_data() :
             f_raw( NULL ),
             f_size( 0 ),
-            f_interval( 0. ),
-            f_time( 0. )
+            f_time_interval( 1. ),
+            f_time_index( 0 )
     {
     }
     rt_data::~rt_data()
@@ -30,10 +32,13 @@ namespace midge
         {
             return;
         }
-
-        delete[] f_raw;
         f_size = p_size;
-        f_raw = new real_t[ f_size ];
+
+        if( f_raw != NULL )
+        {
+            free( f_raw );
+        }
+        f_raw = (real_t*) (malloc( f_size * sizeof(real_t) ));
 
         return;
     }
@@ -42,24 +47,24 @@ namespace midge
         return f_size;
     }
 
-    void rt_data::set_interval( const real_t& p_interval )
+    void rt_data::set_time_interval( const real_t& p_time_interval )
     {
-        f_interval = p_interval;
+        f_time_interval = p_time_interval;
         return;
     }
-    const real_t& rt_data::get_interval() const
+    const real_t& rt_data::get_time_interval() const
     {
-        return f_interval;
+        return f_time_interval;
     }
 
-    void rt_data::set_time( const real_t& p_time )
+    void rt_data::set_time_index( const count_t& p_time_index )
     {
-        f_time = p_time;
+        f_time_index = p_time_index;
         return;
     }
-    const real_t& rt_data::get_time() const
+    const count_t& rt_data::get_time_index() const
     {
-        return f_time;
+        return f_time_index;
     }
 
 }

@@ -22,10 +22,6 @@ namespace midge
         public:
             accessible( string, file )
 
-        private:
-            ofstream f_stream;
-            count_t f_current;
-
         public:
             void initialize();
             void execute();

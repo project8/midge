@@ -3,7 +3,7 @@
 ##########
 
 cmake_minimum_required( VERSION 2.8 )
-project( midge )
+project( midge C CXX )
 
 # module settings
 set( MODULE_VERSION_MAJOR 0 )
@@ -37,6 +37,9 @@ add_definitions( -Wall )
 # external #
 ############
 
+# threads
+find_package( Threads REQUIRED )
+
 # fftw
 find_package( FFTW REQUIRED )
 
@@ -67,6 +70,7 @@ set( midge_external_includes
 )
 
 set( midge_external_libraries 
+	${CMAKE_THREAD_LIBS_INIT}
 	${FFTW_LIBRARIES}
 	${GSL_LIBRARIES}
 	${ROOT_LIBRARIES}
@@ -125,6 +129,7 @@ set( midge_math_directory
 	math
 )
 set( midge_math_headers
+	fourier.hh
 	window.hh
 	window_rectangular.hh
 	window_bartlett.hh
@@ -134,6 +139,7 @@ set( midge_math_headers
 	window_blackman.hh
 )
 set( midge_math_sources
+	fourier.cc
 	window.cc
 	window_rectangular.cc
 	window_bartlett.cc
@@ -203,13 +209,13 @@ set( midge_data_directory
 )
 set( midge_data_headers
 	rt_data.hh
-	#rf_data.hh
+	rf_data.hh
 	#ct_data.hh
 	#cf_data.hh
 )
 set( midge_data_sources
 	rt_data.cc
-	#rf_data.cc
+	rf_data.cc
 	#ct_data.cc
 	#cf_data.cc
 )
@@ -259,7 +265,7 @@ set( midge_consumers_directory
 )
 set( midge_consumers_headers
 	rt_ascii_consumer.hh
-	#rf_ascii_consumer.hh
+	rf_ascii_consumer.hh
 	#rt_root_consumer.hh
 	#rf_root_consumer.hh
 	#rt_monarch_consumer.hh
@@ -268,7 +274,7 @@ set( midge_consumers_headers
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
-	#rf_ascii_consumer.cc
+	rf_ascii_consumer.cc
 	#rt_root_consumer.cc
 	#rf_root_consumer.cc
 	#rt_monarch_consumer.cc
@@ -292,62 +298,35 @@ set( midge_transformers_directory
 	transformers
 )
 set( midge_transformers_headers
-	rt_ct_transformer.hh
-	rf_cf_transformer.hh
-	ct_rt_transformer.hh
-	cf_rf_transformer.hh
-	rt_rt_sum_transformer.hh
-	ct_ct_sum_transformer.hh
-	ct_cf_fourier_transformer.hh
-	cf_ct_fourier_transformer.hh
-	rt_ct_analytic_transformer.hh
+	#rt_ct_transformer.hh
+	#rf_cf_transformer.hh
+	#ct_rt_transformer.hh
+	#cf_rf_transformer.hh
+	#rt_rt_sum_transformer.hh
+	#ct_ct_sum_transformer.hh
+	#ct_cf_fourier_transformer.hh
+	#cf_ct_fourier_transformer.hh
+	#rt_ct_analytic_transformer.hh
 	rt_rf_power_transformer.hh
-	rt_rf_wigner_transformer.hh
-	rf_rf_threshold_transformer.hh
+	#rt_rf_wigner_transformer.hh
+	#rf_rf_threshold_transformer.hh
 )
 set( midge_transformers_sources
-	rt_ct_transformer.cc
-	rf_cf_transformer.cc
-	ct_rt_transformer.cc
-	cf_rf_transformer.cc
-	rt_rt_sum_transformer.cc
-	ct_ct_sum_transformer.cc
-	ct_cf_fourier_transformer.cc
-	cf_ct_fourier_transformer.cc
-	rt_ct_analytic_transformer.cc
+	#rt_ct_transformer.cc
+	#rf_cf_transformer.cc
+	#ct_rt_transformer.cc
+	#cf_rf_transformer.cc
+	#rt_rt_sum_transformer.cc
+	#ct_ct_sum_transformer.cc
+	#ct_cf_fourier_transformer.cc
+	#cf_ct_fourier_transformer.cc
+	#rt_ct_analytic_transformer.cc
 	rt_rf_power_transformer.cc
-	rt_rf_wigner_transformer.cc
-	rf_rf_threshold_transformer.cc
+	#rt_rf_wigner_transformer.cc
+	#rf_rf_threshold_transformer.cc
 )
 
-#midge_library( transformers )
-
-################
-# controllers #
-################
-
-set( midge_controllers_dependencies
-	utility
-	math
-	core
-	data
-	producers
-	consumers
-	transformers
-)
-set( midge_controllers_directory
-	controllers
-)
-set( midge_controllers_headers
-	void_controller.hh
-	count_controller.hh
-)
-set( midge_controllers_sources
-	void_controller.cc
-	count_controller.cc
-)
-
-#midge_library( controllers )
+midge_library( transformers )
 
 ##################
 # initialization #
@@ -406,8 +385,7 @@ set( midge_bindings_dependencies
 	data
 	producers
 	consumers
-	#transformers
-	#controllers
+	transformers
 	initialization
 )
 set( midge_bindings_directory
@@ -430,7 +408,7 @@ set( midge_bindings_headers
 	#rt_gaussian_producer_builder.hh
 	#rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
-	#rf_ascii_consumer_builder.hh
+	rf_ascii_consumer_builder.hh
 	#rt_root_consumer_builder.hh
 	#rf_root_consumer_builder.hh
 	#rt_monarch_consumer_builder.hh
@@ -445,11 +423,9 @@ set( midge_bindings_headers
 	#ct_cf_fourier_transformer_builder.hh
 	#cf_ct_fourier_transformer_builder.hh
 	#rt_ct_analytic_transformer_builder.hh
-	#rt_rf_power_transformer_builder.hh
+	rt_rf_power_transformer_builder.hh
 	#rt_rf_wigner_transformer_builder.hh
 	#rf_rf_threshold_transformer_builder.hh
-	#void_controller_builder.hh
-	#count_controller_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
@@ -462,7 +438,7 @@ set( midge_bindings_sources
 	#rt_gaussian_producer_builder.cc
 	#rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
-	#rf_ascii_consumer_builder.cc
+	rf_ascii_consumer_builder.cc
 	#rt_root_consumer_builder.cc
 	#rf_root_consumer_builder.cc
 	#rt_monarch_consumer_builder.cc
@@ -477,11 +453,9 @@ set( midge_bindings_sources
 	#ct_cf_fourier_transformer_builder.cc
 	#cf_ct_fourier_transformer_builder.cc
 	#rt_ct_analytic_transformer_builder.cc
-	#rt_rf_power_transformer_builder.cc
+	rt_rf_power_transformer_builder.cc
 	#rt_rf_wigner_transformer_builder.cc
 	#rf_rf_threshold_transformer_builder.cc
-	#void_controller_builder.cc
-	#count_controller_builder.cc
 )
 
 midge_library( bindings )
@@ -497,8 +471,7 @@ set( midge_main_dependencies
 	data
 	producers
 	consumers
-	#transformers
-	#controllers
+	transformers
 	initialization
 	bindings
 )
@@ -522,8 +495,7 @@ set( midge_test_dependencies
 	data
 	producers
 	consumers
-	#transformers
-	#controllers
+	transformers
 	initialization
 )
 set( midge_test_directory

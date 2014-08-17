@@ -10,6 +10,8 @@ namespace midge
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_impedance_ohm, "impedance_ohm" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_frequency_hz, "frequency_hz" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_phase_deg, "phase_deg" ) +
+        rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_begin_sec, "begin_sec" ) +
+        rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_end_sec, "end_sec" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_start_sec, "start_sec" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_stop_sec, "stop_sec" ) +
         rt_harmonic_producer_builder::numerical< real_t >( &rt_harmonic_producer::set_interval_sec, "interval_sec" ) +

@@ -1,6 +1,8 @@
 #ifndef _midge_rt_rf_power_transformer_hh_
 #define _midge_rt_rf_power_transformer_hh_
 
+#define BUFFER_DEBUG 1
+
 #include "transformer.hh"
 #include "rt_data.hh"
 #include "rf_data.hh"
@@ -8,7 +10,7 @@
 #include "typelist.hh"
 #include "macros.hh"
 
-#include "fftw3.h"
+#undef BUFFER_DEBUG
 
 namespace midge
 {
@@ -23,32 +25,12 @@ namespace midge
         public:
             accessible( real_t, impedance_ohm );
             composable( window, window );
-
-        private:
-            count_t f_in_size;
-            count_t f_out_size;
-            count_t f_last;
-            count_t f_nyquist;
-
-            const real_t* f_in;
-            real_t f_in_interval;
-            real_t f_in_time;
-
-            real_t* f_out;
-            real_t f_out_interval;
-            real_t f_out_time;
-
-            const real_t* f_multiplier;
-
-            fftw_complex* f_signal;
-            fftw_complex* f_transform;
-            fftw_plan f_plan;
-            real_t f_norm;
+            accessible( count_t, length );
 
         protected:
-            bool start_transformer();
-            bool execute_transformer();
-            bool stop_transformer();
+            void initialize();
+            void execute();
+            void finalize();
     };
 
 }

@@ -20,8 +20,10 @@ namespace midge
             virtual ~stream();
 
         public:
-            virtual const stream& operator>( state_t& p_state ) const = 0;
-            virtual const stream& operator<( const state_t& p_state ) const = 0;
+            virtual count_t operator++( int ) const = 0;
+
+            virtual void state( const state_t& p_state ) = 0;
+            virtual const state_t& state() const = 0;
     };
 
 }

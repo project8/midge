@@ -19,6 +19,7 @@ namespace midge
         rt_rf_power_transformer_builder::object< window_hanning >( &rt_rf_power_transformer::set_window, "window_hanning" ) +
         rt_rf_power_transformer_builder::object< window_hamming >( &rt_rf_power_transformer::set_window, "window_hamming" ) +
         rt_rf_power_transformer_builder::object< window_blackman >( &rt_rf_power_transformer::set_window, "window_blackman" ) +
+        rt_rf_power_transformer_builder::numerical< count_t >( &rt_rf_power_transformer::set_length, "length" ) +
         root_builder::object< rt_rf_power_transformer >( &root::add, "rt_rf_power_transformer" );
 
 }

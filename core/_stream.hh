@@ -16,12 +16,10 @@ namespace midge
             virtual ~_stream();
 
         public:
-            virtual _stream< x_type >& operator>>( x_type*& p_pointer ) = 0;
-            virtual _stream< x_type >& operator<<( x_type*& p_pointer ) = 0;
-            virtual _stream< x_type >& operator++( int ) = 0;
-            virtual const _stream< x_type >& operator>>( const x_type*& p_pointer ) const = 0;
-            virtual const _stream< x_type >& operator<<( const x_type*& p_pointer ) const = 0;
-            virtual const _stream< x_type >& operator++( int ) const = 0;
+            virtual x_type* data() = 0;
+            virtual void data( x_type* p_pointer ) = 0;
+
+            virtual const x_type* data() const = 0;
     };
 
     template< class x_type >

@@ -22,17 +22,10 @@ namespace midge
         public:
             accessible( string, file )
 
-        private:
-            ofstream f_stream;
-
-            count_t f_size;
-            real_t f_interval;
-            const real_t* f_in;
-
         protected:
-            bool start_consumer();
-            bool execute_consumer();
-            bool stop_consumer();
+            void initialize();
+            void execute();
+            void finalize();
     };
 
 }

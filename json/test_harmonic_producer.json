@@ -1,14 +1,4 @@
 {
-    "rt_data" :
-    {
-        "name" : "rt"
-    },
-
-    "rf_data" :
-    {
-        "name" : "rf"
-    },
-
     "rt_harmonic_producer" :
     {
         "name" : "rt_in",
@@ -68,14 +58,7 @@
         "axis_title" : "Power [watt]"
     },
 
-    "count_controller" :
-    {
-        "name" : "c",
-        "count" : 1901
-    },
-
-    "join" : "rt_in.out_0:rt.in",
-    "join" : "rt.out:rta_out.in_0",
+    "join" : "rt_in.out_0:rta_out.in_0",
     "join" : "rt.out:rtr_out.in_0",
     "join" : "rt.out:rt_rf.in_0",
     "join" : "rt_rf.out_0:rf.in",
