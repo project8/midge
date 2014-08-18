@@ -5,6 +5,9 @@
 #include "rt_ascii_consumer.hh"
 using namespace midge;
 
+#include <fstream>
+using std::ofstream;
+
 #include <iostream>
 using std::cout;
 using std::endl;

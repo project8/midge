@@ -95,7 +95,7 @@ set( midge_utility_headers
 	singleton.hh
 	error.hh
 	message.hh
-	utilmsg.hh
+	plot.hh
 	mutex.hh
 	thread.hh
 	types.hh
@@ -111,7 +111,7 @@ set( midge_utility_headers
 set( midge_utility_sources
 	error.cc
 	message.cc
-	utilmsg.cc
+	plot.cc
 	mutex.cc
 	thread.cc
 )
@@ -180,7 +180,6 @@ set( midge_core_headers
 	consumer.hh
 	transformer.hh
 	root.hh
-	plot.hh
 )
 set( midge_core_sources
 	coremsg.cc
@@ -192,7 +191,6 @@ set( midge_core_sources
 	consumer.cc
 	transformer.cc
 	root.cc
-	plot.cc
 )
 
 midge_library( core )
@@ -270,8 +268,9 @@ set( midge_consumers_directory
 set( midge_consumers_headers
 	rt_ascii_consumer.hh
 	rf_ascii_consumer.hh
-	#rt_root_consumer.hh
+	rt_root_consumer.hh
 	#rf_root_consumer.hh
+	rt_plot_consumer.hh
 	rt_monarch_consumer.hh
 	#rf_background_consumer.hh
 	#rf_event_consumer.hh
@@ -279,8 +278,9 @@ set( midge_consumers_headers
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
 	rf_ascii_consumer.cc
-	#rt_root_consumer.cc
+	rt_root_consumer.cc
 	#rf_root_consumer.cc
+	rt_plot_consumer.cc
 	rt_monarch_consumer.cc
 	#rf_background_consumer.cc
 	#rf_event_consumer.cc
@@ -410,8 +410,9 @@ set( midge_bindings_headers
 	rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
-	#rt_root_consumer_builder.hh
+	rt_root_consumer_builder.hh
 	#rf_root_consumer_builder.hh
+	rt_plot_consumer_builder.hh
 	rt_monarch_consumer_builder.hh
 	#rf_background_consumer_builder.hh
 	#rf_event_consumer_builder.hh
@@ -437,8 +438,9 @@ set( midge_bindings_sources
 	rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
-	#rt_root_consumer_builder.cc
+	rt_root_consumer_builder.cc
 	#rf_root_consumer_builder.cc
+	rt_plot_consumer_builder.cc
 	rt_monarch_consumer_builder.cc
 	#rf_background_consumer_builder.cc
 	#rf_event_consumer_builder.cc
@@ -500,18 +502,17 @@ set( midge_test_directory
 	test
 )
 set( midge_test_programs
-	test_temp
 	test_typelength
 	test_typeat
 	test_typechain
 	test_message
 	test_thread
+	test_buffer
 	test_lexer_reporter
 	test_lexer_serializer
 	test_lexer_compiler_reporter
 	test_lexer_compiler_serializer
 	test_builder
-	test_run_string_processing
 	test_harmonic_producer
 	test_chirp_producer
 	test_sinusoidal_producer

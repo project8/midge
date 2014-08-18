@@ -141,7 +141,7 @@ namespace midge
 
                         if( ++f_count % 1000 == 0 )
                         {
-                            msg_normal( coremsg, "  <" << f_count << "> through <" << f_buffer.get_name() << ">..." << eom );
+                            msg_normal( coremsg, "  <" << f_buffer.get_name() << "> processed <" << f_count << ">..." << eom );
                         }
 
                         f_current_index = f_next_index;

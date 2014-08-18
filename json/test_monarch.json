@@ -22,6 +22,16 @@
     	"file" : "test_monarch.write.txt"
     },
 
+    "rt_plot_consumer" :
+    {
+        "name" : "rtwp_out",
+        "plot_key" : "monarch_write",
+        "plot_name" : "monarch_write",
+        "chart_title" : "Monarch Write Signal",
+        "x_title" : "Time [sec]",
+        "y_title" : "Signal [volt]"
+    },
+
     "rt_monarch_consumer" :
     {
     	"name" : "rtwm_out",
@@ -33,9 +43,10 @@
     },
 
     "join" : "rtw_in.out_0:rtwa_out.in_0",
+    "join" : "rtw_in.out_0:rtwp_out.in_0",
     "join" : "rtw_in.out_0:rtwm_out.in_0",
 
-    "run" : "rtw_in:rtwa_out:rtwm_out",
+    "run" : "rtw_in:rtwa_out:rtwp_out:rtwm_out",
 
     "rt_monarch_producer" :
     {
@@ -54,7 +65,18 @@
         "file" : "test_monarch.read.txt"
     },
 
-    "join" : "rtr_in.out_0:rtra_out.in_0",
+    "rt_plot_consumer" :
+    {
+        "name" : "rtrp_out",
+        "plot_key" : "monarch_read",
+        "plot_name" : "monarch_read",
+        "chart_title" : "Monarch Read Signal",
+        "x_title" : "Time [sec]",
+        "y_title" : "Signal [volt]"
+    },
 
-    "run" : "rtr_in:rtra_out"
+    "join" : "rtr_in.out_0:rtra_out.in_0",
+    "join" : "rtr_in.out_0:rtrp_out.in_0",
+
+    "run" : "rtr_in:rtra_out:rtrp_out"
 }

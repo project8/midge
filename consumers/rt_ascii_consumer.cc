@@ -1,5 +1,8 @@
 #include "rt_ascii_consumer.hh"
 
+#include <fstream>
+using std::ofstream;
+
 #include <cmath>
 
 namespace midge

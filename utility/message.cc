@@ -404,3 +404,5 @@ namespace midge
     }
 
 }
+
+message_define( msg, midge, midge )

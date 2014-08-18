@@ -2,6 +2,7 @@
 #define _midge_plot_hh_
 
 #include "singleton.hh"
+#include "mutex.hh"
 #include "types.hh"
 
 #include "TApplication.h"
@@ -130,6 +131,7 @@ namespace midge
             void finalize();
 
         private:
+            mutex f_mutex;
             count_t f_count;
             TApplication* f_application;
 

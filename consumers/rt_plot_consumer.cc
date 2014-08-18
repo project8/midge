@@ -1,27 +1,31 @@
-#include "rt_root_consumer.hh"
+#include "rt_plot_consumer.hh"
 
-#include "TFile.h"
-#include "TTree.h"
+#include "plot.hh"
 
 #include <cmath>
 
 namespace midge
 {
 
-    rt_root_consumer::rt_root_consumer() :
-            f_file( "" )
+    rt_plot_consumer::rt_plot_consumer() :
+            f_plot_key( "" ),
+            f_plot_name( "" ),
+            f_chart_title( "" ),
+            f_x_title( "" ),
+            f_y_title( "" )
     {
     }
-    rt_root_consumer::~rt_root_consumer()
+    rt_plot_consumer::~rt_plot_consumer()
     {
     }
 
-    void rt_root_consumer::initialize()
+    void rt_plot_consumer::initialize()
     {
+        plot::get_instance()->initialize();
         return;
     }
 
-    void rt_root_consumer::execute()
+    void rt_plot_consumer::execute()
     {
         count_t t_index;
 
@@ -30,34 +34,31 @@ namespace midge
         const real_t* t_in_raw;
         count_t t_in_size;
         real_t t_in_time_interval;
+        count_t t_in_first_index;
         count_t t_in_time_index;
 
-        TFile* t_stream = NULL;
-        TTree* t_tree = NULL;
-        real_t t_time;
-        real_t t_value;
+        plot* t_plot = plot::get_instance();
+        plot::abscissa t_x;
+        plot::ordinate t_y;
 
         count_t t_first_unwritten_index;
 
         while( true )
         {
-            in_stream< 0 >()++;
-            t_in_state = in_stream< 0 >().state();
+            in_stream< 0 >()++;t_in_state
+            = in_stream< 0 >().state();
             t_in_data = in_stream< 0 >().data();
 
             if( t_in_state == stream::s_start )
             {
                 t_in_size = t_in_data->get_size();
                 t_in_time_interval = t_in_data->get_time_interval();
-                t_in_time_index = t_in_data->get_time_index();
+                t_in_first_index = t_in_data->get_time_index();
 
-                t_stream = new TFile( f_file.c_str(), "RECREATE" );
-                t_tree = new TTree( get_name().c_str(), get_name().c_str() );
-                t_tree->SetDirectory( t_stream );
-                t_tree->Branch( "time", &t_time, 64000, 99 );
-                t_tree->Branch( "value", &t_value, 64000, 99 );
+                t_x.title() = f_x_title;
+                t_y.title() = f_y_title;
 
-                t_first_unwritten_index = t_in_time_index;
+                t_first_unwritten_index = t_in_first_index;
                 continue;
             }
             if( t_in_state == stream::s_run )
@@ -69,24 +70,21 @@ namespace midge
                 {
                     for( t_index = t_first_unwritten_index; t_index < t_in_time_index + t_in_size; t_index++ )
                     {
-                        t_time = t_index * t_in_time_interval;
-                        t_value = t_in_raw[ t_index - t_first_unwritten_index ];
-                        t_tree->Fill();
+                        t_x.values().push_back( t_index * t_in_time_interval );
+                        t_y.values().push_back( t_in_raw[ t_index - t_in_time_index ] );
                     }
                 }
                 else
                 {
                     for( t_index = t_first_unwritten_index; t_index < t_in_time_index; t_index++ )
                     {
-                        t_time = t_index * t_in_time_interval;
-                        t_value = 0.;
-                        t_tree->Fill();
+                        t_x.values().push_back( t_index * t_in_time_interval );
+                        t_y.values().push_back( 0. );
                     }
                     for( t_index = t_in_time_index; t_index < t_in_time_index + t_in_size; t_index++ )
                     {
-                        t_time = t_index * t_in_time_interval;
-                        t_value = t_in_raw[ t_index - t_first_unwritten_index ];
-                        t_tree->Fill();
+                        t_x.values().push_back( t_index * t_in_time_interval );
+                        t_y.values().push_back( t_in_raw[ t_index - t_in_time_index ] );
                     }
                 }
 
@@ -96,10 +94,11 @@ namespace midge
             }
             if( t_in_state == stream::s_stop )
             {
-                t_stream->cd();
-                t_tree->Write();
-                t_stream->Close();
-                delete t_stream;
+                t_x.count() = t_first_unwritten_index - t_in_first_index;
+                t_x.low() = t_in_first_index * t_in_time_interval;
+                t_x.high() = (t_first_unwritten_index - 1) * t_in_time_interval;
+
+                t_plot->plot_one_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y );
 
                 continue;
             }
@@ -112,8 +111,9 @@ namespace midge
         return;
     }
 
-    void rt_root_consumer::finalize()
+    void rt_plot_consumer::finalize()
     {
+        plot::get_instance()->finalize();
         return;
     }
 

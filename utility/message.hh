@@ -305,4 +305,6 @@ namespace midge\
 #define msg_warning( x_name, x_content ) x_name( s_warning ) << x_content
 #define msg_error( x_name, x_content ) x_name( s_error ) << x_content
 
+message_declare( msg );
+
 #endif

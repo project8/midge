@@ -1,6 +1,6 @@
 #include "plot.hh"
 #include "error.hh"
-#include "coremsg.hh"
+#include "message.hh"
 
 #include <limits>
 using std::numeric_limits;
@@ -149,6 +149,8 @@ namespace midge
     }
     void plot::initialize()
     {
+        f_mutex.lock();
+
         if( (f_count++ == 0) && (f_application == NULL) )
         {
             f_application = new TApplication( "", 0, NULL );
@@ -171,16 +173,21 @@ namespace midge
             TColor::CreateGradientColorTable( t_points, t_stops, t_red, t_green, t_blue, t_contours );
             gStyle->SetNumberContours( t_contours );
         }
+
+        f_mutex.unlock();
+
         return;
     }
     void plot::plot_one_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const ordinate& p_y )
     {
+        f_mutex.lock();
+
         if( p_x.values().size() != p_y.values().size() )
         {
             throw error() << "plot one dimensional was given x values with size <" << p_x.values().size() << "> and y values with size <" << p_y.values().size() << ">";
         }
 
-        msg_normal( coremsg, "making one dimensional plot <" << p_key << "> on canvas <" << p_key << ">" << eom );
+        msg_normal( msg, "making one dimensional plot <" << p_key << "> on canvas <" << p_key << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
 
@@ -236,10 +243,14 @@ namespace midge
             f_plots.insert( plot_entry( p_key, plot_pair( t_canvas, t_axes ) ) );
         }
 
+        f_mutex.unlock();
+
         return;
     }
     void plot::plot_two_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const abscissa& p_y, const ordinate& p_z )
     {
+        f_mutex.lock();
+
         if( p_z.values().size() != p_x.values().size() )
         {
             throw error() << "time frequency plotter was given z values with size <" << p_z.values().size() << "> and x values with size <" << p_x.values().size() << ">";
@@ -250,7 +261,7 @@ namespace midge
             throw error() << "time frequency plotter was given z values with size <" << p_z.values().size() << "> and y values with size <" << p_y.values().size() << ">";
         }
 
-        msg_normal( coremsg, "making two dimensional plot <" << p_name << ">" << eom );
+        msg_normal( msg, "making two dimensional plot <" << p_name << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
@@ -306,16 +317,20 @@ namespace midge
             f_plots.insert( plot_entry( p_key, plot_pair( t_canvas, t_axes ) ) );
         }
 
+        f_mutex.unlock();
+
         return;
     }
     void plot::graph_two_dimensional( const string& p_key, const string& p_name, const string& p_title, const abscissa& p_x, const abscissa& p_y )
     {
+        f_mutex.lock();
+
         if( p_y.values().size() != p_x.values().size() )
         {
             throw error() << "time frequency plotter was given z values with size <" << p_y.values().size() << "> and x values with size <" << p_x.values().size() << ">";
         }
 
-        msg_normal( coremsg, "making two dimensional graph <" << p_name << ">" << eom );
+        msg_normal( msg, "making two dimensional graph <" << p_name << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
@@ -358,14 +373,21 @@ namespace midge
             f_plots.insert( plot_entry( p_key, plot_pair( t_canvas, t_axes ) ) );
         }
 
+        f_mutex.unlock();
+
         return;
     }
     void plot::finalize()
     {
+        f_mutex.lock();
+
         if( (--f_count == 0) && (f_plots.size() != 0) )
         {
             f_application->Run( kTRUE );
         }
+
+        f_mutex.unlock();
+
         return;
     }
 }

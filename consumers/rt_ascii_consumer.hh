@@ -6,9 +6,6 @@
 #include "typelist.hh"
 #include "macros.hh"
 
-#include <fstream>
-using std::ofstream;
-
 namespace midge
 {
 
