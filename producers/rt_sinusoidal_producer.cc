@@ -1,38 +1,40 @@
-#include "rt_gaussian_producer.hh"
-
-#include "random.hh"
+#include "rt_sinusoidal_producer.hh"
 
 #include <cmath>
 
 namespace midge
 {
 
-    rt_gaussian_producer::rt_gaussian_producer() :
+    rt_sinusoidal_producer::rt_sinusoidal_producer() :
             f_impedance_ohm( 1. ),
-            f_power_dbm( 0. ),
+            f_carrier_power_dbm( 0. ),
+            f_carrier_frequency_hz( 0. ),
+            f_carrier_phase_deg( 0. ),
+            f_signal_amplitude_hz( 1. ),
+            f_signal_frequency_hz( 1. ),
+            f_signal_phase_deg( 0. ),
             f_begin_sec( 0. ),
             f_end_sec( 1. ),
             f_start_sec( 0. ),
             f_stop_sec( 1. ),
             f_interval_sec( 1. ),
-            f_seed( 51385 ),
             f_length( 10 ),
             f_size( 0 ),
             f_stride( 0 )
     {
     }
-    rt_gaussian_producer::~rt_gaussian_producer()
+    rt_sinusoidal_producer::~rt_sinusoidal_producer()
     {
     }
 
-    void rt_gaussian_producer::initialize()
+    void rt_sinusoidal_producer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
         out_buffer< 0 >().set_name( get_name() );
         return;
     }
 
-    void rt_gaussian_producer::execute()
+    void rt_sinusoidal_producer::execute()
     {
         count_t t_index;
 
@@ -47,9 +49,12 @@ namespace midge
         count_t t_first_unwritten_index;
         count_t t_first_requested_index;
 
-        real_t t_amplitude = sqrt( 2. * f_impedance_ohm ) * pow( 10., (f_power_dbm - 30.) / 20. );
-        random* t_random = random::get_instance();
-        random_t* t_generator = t_random->allocate( f_seed );
+        real_t t_carrier_amplitude = sqrt( 2. * f_impedance_ohm ) * pow( 10., (f_carrier_power_dbm - 30.) / 20. );
+        real_t t_carrier_linear = f_interval_sec * f_carrier_frequency_hz;
+        real_t t_carrier_phase = (M_PI / 180.) * f_carrier_phase_deg;
+        real_t t_signal_amplitude = f_signal_amplitude_hz / f_signal_frequency_hz;
+        real_t t_signal_linear = f_interval_sec * f_signal_frequency_hz;
+        real_t t_signal_phase = (M_PI / 180.) * f_signal_phase_deg;
 
         t_out_data = out_stream< 0 >().data();
         t_out_data->set_size( f_size );
@@ -90,7 +95,7 @@ namespace midge
                 {
                     if( (t_index >= t_start) && (t_index <= t_stop) )
                     {
-                        t_current_raw[ t_index - t_first_requested_index ] = t_random->gaussian( t_generator, 0., t_amplitude );
+                        t_current_raw[ t_index - t_first_requested_index ] = t_carrier_amplitude * cos( 2 * M_PI * (t_carrier_linear * (t_index - t_start)) + t_carrier_phase + t_signal_amplitude * sin( 2 * M_PI * ( t_signal_linear * (t_index - t_start)) + t_signal_phase ));
                     }
                     else
                     {
@@ -104,7 +109,7 @@ namespace midge
                 {
                     if( (t_index >= t_start) && (t_index <= t_stop) )
                     {
-                        t_current_raw[ t_index - t_first_requested_index ] = t_random->gaussian( t_generator, 0., t_amplitude );
+                        t_current_raw[ t_index - t_first_requested_index ] = t_carrier_amplitude * cos( 2 * M_PI * (t_carrier_linear * (t_index - t_start)) + t_carrier_phase + t_signal_amplitude * sin( 2 * M_PI * ( t_signal_linear * (t_index - t_start)) + t_signal_phase ));
                     }
                     else
                     {
@@ -124,7 +129,7 @@ namespace midge
         return;
     }
 
-    void rt_gaussian_producer::finalize()
+    void rt_sinusoidal_producer::finalize()
     {
         out_buffer< 0 >().finalize();
         return;

@@ -23,7 +23,7 @@ namespace midge
     {
         return f_raw;
     }
-    const real_t* rf_data::raw() const
+    real_t* rf_data::raw() const
     {
         return f_raw;
     }

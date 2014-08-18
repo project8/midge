@@ -30,8 +30,8 @@ int main()
 
     rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
     t_rt_in->set_name( "rt_in" );
-    t_rt_in->set_power_dbm( -10. );
     t_rt_in->set_impedance_ohm( 50. );
+    t_rt_in->set_power_dbm( -10. );
     t_rt_in->set_frequency_hz( 100.e6 );
     t_rt_in->set_phase_deg( 60. );
     t_rt_in->set_begin_sec( 0.e-9 );
@@ -39,7 +39,7 @@ int main()
     t_rt_in->set_start_sec( 2000.e-9 );
     t_rt_in->set_stop_sec( 18000.e-9 );
     t_rt_in->set_interval_sec( 1.e-9 );
-    t_rt_in->set_length( 10 );
+    t_rt_in->set_length( 100 );
     t_rt_in->set_size( 1000 );
     t_rt_in->set_stride( 10 );
     t_root->add( t_rt_in );
@@ -53,7 +53,7 @@ int main()
     t_rt_rf->set_name( "rt_rf" );
     t_rt_rf->set_impedance_ohm( 50. );
     t_rt_rf->set_window( new window_rectangular() );
-    t_rt_rf->set_length( 10 );
+    t_rt_rf->set_length( 100 );
     t_root->add( t_rt_rf );
 
     rf_ascii_consumer* t_rf_out = new rf_ascii_consumer();

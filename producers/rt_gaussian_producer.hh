@@ -17,8 +17,8 @@ namespace midge
             virtual ~rt_gaussian_producer();
 
         public:
-            accessible( real_t, power_dbm )
             accessible( real_t, impedance_ohm )
+            accessible( real_t, power_dbm )
             accessible( real_t, begin_sec )
             accessible( real_t, end_sec )
             accessible( real_t, start_sec )

@@ -1,135 +1,179 @@
 #include "rt_ct_analytic_transformer.hh"
 
+#include "fourier.hh"
+
 #include <cmath>
 
 namespace midge
 {
 
     rt_ct_analytic_transformer::rt_ct_analytic_transformer() :
-            f_size( 0 ),
-            f_under( 0 ),
-            f_nyquist( 0 ),
-            f_over( 0 ),
-            f_in( NULL ),
-            f_out( NULL ),
-            f_signal( NULL ),
-            f_transform( NULL ),
-            f_analytic( NULL ),
-            f_forward( NULL ),
-            f_backward( NULL ),
-            f_norm( 1. )
+            f_length( 10 )
     {
     }
     rt_ct_analytic_transformer::~rt_ct_analytic_transformer()
     {
     }
 
-    bool rt_ct_analytic_transformer::start_transformer()
+    void rt_ct_analytic_transformer::initialize()
     {
-        f_size = in< 0 >()->get_size();
-        if( f_size % 2 == 0 )
-        {
-            f_under = (f_size / 2) - 1;
-            f_nyquist = (f_size / 2);
-            f_over = (f_size / 2) + 1;
-        }
-        else
-        {
-            f_under = (f_size - 1) / 2;
-            f_nyquist = 0;
-            f_over = (f_size + 1) / 2;
-        }
-        out< 0 >()->set_size( f_size );
-        out< 0 >()->set_interval( 1. / (in< 0 >()->get_interval() * f_size) );
-
-        f_in = in< 0 >()->raw();
-        f_out = out< 0 >()->raw();
-
-        f_signal = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
-        f_transform = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
-        f_analytic = (fftw_complex*) (fftw_malloc( f_size * sizeof(fftw_complex) ));
-        f_forward = fftw_plan_dft_1d( f_size, f_signal, f_transform, FFTW_FORWARD, FFTW_MEASURE );
-        f_backward = fftw_plan_dft_1d( f_size, f_transform, f_analytic, FFTW_BACKWARD, FFTW_MEASURE );
-
-        f_norm = sqrt( f_size );
-
-        return true;
+        out_buffer< 0 >().initialize( f_length );
+        out_buffer< 0 >().set_name( get_name() );
+        return;
     }
-    bool rt_ct_analytic_transformer::execute_transformer()
+
+    void rt_ct_analytic_transformer::execute()
     {
         count_t t_index;
 
-        // input to complex signal
-        for( t_index = 0; t_index < f_size; t_index++ )
+        state_t t_in_state;
+        const rt_data* t_in_data;
+        const real_t* t_in_raw;
+
+        ct_data* t_out_data;
+        complex_t* t_out_raw;
+
+        count_t t_size;
+        real_t t_time_interval;
+        count_t t_time_index;
+
+        count_t t_under;
+        count_t t_nyquist;
+        count_t t_over;
+        real_t t_norm;
+
+        fourier* t_fourier = fourier::get_instance();
+        complex_t* t_signal = NULL;
+        complex_t* t_transform = NULL;
+        complex_t* t_analytic = NULL;
+        fourier_t* t_forward_generator = NULL;
+        fourier_t* t_backward_generator = NULL;
+
+        while( true )
         {
-            f_signal[ t_index ][ 0 ] = f_in[ t_index ];
-            f_signal[ t_index ][ 1 ] = 0.;
+            in_stream< 0 >()++;
+            t_in_state = in_stream< 0 >().state();
+            t_in_data = in_stream< 0 >().data();
+            t_out_data = out_stream< 0 >().data();
+
+            if( t_in_state == stream::s_start )
+            {
+                t_size = t_in_data->get_size();
+                if( t_size % 2 == 0 )
+                {
+                    t_under = (t_size / 2) - 1;
+                    t_nyquist = (t_size / 2);
+                    t_over = (t_size / 2) + 1;
+                }
+                else
+                {
+                    t_under = (t_size - 1) / 2;
+                    t_nyquist = 0;
+                    t_over = (t_size + 1) / 2;
+                }
+                t_norm = 1. / sqrt( t_size );
+
+                t_time_interval = t_in_data->get_time_interval();
+                t_time_index = t_in_data->get_time_index();
+
+                t_signal = t_fourier->allocate_complex( t_size );
+                t_transform = t_fourier->allocate_complex( t_size );
+                t_analytic = t_fourier->allocate_complex( t_size );
+                t_forward_generator = t_fourier->forward( t_size, t_signal, t_transform );
+                t_backward_generator = t_fourier->backward( t_size, t_transform, t_analytic );
+
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
+
+                out_stream< 0 >().state( stream::s_start );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_run )
+            {
+                t_time_index = t_in_data->get_time_index();
+                t_in_raw = t_in_data->raw();
+
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
+                t_out_raw = t_out_data->raw();
+
+                // input to complex signal
+                for( t_index = 0; t_index < t_size; t_index++ )
+                {
+                    t_signal[ t_index ][ 0 ] = t_in_raw[ t_index ];
+                    t_signal[ t_index ][ 1 ] = 0.;
+                }
+
+                // complex signal to complex spectrum
+                t_fourier->execute( t_forward_generator );
+
+                // complex spectrum under hilbert transformation
+                t_transform[ 0 ][ 0 ] = 1. * t_transform[ 0 ][ 0 ] * t_norm;
+                t_transform[ 0 ][ 1 ] = 1. * t_transform[ 0 ][ 1 ] * t_norm;
+                for( t_index = 1; t_index <= t_under; t_index++ )
+                {
+                    t_transform[ t_index ][ 0 ] = 2. * t_transform[ t_index ][ 0 ] * t_norm;
+                    t_transform[ t_index ][ 1 ] = 2. * t_transform[ t_index ][ 1 ] * t_norm;
+                }
+                if( t_nyquist != 0 )
+                {
+                    t_transform[ t_nyquist ][ 0 ] = 1. * t_transform[ t_nyquist ][ 0 ] * t_norm;
+                    t_transform[ t_nyquist ][ 1 ] = 1. * t_transform[ t_nyquist ][ 1 ] * t_norm;
+                }
+                for( t_index = t_over; t_index < t_size; t_index++ )
+                {
+                    t_transform[ t_index ][ 0 ] = 0. * t_norm;
+                    t_transform[ t_index ][ 1 ] = 0. * t_norm;
+                }
+
+                // complex spectrum to analytic signal
+                t_fourier->execute( t_backward_generator );
+
+                // analytic signal to output
+                for( t_index = 0; t_index < t_size; t_index++ )
+                {
+                    t_out_raw[ t_index ][ 0 ] = t_analytic[ t_index ][ 0 ] * t_norm;
+                    t_out_raw[ t_index ][ 1 ] = t_analytic[ t_index ][ 1 ] * t_norm;
+                }
+
+                out_stream< 0 >().state( stream::s_run );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_stop )
+            {
+                t_fourier->free_complex( t_signal );
+                t_fourier->free_complex( t_transform );
+                t_fourier->free_complex( t_analytic );
+                t_fourier->destroy( t_forward_generator );
+                t_fourier->destroy( t_backward_generator );
+
+                out_stream< 0 >().state( stream::s_stop );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_exit )
+            {
+                out_stream< 0 >().state( stream::s_exit );
+                t_index = out_stream< 0 >()++;
+
+                break;
+            }
         }
 
-        // complex signal to complex spectrum
-        fftw_execute( f_forward );
-
-        // complex spectrum under hilbert transformation
-        f_transform[ 0 ][ 0 ] = 1. * f_transform[ 0 ][ 0 ] / f_norm;
-        f_transform[ 0 ][ 1 ] = 1. * f_transform[ 0 ][ 1 ] / f_norm;
-        for( t_index = 1; t_index <= f_under; t_index++ )
-        {
-            f_transform[ t_index ][ 0 ] = 2. * f_transform[ t_index ][ 0 ] / f_norm;
-            f_transform[ t_index ][ 1 ] = 2. * f_transform[ t_index ][ 1 ] / f_norm;
-        }
-        if( f_nyquist != 0 )
-        {
-            f_transform[ f_nyquist ][ 0 ] = 1. * f_transform[ f_nyquist ][ 0 ] / f_norm;
-            f_transform[ f_nyquist ][ 1 ] = 1. * f_transform[ f_nyquist ][ 1 ] / f_norm;
-        }
-        for( t_index = f_over; t_index < f_size; t_index++ )
-        {
-            f_transform[ t_index ][ 0 ] = 0. / f_norm;
-            f_transform[ t_index ][ 1 ] = 0. / f_norm;
-        }
-
-        // complex spectrum to analytic signal
-        fftw_execute( f_backward );
-
-        // analytic signal to output
-        for( t_index = 0; t_index < f_size; t_index++ )
-        {
-            f_out[ t_index ][ 0 ] = f_analytic[ t_index ][ 0 ] / f_norm;
-            f_out[ t_index ][ 1 ] = f_analytic[ t_index ][ 1 ] / f_norm;
-        }
-
-        // update time
-        out< 0 >()->set_time( in< 0 >()->get_time() );
-
-        return true;
+        return;
     }
-    bool rt_ct_analytic_transformer::stop_transformer()
+
+    void rt_ct_analytic_transformer::finalize()
     {
-        f_size = 0;
-        f_under = 0;
-        f_nyquist = 0;
-        f_over = 0;
-        f_in = NULL;
-        f_out = NULL;
-
-        fftw_free( f_signal );
-        f_signal = NULL;
-
-        fftw_free( f_transform );
-        f_transform = NULL;
-
-        fftw_free( f_analytic );
-        f_analytic = NULL;
-
-        fftw_destroy_plan( f_forward );
-        f_forward = NULL;
-
-        fftw_destroy_plan( f_backward );
-        f_backward = NULL;
-
-        f_norm = 1.;
-
-        return true;
+        out_buffer< 0 >().finalize();
+        return;
     }
 
 }

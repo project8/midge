@@ -1,11 +1,14 @@
 {
-    "rt_harmonic_producer" :
+    "rt_sinusoidal_producer" :
     {
         "name" : "rt_in",
         "impedance_ohm" : 50.0,
-        "power_dbm" : -10.0,
-        "frequency_hz" : 100.0e6,
-        "phase_deg" : 60.0,
+        "carrier_power_dbm" : -10.0,
+        "carrier_frequency_hz" : 250.0e6,
+        "carrier_phase_deg" : 60.0,
+        "signal_amplitude_hz" : 100.0e6,
+        "signal_frequency_hz" : 500.0e3,
+        "signal_phase_deg" : 180.0,
         "begin_sec" : 0.0e-9,
         "end_sec" : 20000.0e-9,
         "start_sec" : 2000.0e-9,
@@ -29,13 +32,13 @@
     "rt_ascii_consumer" :
     {
         "name" : "rta_out",
-        "file" : "test_harmonic_producer.signal.txt"
+        "file" : "test_sinusoidal_producer.signal.txt"
     },
 
     "rf_ascii_consumer" :
     {
         "name" : "rfa_out",
-        "file" : "test_harmonic_producer.spectrum.txt"
+        "file" : "test_sinusoidal_producer.spectrum.txt"
     },
 
     "join" : "rt_in.out_0:rta_out.in_0",

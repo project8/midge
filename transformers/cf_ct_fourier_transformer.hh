@@ -2,11 +2,11 @@
 #define _midge_cf_ct_fourier_transformer_hh_
 
 #include "transformer.hh"
-#include "cf_data.hh"
 #include "ct_data.hh"
+#include "cf_data.hh"
+#include "window.hh"
 #include "typelist.hh"
-
-#include "fftw3.h"
+#include "macros.hh"
 
 namespace midge
 {
@@ -18,24 +18,13 @@ namespace midge
             cf_ct_fourier_transformer();
             virtual ~cf_ct_fourier_transformer();
 
-        private:
-            count_t f_size;
-
-            const complex_t* f_in;
-            real_t f_in_interval;
-            real_t f_in_time;
-
-            complex_t* f_out;
-            real_t f_out_interval;
-            real_t f_out_time;
-
-            fftw_plan f_plan;
-            real_t f_norm;
+        public:
+            accessible( count_t, length );
 
         protected:
-            bool start_transformer();
-            bool execute_transformer();
-            bool stop_transformer();
+            void initialize();
+            void execute();
+            void finalize();
     };
 
 }

@@ -1,76 +1,114 @@
 #include "cf_ct_fourier_transformer.hh"
 
-#include <cmath>
+#include "fourier.hh"
 
 namespace midge
 {
 
     cf_ct_fourier_transformer::cf_ct_fourier_transformer() :
-            f_size( 0 ),
-            f_in( NULL ),
-            f_in_interval( 0. ),
-            f_in_time( 0. ),
-            f_out( NULL ),
-            f_out_interval( 0. ),
-            f_out_time( 0. ),
-            f_plan( NULL ),
-            f_norm( 1. )
+            f_length( 10 )
     {
     }
     cf_ct_fourier_transformer::~cf_ct_fourier_transformer()
     {
     }
 
-    bool cf_ct_fourier_transformer::start_transformer()
+    void cf_ct_fourier_transformer::initialize()
     {
-        f_in = in< 0 >()->raw();
-        f_size = in< 0 >()->get_size();
-        out< 0 >()->set_size( f_size );
-        f_out = out< 0 >()->raw();
+        out_buffer< 0 >().initialize( f_length );
+        out_buffer< 0 >().set_name( get_name() );
 
-        f_in_interval = in< 0 >()->get_interval();
-        f_out_interval = 1. / (f_size * f_in_interval);
-        out< 0 >()->set_interval( f_out_interval );
-
-        f_plan = fftw_plan_dft_1d( f_size, const_cast< complex_t* >( f_in ), f_out, FFTW_BACKWARD, FFTW_MEASURE );
-        f_norm = sqrt( (real_t) (f_size) );
-
-        return true;
+        return;
     }
-    bool cf_ct_fourier_transformer::execute_transformer()
-    {
-        fftw_execute( f_plan );
 
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+    void cf_ct_fourier_transformer::execute()
+    {
+        count_t t_index;
+
+        state_t t_in_state;
+        const cf_data* t_in_data;
+        complex_t* t_in_raw;
+
+        ct_data* t_out_data;
+        complex_t* t_out_raw;
+
+        count_t t_size;
+        real_t t_time_interval;
+        count_t t_time_index;
+
+        fourier* t_fourier = fourier::get_instance();
+        fourier_t* t_generator = NULL;
+
+        while( true )
         {
-            f_out[ t_index ][ 0 ] /= f_norm;
-            f_out[ t_index ][ 1 ] /= f_norm;
+            in_stream< 0 >()++;
+            t_in_state = in_stream< 0 >().state();
+            t_in_data = in_stream< 0 >().data();
+            t_out_data = out_stream< 0 >().data();
+
+            if( t_in_state == stream::s_start )
+            {
+                t_size = t_in_data->get_size();
+                t_time_interval = t_in_data->get_time_interval();
+                t_time_index = t_in_data->get_time_index();
+
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
+
+                t_in_raw = t_in_data->raw();
+                t_out_raw = t_out_data->raw();
+
+                t_generator = t_fourier->forward( t_size, t_in_raw, t_out_raw );
+
+                out_stream< 0 >().state( stream::s_start );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_run )
+            {
+                t_time_index = t_in_data->get_time_index();
+                t_in_raw = t_in_data->raw();
+
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index - t_size / 2 );
+                t_out_raw = t_out_data->raw();
+
+                t_fourier->execute( t_generator, t_in_raw, t_out_raw );
+
+                out_stream< 0 >().state( stream::s_run );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_stop )
+            {
+                t_fourier->destroy( t_generator );
+
+                out_stream< 0 >().state( stream::s_stop );
+                t_index = out_stream< 0 >()++;
+
+                continue;
+            }
+            if( t_in_state == stream::s_exit )
+            {
+                out_stream< 0 >().state( stream::s_exit );
+                t_index = out_stream< 0 >()++;
+
+                break;
+            }
         }
 
-        f_in_time = in< 0 >()->get_time();
-        f_out_time = f_in_time - .5 * f_size * f_out_interval;
-        out< 0 >()->set_time( f_out_time );
-
-        return true;
+        return;
     }
-    bool cf_ct_fourier_transformer::stop_transformer()
+
+    void cf_ct_fourier_transformer::finalize()
     {
-        f_size = 0;
+        out_buffer< 0 >().finalize();
 
-        f_in = NULL;
-        f_in_interval = 1.;
-        f_in_time = 0.;
-
-        f_out = NULL;
-        f_out_interval = 1.;
-        f_out_time = 0.;
-
-        fftw_destroy_plan( f_plan );
-        f_plan = NULL;
-
-        f_norm = 1.;
-
-        return true;
+        return;
     }
 
 }

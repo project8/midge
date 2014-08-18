@@ -8,8 +8,6 @@
 #include "typelist.hh"
 #include "macros.hh"
 
-#include "fftw3.h"
-
 namespace midge
 {
 
@@ -21,41 +19,14 @@ namespace midge
             virtual ~rt_rf_wigner_transformer();
 
         public:
-            accessible( count_t, offset )
-            accessible( count_t, length )
             composable( window, window );
-
-        private:
-            count_t f_in_size;
-            count_t f_out_size;
-            count_t f_under;
-            count_t f_center;
-            count_t f_over;
-
-            const real_t* f_in;
-            real_t f_in_interval;
-            real_t f_in_time;
-
-            real_t* f_out;
-            real_t f_out_interval;
-            real_t f_out_time;
-
-            const real_t* f_multiplier;
-
-            fftw_complex* f_signal;
-            fftw_complex* f_transform;
-            fftw_complex* f_analytic;
-            fftw_complex* f_correlation;
-            fftw_complex* f_distribution;
-            fftw_plan f_forward;
-            fftw_plan f_backward;
-            fftw_plan f_final;
-            real_t f_norm;
+            accessible( count_t, width );
+            accessible( count_t, length );
 
         protected:
-            bool start_transformer();
-            bool execute_transformer();
-            bool stop_transformer();
+            void initialize();
+            void execute();
+            void finalize();
     };
 
 }

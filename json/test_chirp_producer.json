@@ -2,8 +2,8 @@
     "rt_chirp_producer" :
     {
         "name" : "rt_in",
-        "power_dbm" : -10.0,
         "impedance_ohm" : 50.0,
+        "power_dbm" : -10.0,
         "start_frequency_hz" : 100.0e6,
         "stop_frequency_hz" : 400.0e6,
         "phase_deg" : 60.0,

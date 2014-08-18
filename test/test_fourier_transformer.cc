@@ -1,17 +1,15 @@
 #include "root.hh"
-#include "rt_data.hh"
-#include "rf_data.hh"
-#include "ct_data.hh"
-#include "cf_data.hh"
-#include "rt_harmonic_producer.hh"
-#include "rt_chirp_producer.hh"
+#include "rt_sinusoidal_producer.hh"
+#include "rt_ascii_consumer.hh"
 #include "rt_ct_transformer.hh"
 #include "ct_cf_fourier_transformer.hh"
 #include "cf_rf_transformer.hh"
-#include "rt_ascii_consumer.hh"
 #include "rf_ascii_consumer.hh"
-#include "count_controller.hh"
+#include "window_rectangular.hh"
 using namespace midge;
+
+#include <fstream>
+using std::ofstream;
 
 #include <iostream>
 using std::cout;
@@ -21,111 +19,87 @@ using std::endl;
 
 int main()
 {
+    ofstream t_file;
+    t_file.open( "test_fourier_transformer.log.txt", std::ios_base::trunc );
+
+    messages* t_messages = messages::get_instance();
+    t_messages->set_terminal_severity( s_debug );
+    t_messages->set_terminal_stream( &cout );
+    t_messages->set_log_severity( s_debug );
+    t_messages->set_log_stream( &t_file );
+
     root* t_root = new root();
 
-    rt_data* t_rt = new rt_data();
-    t_rt->set_name( "rt" );
-    t_root->add( t_rt );
-
-    ct_data* t_ct = new ct_data();
-    t_ct->set_name( "ct" );
-    t_root->add( t_ct );
-
-    cf_data* t_cf = new cf_data();
-    t_cf->set_name( "cf" );
-    t_root->add( t_cf );
-
-    rf_data* t_rfm = new rf_data();
-    t_rfm->set_name( "rfm" );
-    t_root->add( t_rfm );
-
-    rf_data* t_rfa = new rf_data();
-    t_rfa->set_name( "rfa" );
-    t_root->add( t_rfa );
-
-//    rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
-//    t_rt_in->set_name( "rt_in" );
-//    t_rt_in->set_power_dbm( -10. );
-//    t_rt_in->set_impedance_ohm( 50. );
-//    t_rt_in->set_frequency_hz( 100.e6 );
-//    t_rt_in->set_phase_deg( 60. );
-//    t_rt_in->set_start_sec( 2000.e-9 );
-//    t_rt_in->set_stop_sec( 18000.e-9 );
-//    t_rt_in->set_interval( 1.e-9 );
-//    t_rt_in->set_size( 20000 );
-//    t_rt_in->set_stride( 20000 );
-//    t_root->add( t_rt_in );
-
-    rt_chirp_producer* t_rt_in = new rt_chirp_producer();
+    rt_sinusoidal_producer* t_rt_in = new rt_sinusoidal_producer();
     t_rt_in->set_name( "rt_in" );
-    t_rt_in->set_power_dbm( -10. );
     t_rt_in->set_impedance_ohm( 50. );
-    t_rt_in->set_start_frequency_hz( 100.e6 );
-    t_rt_in->set_stop_frequency_hz( 400.e6 );
-    t_rt_in->set_phase_deg( 60. );
+    t_rt_in->set_carrier_power_dbm( -10. );
+    t_rt_in->set_carrier_frequency_hz( 250.e6 );
+    t_rt_in->set_carrier_phase_deg( 60. );
+    t_rt_in->set_signal_amplitude_hz( 50.e6 );
+    t_rt_in->set_signal_frequency_hz( 500.e3 );
+    t_rt_in->set_signal_phase_deg( 180. );
+    t_rt_in->set_begin_sec( 0.e-9 );
+    t_rt_in->set_end_sec( 20000.e-9 );
     t_rt_in->set_start_sec( 2000.e-9 );
     t_rt_in->set_stop_sec( 18000.e-9 );
-    t_rt_in->set_interval( 1.e-9 );
-    t_rt_in->set_size( 20000 );
-    t_rt_in->set_stride( 20000 );
+    t_rt_in->set_interval_sec( 1.e-9 );
+    t_rt_in->set_length( 100 );
+    t_rt_in->set_size( 1000 );
+    t_rt_in->set_stride( 10 );
     t_root->add( t_rt_in );
+
+    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
+    t_rt_out->set_name( "rt_out" );
+    t_rt_out->set_file( "test_fourier_transformer.input.txt" );
+    t_root->add( t_rt_out );
 
     rt_ct_transformer* t_rt_ct = new rt_ct_transformer();
     t_rt_ct->set_name( "rt_ct" );
     t_rt_ct->set_mode( "real" );
+    t_rt_ct->set_length( 100 );
     t_root->add( t_rt_ct );
 
     ct_cf_fourier_transformer* t_ct_cf = new ct_cf_fourier_transformer();
     t_ct_cf->set_name( "ct_cf" );
+    t_ct_cf->set_length( 100 );
     t_root->add( t_ct_cf );
 
-    cf_rf_transformer* t_cf_rfm = new cf_rf_transformer();
-    t_cf_rfm->set_name( "cf_rfm" );
-    t_cf_rfm->set_mode( "modulus" );
-    t_root->add( t_cf_rfm );
+    cf_rf_transformer* t_cf_rf_re = new cf_rf_transformer();
+    t_cf_rf_re->set_name( "cf_rf_re" );
+    t_cf_rf_re->set_mode( "real" );
+    t_cf_rf_re->set_length( 100 );
+    t_root->add( t_cf_rf_re );
 
-    cf_rf_transformer* t_cf_rfa = new cf_rf_transformer();
-    t_cf_rfa->set_name( "cf_rfa" );
-    t_cf_rfa->set_mode( "argument" );
-    t_root->add( t_cf_rfa );
+    rf_ascii_consumer* t_rf_re_out = new rf_ascii_consumer();
+    t_rf_re_out->set_name( "rf_re_out" );
+    t_rf_re_out->set_file( "test_fourier_transformer.re.txt" );
+    t_root->add( t_rf_re_out );
 
-    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
-    t_rt_out->set_name( "rt_out" );
-    t_rt_out->set_file( "test_fourier_transformer.signal.txt" );
-    t_root->add( t_rt_out );
+    cf_rf_transformer* t_cf_rf_im = new cf_rf_transformer();
+    t_cf_rf_im->set_name( "cf_rf_im" );
+    t_cf_rf_im->set_mode( "imaginary" );
+    t_cf_rf_im->set_length( 100 );
+    t_root->add( t_cf_rf_im );
 
-    rf_ascii_consumer* t_rfm_out = new rf_ascii_consumer();
-    t_rfm_out->set_name( "rfm_out" );
-    t_rfm_out->set_file( "test_fourier_transformer.modulus.txt" );
-    t_root->add( t_rfm_out );
+    rf_ascii_consumer* t_rf_im_out = new rf_ascii_consumer();
+    t_rf_im_out->set_name( "rf_im_out" );
+    t_rf_im_out->set_file( "test_fourier_transformer.im.txt" );
+    t_root->add( t_rf_im_out );
 
-    rf_ascii_consumer* t_rfa_out = new rf_ascii_consumer();
-    t_rfa_out->set_name( "rfa_out" );
-    t_rfa_out->set_file( "test_fourier_transformer.argument.txt" );
-    t_root->add( t_rfa_out );
+    t_root->join( "rt_in.out_0:rt_out.in_0" );
+    t_root->join( "rt_in.out_0:rt_ct.in_0" );
+    t_root->join( "rt_ct.out_0:ct_cf.in_0" );
+    t_root->join( "ct_cf.out_0:cf_rf_re.in_0" );
+    t_root->join( "cf_rf_re.out_0:rf_re_out.in_0" );
+    t_root->join( "ct_cf.out_0:cf_rf_im.in_0" );
+    t_root->join( "cf_rf_im.out_0:rf_im_out.in_0" );
 
-    count_controller* t_c = new count_controller();
-    t_c->set_name( "c" );
-    t_c->set_count( 1 );
-    t_root->add( t_c );
-
-    t_root->join( "rt_in.out_0:rt.in" );
-    t_root->join( "rt.out:rt_out.in_0" );
-    t_root->join( "rt.out:rt_ct.in_0" );
-    t_root->join( "rt_ct.out_0:ct.in" );
-    t_root->join( "ct.out:ct_cf.in_0" );
-    t_root->join( "ct_cf.out_0:cf.in" );
-    t_root->join( "cf.out:cf_rfm.in_0" );
-    t_root->join( "cf.out:cf_rfa.in_0" );
-    t_root->join( "cf_rfm.out_0:rfm.in" );
-    t_root->join( "cf_rfa.out_0:rfa.in" );
-    t_root->join( "rfm.out:rfm_out.in_0" );
-    t_root->join( "rfa.out:rfa_out.in_0" );
-    t_root->join( "c.out_0:rt_in" );
-
-    t_root->run( "c" );
+    t_root->run( "rt_in:rt_out:rt_ct:ct_cf:cf_rf_re:rf_re_out:cf_rf_im:rf_im_out" );
 
     delete t_root;
+
+    t_file.close();
 
     return 0;
 }

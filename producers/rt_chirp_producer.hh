@@ -16,8 +16,8 @@ namespace midge
             virtual ~rt_chirp_producer();
 
         public:
-            accessible( real_t, power_dbm )
             accessible( real_t, impedance_ohm )
+            accessible( real_t, power_dbm )
             accessible( real_t, start_frequency_hz )
             accessible( real_t, stop_frequency_hz )
             accessible( real_t, phase_deg )
@@ -35,6 +35,7 @@ namespace midge
             void execute();
             void finalize();
     };
+
 }
 
 #endif

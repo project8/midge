@@ -21,7 +21,7 @@ namespace midge
     {
         return f_raw;
     }
-    const complex_t* ct_data::raw() const
+    complex_t* ct_data::raw() const
     {
         return f_raw;
     }

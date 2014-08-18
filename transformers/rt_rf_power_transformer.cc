@@ -2,18 +2,13 @@
 
 #include "fourier.hh"
 
-#include <cmath>
-
-#include <fstream>
-using std::ofstream;
-
 namespace midge
 {
 
     rt_rf_power_transformer::rt_rf_power_transformer() :
+            f_length( 10 ),
             f_impedance_ohm( 1. ),
-            f_window( NULL ),
-            f_length( 10 )
+            f_window( NULL )
     {
     }
     rt_rf_power_transformer::~rt_rf_power_transformer()
@@ -49,12 +44,13 @@ namespace midge
         real_t t_time_interval;
         count_t t_time_index;
         real_t t_frequency_interval;
-        count_t t_frequency_index = 0;
+        count_t t_frequency_index;
 
         count_t t_nyquist;
         count_t t_last;
-        real_t t_norm;
+
         const real_t* t_window;
+        real_t t_norm;
 
         fourier* t_fourier = fourier::get_instance();
         complex_t* t_signal = NULL;
@@ -88,11 +84,13 @@ namespace midge
                 }
 
                 t_time_interval = t_in_data->get_time_interval();
+                t_time_index = t_in_data->get_time_index();
                 t_frequency_interval = 1. / (t_in_size * t_time_interval);
+                t_frequency_index = 0;
 
                 f_window->initialize( t_in_size );
-                t_norm = 1. / (f_impedance_ohm * f_window->sum() * f_window->sum());
                 t_window = f_window->raw();
+                t_norm = 1. / (f_impedance_ohm * f_window->sum() * f_window->sum());
 
                 t_signal = t_fourier->allocate_complex( t_in_size );
                 t_transform = t_fourier->allocate_complex( t_in_size );
@@ -100,9 +98,9 @@ namespace midge
 
                 t_out_data->set_size( t_out_size );
                 t_out_data->set_time_interval( t_time_interval );
-                t_out_data->set_time_index( 0 );
+                t_out_data->set_time_index( t_time_index );
                 t_out_data->set_frequency_interval( t_frequency_interval );
-                t_out_data->set_frequency_index( 0 );
+                t_out_data->set_frequency_index( t_frequency_index );
 
                 out_stream< 0 >().state( stream::s_start );
                 t_index = out_stream< 0 >()++;

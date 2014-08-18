@@ -1,26 +1,28 @@
-#ifndef _midge_rt_harmonic_producer_hh_
-#define _midge_rt_harmonic_producer_hh_
+#ifndef midge_rt_sinusoidal_producer_hh_
+#define midge_rt_sinusoidal_producer_hh_
 
 #include "producer.hh"
 #include "rt_data.hh"
 #include "typelist.hh"
-#include "macros.hh"
 
 namespace midge
 {
 
-    class rt_harmonic_producer :
-        public _producer< rt_harmonic_producer, typelist_1( rt_data ) >
+    class rt_sinusoidal_producer :
+        public _producer< rt_sinusoidal_producer, typelist_1( rt_data ) >
     {
         public:
-            rt_harmonic_producer();
-            virtual ~rt_harmonic_producer();
+            rt_sinusoidal_producer();
+            virtual ~rt_sinusoidal_producer();
 
         public:
             accessible( real_t, impedance_ohm )
-            accessible( real_t, power_dbm )
-            accessible( real_t, frequency_hz )
-            accessible( real_t, phase_deg )
+            accessible( real_t, carrier_power_dbm )
+            accessible( real_t, carrier_frequency_hz )
+            accessible( real_t, carrier_phase_deg )
+            accessible( real_t, signal_amplitude_hz )
+            accessible( real_t, signal_frequency_hz )
+            accessible( real_t, signal_phase_deg )
             accessible( real_t, begin_sec )
             accessible( real_t, end_sec )
             accessible( real_t, start_sec )
@@ -30,11 +32,12 @@ namespace midge
             accessible( count_t, size )
             accessible( count_t, stride )
 
-        public:
+        protected:
             void initialize();
             void execute();
             void finalize();
     };
+
 }
 
 #endif

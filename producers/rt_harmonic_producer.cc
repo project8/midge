@@ -6,8 +6,8 @@ namespace midge
 {
 
     rt_harmonic_producer::rt_harmonic_producer() :
-            f_power_dbm( 0. ),
             f_impedance_ohm( 1. ),
+            f_power_dbm( 0. ),
             f_frequency_hz( 1. ),
             f_phase_deg( 0. ),
             f_begin_sec( 0. ),

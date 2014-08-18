@@ -240,12 +240,14 @@ set( midge_producers_directory
 set( midge_producers_headers
 	rt_harmonic_producer.hh
 	rt_chirp_producer.hh
+	rt_sinusoidal_producer.hh
 	rt_gaussian_producer.hh
 	#rt_monarch_producer.hh
 )
 set( midge_producers_sources
 	rt_harmonic_producer.cc
 	rt_chirp_producer.cc
+	rt_sinusoidal_producer.cc
 	rt_gaussian_producer.cc
 	#rt_monarch_producer.cc
 )
@@ -304,13 +306,13 @@ set( midge_transformers_headers
 	rf_cf_transformer.hh
 	ct_rt_transformer.hh
 	cf_rf_transformer.hh
-	#rt_rt_sum_transformer.hh
-	#ct_ct_sum_transformer.hh
-	#ct_cf_fourier_transformer.hh
-	#cf_ct_fourier_transformer.hh
-	#rt_ct_analytic_transformer.hh
+	rt_rt_sum_transformer.hh
+	ct_ct_sum_transformer.hh
+	ct_cf_fourier_transformer.hh
+	cf_ct_fourier_transformer.hh
+	rt_ct_analytic_transformer.hh
 	rt_rf_power_transformer.hh
-	#rt_rf_wigner_transformer.hh
+	rt_rf_wigner_transformer.hh
 	#rf_rf_threshold_transformer.hh
 )
 set( midge_transformers_sources
@@ -318,13 +320,13 @@ set( midge_transformers_sources
 	rf_cf_transformer.cc
 	ct_rt_transformer.cc
 	cf_rf_transformer.cc
-	#rt_rt_sum_transformer.cc
-	#ct_ct_sum_transformer.cc
-	#ct_cf_fourier_transformer.cc
-	#cf_ct_fourier_transformer.cc
-	#rt_ct_analytic_transformer.cc
+	rt_rt_sum_transformer.cc
+	ct_ct_sum_transformer.cc
+	ct_cf_fourier_transformer.cc
+	cf_ct_fourier_transformer.cc
+	rt_ct_analytic_transformer.cc
 	rt_rf_power_transformer.cc
-	#rt_rf_wigner_transformer.cc
+	rt_rf_wigner_transformer.cc
 	#rf_rf_threshold_transformer.cc
 )
 
@@ -403,6 +405,7 @@ set( midge_bindings_headers
 	window_blackman_builder.hh
 	rt_harmonic_producer_builder.hh
 	rt_chirp_producer_builder.hh
+	rt_sinusoidal_producer_builder.hh
 	rt_gaussian_producer_builder.hh
 	#rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
@@ -416,19 +419,20 @@ set( midge_bindings_headers
 	rf_cf_transformer_builder.hh
 	ct_rt_transformer_builder.hh
 	cf_rf_transformer_builder.hh
-	#rt_rt_sum_transformer_builder.hh
-	#ct_ct_sum_transformer_builder.hh
-	#ct_cf_fourier_transformer_builder.hh
-	#cf_ct_fourier_transformer_builder.hh
-	#rt_ct_analytic_transformer_builder.hh
+	rt_rt_sum_transformer_builder.hh
+	ct_ct_sum_transformer_builder.hh
+	ct_cf_fourier_transformer_builder.hh
+	cf_ct_fourier_transformer_builder.hh
+	rt_ct_analytic_transformer_builder.hh
 	rt_rf_power_transformer_builder.hh
-	#rt_rf_wigner_transformer_builder.hh
+	rt_rf_wigner_transformer_builder.hh
 	#rf_rf_threshold_transformer_builder.hh
 )
 set( midge_bindings_sources
 	root_builder.cc
 	rt_harmonic_producer_builder.cc
 	rt_chirp_producer_builder.cc
+	rt_sinusoidal_producer_builder.cc
 	rt_gaussian_producer_builder.cc
 	#rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
@@ -442,13 +446,13 @@ set( midge_bindings_sources
 	rf_cf_transformer_builder.cc
 	ct_rt_transformer_builder.cc
 	cf_rf_transformer_builder.cc
-	#rt_rt_sum_transformer_builder.cc
-	#ct_ct_sum_transformer_builder.cc
-	#ct_cf_fourier_transformer_builder.cc
-	#cf_ct_fourier_transformer_builder.cc
-	#rt_ct_analytic_transformer_builder.cc
+	rt_rt_sum_transformer_builder.cc
+	ct_ct_sum_transformer_builder.cc
+	ct_cf_fourier_transformer_builder.cc
+	cf_ct_fourier_transformer_builder.cc
+	rt_ct_analytic_transformer_builder.cc
 	rt_rf_power_transformer_builder.cc
-	#rt_rf_wigner_transformer_builder.cc
+	rt_rf_wigner_transformer_builder.cc
 	#rf_rf_threshold_transformer_builder.cc
 )
 
@@ -508,12 +512,14 @@ set( midge_test_programs
 	test_lexer_compiler_serializer
 	test_builder
 	test_run_string_processing
-	#test_fourier_transformer
-	#test_analytic_transformer
-	#test_wigner_transformer
 	test_harmonic_producer
 	test_chirp_producer
+	test_sinusoidal_producer
 	test_gaussian_producer
+	test_fourier_transformer
+	test_analytic_transformer
+	test_power_transformer
+	test_wigner_transformer
 )
 
 midge_executables( test )

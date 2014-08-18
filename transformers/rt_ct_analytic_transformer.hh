@@ -4,9 +4,9 @@
 #include "transformer.hh"
 #include "rt_data.hh"
 #include "ct_data.hh"
+#include "window.hh"
 #include "typelist.hh"
-
-#include "fftw3.h"
+#include "macros.hh"
 
 namespace midge
 {
@@ -18,24 +18,13 @@ namespace midge
             rt_ct_analytic_transformer();
             virtual ~rt_ct_analytic_transformer();
 
-        private:
-            count_t f_size;
-            count_t f_under;
-            count_t f_nyquist;
-            count_t f_over;
-            const real_t* f_in;
-            complex_t* f_out;
-            fftw_complex* f_signal;
-            fftw_complex* f_transform;
-            fftw_complex* f_analytic;
-            fftw_plan f_forward;
-            fftw_plan f_backward;
-            real_t f_norm;
+        public:
+            accessible( count_t, length );
 
         protected:
-            bool start_transformer();
-            bool execute_transformer();
-            bool stop_transformer();
+            void initialize();
+            void execute();
+            void finalize();
     };
 
 }

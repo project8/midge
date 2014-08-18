@@ -1,16 +1,12 @@
 #ifndef _midge_rt_rf_power_transformer_hh_
 #define _midge_rt_rf_power_transformer_hh_
 
-#define BUFFER_DEBUG 1
-
 #include "transformer.hh"
 #include "rt_data.hh"
 #include "rf_data.hh"
 #include "window.hh"
 #include "typelist.hh"
 #include "macros.hh"
-
-#undef BUFFER_DEBUG
 
 namespace midge
 {
@@ -23,9 +19,9 @@ namespace midge
             virtual ~rt_rf_power_transformer();
 
         public:
+            accessible( count_t, length );
             accessible( real_t, impedance_ohm );
             composable( window, window );
-            accessible( count_t, length );
 
         protected:
             void initialize();

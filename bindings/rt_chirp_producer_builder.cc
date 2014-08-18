@@ -6,8 +6,8 @@ namespace midge
 
     static const int s_rt_chirp_producer =
         rt_chirp_producer_builder::lingual< string >( &rt_chirp_producer::set_name, "name" ) +
-        rt_chirp_producer_builder::numerical< real_t >( &rt_chirp_producer::set_power_dbm, "power_dbm" ) +
         rt_chirp_producer_builder::numerical< real_t >( &rt_chirp_producer::set_impedance_ohm, "impedance_ohm" ) +
+        rt_chirp_producer_builder::numerical< real_t >( &rt_chirp_producer::set_power_dbm, "power_dbm" ) +
         rt_chirp_producer_builder::numerical< real_t >( &rt_chirp_producer::set_start_frequency_hz, "start_frequency_hz" ) +
         rt_chirp_producer_builder::numerical< real_t >( &rt_chirp_producer::set_stop_frequency_hz, "stop_frequency_hz" ) +
         rt_chirp_producer_builder::numerical< real_t >( &rt_chirp_producer::set_phase_deg, "phase_deg" ) +

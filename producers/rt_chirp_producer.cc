@@ -6,8 +6,8 @@ namespace midge
 {
 
     rt_chirp_producer::rt_chirp_producer() :
-            f_power_dbm( 0. ),
             f_impedance_ohm( 1. ),
+            f_power_dbm( 0. ),
             f_start_frequency_hz( 1. ),
             f_stop_frequency_hz( 1. ),
             f_phase_deg( 0. ),
