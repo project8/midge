@@ -242,14 +242,14 @@ set( midge_producers_headers
 	rt_chirp_producer.hh
 	rt_sinusoidal_producer.hh
 	rt_gaussian_producer.hh
-	#rt_monarch_producer.hh
+	rt_monarch_producer.hh
 )
 set( midge_producers_sources
 	rt_harmonic_producer.cc
 	rt_chirp_producer.cc
 	rt_sinusoidal_producer.cc
 	rt_gaussian_producer.cc
-	#rt_monarch_producer.cc
+	rt_monarch_producer.cc
 )
 
 midge_library( producers )
@@ -272,7 +272,7 @@ set( midge_consumers_headers
 	rf_ascii_consumer.hh
 	#rt_root_consumer.hh
 	#rf_root_consumer.hh
-	#rt_monarch_consumer.hh
+	rt_monarch_consumer.hh
 	#rf_background_consumer.hh
 	#rf_event_consumer.hh
 )
@@ -281,7 +281,7 @@ set( midge_consumers_sources
 	rf_ascii_consumer.cc
 	#rt_root_consumer.cc
 	#rf_root_consumer.cc
-	#rt_monarch_consumer.cc
+	rt_monarch_consumer.cc
 	#rf_background_consumer.cc
 	#rf_event_consumer.cc
 )
@@ -407,12 +407,12 @@ set( midge_bindings_headers
 	rt_chirp_producer_builder.hh
 	rt_sinusoidal_producer_builder.hh
 	rt_gaussian_producer_builder.hh
-	#rt_monarch_producer_builder.hh
+	rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
 	#rt_root_consumer_builder.hh
 	#rf_root_consumer_builder.hh
-	#rt_monarch_consumer_builder.hh
+	rt_monarch_consumer_builder.hh
 	#rf_background_consumer_builder.hh
 	#rf_event_consumer_builder.hh
 	rt_ct_transformer_builder.hh
@@ -434,12 +434,12 @@ set( midge_bindings_sources
 	rt_chirp_producer_builder.cc
 	rt_sinusoidal_producer_builder.cc
 	rt_gaussian_producer_builder.cc
-	#rt_monarch_producer_builder.cc
+	rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
 	#rt_root_consumer_builder.cc
 	#rf_root_consumer_builder.cc
-	#rt_monarch_consumer_builder.cc
+	rt_monarch_consumer_builder.cc
 	#rf_background_consumer_builder.cc
 	#rf_event_consumer_builder.cc
 	rt_ct_transformer_builder.cc

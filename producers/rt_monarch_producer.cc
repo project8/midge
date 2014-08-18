@@ -1,7 +1,6 @@
 #include "rt_monarch_producer.hh"
 
-#include <limits>
-using std::numeric_limits;
+#include "Monarch.hpp"
 
 #include <cmath>
 
@@ -10,168 +9,165 @@ namespace midge
 
     rt_monarch_producer::rt_monarch_producer() :
             f_file( "" ),
-            f_minimum_time( 0. ),
-            f_maximum_time( numeric_limits< real_t >::max() ),
-            f_stride( 0 ),
+            f_begin_sec( 0. ),
+            f_end_sec( 1. ),
             f_size( 0 ),
-            f_monarch( NULL ),
-            f_header( NULL ),
-            f_record( NULL ),
-            f_length( 4194304 ),
-            f_interval( 1.e-9 ),
-            f_voltage_minimum( -.25 ),
-            f_voltage_range( .5 ),
-            f_voltage_inverse_range( 1. / .5 ),
-            f_voltage_levels( 256. ),
-            f_voltage_inverse_levels( 1. / 256. ),
-            f_minimum_index( 0 ),
-            f_maximum_index( numeric_limits< count_t >::max() ),
-            f_out( NULL ),
-            f_index( 0 ),
-            f_next( 0 ),
-            f_samples( 0 )
+            f_stride( 0 ),
+            f_length( 10 )
     {
     }
     rt_monarch_producer::~rt_monarch_producer()
     {
     }
 
-    void rt_monarch_producer::initialize_producer()
+    void rt_monarch_producer::initialize()
     {
+        out_buffer< 0 >().initialize( f_length );
+        out_buffer< 0 >().set_name( get_name() );
         return;
     }
 
-    bool rt_monarch_producer::start_producer()
-    {
-        f_monarch = monarch::Monarch::OpenForReading( f_file );
-
-        f_monarch->ReadHeader();
-        f_header = f_monarch->GetHeader();
-
-        f_monarch->SetInterface( monarch::sInterfaceSeparate );
-        f_record = f_monarch->GetRecordSeparateOne();
-
-        f_length = f_header->GetRecordSize();
-        f_interval = 1.e-6 / f_header->GetAcquisitionRate();
-        f_voltage_minimum = f_header->GetVoltageMin();
-        f_voltage_range = f_header->GetVoltageRange();
-        f_voltage_inverse_range = 1. / f_voltage_range;
-        f_voltage_levels = 1 << f_header->GetBitDepth();
-        f_voltage_inverse_levels = 1. / f_voltage_levels;
-
-        f_minimum_index = (count_t) (round( f_minimum_time / (f_interval * f_size) ) * f_size);
-        f_maximum_index = (count_t) (round( f_maximum_time / (f_interval * f_size) ) * f_size);
-
-        out< 0 >()->set_size( f_size );
-        out< 0 >()->set_interval( f_interval );
-        f_out = out< 0 >()->raw();
-        f_index = 0;
-        f_next = 0;
-        f_samples = f_length;
-
-        return true;
-    }
-
-    bool rt_monarch_producer::execute_producer()
+    void rt_monarch_producer::execute()
     {
         count_t t_index;
+
+        rt_data* t_out_data;
+        real_t* t_current_raw;
+        real_t* t_previous_raw;
+
+        const monarch::Monarch* t_monarch = monarch::Monarch::OpenForReading( f_file );
+
+        t_monarch->ReadHeader();
+        const monarch::MonarchHeader* t_header = t_monarch->GetHeader();
+
+        t_monarch->SetInterface( monarch::sInterfaceSeparate );
+        const monarch::MonarchRecord< monarch::DataType >* t_record = t_monarch->GetRecordSeparateOne();
+
+        real_t t_time_interval = 1.e-6 / t_header->GetAcquisitionRate();
+
         real_t t_datum;
+        real_t t_voltage_minimum = t_header->GetVoltageMin();
+        real_t t_voltage_range = t_header->GetVoltageRange();
+        real_t t_voltage_levels = 1 << t_header->GetBitDepth();
+        real_t t_voltage_inverse_levels = 1. / t_voltage_levels;
 
-        if( f_index == f_maximum_index )
-        {
-            return false;
-        }
-        else if( f_index == 0 )
-        {
-            f_next += f_minimum_index;
-        }
-        else
-        {
-            f_next += f_stride;
-        }
+        count_t t_begin = (count_t) (round( f_begin_sec / t_time_interval ));
+        count_t t_end = (count_t) (round( f_end_sec / t_time_interval ));
+        count_t t_record_length = t_header->GetRecordSize();
+        count_t t_first_unwritten_index;
+        count_t t_first_requested_index;
+        count_t t_record_index;
 
-        if( f_index > f_next )
+        t_out_data = out_stream< 0 >().data();
+        t_out_data->set_size( f_size );
+        t_out_data->set_time_interval( t_time_interval );
+        t_out_data->set_time_index( t_begin );
+
+        out_stream< 0 >().state( stream::s_start );
+        out_stream< 0 >()++;
+
+        t_first_unwritten_index = 0;
+        t_first_requested_index = t_begin;
+        t_record_index = t_record_length;
+        while( true )
         {
-            for( t_index = f_next; t_index < f_index; t_index++ )
+            if( t_first_unwritten_index >= t_end )
             {
-                f_out[ t_index - f_next ] = f_out[ t_index - f_index + f_size ];
+                t_monarch->Close();
+                delete t_monarch;
+
+                out_stream< 0 >().state( stream::s_stop );
+                out_stream< 0 >()++;
+
+                out_stream< 0 >().state( stream::s_exit );
+                out_stream< 0 >()++;
+
+                return;
             }
 
-            for( t_index = f_index; t_index < f_next + f_size; t_index++ )
+            t_out_data = out_stream< 0 >().data();
+            t_out_data->set_size( f_size );
+            t_out_data->set_time_interval( t_time_interval );
+            t_out_data->set_time_index( t_first_requested_index );
+            t_current_raw = t_out_data->raw();
+
+            if( t_first_unwritten_index > t_first_requested_index )
             {
-                while( f_samples >= f_length )
+                for( t_index = t_first_requested_index; t_index < t_first_unwritten_index; t_index++ )
                 {
-                    if( f_monarch->ReadRecord() == false )
-                    {
-                        return false;
-                    }
-                    f_samples -= f_length;
+                    t_current_raw[ t_index - t_first_requested_index ] = t_previous_raw[ t_index - t_first_unwritten_index + f_size ];
                 }
-
-                t_datum = f_voltage_minimum + f_voltage_range * (real_t) (f_record->fData[ f_samples ]) * f_voltage_inverse_levels;
-                f_out[ t_index - f_next ] = t_datum;
-
-                f_samples++;
-            }
-        }
-        else
-        {
-            f_samples += f_next - f_index;
-
-            for( t_index = f_next; t_index < f_next + f_size; t_index++ )
-            {
-                while( f_samples >= f_length )
+                for( t_index = t_first_unwritten_index; t_index < t_first_requested_index + f_size; t_index++ )
                 {
-                    if( f_monarch->ReadRecord() == false )
+                    while( t_record_index >= t_record_length )
                     {
-                        return false;
+                        if( t_monarch->ReadRecord() == false )
+                        {
+                            t_monarch->Close();
+                            delete t_monarch;
+
+                            out_stream< 0 >().state( stream::s_stop );
+                            out_stream< 0 >()++;
+
+                            out_stream< 0 >().state( stream::s_exit );
+                            out_stream< 0 >()++;
+
+                            return;
+                        }
+                        t_record_index -= t_record_length;
                     }
-                    f_samples -= f_length;
+
+                    t_datum = t_voltage_minimum + t_voltage_range * (real_t) (t_record->fData[ t_record_index ]) * t_voltage_inverse_levels;
+                    t_current_raw[ t_index - t_first_requested_index ] = t_datum;
+
+                    t_record_index++;
                 }
-
-                t_datum = f_voltage_minimum + f_voltage_range * (real_t) (f_record->fData[ f_samples ]) * f_voltage_inverse_levels;
-                f_out[ t_index - f_next ] = t_datum;
-
-                f_samples++;
             }
+            else
+            {
+                t_record_index += t_first_requested_index - t_first_unwritten_index;
+
+                for( t_index = t_first_requested_index; t_index < t_first_requested_index + f_size; t_index++ )
+                {
+                    while( t_record_index >= t_record_length )
+                    {
+                        if( t_monarch->ReadRecord() == false )
+                        {
+                            t_monarch->Close();
+                            delete t_monarch;
+
+                            out_stream< 0 >().state( stream::s_stop );
+                            out_stream< 0 >()++;
+
+                            out_stream< 0 >().state( stream::s_exit );
+                            out_stream< 0 >()++;
+
+                            return;
+                        }
+                        t_record_index -= t_record_length;
+                    }
+
+                    t_datum = t_voltage_minimum + t_voltage_range * (real_t) (t_record->fData[ t_record_index ]) * t_voltage_inverse_levels;
+                    t_current_raw[ t_index - t_first_requested_index ] = t_datum;
+
+                    t_record_index++;
+                }
+            }
+
+            t_first_unwritten_index = t_first_requested_index + f_size;
+            t_first_requested_index = t_first_requested_index + f_stride;
+            t_previous_raw = t_current_raw;
+
+            out_stream< 0 >().state( stream::s_run );
+            out_stream< 0 >()++;
         }
 
-        f_index = f_next + f_size;
-
-        out< 0 >()->set_time( f_next * f_interval );
-
-        return true;
+        return;
     }
 
-    bool rt_monarch_producer::stop_producer()
+    void rt_monarch_producer::finalize()
     {
-        f_monarch->Close();
-        delete f_monarch;
-        f_monarch = NULL;
-        f_header = NULL;
-        f_record = NULL;
-
-        f_length = 4194304;
-        f_interval = 1.e-9;
-        f_voltage_minimum = -.25;
-        f_voltage_range = .5;
-        f_voltage_inverse_range = 1. / .5;
-        f_voltage_levels = 256.;
-        f_voltage_inverse_levels = 1. / 256.;
-
-        f_minimum_index = 0;
-        f_maximum_index = numeric_limits< count_t >::max();
-
-        f_out = NULL;
-        f_index = 0;
-        f_next = 0;
-        f_samples = 0;
-
-        return true;
-    }
-
-    void rt_monarch_producer::finalize_producer()
-    {
+        out_buffer< 0 >().finalize();
         return;
     }
 

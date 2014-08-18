@@ -59,7 +59,7 @@ namespace midge
         t_out_data = out_stream< 0 >().data();
         t_out_data->set_size( f_size );
         t_out_data->set_time_interval( f_interval_sec );
-        t_out_data->set_time_index( 0 );
+        t_out_data->set_time_index( t_begin );
 
         out_stream< 0 >().state( stream::s_start );
         out_stream< 0 >()++;
