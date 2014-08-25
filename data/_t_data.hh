@@ -7,6 +7,8 @@
 #include "ascii.hh"
 #include "_stream.hh"
 
+#include "coremsg.hh"
+
 namespace midge
 {
 
@@ -80,7 +82,7 @@ namespace midge
             }
 
         protected:
-            x_type* f_raw;
+            mutable x_type* f_raw;
             count_t f_size;
             real_t f_time_interval;
             count_t f_time_index;
@@ -97,10 +99,12 @@ namespace midge
 
             _t_data& operator>>( _t_data& p_data )
             {
+
                 p_data.f_raw = f_raw;
                 p_data.f_size = f_size;
                 p_data.f_time_interval = f_time_interval;
                 p_data.f_time_index = f_time_index;
+                f_raw = NULL;
                 return *this;
             }
             _t_data& operator<<( const _t_data& p_data )
@@ -109,6 +113,7 @@ namespace midge
                 f_size = p_data.f_size;
                 f_time_interval = p_data.f_time_interval;
                 f_time_index = p_data.f_time_index;
+                p_data.f_raw = NULL;
                 return *this;
             }
     };

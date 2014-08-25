@@ -18,7 +18,6 @@ namespace midge
     void rt_ct_analytic_transformer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
-        out_buffer< 0 >().set_name( get_name() );
         return;
     }
 
@@ -26,11 +25,12 @@ namespace midge
     {
         count_t t_index;
 
-        command_t t_in_state;
-        const rt_data* t_in_data;
-        const real_t* t_in_raw;
+        command_t t_in_command;
 
-        ct_data* t_out_data;
+        rt_data t_in_data;
+        real_t* t_in_raw;
+
+        ct_data t_out_data;
         complex_t* t_out_raw;
 
         count_t t_size;
@@ -51,14 +51,13 @@ namespace midge
 
         while( true )
         {
-            in_stream< 0 >()++;
-            t_in_state = in_stream< 0 >().command();
-            t_in_data = in_stream< 0 >().data();
-            t_out_data = out_stream< 0 >().data();
+            in_stream< 0 >() >> t_in_data;
+            out_stream< 0 >() >> t_out_data;
+            t_in_command = in_stream< 0 >().command();
 
-            if( t_in_state == stream::s_start )
+            if( t_in_command == stream::s_start )
             {
-                t_size = t_in_data->get_size();
+                t_size = t_in_data.get_size();
                 if( t_size % 2 == 0 )
                 {
                     t_under = (t_size / 2) - 1;
@@ -73,33 +72,34 @@ namespace midge
                 }
                 t_norm = 1. / sqrt( t_size );
 
-                t_time_interval = t_in_data->get_time_interval();
-                t_time_index = t_in_data->get_time_index();
+                t_time_interval = t_in_data.get_time_interval();
+                t_time_index = t_in_data.get_time_index();
 
-                t_signal = t_fourier->allocate_complex( t_size );
-                t_transform = t_fourier->allocate_complex( t_size );
-                t_analytic = t_fourier->allocate_complex( t_size );
+                t_signal = t_fourier->allocate< complex_t >( t_size );
+                t_transform = t_fourier->allocate< complex_t >( t_size );
+                t_analytic = t_fourier->allocate< complex_t >( t_size );
                 t_forward_generator = t_fourier->forward( t_size, t_signal, t_transform );
                 t_backward_generator = t_fourier->backward( t_size, t_transform, t_analytic );
 
-                t_out_data->set_size( t_size );
-                t_out_data->set_time_interval( t_time_interval );
-                t_out_data->set_time_index( t_time_index );
+                t_out_data.set_size( t_size );
+                t_out_data.set_time_interval( t_time_interval );
+                t_out_data.set_time_index( t_time_index );
 
                 out_stream< 0 >().command( stream::s_start );
-                t_index = out_stream< 0 >()++;
-
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_state == stream::s_run )
+            if( t_in_command == stream::s_run )
             {
-                t_time_index = t_in_data->get_time_index();
-                t_in_raw = t_in_data->raw();
+                t_time_interval = t_in_data.get_time_interval();
+                t_time_index = t_in_data.get_time_index();
+                t_in_raw = t_in_data.raw();
 
-                t_out_data->set_size( t_size );
-                t_out_data->set_time_interval( t_time_interval );
-                t_out_data->set_time_index( t_time_index );
-                t_out_raw = t_out_data->raw();
+                t_out_data.set_size( t_size );
+                t_out_data.set_time_interval( t_time_interval );
+                t_out_data.set_time_index( t_time_index );
+                t_out_raw = t_out_data.raw();
 
                 // input to complex signal
                 for( t_index = 0; t_index < t_size; t_index++ )
@@ -141,29 +141,29 @@ namespace midge
                 }
 
                 out_stream< 0 >().command( stream::s_run );
-                t_index = out_stream< 0 >()++;
-
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_state == stream::s_stop )
+            if( t_in_command == stream::s_stop )
             {
-                t_fourier->free_complex( t_signal );
-                t_fourier->free_complex( t_transform );
-                t_fourier->free_complex( t_analytic );
+                t_fourier->free< complex_t >( t_signal );
+                t_fourier->free< complex_t >( t_transform );
+                t_fourier->free< complex_t >( t_analytic );
                 t_fourier->destroy( t_forward_generator );
                 t_fourier->destroy( t_backward_generator );
 
                 out_stream< 0 >().command( stream::s_stop );
-                t_index = out_stream< 0 >()++;
-
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_state == stream::s_exit )
+            if( t_in_command == stream::s_exit )
             {
                 out_stream< 0 >().command( stream::s_exit );
-                t_index = out_stream< 0 >()++;
-
-                break;
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
+                return;
             }
         }
 

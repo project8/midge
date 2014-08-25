@@ -68,7 +68,10 @@ namespace midge
             }
             if( t_in_command == stream::s_run )
             {
+                t_time_interval = t_in_data.get_time_interval();
                 t_time_index = t_in_data.get_time_index();
+                t_frequency_interval = 1. / (t_size * t_time_interval);
+                t_frequency_index = 0;
                 t_in_raw = t_in_data.raw();
 
                 t_out_data.set_size( t_size );

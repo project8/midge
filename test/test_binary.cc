@@ -1,5 +1,5 @@
 #include "message.hh"
-#include "_binary_data.hh"
+#include "binary.hh"
 
 #include <fstream>
 using std::fstream;

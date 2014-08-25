@@ -1,4 +1,4 @@
-#include "root.hh"
+#include "midge.hh"
 #include "rt_harmonic_producer.hh"
 #include "rt_ascii_consumer.hh"
 #include "rt_rtf_power_transformer.hh"
@@ -26,7 +26,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    midge* t_root = new midge();
+    ::midge::midge* t_midge = new ::midge::midge();
 
     rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
     t_rt_in->set_name( "rt_in" );
@@ -39,35 +39,35 @@ int main()
     t_rt_in->set_start_sec( 2000.e-9 );
     t_rt_in->set_stop_sec( 18000.e-9 );
     t_rt_in->set_interval_sec( 1.e-9 );
-    t_rt_in->set_length( 100 );
+    t_rt_in->set_length( 10 );
     t_rt_in->set_size( 1000 );
-    t_rt_in->set_stride( 10 );
-    t_root->add( t_rt_in );
+    t_rt_in->set_stride( 100 );
+    t_midge->add( t_rt_in );
 
-    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
-    t_rt_out->set_name( "rt_out" );
-    t_rt_out->set_file( "test_harmonic_producer.signal.txt" );
-    t_root->add( t_rt_out );
+//    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
+//    t_rt_out->set_name( "rt_out" );
+//    t_rt_out->set_file( "test_harmonic_producer.signal.txt" );
+//    t_midge->add( t_rt_out );
 
     rt_rtf_power_transformer* t_rt_rf = new rt_rtf_power_transformer();
     t_rt_rf->set_name( "rt_rf" );
     t_rt_rf->set_impedance_ohm( 50. );
     t_rt_rf->set_window( new window_rectangular() );
     t_rt_rf->set_length( 100 );
-    t_root->add( t_rt_rf );
+    t_midge->add( t_rt_rf );
 
-    rtf_ascii_consumer* t_rf_out = new rtf_ascii_consumer();
-    t_rf_out->set_name( "rf_out" );
-    t_rf_out->set_file( "test_harmonic_producer.spectrum.txt" );
-    t_root->add( t_rf_out );
+//    rtf_ascii_consumer* t_rf_out = new rtf_ascii_consumer();
+//    t_rf_out->set_name( "rf_out" );
+//    t_rf_out->set_file( "test_harmonic_producer.spectrum.txt" );
+//    t_midge->add( t_rf_out );
 
-    t_root->join( "rt_in.out_0:rt_out.in_0" );
-    t_root->join( "rt_in.out_0:rt_rf.in_0" );
-    t_root->join( "rt_rf.out_0:rf_out.in_0" );
+    //t_midge->join( "rt_in.out_0:rt_out.in_0" );
+    t_midge->join( "rt_in.out_0:rt_rf.in_0" );
+    //t_midge->join( "rt_rf.out_0:rf_out.in_0" );
 
-    t_root->run( "rt_in:rt_out:rt_rf:rf_out" );
+    t_midge->run( "rt_in:rt_rf" );
 
-    delete t_root;
+    delete t_midge;
 
     t_file.close();
 

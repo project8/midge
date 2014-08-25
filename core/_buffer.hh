@@ -242,8 +242,6 @@ namespace midge
 
                     _stream< x_type >& operator>>( x_type& p_data )
                     {
-                        f_buffer.f_read_data[ f_current_index ] >> p_data;
-
                         if( ++f_next_index == f_buffer.f_length )
                         {
                             f_next_index = 0;
@@ -254,6 +252,8 @@ namespace midge
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_current_index ].unlock();
 
                         f_current_index = f_next_index;
+
+                        f_buffer.f_read_data[ f_current_index ] >> p_data;
 
                         return *this;
                     }

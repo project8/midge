@@ -82,7 +82,7 @@ namespace midge
             }
 
         protected:
-            x_type* f_raw;
+            mutable x_type* f_raw;
             count_t f_size;
             real_t f_frequency_interval;
             count_t f_frequency_index;
@@ -103,6 +103,7 @@ namespace midge
                 p_data.f_size = f_size;
                 p_data.f_frequency_interval = f_frequency_interval;
                 p_data.f_frequency_index = f_frequency_index;
+                f_raw = NULL;
                 return *this;
             }
             _f_data& operator<<( const _f_data& p_data )
@@ -111,6 +112,7 @@ namespace midge
                 f_size = p_data.f_size;
                 f_frequency_interval = p_data.f_frequency_interval;
                 f_frequency_index = p_data.f_frequency_index;
+                p_data.f_raw = NULL;
                 return *this;
             }
     };

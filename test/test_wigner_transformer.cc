@@ -1,4 +1,4 @@
-#include "root.hh"
+#include "midge.hh"
 #include "rt_sinusoidal_producer.hh"
 #include "rt_ascii_consumer.hh"
 #include "rt_rtf_wigner_transformer.hh"
@@ -26,7 +26,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    midge* t_root = new midge();
+    ::midge::midge* t_root = new ::midge::midge();
 
     rt_sinusoidal_producer* t_rt_in = new rt_sinusoidal_producer();
     t_rt_in->set_name( "rt_in" );

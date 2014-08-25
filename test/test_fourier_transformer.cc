@@ -1,9 +1,9 @@
-#include "root.hh"
+#include "midge.hh"
 #include "rt_sinusoidal_producer.hh"
 #include "rt_ascii_consumer.hh"
-#include "rt_ct_transformer.hh"
+#include "rt_ct_converter_transformer.hh"
 #include "ct_ctf_fourier_transformer.hh"
-#include "ctf_rtf_transformer.hh"
+#include "ctf_rtf_converter_transformer.hh"
 #include "rtf_ascii_consumer.hh"
 #include "window_rectangular.hh"
 using namespace midge;
@@ -28,7 +28,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    midge* t_root = new midge();
+    ::midge::midge* t_root = new ::midge::midge();
 
     rt_sinusoidal_producer* t_rt_in = new rt_sinusoidal_producer();
     t_rt_in->set_name( "rt_in" );
@@ -54,7 +54,7 @@ int main()
     t_rt_out->set_file( "test_fourier_transformer.input.txt" );
     t_root->add( t_rt_out );
 
-    rt_ct_transformer* t_rt_ct = new rt_ct_transformer();
+    rt_ct_converter_transformer* t_rt_ct = new rt_ct_converter_transformer();
     t_rt_ct->set_name( "rt_ct" );
     t_rt_ct->set_mode( "real" );
     t_rt_ct->set_length( 100 );
@@ -65,7 +65,7 @@ int main()
     t_ct_cf->set_length( 100 );
     t_root->add( t_ct_cf );
 
-    ctf_rtf_transformer* t_cf_rf_re = new ctf_rtf_transformer();
+    ctf_rtf_converter_transformer* t_cf_rf_re = new ctf_rtf_converter_transformer();
     t_cf_rf_re->set_name( "cf_rf_re" );
     t_cf_rf_re->set_mode( "real" );
     t_cf_rf_re->set_length( 100 );
@@ -76,7 +76,7 @@ int main()
     t_rf_re_out->set_file( "test_fourier_transformer.re.txt" );
     t_root->add( t_rf_re_out );
 
-    ctf_rtf_transformer* t_cf_rf_im = new ctf_rtf_transformer();
+    ctf_rtf_converter_transformer* t_cf_rf_im = new ctf_rtf_converter_transformer();
     t_cf_rf_im->set_name( "cf_rf_im" );
     t_cf_rf_im->set_mode( "imaginary" );
     t_cf_rf_im->set_length( 100 );
