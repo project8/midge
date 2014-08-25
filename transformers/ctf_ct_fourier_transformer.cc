@@ -16,88 +16,88 @@ namespace midge
     void ctf_ct_fourier_transformer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
-        out_buffer< 0 >().set_name( get_name() );
-
         return;
     }
 
     void ctf_ct_fourier_transformer::execute()
     {
-        count_t t_index;
+        command_t t_in_command;
 
-        command_t t_in_state;
-        const ctf_data* t_in_data;
+        ctf_data t_in_data;
         complex_t* t_in_raw;
 
-        ct_data* t_out_data;
+        ct_data t_out_data;
         complex_t* t_out_raw;
 
         count_t t_size;
         real_t t_time_interval;
         count_t t_time_index;
+        real_t t_frequency_interval;
+        count_t t_frequency_index;
 
         fourier* t_fourier = fourier::get_instance();
         fourier_t* t_generator = NULL;
 
         while( true )
         {
-            in_stream< 0 >()++;
-            t_in_state = in_stream< 0 >().command();
-            t_in_data = in_stream< 0 >().data();
-            t_out_data = out_stream< 0 >().data();
+            in_stream< 0 >() >> t_in_data;
+            out_stream< 0 >() >> t_out_data;
+            t_in_command = in_stream< 0 >().command();
 
-            if( t_in_state == stream::s_start )
+            if( t_in_command == stream::s_start )
             {
-                t_size = t_in_data->get_size();
-                t_time_interval = t_in_data->get_time_interval();
-                t_time_index = t_in_data->get_time_index();
+                t_size = t_in_data.get_size();
+                t_time_interval = t_in_data.get_time_interval();
+                t_time_index = t_in_data.get_time_index();
+                t_frequency_interval = 1. / (t_size * t_time_interval);
+                t_frequency_index = 0;
 
-                t_out_data->set_size( t_size );
-                t_out_data->set_time_interval( t_time_interval );
-                t_out_data->set_time_index( t_time_index );
+                t_out_data.set_size( t_size );
+                t_out_data.set_time_interval( t_time_interval );
+                t_out_data.set_time_index( t_time_index - t_size / 2 );
 
-                t_in_raw = t_in_data->raw();
-                t_out_raw = t_out_data->raw();
+                t_in_raw = t_in_data.raw();
+                t_out_raw = t_out_data.raw();
 
-                t_generator = t_fourier->forward( t_size, t_in_raw, t_out_raw );
+                t_generator = t_fourier->backward( t_size, t_in_raw, t_out_raw );
 
                 out_stream< 0 >().command( stream::s_start );
-                t_index = out_stream< 0 >()++;
-
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_state == stream::s_run )
+            if( t_in_command == stream::s_run )
             {
-                t_time_index = t_in_data->get_time_index();
-                t_in_raw = t_in_data->raw();
+                t_time_index = t_in_data.get_time_index();
+                t_in_raw = t_in_data.raw();
 
-                t_out_data->set_size( t_size );
-                t_out_data->set_time_interval( t_time_interval );
-                t_out_data->set_time_index( t_time_index - t_size / 2 );
-                t_out_raw = t_out_data->raw();
+                t_out_data.set_size( t_size );
+                t_out_data.set_time_interval( t_time_interval );
+                t_out_data.set_time_index( t_time_index - t_size / 2 );
+                t_out_raw = t_out_data.raw();
 
                 t_fourier->execute( t_generator, t_in_raw, t_out_raw );
 
                 out_stream< 0 >().command( stream::s_run );
-                t_index = out_stream< 0 >()++;
-
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_state == stream::s_stop )
+            if( t_in_command == stream::s_stop )
             {
                 t_fourier->destroy( t_generator );
 
                 out_stream< 0 >().command( stream::s_stop );
-                t_index = out_stream< 0 >()++;
-
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_state == stream::s_exit )
+            if( t_in_command == stream::s_exit )
             {
                 out_stream< 0 >().command( stream::s_exit );
-                t_index = out_stream< 0 >()++;
-
-                break;
+                out_stream< 0 >() << t_out_data;
+                in_stream< 0 >() << t_in_data;
+                return;
             }
         }
 
@@ -107,7 +107,6 @@ namespace midge
     void ctf_ct_fourier_transformer::finalize()
     {
         out_buffer< 0 >().finalize();
-
         return;
     }
 

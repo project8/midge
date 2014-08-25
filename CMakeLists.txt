@@ -374,7 +374,7 @@ set( midge_transformers_headers
 	cf_cf_difference_transformer.hh
 	rtf_rtf_difference_transformer.hh
 	ctf_ctf_difference_transformer.hh
-	#ct_ctf_fourier_transformer.hh
+	ct_ctf_fourier_transformer.hh
 	#ctf_ct_fourier_transformer.hh
 	#rt_ct_analytic_transformer.hh
 	#rt_rtf_power_transformer.hh
@@ -400,8 +400,8 @@ set( midge_transformers_sources
 	cf_cf_difference_transformer.cc
 	rtf_rtf_difference_transformer.cc
 	ctf_ctf_difference_transformer.cc
-	#ct_ctf_fourier_transformer.cc
-	#ctf_ct_fourier_transformer.cc
+	ct_ctf_fourier_transformer.cc
+	ctf_ct_fourier_transformer.cc
 	#rt_ct_analytic_transformer.cc
 	#rt_rtf_power_transformer.cc
 	#rt_rtf_wigner_transformer.cc
@@ -539,8 +539,8 @@ set( midge_bindings_headers
 	cf_cf_difference_transformer_builder.hh
 	rtf_rtf_difference_transformer_builder.hh
 	ctf_ctf_difference_transformer_builder.hh
-	#ct_ctf_fourier_transformer_builder.hh
-	#ctf_ct_fourier_transformer_builder.hh
+	ct_ctf_fourier_transformer_builder.hh
+	ctf_ct_fourier_transformer_builder.hh
 	#rt_ct_analytic_transformer_builder.hh
 	#rt_rtf_power_transformer_builder.hh
 	#rt_rtf_wigner_transformer_builder.hh
@@ -590,8 +590,8 @@ set( midge_bindings_sources
 	cf_cf_difference_transformer_builder.cc
 	rtf_rtf_difference_transformer_builder.cc
 	ctf_ctf_difference_transformer_builder.cc
-	#ct_ctf_fourier_transformer_builder.cc
-	#ctf_ct_fourier_transformer_builder.cc
+	ct_ctf_fourier_transformer_builder.cc
+	ctf_ct_fourier_transformer_builder.cc
 	#rt_ct_analytic_transformer_builder.cc
 	#rt_rtf_power_transformer_builder.cc
 	#rt_rtf_wigner_transformer_builder.cc
