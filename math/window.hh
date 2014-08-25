@@ -24,6 +24,7 @@ namespace midge
             virtual void fill( const count_t& p_size, real_t*& p_raw ) = 0;
 
         private:
+            count_t f_size;
             real_t* f_raw;
             real_t f_sum;
             real_t f_square;
