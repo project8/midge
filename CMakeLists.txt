@@ -487,6 +487,12 @@ set( midge_bindings_headers
 	cf_ascii_consumer_builder.hh
 	rtf_ascii_consumer_builder.hh
 	ctf_ascii_consumer_builder.hh
+	rt_binary_consumer_builder.hh
+	ct_binary_consumer_builder.hh
+	rf_binary_consumer_builder.hh
+	cf_binary_consumer_builder.hh
+	rtf_binary_consumer_builder.hh
+	ctf_binary_consumer_builder.hh
 	rt_plot_consumer_builder.hh
 	rf_plot_consumer_builder.hh
 	rtf_plot_consumer_builder.hh
@@ -519,6 +525,12 @@ set( midge_bindings_sources
 	cf_ascii_consumer_builder.cc
 	rtf_ascii_consumer_builder.cc
 	ctf_ascii_consumer_builder.cc
+	rt_binary_consumer_builder.cc
+	ct_binary_consumer_builder.cc
+	rf_binary_consumer_builder.cc
+	cf_binary_consumer_builder.cc
+	rtf_binary_consumer_builder.cc
+	ctf_binary_consumer_builder.cc
 	rt_plot_consumer_builder.cc
 	rf_plot_consumer_builder.cc
 	rtf_plot_consumer_builder.cc
