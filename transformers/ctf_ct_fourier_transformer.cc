@@ -32,8 +32,6 @@ namespace midge
         count_t t_size;
         real_t t_time_interval;
         count_t t_time_index;
-        real_t t_frequency_interval;
-        count_t t_frequency_index;
 
         fourier* t_fourier = fourier::get_instance();
         fourier_t* t_generator = NULL;
@@ -49,8 +47,6 @@ namespace midge
                 t_size = t_in_data.get_size();
                 t_time_interval = t_in_data.get_time_interval();
                 t_time_index = t_in_data.get_time_index();
-                t_frequency_interval = 1. / (t_size * t_time_interval);
-                t_frequency_index = 0;
 
                 t_out_data.set_size( t_size );
                 t_out_data.set_time_interval( t_time_interval );
@@ -70,8 +66,6 @@ namespace midge
             {
                 t_time_interval = t_in_data.get_time_interval();
                 t_time_index = t_in_data.get_time_index();
-                t_frequency_interval = 1. / (t_size * t_time_interval);
-                t_frequency_index = 0;
                 t_in_raw = t_in_data.raw();
 
                 t_out_data.set_size( t_size );

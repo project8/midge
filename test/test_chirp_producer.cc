@@ -1,8 +1,8 @@
 #include "midge.hh"
 #include "rt_chirp_producer.hh"
-#include "rt_ascii_consumer.hh"
+#include "rt_plot_consumer.hh"
 #include "rt_rtf_power_transformer.hh"
-#include "rtf_ascii_consumer.hh"
+#include "rtf_plot_consumer.hh"
 #include "window_rectangular.hh"
 using namespace midge;
 
@@ -26,7 +26,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    ::midge::midge* t_root = new ::midge::midge();
+    ::midge::midge* t_midge = new ::midge::midge();
 
     rt_chirp_producer* t_rt_in = new rt_chirp_producer();
     t_rt_in->set_name( "rt_in" );
@@ -43,32 +43,41 @@ int main()
     t_rt_in->set_length( 100 );
     t_rt_in->set_size( 1000 );
     t_rt_in->set_stride( 10 );
-    t_root->add( t_rt_in );
+    t_midge->add( t_rt_in );
 
-    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
-    t_rt_out->set_name( "rt_out" );
-    t_rt_out->set_file( "test_chirp_producer.signal.txt" );
-    t_root->add( t_rt_out );
+    rt_plot_consumer* t_rt_plot = new rt_plot_consumer();
+    t_rt_plot->set_name( "rt_plot" );
+    t_rt_plot->set_plot_key( "rt_plot" );
+    t_rt_plot->set_plot_name( "rt_plot" );
+    t_rt_plot->set_chart_title( "Chirp Producer Signal" );
+    t_rt_plot->set_x_title( "Time [sec]" );
+    t_rt_plot->set_y_title( "Signal [volt]" );
+    t_midge->add( t_rt_plot );
 
-    rt_rtf_power_transformer* t_rt_rf = new rt_rtf_power_transformer();
-    t_rt_rf->set_name( "rt_rf" );
-    t_rt_rf->set_impedance_ohm( 50. );
-    t_rt_rf->set_window( new window_rectangular() );
-    t_rt_rf->set_length( 100 );
-    t_root->add( t_rt_rf );
+    rt_rtf_power_transformer* t_rt_rtf = new rt_rtf_power_transformer();
+    t_rt_rtf->set_name( "rt_rtf" );
+    t_rt_rtf->set_impedance_ohm( 50. );
+    t_rt_rtf->set_window( new window_rectangular() );
+    t_rt_rtf->set_length( 100 );
+    t_midge->add( t_rt_rtf );
 
-    rtf_ascii_consumer* t_rf_out = new rtf_ascii_consumer();
-    t_rf_out->set_name( "rf_out" );
-    t_rf_out->set_file( "test_chirp_producer.spectrum.txt" );
-    t_root->add( t_rf_out );
+    rtf_plot_consumer* t_rtf_plot = new rtf_plot_consumer();
+    t_rtf_plot->set_name( "rtf_plot" );
+    t_rtf_plot->set_plot_key( "rtf_plot" );
+    t_rtf_plot->set_plot_name( "rtf_plot" );
+    t_rtf_plot->set_chart_title( "Chirp Producer Spectrum" );
+    t_rtf_plot->set_x_title( "Time [sec]" );
+    t_rtf_plot->set_y_title( "Frequency [hertz]" );
+    t_rtf_plot->set_z_title( "Power [watt]" );
+    t_midge->add( t_rtf_plot );
 
-    t_root->join( "rt_in.out_0:rt_out.in_0" );
-    t_root->join( "rt_in.out_0:rt_rf.in_0" );
-    t_root->join( "rt_rf.out_0:rf_out.in_0" );
+    t_midge->join( "rt_in.out_0:rt_plot.in_0" );
+    t_midge->join( "rt_in.out_0:rt_rtf.in_0" );
+    t_midge->join( "rt_rtf.out_0:rtf_plot.in_0" );
 
-    t_root->run( "rt_in:rt_out:rt_rf:rf_out" );
+    t_midge->run( "rt_in:rt_plot:rt_rtf:rtf_plot" );
 
-    delete t_root;
+    delete t_midge;
 
     t_file.close();
 

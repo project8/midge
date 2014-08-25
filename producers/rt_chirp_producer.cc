@@ -28,7 +28,6 @@ namespace midge
     void rt_chirp_producer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
-        out_buffer< 0 >().call( &rt_data::set_size, f_size );
         return;
     }
 
@@ -36,7 +35,7 @@ namespace midge
     {
         count_t t_index;
 
-        rt_data t_out_data;
+        rt_data t_data;
         real_t* t_current_raw;
         real_t* t_previous_raw;
 
@@ -52,11 +51,12 @@ namespace midge
         real_t t_quadratic = (f_interval_sec * (f_stop_frequency_hz - f_start_frequency_hz)) / (2. * (t_stop - t_start));
         real_t t_phase = (M_PI / 180.) * f_phase_deg;
 
-        out_stream< 0 >() >> t_out_data;
-        t_out_data.set_time_interval( f_interval_sec );
-        t_out_data.set_time_index( t_begin );
+        out_stream< 0 >() >> t_data;
+        t_data.set_size( f_size );
+        t_data.set_time_interval( f_interval_sec );
+        t_data.set_time_index( t_begin );
         out_stream< 0 >().command( stream::s_start );
-        out_stream< 0 >() << t_out_data;
+        out_stream< 0 >() << t_data;
 
         t_first_unwritten_index = 0;
         t_first_requested_index = t_begin;
@@ -64,21 +64,23 @@ namespace midge
         {
             if( (out_stream< 0 >().command() == stream::s_stop) || (t_first_unwritten_index >= t_end) )
             {
-                out_stream< 0 >() >> t_out_data;
+                out_stream< 0 >() >> t_data;
                 out_stream< 0 >().command( stream::s_stop );
-                out_stream< 0 >() << t_out_data;
+                out_stream< 0 >() << t_data;
 
-                out_stream< 0 >() >> t_out_data;
+                out_stream< 0 >() >> t_data;
                 out_stream< 0 >().command( stream::s_exit );
-                out_stream< 0 >() << t_out_data;
+                out_stream< 0 >() << t_data;
 
                 return;
             }
 
-            out_stream< 0 >() >> t_out_data;
+            out_stream< 0 >() >> t_data;
 
-            t_out_data.set_time_index( t_first_requested_index );
-            t_current_raw = t_out_data.raw();
+            t_data.set_size( f_size );
+            t_data.set_time_interval( f_interval_sec );
+            t_data.set_time_index( t_first_requested_index );
+            t_current_raw = t_data.raw();
 
             if( t_first_unwritten_index > t_first_requested_index )
             {
@@ -118,7 +120,7 @@ namespace midge
             t_previous_raw = t_current_raw;
 
             out_stream< 0 >().command( stream::s_run );
-            out_stream< 0 >() << t_out_data;
+            out_stream< 0 >() << t_data;
         }
 
         return;

@@ -266,7 +266,7 @@ namespace midge
             {
                 for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = p_from.raw()[ t_index ][ 0 ];
+                    p_to.raw()[ t_index ] = p_from.raw()[ t_index ][ 1 ];
                 }
                 return;
             }

@@ -70,7 +70,7 @@ namespace midge
                     t_nyquist = 0;
                     t_over = (t_size + 1) / 2;
                 }
-                t_norm = 1. / sqrt( t_size );
+                t_norm = 1. / (real_t) ( t_size );
 
                 t_time_interval = t_in_data.get_time_interval();
                 t_time_index = t_in_data.get_time_index();
@@ -136,8 +136,8 @@ namespace midge
                 // analytic signal to output
                 for( t_index = 0; t_index < t_size; t_index++ )
                 {
-                    t_out_raw[ t_index ][ 0 ] = t_analytic[ t_index ][ 0 ] * t_norm;
-                    t_out_raw[ t_index ][ 1 ] = t_analytic[ t_index ][ 1 ] * t_norm;
+                    t_out_raw[ t_index ][ 0 ] = t_analytic[ t_index ][ 0 ];
+                    t_out_raw[ t_index ][ 1 ] = t_analytic[ t_index ][ 1 ];
                 }
 
                 out_stream< 0 >().command( stream::s_run );
