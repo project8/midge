@@ -26,7 +26,7 @@ namespace midge
     {
         count_t t_index;
 
-        state_t t_in_state;
+        command_t t_in_state;
         const rt_data* t_in_data;
         const real_t* t_in_raw;
 
@@ -52,7 +52,7 @@ namespace midge
         while( true )
         {
             in_stream< 0 >()++;
-            t_in_state = in_stream< 0 >().state();
+            t_in_state = in_stream< 0 >().command();
             t_in_data = in_stream< 0 >().data();
             t_out_data = out_stream< 0 >().data();
 
@@ -86,7 +86,7 @@ namespace midge
                 t_out_data->set_time_interval( t_time_interval );
                 t_out_data->set_time_index( t_time_index );
 
-                out_stream< 0 >().state( stream::s_start );
+                out_stream< 0 >().command( stream::s_start );
                 t_index = out_stream< 0 >()++;
 
                 continue;
@@ -140,7 +140,7 @@ namespace midge
                     t_out_raw[ t_index ][ 1 ] = t_analytic[ t_index ][ 1 ] * t_norm;
                 }
 
-                out_stream< 0 >().state( stream::s_run );
+                out_stream< 0 >().command( stream::s_run );
                 t_index = out_stream< 0 >()++;
 
                 continue;
@@ -153,14 +153,14 @@ namespace midge
                 t_fourier->destroy( t_forward_generator );
                 t_fourier->destroy( t_backward_generator );
 
-                out_stream< 0 >().state( stream::s_stop );
+                out_stream< 0 >().command( stream::s_stop );
                 t_index = out_stream< 0 >()++;
 
                 continue;
             }
             if( t_in_state == stream::s_exit )
             {
-                out_stream< 0 >().state( stream::s_exit );
+                out_stream< 0 >().command( stream::s_exit );
                 t_index = out_stream< 0 >()++;
 
                 break;

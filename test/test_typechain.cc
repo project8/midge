@@ -10,13 +10,13 @@ namespace midge
 {
     namespace test
     {
-        template< class x_type, int x_index >
+        template< class x_type, class x_index >
         class socket
         {
             public:
                 socket( const string_t& p_name )
                 {
-                    cout << "<" << p_name << ">: creating socket for <" << typeid(x_type).name() << "> at index <" << x_index << ">" << endl;
+                    cout << "<" << p_name << ">: creating socket for <" << typeid(x_type).name() << "> at index <" << x_index::result << ">" << endl;
                 }
                 ~socket()
                 {
@@ -26,11 +26,11 @@ namespace midge
 
         template< class x_list >
         class parent :
-            public typechain< socket, x_list >
+            public typechain< socket< _1, _index >, x_list >
         {
             public:
                 parent() :
-                    typechain< socket, x_list >( "parent" )
+                    typechain< socket< _1, _index >, x_list >( "parent" )
                 {
                 }
                 ~parent()

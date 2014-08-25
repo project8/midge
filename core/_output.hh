@@ -13,7 +13,7 @@ namespace midge
         public output
     {
         public:
-            _output( x_node* p_node, const _stream< x_type >* (x_node::*p_member)() ) :
+            _output( x_node* p_node, _stream< x_type >* (x_node::*p_member)() ) :
                 f_node( p_node ),
                 f_member( p_member )
             {
@@ -23,10 +23,10 @@ namespace midge
             }
 
         public:
-            const stream* get()
+            stream* get()
             {
-                const _stream< x_type >* t_typed_stream = (f_node->*f_member)();
-                const stream* t_stream = dynamic_cast< const stream* >( t_typed_stream );
+                _stream< x_type >* t_typed_stream = (f_node->*f_member)();
+                stream* t_stream = dynamic_cast< stream* >( t_typed_stream );
                 if( t_stream == NULL )
                 {
                     throw error() << "output <" << get_name() << "> on node <" << f_node->get_name() << "> cannot cast stream up from specific type";
@@ -37,7 +37,7 @@ namespace midge
 
         private:
             x_node* f_node;
-            const _stream< x_type >* (x_node::*f_member)();
+            _stream< x_type >* (x_node::*f_member)();
     };
 
 }

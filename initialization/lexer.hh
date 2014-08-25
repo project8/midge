@@ -46,7 +46,7 @@ namespace midge
             char f_char;
 
             //*****
-            //state
+            //command
             //*****
 
         private:

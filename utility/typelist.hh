@@ -4,8 +4,8 @@
 #include "typenode.hh"
 #include "typenull.hh"
 
-#define typelist_0() ::midge::typenull
-#define typelist_1(one) ::midge::typenode< one, ::midge::typenull >
+#define typelist_0() ::midge::_
+#define typelist_1(one) ::midge::typenode< one, ::midge::_ >
 #define typelist_2(one,two) ::midge::typenode< one, typelist_1(two) >
 #define typelist_3(one,two,three) ::midge::typenode< one, typelist_2(two,three) >
 #define typelist_4(one,two,three,four) ::midge::typenode< one, typelist_3(two,three,four) >

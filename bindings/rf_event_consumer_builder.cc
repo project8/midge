@@ -1,5 +1,5 @@
 #include "rf_event_consumer_builder.hh"
-#include "root_builder.hh"
+#include "midge_builder.hh"
 
 namespace midge
 {
@@ -49,6 +49,6 @@ namespace midge
         rf_event_consumer_builder::lingual< string >( &rf_event_consumer::set_plot_event_name, "plot_event_name" ) +
         rf_event_consumer_builder::lingual< string >( &rf_event_consumer::set_chart_event_title, "chart_event_title" ) +
         rf_event_consumer_builder::lingual< string >( &rf_event_consumer::set_axis_event_title, "axis_event_title" ) +
-        root_builder::object< rf_event_consumer >( &root::add, "rf_event_consumer" );
+        midge_builder::object< rf_event_consumer >( &midge::add, "rf_event_consumer" );
 
 }

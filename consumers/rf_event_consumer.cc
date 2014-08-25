@@ -1511,7 +1511,7 @@ namespace midge
 
         if( f_state == e_in_add )
         {
-            //msg_warning( coremsg, "  remained in state <add>" << eom );
+            //msg_warning( coremsg, "  remained in command <add>" << eom );
 
             //msg_warning( coremsg, "  updating properties:" << eom );
             f_duration = t_point_duration;
@@ -1573,7 +1573,7 @@ namespace midge
         }
         else if( f_state == e_to_add )
         {
-            //msg_warning( coremsg, "  switched to state <add>" << eom );
+            //msg_warning( coremsg, "  switched to command <add>" << eom );
 
             //msg_warning( coremsg, "  updating properties:" << eom );
             f_duration = t_point_duration;
@@ -1639,7 +1639,7 @@ namespace midge
         }
         else if( f_state == e_in_gap )
         {
-            //msg_warning( coremsg, "  remained in state <gap>" << eom );
+            //msg_warning( coremsg, "  remained in command <gap>" << eom );
 
             //msg_warning( coremsg, "  updating scores:" << eom );
             f_gaps.back() += 1.;
@@ -1654,7 +1654,7 @@ namespace midge
         }
         else if( f_state == e_to_gap )
         {
-            //msg_warning( coremsg, "  switched to state <gap>" << eom );
+            //msg_warning( coremsg, "  switched to command <gap>" << eom );
 
             //msg_warning( coremsg, "  updating scores:" << eom );
             f_gaps.push_back( 1. );
@@ -2206,7 +2206,7 @@ namespace midge
 
         if( f_state == e_in_add )
         {
-            //msg_warning( coremsg, "  remained in state <add>" << eom );
+            //msg_warning( coremsg, "  remained in command <add>" << eom );
 
             //msg_warning( coremsg, "  updating properties:" << eom );
             f_duration = t_point_duration;
@@ -2268,7 +2268,7 @@ namespace midge
         }
         else if( f_state == e_to_add )
         {
-            //msg_warning( coremsg, "  switched to state <add>" << eom );
+            //msg_warning( coremsg, "  switched to command <add>" << eom );
 
             //msg_warning( coremsg, "  updating properties:" << eom );
             f_duration = t_point_duration;
@@ -2334,7 +2334,7 @@ namespace midge
         }
         else if( f_state == e_in_gap )
         {
-            //msg_warning( coremsg, "  remained in state <gap>" << eom );
+            //msg_warning( coremsg, "  remained in command <gap>" << eom );
 
             //msg_warning( coremsg, "  updating scores:" << eom );
             f_gaps.back() += 1.;
@@ -2349,7 +2349,7 @@ namespace midge
         }
         else if( f_state == e_to_gap )
         {
-            //msg_warning( coremsg, "  switched to state <gap>" << eom );
+            //msg_warning( coremsg, "  switched to command <gap>" << eom );
 
             //msg_warning( coremsg, "  updating scores:" << eom );
             f_gaps.push_back( 1. );

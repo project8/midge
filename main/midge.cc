@@ -1,7 +1,7 @@
 #include "lexer.hh"
 #include "compiler.hh"
 #include "coremsg.hh"
-#include "root_builder.hh"
+#include "midge_builder.hh"
 using namespace midge;
 
 #include <iostream>
@@ -46,7 +46,7 @@ int main( int p_count, char** p_values )
         return -1;
     }
 
-    root_builder t_builder;
+    midge_builder t_builder;
 
     try
     {

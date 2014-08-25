@@ -1,5 +1,5 @@
 #include "rt_sinusoidal_producer_builder.hh"
-#include "root_builder.hh"
+#include "midge_builder.hh"
 
 namespace midge
 {
@@ -21,6 +21,6 @@ namespace midge
         rt_sinusoidal_producer_builder::numerical< count_t >( &rt_sinusoidal_producer::set_length, "length" ) +
         rt_sinusoidal_producer_builder::numerical< count_t >( &rt_sinusoidal_producer::set_size, "size" ) +
         rt_sinusoidal_producer_builder::numerical< count_t >( &rt_sinusoidal_producer::set_stride, "stride" ) +
-        root_builder::object< rt_sinusoidal_producer >( &root::add, "rt_sinusoidal_producer" );
+        midge_builder::object< rt_sinusoidal_producer >( &midge::add, "rt_sinusoidal_producer" );
 
 }

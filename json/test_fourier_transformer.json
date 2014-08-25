@@ -32,33 +32,33 @@
         "length" : 100
     },
 
-    "ct_cf_fourier_transformer" :
+    "ct_ctf_fourier_transformer" :
     {
         "name" : "ct_cf",
         "length" : 100
     },
 
-    "cf_rf_transformer" :
+    "ctf_rtf_transformer" :
     {
         "name" : "cf_rf_re",
         "mode" : "real",
         "length" : 100
     },
 
-    "rf_ascii_consumer" :
+    "rtf_ascii_consumer" :
     {
         "name" : "rf_re_out",
         "file" : "test_fourier_transformer.re.txt"
     },
 
-    "cf_rf_transformer" :
+    "ctf_rtf_transformer" :
     {
         "name" : "cf_rf_im",
         "mode" : "imaginary",
         "length" : 100
     },
 
-    "rf_ascii_consumer" :
+    "rtf_ascii_consumer" :
     {
         "name" : "rf_im_out",
         "file" : "test_fourier_transformer.im.txt"

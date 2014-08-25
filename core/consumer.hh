@@ -28,7 +28,7 @@ namespace midge
     template< class x_type, class x_in_list >
     class _consumer :
         public consumer,
-        public typechain< _in, x_in_list >
+        public typechain< _in< _1, _index >, x_in_list >
     {
         public:
             using node::in;
@@ -39,16 +39,16 @@ namespace midge
 
         protected:
             template< int x_index >
-            const _stream< typename typeat< x_in_list, x_index >::result >& in_stream()
+            _stream< typename typeat< x_in_list, x_index >::result >& in_stream()
             {
-                return this->_in< typename typeat< x_in_list, x_index >::result, x_index >::get_stream();
+                return this->_in< typename typeat< x_in_list, x_index >::result, typeint< x_index > >::get_stream();
             }
     };
 
     template< class x_type, class x_in_list >
     _consumer< x_type, x_in_list >::_consumer() :
             consumer(),
-            typechain< _in, x_in_list >()
+            typechain< _in< _1, _index >, x_in_list >()
     {
     }
     template< class x_type, class x_in_list >

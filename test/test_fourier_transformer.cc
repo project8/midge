@@ -2,9 +2,9 @@
 #include "rt_sinusoidal_producer.hh"
 #include "rt_ascii_consumer.hh"
 #include "rt_ct_transformer.hh"
-#include "ct_cf_fourier_transformer.hh"
-#include "cf_rf_transformer.hh"
-#include "rf_ascii_consumer.hh"
+#include "ct_ctf_fourier_transformer.hh"
+#include "ctf_rtf_transformer.hh"
+#include "rtf_ascii_consumer.hh"
 #include "window_rectangular.hh"
 using namespace midge;
 
@@ -28,7 +28,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    root* t_root = new root();
+    midge* t_root = new midge();
 
     rt_sinusoidal_producer* t_rt_in = new rt_sinusoidal_producer();
     t_rt_in->set_name( "rt_in" );
@@ -60,29 +60,29 @@ int main()
     t_rt_ct->set_length( 100 );
     t_root->add( t_rt_ct );
 
-    ct_cf_fourier_transformer* t_ct_cf = new ct_cf_fourier_transformer();
+    ct_ctf_fourier_transformer* t_ct_cf = new ct_ctf_fourier_transformer();
     t_ct_cf->set_name( "ct_cf" );
     t_ct_cf->set_length( 100 );
     t_root->add( t_ct_cf );
 
-    cf_rf_transformer* t_cf_rf_re = new cf_rf_transformer();
+    ctf_rtf_transformer* t_cf_rf_re = new ctf_rtf_transformer();
     t_cf_rf_re->set_name( "cf_rf_re" );
     t_cf_rf_re->set_mode( "real" );
     t_cf_rf_re->set_length( 100 );
     t_root->add( t_cf_rf_re );
 
-    rf_ascii_consumer* t_rf_re_out = new rf_ascii_consumer();
+    rtf_ascii_consumer* t_rf_re_out = new rtf_ascii_consumer();
     t_rf_re_out->set_name( "rf_re_out" );
     t_rf_re_out->set_file( "test_fourier_transformer.re.txt" );
     t_root->add( t_rf_re_out );
 
-    cf_rf_transformer* t_cf_rf_im = new cf_rf_transformer();
+    ctf_rtf_transformer* t_cf_rf_im = new ctf_rtf_transformer();
     t_cf_rf_im->set_name( "cf_rf_im" );
     t_cf_rf_im->set_mode( "imaginary" );
     t_cf_rf_im->set_length( 100 );
     t_root->add( t_cf_rf_im );
 
-    rf_ascii_consumer* t_rf_im_out = new rf_ascii_consumer();
+    rtf_ascii_consumer* t_rf_im_out = new rtf_ascii_consumer();
     t_rf_im_out->set_name( "rf_im_out" );
     t_rf_im_out->set_file( "test_fourier_transformer.im.txt" );
     t_root->add( t_rf_im_out );

@@ -4,7 +4,7 @@
 namespace midge
 {
 
-    class typenull
+    class _
     {
     };
 

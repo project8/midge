@@ -5,6 +5,7 @@
 #include "_buffer.hh"
 #include "_stream.hh"
 #include "_output.hh"
+#include "typenull.hh"
 
 #include <sstream>
 using std::stringstream;
@@ -15,24 +16,25 @@ using std::vector;
 namespace midge
 {
 
-    template< class x_type, int x_index >
+    template< class x_type, class x_index >
     class _out :
         virtual public node
     {
         public:
             _out() :
-                    f_buffer( new _buffer< x_type >() )
+                    f_buffer( new _buffer< x_type > )
             {
                 stringstream t_name;
-                t_name << "out_" << x_index;
+                t_name << "out_" << x_index::result;
                 node::out( new _output< _out< x_type, x_index >, x_type >( this, &_out< x_type, x_index >::out ), t_name.str() );
             }
             virtual ~_out()
             {
+                delete f_buffer;
             }
 
         public:
-            const _stream< x_type >* out()
+            _stream< x_type >* out()
             {
                 return f_buffer->read();
             }
@@ -40,7 +42,7 @@ namespace midge
         protected:
             _buffer< x_type >& get_buffer()
             {
-                return *f_buffer;
+                return *(f_buffer);
             }
             _stream< x_type >& get_stream()
             {

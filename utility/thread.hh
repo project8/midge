@@ -87,7 +87,7 @@ namespace midge
                     virtual void execute() = 0;
             };
 
-            template< class x_type, class x_r, class x_a1 = typenull, class x_a2 = typenull, class x_a3 = typenull >
+            template< class x_type, class x_r, class x_a1 = _, class x_a2 = _, class x_a3 = _ >
             class _callable;
 
             static void* thread_start( void* voidthread );
@@ -150,7 +150,7 @@ namespace midge
     }
 
     template< class x_type, class x_r, class x_a1, class x_a2 >
-    class thread::_callable< x_type, x_r, x_a1, x_a2, typenull > :
+    class thread::_callable< x_type, x_r, x_a1, x_a2, _ > :
         public thread::callable
     {
         public:
@@ -189,7 +189,7 @@ namespace midge
     }
 
     template< class x_type, class x_r, class x_a1 >
-    class thread::_callable< x_type, x_r, x_a1, typenull, typenull > :
+    class thread::_callable< x_type, x_r, x_a1, _, _ > :
         public thread::callable
     {
         public:
@@ -226,7 +226,7 @@ namespace midge
     }
 
     template< class x_type, class x_r >
-    class thread::_callable< x_type, x_r, typenull, typenull, typenull > :
+    class thread::_callable< x_type, x_r, _, _, _ > :
         public thread::callable
     {
         public:
@@ -261,7 +261,7 @@ namespace midge
     }
 
     template< class x_r, class x_a1, class x_a2, class x_a3 >
-    class thread::_callable< typenull, x_r, x_a1, x_a2, x_a3 > :
+    class thread::_callable< _, x_r, x_a1, x_a2, x_a3 > :
         public thread::callable
     {
         public:
@@ -291,16 +291,16 @@ namespace midge
     template< class x_r, class x_a1, class x_a2, class x_a3 >
     inline void thread::start( x_r (*p_function)( x_a1, x_a2, x_a3 ), x_a1 p_a1, x_a2 p_a2, x_a3 p_a3 )
     {
-        f_start = new _callable< typenull, x_r, x_a1, x_a2, x_a3 >( p_function, p_a1, p_a2, p_a3 );
+        f_start = new _callable< _, x_r, x_a1, x_a2, x_a3 >( p_function, p_a1, p_a2, p_a3 );
     }
     template< class x_r, class x_a1, class x_a2, class x_a3 >
     inline void thread::stop( x_r (*p_function)( x_a1, x_a2, x_a3 ), x_a1 p_a1, x_a2 p_a2, x_a3 p_a3 )
     {
-        f_stop = new _callable< typenull, x_r, x_a1, x_a2, x_a3 >( p_function, p_a1, p_a2, p_a3 );
+        f_stop = new _callable< _, x_r, x_a1, x_a2, x_a3 >( p_function, p_a1, p_a2, p_a3 );
     }
 
     template< class x_r, class x_a1, class x_a2 >
-    class thread::_callable< typenull, x_r, x_a1, x_a2, typenull > :
+    class thread::_callable< _, x_r, x_a1, x_a2, _ > :
         public thread::callable
     {
         public:
@@ -328,16 +328,16 @@ namespace midge
     template< class x_r, class x_a1, class x_a2 >
     inline void thread::start( x_r (*p_function)( x_a1, x_a2 ), x_a1 p_a1, x_a2 p_a2 )
     {
-        f_start = new _callable< typenull, x_r, x_a1, x_a2 >( p_function, p_a1, p_a2 );
+        f_start = new _callable< _, x_r, x_a1, x_a2 >( p_function, p_a1, p_a2 );
     }
     template< class x_r, class x_a1, class x_a2 >
     inline void thread::stop( x_r (*p_function)( x_a1, x_a2 ), x_a1 p_a1, x_a2 p_a2 )
     {
-        f_stop = new _callable< typenull, x_r, x_a1, x_a2 >( p_function, p_a1, p_a2 );
+        f_stop = new _callable< _, x_r, x_a1, x_a2 >( p_function, p_a1, p_a2 );
     }
 
     template< class x_r, class x_a1 >
-    class thread::_callable< typenull, x_r, x_a1, typenull, typenull > :
+    class thread::_callable< _, x_r, x_a1, _, _ > :
         public thread::callable
     {
         public:
@@ -363,16 +363,16 @@ namespace midge
     template< class x_r, class x_a1 >
     inline void thread::start( x_r (*p_function)( x_a1 ), x_a1 p_a1 )
     {
-        f_start = new _callable< typenull, x_r, x_a1 >( p_function, p_a1 );
+        f_start = new _callable< _, x_r, x_a1 >( p_function, p_a1 );
     }
     template< class x_r, class x_a1 >
     inline void thread::stop( x_r (*p_function)( x_a1 ), x_a1 p_a1 )
     {
-        f_stop = new _callable< typenull, x_r, x_a1 >( p_function, p_a1 );
+        f_stop = new _callable< _, x_r, x_a1 >( p_function, p_a1 );
     }
 
     template< class x_r >
-    class thread::_callable< typenull, x_r, typenull, typenull, typenull > :
+    class thread::_callable< _, x_r, _, _, _ > :
         public thread::callable
     {
         public:
@@ -396,12 +396,12 @@ namespace midge
     template< class x_r >
     inline void thread::start( x_r (*p_function)() )
     {
-        f_start = new _callable< typenull, x_r >( p_function );
+        f_start = new _callable< _, x_r >( p_function );
     }
     template< class x_r >
     inline void thread::stop( x_r (*p_function)() )
     {
-        f_stop = new _callable< typenull, x_r >( p_function );
+        f_stop = new _callable< _, x_r >( p_function );
     }
 
 }

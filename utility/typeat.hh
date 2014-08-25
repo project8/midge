@@ -25,10 +25,10 @@ namespace midge
     };
 
     template< int x_index >
-    class typeat< typenull, x_index >
+    class typeat< _, x_index >
     {
         public:
-            typedef typenull result;
+            typedef _ result;
     };
 
 }

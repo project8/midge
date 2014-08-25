@@ -1,5 +1,5 @@
 #include "rt_gaussian_producer_builder.hh"
-#include "root_builder.hh"
+#include "midge_builder.hh"
 
 namespace midge
 {
@@ -17,6 +17,6 @@ namespace midge
         rt_gaussian_producer_builder::numerical< count_t >( &rt_gaussian_producer::set_length, "length" ) +
         rt_gaussian_producer_builder::numerical< count_t >( &rt_gaussian_producer::set_size, "size" ) +
         rt_gaussian_producer_builder::numerical< count_t >( &rt_gaussian_producer::set_stride, "stride" ) +
-        root_builder::object< rt_gaussian_producer >( &root::add, "rt_gaussian_producer" );
+        midge_builder::object< rt_gaussian_producer >( &midge::add, "rt_gaussian_producer" );
 
 }

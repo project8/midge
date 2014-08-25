@@ -31,7 +31,7 @@ namespace midge
     };
 
     template< class x_head, class x_query >
-    class typein< typenull, x_query >
+    class typein< _, x_query >
     {
         public:
             enum

@@ -1,8 +1,8 @@
 #include "root.hh"
 #include "rt_gaussian_producer.hh"
 #include "rt_ascii_consumer.hh"
-#include "rt_rf_power_transformer.hh"
-#include "rf_ascii_consumer.hh"
+#include "rt_rtf_power_transformer.hh"
+#include "rtf_ascii_consumer.hh"
 #include "window_rectangular.hh"
 using namespace midge;
 
@@ -26,7 +26,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    root* t_root = new root();
+    midge* t_root = new midge();
 
     rt_gaussian_producer* t_rt_in = new rt_gaussian_producer();
     t_rt_in->set_name( "rt_in" );
@@ -47,14 +47,14 @@ int main()
     t_rt_out->set_file( "test_gaussian_producer.signal.txt" );
     t_root->add( t_rt_out );
 
-    rt_rf_power_transformer* t_rt_rf = new rt_rf_power_transformer();
+    rt_rtf_power_transformer* t_rt_rf = new rt_rtf_power_transformer();
     t_rt_rf->set_name( "rt_rf" );
     t_rt_rf->set_impedance_ohm( 50. );
     t_rt_rf->set_window( new window_rectangular() );
     t_rt_rf->set_length( 100 );
     t_root->add( t_rt_rf );
 
-    rf_ascii_consumer* t_rf_out = new rf_ascii_consumer();
+    rtf_ascii_consumer* t_rf_out = new rtf_ascii_consumer();
     t_rf_out->set_name( "rf_out" );
     t_rf_out->set_file( "test_gaussian_producer.spectrum.txt" );
     t_root->add( t_rf_out );

@@ -26,18 +26,17 @@ namespace midge
     {
         count_t t_index;
 
-        state_t t_in_state;
-        const rt_data* t_in_data;
-        const real_t* t_in_raw;
-        count_t t_in_size;
-        real_t t_in_time_interval;
-        count_t t_in_time_index;
+        command_t t_command;
+        rt_data t_data;
+        real_t* t_raw;
+        count_t t_size;
+        real_t t_time_interval;
+        count_t t_time_index;
 
         real_t t_datum;
         real_t t_voltage_range = f_voltage_maximum - f_voltage_minimum;
         real_t t_voltage_inverse_range = 1. / t_voltage_range;
         real_t t_voltage_levels = 1 << f_bits;
-        real_t t_voltage_inverse_levels = 1. / t_voltage_levels;
 
         monarch::Monarch* t_monarch = NULL;
         monarch::MonarchHeader* t_header = NULL;
@@ -49,15 +48,14 @@ namespace midge
 
         while( true )
         {
-            in_stream< 0 >()++;
-            t_in_state = in_stream< 0 >().state();
-            t_in_data = in_stream< 0 >().data();
+            in_stream< 0 >() >> t_data;
+            t_command = in_stream< 0 >().command();
 
-            if( t_in_state == stream::s_start )
+            if( t_command == stream::s_start )
             {
-                t_in_size = t_in_data->get_size();
-                t_in_time_interval = t_in_data->get_time_interval();
-                t_in_time_index = t_in_data->get_time_index();
+                t_size = t_data.get_size();
+                t_time_interval = t_data.get_time_interval();
+                t_time_index = t_data.get_time_index();
 
                 t_monarch = monarch::Monarch::OpenForWriting( f_file );
 
@@ -66,7 +64,7 @@ namespace midge
                 t_header->SetDescription( string( "produced by midge rt monarch consumer <" ) + this->get_name() + string( ">" ) );
                 t_header->SetFormatMode( monarch::sFormatSingle );
                 t_header->SetAcquisitionMode( monarch::sOneChannel );
-                t_header->SetAcquisitionRate( 1.e-6 / t_in_time_interval );
+                t_header->SetAcquisitionRate( 1.e-6 / t_time_interval );
                 t_header->SetRunDuration( 0. );
                 t_header->SetRunType( monarch::sRunTypeSignal );
                 t_header->SetRunSource( monarch::sSourceSimulation );
@@ -80,21 +78,23 @@ namespace midge
                 t_monarch->SetInterface( monarch::sInterfaceInterleaved );
                 t_record = t_monarch->GetRecordInterleaved();
 
-                t_first_unwritten_index = t_in_time_index;
+                t_first_unwritten_index = t_time_index;
                 t_record_index = 0;
                 t_record_count = 0;
+
+                in_stream< 0 >() << t_data;
                 continue;
             }
-            if( t_in_state == stream::s_run )
+            if( t_command == stream::s_run )
             {
-                t_in_raw = t_in_data->raw();
-                t_in_time_index = t_in_data->get_time_index();
+                t_raw = t_data.raw();
+                t_time_index = t_data.get_time_index();
 
-                if( t_in_time_index < t_first_unwritten_index )
+                if( t_time_index < t_first_unwritten_index )
                 {
-                    for( t_index = t_first_unwritten_index; t_index < t_in_time_index + t_in_size; t_index++ )
+                    for( t_index = t_first_unwritten_index; t_index < t_time_index + t_size; t_index++ )
                     {
-                        t_datum = t_in_raw[ t_index - t_in_time_index ];
+                        t_datum = t_raw[ t_index - t_time_index ];
                         t_datum = (t_datum - f_voltage_minimum) * t_voltage_inverse_range * t_voltage_levels;
 
                         if( t_datum > (t_voltage_levels - 1.) )
@@ -120,9 +120,9 @@ namespace midge
                 }
                 else
                 {
-                    for( t_index = t_in_time_index; t_index < t_in_time_index + t_in_size; t_index++ )
+                    for( t_index = t_time_index; t_index < t_time_index + t_size; t_index++ )
                     {
-                        t_datum = t_in_raw[ t_index - t_in_time_index ];
+                        t_datum = t_raw[ t_index - t_time_index ];
                         t_datum = (t_datum - f_voltage_minimum) * t_voltage_inverse_range * t_voltage_levels;
 
                         if( t_datum > (t_voltage_levels - 1.) )
@@ -147,20 +147,23 @@ namespace midge
                     }
                 }
 
-                t_first_unwritten_index = t_in_time_index + t_in_size;
+                t_first_unwritten_index = t_time_index + t_size;
 
+                in_stream< 0 >() << t_data;
                 continue;
             }
-            if( t_in_state == stream::s_stop )
+            if( t_command == stream::s_stop )
             {
                 t_monarch->Close();
                 delete t_monarch;
 
+                in_stream< 0 >() << t_data;
                 continue;
             }
-            if( t_in_state == stream::s_exit )
+            if( t_command == stream::s_exit )
             {
-                break;
+                in_stream< 0 >() << t_data;
+                return;
             }
         }
 

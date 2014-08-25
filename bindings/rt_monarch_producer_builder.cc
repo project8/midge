@@ -1,5 +1,5 @@
 #include "rt_monarch_producer_builder.hh"
-#include "root_builder.hh"
+#include "midge_builder.hh"
 
 namespace midge
 {
@@ -12,6 +12,6 @@ namespace midge
         rt_monarch_producer_builder::numerical< count_t >( &rt_monarch_producer::set_size, "size" ) +
         rt_monarch_producer_builder::numerical< count_t >( &rt_monarch_producer::set_stride, "stride" ) +
         rt_monarch_producer_builder::numerical< count_t >( &rt_monarch_producer::set_length, "length" ) +
-        root_builder::object< rt_monarch_producer >( &root::add, "rt_monarch_producer" );
+        midge_builder::object< rt_monarch_producer >( &midge::add, "rt_monarch_producer" );
 
 }

@@ -19,7 +19,7 @@ namespace midge
             accessible( string_t, name )
 
         public:
-            virtual const stream* get() = 0;
+            virtual stream* get() = 0;
     };
 
 }

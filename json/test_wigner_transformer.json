@@ -24,12 +24,12 @@
         "name" : "rts"
     },
 
-    "rf_data" :
+    "rtf_data" :
     {
         "name" : "rfw"
     },
 
-    "rf_data" :
+    "rtf_data" :
     {
         "name" : "rfp"
     },
@@ -86,7 +86,7 @@
         "name" : "rts_in"
     },
 
-    "rt_rf_power_transformer" :
+    "rt_rtf_power_transformer" :
     {
         "name" : "rt_rfp",
         "impedance_ohm" : 50.0,
@@ -95,7 +95,7 @@
         }
     },
 
-    "rt_rf_wigner_transformer" :
+    "rt_rtf_wigner_transformer" :
     {
         "name" : "rt_rfw",
         "offset" : 500,
@@ -116,7 +116,7 @@
         "axis_title" : "Signal [volt]"
     },
 
-    "rf_root_consumer" :
+    "rtf_root_consumer" :
     {
         "name" : "rfp_out",
         "frequency_minimum" : 0.0e6,
@@ -129,7 +129,7 @@
         "axis_title" : "Power [watt]"
     },
 
-    "rf_root_consumer" :
+    "rtf_root_consumer" :
     {
         "name" : "rfw_out",
         "frequency_minimum" : 0.0e6,

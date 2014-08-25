@@ -25,11 +25,11 @@ namespace midge
     {
         count_t t_index;
 
-        state_t t_in_zero_state;
+        command_t t_in_zero_state;
         const ct_data* t_in_zero_data;
         complex_t* t_in_zero_raw;
 
-        state_t t_in_one_state;
+        command_t t_in_one_state;
         const ct_data* t_in_one_data;
         complex_t* t_in_one_raw;
 
@@ -43,11 +43,11 @@ namespace midge
         while( true )
         {
             in_stream< 0 >()++;
-            t_in_zero_state = in_stream< 0 >().state();
+            t_in_zero_state = in_stream< 0 >().command();
             t_in_zero_data = in_stream< 0 >().data();
 
             in_stream< 1 >()++;
-            t_in_one_state = in_stream< 1 >().state();
+            t_in_one_state = in_stream< 1 >().command();
             t_in_one_data = in_stream< 1 >().data();
 
             t_out_data = out_stream< 0 >().data();
@@ -85,7 +85,7 @@ namespace midge
                 t_out_data->set_time_interval( t_time_interval );
                 t_out_data->set_time_index( t_time_index );
 
-                out_stream< 0 >().state( stream::s_start );
+                out_stream< 0 >().command( stream::s_start );
                 t_index = out_stream< 0 >()++;
 
                 continue;
@@ -113,21 +113,21 @@ namespace midge
                     t_out_raw[ t_index ][ 1 ] = t_in_zero_raw[ t_index ][ 1 ] + t_in_one_raw[ t_index ][ 1 ];
                 }
 
-                out_stream< 0 >().state( stream::s_run );
+                out_stream< 0 >().command( stream::s_run );
                 t_index = out_stream< 0 >()++;
 
                 continue;
             }
             if( t_in_zero_state == stream::s_stop )
             {
-                out_stream< 0 >().state( stream::s_stop );
+                out_stream< 0 >().command( stream::s_stop );
                 t_index = out_stream< 0 >()++;
 
                 continue;
             }
             if( t_in_zero_state == stream::s_exit )
             {
-                out_stream< 0 >().state( stream::s_exit );
+                out_stream< 0 >().command( stream::s_exit );
                 t_index = out_stream< 0 >()++;
 
                 break;

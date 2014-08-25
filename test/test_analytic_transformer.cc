@@ -25,7 +25,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    root* t_root = new root();
+    midge* t_root = new midge();
 
     rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
     t_rt_in->set_name( "rt_in" );

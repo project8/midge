@@ -2,7 +2,7 @@
 #define _midge_rf_event_consumer_hh_
 
 #include "consumer.hh"
-#include "rf_data.hh"
+#include "rtf_data.hh"
 #include "typelist.hh"
 #include "macros.hh"
 
@@ -20,7 +20,7 @@ namespace midge
 {
 
     class rf_event_consumer :
-        public _consumer< rf_event_consumer, typelist_1( rf_data ) >
+        public _consumer< rf_event_consumer, typelist_1( rtf_data ) >
     {
         public:
             rf_event_consumer();

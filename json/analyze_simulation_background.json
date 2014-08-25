@@ -4,7 +4,7 @@
         "name" : "signal_data"
     },
 
-    "rf_data" :
+    "rtf_data" :
     {
         "name" : "power_data"
     },
@@ -19,7 +19,7 @@
         "stride" : 1000
     },
 
-    "rt_rf_power_transformer" :
+    "rt_rtf_power_transformer" :
     {
         "name" : "power",
         "impedance_ohm" : 50,
@@ -28,7 +28,7 @@
         }
     },
 
-    "rf_background_consumer" :
+    "rtf_background_consumer" :
     {
         "name" : "background",
         "file" : "simulation_background.root",

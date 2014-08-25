@@ -95,6 +95,8 @@ set( midge_utility_headers
 	singleton.hh
 	error.hh
 	message.hh
+	ascii.hh
+	binary.hh
 	plot.hh
 	mutex.hh
 	thread.hh
@@ -111,12 +113,33 @@ set( midge_utility_headers
 set( midge_utility_sources
 	error.cc
 	message.cc
+	ascii.cc
+	binary.cc
 	plot.cc
 	mutex.cc
 	thread.cc
 )
 
 midge_library( utility )
+
+set( midge_utility_test_dependencies
+	utility
+)
+set( midge_utility_test_directory
+	test
+)
+set( midge_utility_test_programs
+	test_typelength
+	test_typeat
+	test_typechain
+	test_message
+	test_ascii
+	test_binary
+	test_thread
+	test_buffer
+)
+
+midge_executables( utility_test )
 
 ########
 # math #
@@ -179,7 +202,7 @@ set( midge_core_headers
 	producer.hh
 	consumer.hh
 	transformer.hh
-	root.hh
+	midge.hh
 )
 set( midge_core_sources
 	coremsg.cc
@@ -190,7 +213,7 @@ set( midge_core_sources
 	producer.cc
 	consumer.cc
 	transformer.cc
-	root.cc
+	midge.cc
 )
 
 midge_library( core )
@@ -208,16 +231,23 @@ set( midge_data_directory
 	data
 )
 set( midge_data_headers
+	_t_data.hh
 	rt_data.hh
-	rf_data.hh
 	ct_data.hh
+	_f_data.hh
+	rf_data.hh
 	cf_data.hh
+	_tf_data.hh
+	rtf_data.hh
+	ctf_data.hh
 )
 set( midge_data_sources
 	rt_data.cc
-	rf_data.cc
 	ct_data.cc
+	rf_data.cc
 	cf_data.cc
+	rtf_data.cc
+	ctf_data.cc
 )
 
 midge_library( data )
@@ -266,24 +296,45 @@ set( midge_consumers_directory
 	consumers
 )
 set( midge_consumers_headers
+	_file_consumer.hh
 	rt_ascii_consumer.hh
+	ct_ascii_consumer.hh
 	rf_ascii_consumer.hh
-	rt_root_consumer.hh
-	#rf_root_consumer.hh
+	cf_ascii_consumer.hh
+	rtf_ascii_consumer.hh
+	ctf_ascii_consumer.hh
+	rt_binary_consumer.hh
+	ct_binary_consumer.hh
+	rf_binary_consumer.hh
+	cf_binary_consumer.hh
+	rtf_binary_consumer.hh
+	ctf_binary_consumer.hh
 	rt_plot_consumer.hh
+	rf_plot_consumer.hh
+	rtf_plot_consumer.hh
 	rt_monarch_consumer.hh
-	#rf_background_consumer.hh
-	#rf_event_consumer.hh
+	#rtf_background_consumer.hh
+	#rtf_event_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
+	ct_ascii_consumer.cc
 	rf_ascii_consumer.cc
-	rt_root_consumer.cc
-	#rf_root_consumer.cc
+	cf_ascii_consumer.cc
+	rtf_ascii_consumer.cc
+	ctf_ascii_consumer.cc
+	rt_binary_consumer.cc
+	ct_binary_consumer.cc
+	rf_binary_consumer.cc
+	cf_binary_consumer.cc
+	rtf_binary_consumer.cc
+	ctf_binary_consumer.cc
 	rt_plot_consumer.cc
+	rf_plot_consumer.cc
+	rtf_plot_consumer.cc
 	rt_monarch_consumer.cc
-	#rf_background_consumer.cc
-	#rf_event_consumer.cc
+	#rtf_background_consumer.cc
+	#rtf_event_consumer.cc
 )
 
 midge_library( consumers )
@@ -302,31 +353,36 @@ set( midge_transformers_directory
 	transformers
 )
 set( midge_transformers_headers
-	rt_ct_transformer.hh
-	rf_cf_transformer.hh
-	ct_rt_transformer.hh
-	cf_rf_transformer.hh
-	rt_rt_sum_transformer.hh
-	ct_ct_sum_transformer.hh
-	ct_cf_fourier_transformer.hh
-	cf_ct_fourier_transformer.hh
-	rt_ct_analytic_transformer.hh
-	rt_rf_power_transformer.hh
-	rt_rf_wigner_transformer.hh
+	_converter_transformer.hh
+	rt_ct_converter_transformer.hh
+	ct_rt_converter_transformer.hh
+	rf_cf_converter_transformer.hh
+	cf_rf_converter_transformer.hh
+	rtf_ctf_converter_transformer.hh
+	ctf_rtf_converter_transformer.hh
+	#rt_rt_sum_transformer.hh
+	#ct_ct_sum_transformer.hh
+	#ct_ctf_fourier_transformer.hh
+	#ctf_ct_fourier_transformer.hh
+	#rt_ct_analytic_transformer.hh
+	#rt_rtf_power_transformer.hh
+	#rt_rtf_wigner_transformer.hh
 	#rf_rf_threshold_transformer.hh
 )
 set( midge_transformers_sources
-	rt_ct_transformer.cc
-	rf_cf_transformer.cc
-	ct_rt_transformer.cc
-	cf_rf_transformer.cc
-	rt_rt_sum_transformer.cc
-	ct_ct_sum_transformer.cc
-	ct_cf_fourier_transformer.cc
-	cf_ct_fourier_transformer.cc
-	rt_ct_analytic_transformer.cc
-	rt_rf_power_transformer.cc
-	rt_rf_wigner_transformer.cc
+	rt_ct_converter_transformer.cc
+	ct_rt_converter_transformer.cc
+	rf_cf_converter_transformer.cc
+	cf_rf_converter_transformer.cc
+	rtf_ctf_converter_transformer.cc
+	ctf_rtf_converter_transformer.cc
+	#rt_rt_sum_transformer.cc
+	#ct_ct_sum_transformer.cc
+	#ct_ctf_fourier_transformer.cc
+	#ctf_ct_fourier_transformer.cc
+	#rt_ct_analytic_transformer.cc
+	#rt_rtf_power_transformer.cc
+	#rt_rtf_wigner_transformer.cc
 	#rf_rf_threshold_transformer.cc
 )
 
@@ -378,6 +434,23 @@ set( midge_initialization_sources
 
 midge_library( initialization )
 
+set( midge_test_initialization_dependencies
+	utility
+	initialization
+)
+set( midge_test_initialization_directory
+	test
+)
+set( midge_test_initialization_programs
+	test_lexer_reporter
+	test_lexer_serializer
+	test_lexer_compiler_reporter
+	test_lexer_compiler_serializer
+	test_builder
+)
+
+midge_executables( test_initialization )
+
 ############
 # bindings #
 ############
@@ -396,7 +469,7 @@ set( midge_bindings_directory
 	bindings
 )
 set( midge_bindings_headers
-	root_builder.hh
+	midge_builder.hh
 	window_rectangular_builder.hh
 	window_bartlett_builder.hh
 	window_welch_builder.hh
@@ -409,52 +482,61 @@ set( midge_bindings_headers
 	rt_gaussian_producer_builder.hh
 	rt_monarch_producer_builder.hh
 	rt_ascii_consumer_builder.hh
+	ct_ascii_consumer_builder.hh
 	rf_ascii_consumer_builder.hh
-	rt_root_consumer_builder.hh
-	#rf_root_consumer_builder.hh
+	cf_ascii_consumer_builder.hh
+	rtf_ascii_consumer_builder.hh
+	ctf_ascii_consumer_builder.hh
 	rt_plot_consumer_builder.hh
+	rf_plot_consumer_builder.hh
+	rtf_plot_consumer_builder.hh
 	rt_monarch_consumer_builder.hh
-	#rf_background_consumer_builder.hh
-	#rf_event_consumer_builder.hh
+	#rtf_background_consumer_builder.hh
+	#rtf_event_consumer_builder.hh
 	rt_ct_transformer_builder.hh
-	rf_cf_transformer_builder.hh
+	rtf_ctf_transformer_builder.hh
 	ct_rt_transformer_builder.hh
-	cf_rf_transformer_builder.hh
+	ctf_rtf_transformer_builder.hh
 	rt_rt_sum_transformer_builder.hh
 	ct_ct_sum_transformer_builder.hh
-	ct_cf_fourier_transformer_builder.hh
-	cf_ct_fourier_transformer_builder.hh
+	ct_ctf_fourier_transformer_builder.hh
+	ctf_ct_fourier_transformer_builder.hh
 	rt_ct_analytic_transformer_builder.hh
-	rt_rf_power_transformer_builder.hh
-	rt_rf_wigner_transformer_builder.hh
+	rt_rtf_power_transformer_builder.hh
+	rt_rtf_wigner_transformer_builder.hh
 	#rf_rf_threshold_transformer_builder.hh
 )
 set( midge_bindings_sources
-	root_builder.cc
+	midge_builder.cc
 	rt_harmonic_producer_builder.cc
 	rt_chirp_producer_builder.cc
 	rt_sinusoidal_producer_builder.cc
 	rt_gaussian_producer_builder.cc
 	rt_monarch_producer_builder.cc
 	rt_ascii_consumer_builder.cc
+	ct_ascii_consumer_builder.cc
 	rf_ascii_consumer_builder.cc
-	rt_root_consumer_builder.cc
-	#rf_root_consumer_builder.cc
+	cf_ascii_consumer_builder.cc
+	rtf_ascii_consumer_builder.cc
+	ctf_ascii_consumer_builder.cc
 	rt_plot_consumer_builder.cc
+	rf_plot_consumer_builder.cc
+	rtf_plot_consumer_builder.cc
 	rt_monarch_consumer_builder.cc
-	#rf_background_consumer_builder.cc
+	#rtf_background_consumer_builder.cc
+	#rtf_event_consumer_builder.cc
 	#rf_event_consumer_builder.cc
 	rt_ct_transformer_builder.cc
-	rf_cf_transformer_builder.cc
+	rtf_ctf_transformer_builder.cc
 	ct_rt_transformer_builder.cc
-	cf_rf_transformer_builder.cc
+	ctf_rtf_transformer_builder.cc
 	rt_rt_sum_transformer_builder.cc
 	ct_ct_sum_transformer_builder.cc
-	ct_cf_fourier_transformer_builder.cc
-	cf_ct_fourier_transformer_builder.cc
+	ct_ctf_fourier_transformer_builder.cc
+	ctf_ct_fourier_transformer_builder.cc
 	rt_ct_analytic_transformer_builder.cc
-	rt_rf_power_transformer_builder.cc
-	rt_rf_wigner_transformer_builder.cc
+	rt_rtf_power_transformer_builder.cc
+	rt_rtf_wigner_transformer_builder.cc
 	#rf_rf_threshold_transformer_builder.cc
 )
 
@@ -502,17 +584,6 @@ set( midge_test_directory
 	test
 )
 set( midge_test_programs
-	test_typelength
-	test_typeat
-	test_typechain
-	test_message
-	test_thread
-	test_buffer
-	test_lexer_reporter
-	test_lexer_serializer
-	test_lexer_compiler_reporter
-	test_lexer_compiler_serializer
-	test_builder
 	test_harmonic_producer
 	test_chirp_producer
 	test_sinusoidal_producer

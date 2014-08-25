@@ -20,9 +20,9 @@ namespace midge
         class stream
         {
             public:
-                static const state_t s_idle;
-                static const state_t s_started;
-                static const state_t s_stopped;
+                static const command_t s_idle;
+                static const command_t s_started;
+                static const command_t s_stopped;
 
             public:
                 stream()
@@ -32,13 +32,13 @@ namespace midge
                 {
                 }
 
-                virtual stream& operator>( state_t& p_state ) = 0;
-                virtual stream& operator<( const state_t& p_state ) = 0;
+                virtual stream& operator>( command_t& p_state ) = 0;
+                virtual stream& operator<( const command_t& p_state ) = 0;
         };
 
-        const state_t stream::s_idle = 0;
-        const state_t stream::s_started = 1;
-        const state_t stream::s_stopped = 2;
+        const command_t stream::s_idle = 0;
+        const command_t stream::s_started = 1;
+        const command_t stream::s_stopped = 2;
 
         template< class x_type >
         class read_stream :
@@ -117,10 +117,10 @@ namespace midge
                     delete[] f_read_streams;
                 }
 
-                void initialize( const count_t& p_length, state_t* (p_state_factory)(), x_type* (*p_data_factory)() )
+                void initialize( const count_t& p_length, command_t* (p_state_factory)(), x_type* (*p_data_factory)() )
                 {
                     f_length = p_length;
-                    f_read_state = new state_t*[ p_length ];
+                    f_read_state = new command_t*[ p_length ];
                     f_read_data = new x_type*[ p_length ];
                     for( count_t t_index = 0; t_index < p_length; t_index++ )
                     {
@@ -188,7 +188,7 @@ namespace midge
                         {
                         }
 
-                        write_stream< x_type >& operator>( state_t& p_state )
+                        write_stream< x_type >& operator>( command_t& p_state )
                         {
                             f_buffer.f_write_state_mutex.lock();
                             p_state = f_buffer.f_write_state;
@@ -196,7 +196,7 @@ namespace midge
 
                             return *this;
                         }
-                        write_stream< x_type >& operator<( const state_t& p_state )
+                        write_stream< x_type >& operator<( const command_t& p_state )
                         {
                             if( ++f_next_state_index == f_buffer.f_length )
                             {
@@ -255,7 +255,7 @@ namespace midge
                         count_t f_next_data_index;
                 };
 
-                state_t f_write_state;
+                command_t f_write_state;
                 mutex f_write_state_mutex;
                 buffer_write_stream* f_write_stream;
 
@@ -275,7 +275,7 @@ namespace midge
                         {
                         }
 
-                        read_stream< x_type >& operator>( state_t& p_state )
+                        read_stream< x_type >& operator>( command_t& p_state )
                         {
                             f_buffer.f_read_state_mutexes[ f_stream_index ][ f_current_state_index ].lock();
 
@@ -290,7 +290,7 @@ namespace midge
 
                             return *this;
                         }
-                        read_stream< x_type >& operator<( const state_t& p_state )
+                        read_stream< x_type >& operator<( const command_t& p_state )
                         {
                             f_buffer.f_write_state_mutex.lock();
                             f_buffer.f_write_state = p_state;
@@ -326,7 +326,7 @@ namespace midge
                 };
 
                 count_t f_read_count;
-                state_t** f_read_state;
+                command_t** f_read_state;
                 mutex** f_read_state_mutexes;
                 x_type** f_read_data;
                 mutex** f_read_data_mutexes;
@@ -354,7 +354,7 @@ namespace midge
 
                     count_t t_count = 0;
                     count_t t_sleep;
-                    state_t t_state;
+                    command_t t_state;
                     double* t_value;
                     while( true )
                     {
@@ -410,7 +410,7 @@ namespace midge
                 {
                     count_t t_count = 0;
                     count_t t_sleep;
-                    state_t t_state;
+                    command_t t_state;
                     const double* t_value;
                     while( true )
                     {
@@ -454,9 +454,9 @@ namespace midge
             (*t_real) = 0.;
             return t_real;
         }
-        state_t* new_state()
+        command_t* new_state()
         {
-            state_t* t_state = new state_t;
+            command_t* t_state = new command_t;
             (*t_state) = stream::s_idle;
             return t_state;
         }

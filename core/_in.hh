@@ -4,6 +4,7 @@
 #include "node.hh"
 #include "_stream.hh"
 #include "_input.hh"
+#include "typenull.hh"
 
 #include <sstream>
 using std::stringstream;
@@ -14,7 +15,7 @@ using std::vector;
 namespace midge
 {
 
-    template< class x_type, int x_index >
+    template< class x_type, class x_index >
     class _in :
         virtual public node
     {
@@ -23,7 +24,7 @@ namespace midge
                     f_in( NULL )
             {
                 stringstream t_name;
-                t_name << "in_" << x_index;
+                t_name << "in_" << x_index::result;
                 node::in( new _input< _in< x_type, x_index >, x_type >( this, &_in< x_type, x_index >::in ), t_name.str() );
             }
             virtual ~_in()
@@ -31,20 +32,20 @@ namespace midge
             }
 
         public:
-            void in( const _stream< x_type >* p_in )
+            void in( _stream< x_type >* p_in )
             {
                 f_in = p_in;
                 return;
             }
 
         protected:
-            const _stream< x_type >& get_stream()
+            _stream< x_type >& get_stream()
             {
                 return *f_in;
             }
 
         private:
-            const _stream< x_type >* f_in;
+            _stream< x_type >* f_in;
     };
 }
 

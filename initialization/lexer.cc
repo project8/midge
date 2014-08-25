@@ -176,7 +176,7 @@ namespace midge
     }
 
     //*****
-    //state
+    //command
     //*****
 
     void lexer::lex_value()

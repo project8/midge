@@ -1,5 +1,5 @@
 #include "rf_rf_threshold_transformer_builder.hh"
-#include "root_builder.hh"
+#include "midge_builder.hh"
 
 namespace midge
 {
@@ -16,6 +16,6 @@ namespace midge
         rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_plot_name, "plot_name" ) +
         rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_chart_title, "chart_title" ) +
         rf_rf_threshold_transformer_builder::lingual< string >( &rf_rf_threshold_transformer::set_axis_title, "axis_title" ) +
-        root_builder::object< rf_rf_threshold_transformer >( &root::add, "rf_rf_threshold_transformer" );
+        midge_builder::object< rf_rf_threshold_transformer >( &midge::add, "rf_rf_threshold_transformer" );
 
 }

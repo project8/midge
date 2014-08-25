@@ -2,7 +2,7 @@
 #define _midge_rf_rf_threshold_transformer_hh_
 
 #include "transformer.hh"
-#include "rf_data.hh"
+#include "rtf_data.hh"
 #include "typelist.hh"
 #include "macros.hh"
 
@@ -17,7 +17,7 @@ namespace midge
 {
 
     class rf_rf_threshold_transformer :
-        public _transformer< rf_rf_threshold_transformer, typelist_1( rf_data ), typelist_1( rf_data ) >
+        public _transformer< rf_rf_threshold_transformer, typelist_1( rtf_data ), typelist_1( rtf_data ) >
     {
         public:
             rf_rf_threshold_transformer();

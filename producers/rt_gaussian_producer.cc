@@ -28,7 +28,7 @@ namespace midge
     void rt_gaussian_producer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
-        out_buffer< 0 >().set_name( get_name() );
+        out_buffer< 0 >().call( &rt_data::set_size, f_size );
         return;
     }
 
@@ -36,7 +36,7 @@ namespace midge
     {
         count_t t_index;
 
-        rt_data* t_out_data;
+        rt_data t_out_data;
         real_t* t_current_raw;
         real_t* t_previous_raw;
 
@@ -51,34 +51,33 @@ namespace midge
         random* t_random = random::get_instance();
         random_t* t_generator = t_random->allocate( f_seed );
 
-        t_out_data = out_stream< 0 >().data();
-        t_out_data->set_size( f_size );
-        t_out_data->set_time_interval( f_interval_sec );
-        t_out_data->set_time_index( t_begin );
-
-        out_stream< 0 >().state( stream::s_start );
-        out_stream< 0 >()++;
+        out_stream< 0 >() >> t_out_data;
+        t_out_data.set_time_interval( f_interval_sec );
+        t_out_data.set_time_index( t_begin );
+        out_stream< 0 >().command( stream::s_start );
+        out_stream< 0 >() << t_out_data;
 
         t_first_unwritten_index = 0;
         t_first_requested_index = t_begin;
         while( true )
         {
-            if( t_first_unwritten_index >= t_end )
+            if( (out_stream< 0 >().command() == stream::s_stop) || (t_first_unwritten_index >= t_end) )
             {
-                out_stream< 0 >().state( stream::s_stop );
-                out_stream< 0 >()++;
+                out_stream< 0 >() >> t_out_data;
+                out_stream< 0 >().command( stream::s_stop );
+                out_stream< 0 >() << t_out_data;
 
-                out_stream< 0 >().state( stream::s_exit );
-                out_stream< 0 >()++;
+                out_stream< 0 >() >> t_out_data;
+                out_stream< 0 >().command( stream::s_exit );
+                out_stream< 0 >() << t_out_data;
 
-                break;
+                return;
             }
 
-            t_out_data = out_stream< 0 >().data();
-            t_out_data->set_size( f_size );
-            t_out_data->set_time_interval( f_interval_sec );
-            t_out_data->set_time_index( t_first_requested_index );
-            t_current_raw = t_out_data->raw();
+            out_stream< 0 >() >> t_out_data;
+
+            t_out_data.set_time_index( t_first_requested_index );
+            t_current_raw = t_out_data.raw();
 
             if( t_first_unwritten_index > t_first_requested_index )
             {
@@ -117,8 +116,8 @@ namespace midge
             t_first_requested_index = t_first_requested_index + f_stride;
             t_previous_raw = t_current_raw;
 
-            out_stream< 0 >().state( stream::s_run );
-            out_stream< 0 >()++;
+            out_stream< 0 >().command( stream::s_run );
+            out_stream< 0 >() << t_out_data;
         }
 
         return;

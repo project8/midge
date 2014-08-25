@@ -16,18 +16,31 @@ namespace midge
         public singleton< fourier >
     {
         public:
-            friend class singleton< fourier >;
+            friend class singleton< fourier > ;
 
         private:
             fourier();
             virtual ~fourier();
 
         public:
-            real_t* allocate_real( const count_t& p_size );
-            void free_real( real_t* p_pointer );
+            template< class x_type >
+            x_type* allocate( const count_t& p_size )
+            {
+                x_type* t_pointer;
+                f_mutex.lock();
+                t_pointer = (x_type*) (fftw_malloc( sizeof(x_type) * p_size ));
+                f_mutex.unlock();
+                return t_pointer;
+            }
 
-            complex_t* allocate_complex( const count_t& p_size );
-            void free_complex( complex_t* p_pointer );
+            template< class x_type >
+            void free( x_type* p_pointer )
+            {
+                f_mutex.lock();
+                fftw_free( p_pointer );
+                f_mutex.unlock();
+                return;
+            }
 
             fourier_t* forward( const count_t& p_size, complex_t* p_input, complex_t* p_output );
             fourier_t* backward( const count_t& p_size, complex_t* p_input, complex_t* p_output );

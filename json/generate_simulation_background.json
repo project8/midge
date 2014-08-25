@@ -4,7 +4,7 @@
         "name" : "noise_data"
     },
 
-    "rf_data" :
+    "rtf_data" :
     {
         "name" : "power_data"
     },
@@ -44,7 +44,7 @@
         "axis_title" : "Signal [volt]"
     },
 
-    "rt_rf_power_transformer" :
+    "rt_rtf_power_transformer" :
     {
         "name" : "power",
         "impedance_ohm" : 50.0,
@@ -53,7 +53,7 @@
         }
     },
 
-    "rf_root_consumer" :
+    "rtf_root_consumer" :
     {
         "name" : "waterfall",
         "frequency_minimum" : 0.0e6,

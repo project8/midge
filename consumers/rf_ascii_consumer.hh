@@ -1,32 +1,14 @@
 #ifndef _midge_rf_ascii_consumer_hh_
 #define _midge_rf_ascii_consumer_hh_
 
-#include "consumer.hh"
+#include "_file_consumer.hh"
 #include "rf_data.hh"
-#include "typelist.hh"
-#include "macros.hh"
-
-#include <fstream>
-using std::ofstream;
+#include "ascii.hh"
 
 namespace midge
 {
 
-    class rf_ascii_consumer :
-        public _consumer< rf_ascii_consumer, typelist_1( rf_data )>
-    {
-        public:
-            rf_ascii_consumer();
-            virtual ~rf_ascii_consumer();
-
-        public:
-            accessible( string, file )
-
-        protected:
-            void initialize();
-            void execute();
-            void finalize();
-    };
+    typedef _file_consumer< rf_data, ascii > rf_ascii_consumer;
 
 }
 

@@ -17,7 +17,7 @@
         "stride" : 10
     },
 
-    "rt_rf_power_transformer" :
+    "rt_rtf_power_transformer" :
     {
         "name" : "rt_rf",
         "impedance_ohm" : 50.0,
@@ -33,7 +33,7 @@
         "file" : "test_chirp_producer.signal.txt"
     },
 
-    "rf_ascii_consumer" :
+    "rtf_ascii_consumer" :
     {
         "name" : "rfa_out",
         "file" : "test_chirp_producer.spectrum.txt"

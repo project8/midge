@@ -21,7 +21,7 @@ namespace midge
     };
 
     template< >
-    class typelength< typenull >
+    class typelength< _ >
     {
         public:
             enum
