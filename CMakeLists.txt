@@ -360,8 +360,13 @@ set( midge_transformers_headers
 	cf_rf_converter_transformer.hh
 	rtf_ctf_converter_transformer.hh
 	ctf_rtf_converter_transformer.hh
-	#rt_rt_sum_transformer.hh
-	#ct_ct_sum_transformer.hh
+	_sum_transformer.hh
+	rt_rt_sum_transformer.hh
+	ct_ct_sum_transformer.hh
+	rf_rf_sum_transformer.hh
+	cf_cf_sum_transformer.hh
+	rtf_rtf_sum_transformer.hh
+	ctf_ctf_sum_transformer.hh
 	#ct_ctf_fourier_transformer.hh
 	#ctf_ct_fourier_transformer.hh
 	#rt_ct_analytic_transformer.hh
@@ -376,8 +381,12 @@ set( midge_transformers_sources
 	cf_rf_converter_transformer.cc
 	rtf_ctf_converter_transformer.cc
 	ctf_rtf_converter_transformer.cc
-	#rt_rt_sum_transformer.cc
-	#ct_ct_sum_transformer.cc
+	rt_rt_sum_transformer.cc
+	ct_ct_sum_transformer.cc
+	rf_rf_sum_transformer.cc
+	cf_cf_sum_transformer.cc
+	rtf_rtf_sum_transformer.cc
+	ctf_ctf_sum_transformer.cc
 	#ct_ctf_fourier_transformer.cc
 	#ctf_ct_fourier_transformer.cc
 	#rt_ct_analytic_transformer.cc
@@ -507,11 +516,15 @@ set( midge_bindings_headers
 	ctf_rtf_converter_transformer_builder.hh
 	rt_rt_sum_transformer_builder.hh
 	ct_ct_sum_transformer_builder.hh
-	ct_ctf_fourier_transformer_builder.hh
-	ctf_ct_fourier_transformer_builder.hh
-	rt_ct_analytic_transformer_builder.hh
-	rt_rtf_power_transformer_builder.hh
-	rt_rtf_wigner_transformer_builder.hh
+	rf_rf_sum_transformer_builder.hh
+	cf_cf_sum_transformer_builder.hh
+	rtf_rtf_sum_transformer_builder.hh
+	ctf_ctf_sum_transformer_builder.hh
+	#ct_ctf_fourier_transformer_builder.hh
+	#ctf_ct_fourier_transformer_builder.hh
+	#rt_ct_analytic_transformer_builder.hh
+	#rt_rtf_power_transformer_builder.hh
+	#rt_rtf_wigner_transformer_builder.hh
 	#rf_rf_threshold_transformer_builder.hh
 )
 set( midge_bindings_sources
@@ -548,11 +561,15 @@ set( midge_bindings_sources
 	ctf_rtf_converter_transformer_builder.cc
 	rt_rt_sum_transformer_builder.cc
 	ct_ct_sum_transformer_builder.cc
-	ct_ctf_fourier_transformer_builder.cc
-	ctf_ct_fourier_transformer_builder.cc
-	rt_ct_analytic_transformer_builder.cc
-	rt_rtf_power_transformer_builder.cc
-	rt_rtf_wigner_transformer_builder.cc
+	rf_rf_sum_transformer_builder.cc
+	cf_cf_sum_transformer_builder.cc
+	rtf_rtf_sum_transformer_builder.cc
+	ctf_ctf_sum_transformer_builder.cc
+	#ct_ctf_fourier_transformer_builder.cc
+	#ctf_ct_fourier_transformer_builder.cc
+	#rt_ct_analytic_transformer_builder.cc
+	#rt_rtf_power_transformer_builder.cc
+	#rt_rtf_wigner_transformer_builder.cc
 	#rf_rf_threshold_transformer_builder.cc
 )
 

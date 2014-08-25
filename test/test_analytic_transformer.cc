@@ -1,7 +1,7 @@
-#include "root.hh"
+#include "midge.hh"
 #include "rt_harmonic_producer.hh"
 #include "rt_ct_analytic_transformer.hh"
-#include "ct_rt_transformer.hh"
+#include "ct_rt_converter_transformer.hh"
 #include "rt_ascii_consumer.hh"
 using namespace midge;
 
@@ -25,7 +25,7 @@ int main()
     t_messages->set_log_severity( s_debug );
     t_messages->set_log_stream( &t_file );
 
-    midge* t_root = new midge();
+    ::midge::midge* t_root = new ::midge::midge();
 
     rt_harmonic_producer* t_rt_in = new rt_harmonic_producer();
     t_rt_in->set_name( "rt_in" );
@@ -53,13 +53,13 @@ int main()
     t_rt_ct->set_length( 10 );
     t_root->add( t_rt_ct );
 
-    ct_rt_transformer* t_ct_rt_re = new ct_rt_transformer();
+    ct_rt_converter_transformer* t_ct_rt_re = new ct_rt_converter_transformer();
     t_ct_rt_re->set_name( "ct_rt_re" );
     t_ct_rt_re->set_mode( "real" );
     t_ct_rt_re->set_length( 10 );
     t_root->add( t_ct_rt_re );
 
-    ct_rt_transformer* t_ct_rt_im = new ct_rt_transformer();
+    ct_rt_converter_transformer* t_ct_rt_im = new ct_rt_converter_transformer();
     t_ct_rt_im->set_name( "ct_rt_im" );
     t_ct_rt_im->set_mode( "imaginary" );
     t_ct_rt_im->set_length( 10 );
