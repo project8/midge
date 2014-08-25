@@ -499,10 +499,12 @@ set( midge_bindings_headers
 	rt_monarch_consumer_builder.hh
 	#rtf_background_consumer_builder.hh
 	#rtf_event_consumer_builder.hh
-	rt_ct_transformer_builder.hh
-	rtf_ctf_transformer_builder.hh
-	ct_rt_transformer_builder.hh
-	ctf_rtf_transformer_builder.hh
+	rt_ct_converter_transformer_builder.hh
+	ct_rt_converter_transformer_builder.hh
+	rf_cf_converter_transformer_builder.hh
+	cf_rf_converter_transformer_builder.hh
+	rtf_ctf_converter_transformer_builder.hh
+	ctf_rtf_converter_transformer_builder.hh
 	rt_rt_sum_transformer_builder.hh
 	ct_ct_sum_transformer_builder.hh
 	ct_ctf_fourier_transformer_builder.hh
@@ -538,10 +540,12 @@ set( midge_bindings_sources
 	#rtf_background_consumer_builder.cc
 	#rtf_event_consumer_builder.cc
 	#rf_event_consumer_builder.cc
-	rt_ct_transformer_builder.cc
-	rtf_ctf_transformer_builder.cc
-	ct_rt_transformer_builder.cc
-	ctf_rtf_transformer_builder.cc
+	rt_ct_converter_transformer_builder.cc
+	ct_rt_converter_transformer_builder.cc
+	rf_cf_converter_transformer_builder.cc
+	cf_rf_converter_transformer_builder.cc
+	rtf_ctf_converter_transformer_builder.cc
+	ctf_rtf_converter_transformer_builder.cc
 	rt_rt_sum_transformer_builder.cc
 	ct_ct_sum_transformer_builder.cc
 	ct_ctf_fourier_transformer_builder.cc
