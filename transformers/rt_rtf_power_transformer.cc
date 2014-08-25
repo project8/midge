@@ -1,4 +1,5 @@
 #include "rt_rtf_power_transformer.hh"
+//#include "coremsg.hh"
 
 #include "fourier.hh"
 
@@ -105,11 +106,17 @@ namespace midge
 
                 t_out_data.set_size( t_out_size );
                 t_out_data.set_time_interval( t_time_interval );
-                t_out_data.set_time_index( t_time_index );
+                t_out_data.set_time_index( t_time_index + t_under + 1 );
                 t_out_data.set_frequency_interval( t_frequency_interval );
                 t_out_data.set_frequency_index( t_frequency_index );
 
                 out_stream< 0 >().command( stream::s_start );
+                //coremsg( s_normal ) << "rt rtf power transformer <" << get_name() << "> pushing <start>" << ret;
+                //coremsg( s_normal ) << "  size <" << t_out_data.get_size() << ">" << ret;
+                //coremsg( s_normal ) << "  time interval <" << t_out_data.get_time_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  time index <" << t_out_data.get_time_index() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency interval <" << t_out_data.get_frequency_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency index <" << t_out_data.get_frequency_index() << ">" << eom;
                 out_stream< 0 >() << t_out_data;
                 in_stream< 0 >() << t_in_data;
                 continue;
@@ -121,7 +128,7 @@ namespace midge
 
                 t_out_data.set_size( t_out_size );
                 t_out_data.set_time_interval( t_time_interval );
-                t_out_data.set_time_index( t_time_index + t_under );
+                t_out_data.set_time_index( t_time_index + t_under + 1 );
                 t_out_data.set_frequency_interval( t_frequency_interval );
                 t_out_data.set_frequency_index( t_frequency_index );
                 t_out_raw = t_out_data.raw();
@@ -151,6 +158,12 @@ namespace midge
                 }
 
                 out_stream< 0 >().command( stream::s_run );
+                //coremsg( s_normal ) << "rt rtf power transformer <" << get_name() << "> pushing <run>" << ret;
+                //coremsg( s_normal ) << "  size <" << t_out_data.get_size() << ">" << ret;
+                //coremsg( s_normal ) << "  time interval <" << t_out_data.get_time_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  time index <" << t_out_data.get_time_index() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency interval <" << t_out_data.get_frequency_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency index <" << t_out_data.get_frequency_index() << ">" << eom;
                 out_stream< 0 >() << t_out_data;
                 in_stream< 0 >() << t_in_data;
                 continue;
@@ -162,6 +175,12 @@ namespace midge
                 t_fourier->destroy( t_generator );
 
                 out_stream< 0 >().command( stream::s_stop );
+                //coremsg( s_normal ) << "rt rtf power transformer <" << get_name() << "> pushing <stop>" << ret;
+                //coremsg( s_normal ) << "  size <" << t_out_data.get_size() << ">" << ret;
+                //coremsg( s_normal ) << "  time interval <" << t_out_data.get_time_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  time index <" << t_out_data.get_time_index() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency interval <" << t_out_data.get_frequency_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency index <" << t_out_data.get_frequency_index() << ">" << eom;
                 out_stream< 0 >() << t_out_data;
                 in_stream< 0 >() << t_in_data;
                 continue;
@@ -169,6 +188,12 @@ namespace midge
             if( t_in_command == stream::s_exit )
             {
                 out_stream< 0 >().command( stream::s_exit );
+                //coremsg( s_normal ) << "rt rtf power transformer <" << get_name() << "> pushing <exit>" << ret;
+                //coremsg( s_normal ) << "  size <" << t_out_data.get_size() << ">" << ret;
+                //coremsg( s_normal ) << "  time interval <" << t_out_data.get_time_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  time index <" << t_out_data.get_time_index() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency interval <" << t_out_data.get_frequency_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  frequency index <" << t_out_data.get_frequency_index() << ">" << eom;
                 out_stream< 0 >() << t_out_data;
                 in_stream< 0 >() << t_in_data;
                 return;

@@ -26,10 +26,10 @@ namespace midge
             }
             virtual ~_t_data()
             {
-                if( f_raw != NULL )
-                {
-                    fourier::get_instance()->free< x_type >( f_raw );
-                }
+//                if( f_raw != NULL )
+//                {
+//                    fourier::get_instance()->free< x_type >( f_raw );
+//                }
             }
 
         public:
@@ -104,7 +104,7 @@ namespace midge
                 p_data.f_size = f_size;
                 p_data.f_time_interval = f_time_interval;
                 p_data.f_time_index = f_time_index;
-                f_raw = NULL;
+                //f_raw = NULL;
                 return *this;
             }
             _t_data& operator<<( const _t_data& p_data )
@@ -113,7 +113,7 @@ namespace midge
                 f_size = p_data.f_size;
                 f_time_interval = p_data.f_time_interval;
                 f_time_index = p_data.f_time_index;
-                p_data.f_raw = NULL;
+                //p_data.f_raw = NULL;
                 return *this;
             }
     };

@@ -19,11 +19,11 @@ namespace midge
             virtual ~rt_rtf_power_transformer();
 
         public:
-            accessible( real_t, impedance_ohm );
+            accessible( real_t, impedance_ohm )
             accessible( real_t, begin_hz )
             accessible( real_t, end_hz )
-            composable( window, window );
-            accessible( count_t, length );
+            composable( window, window )
+            accessible( count_t, length )
 
         protected:
             void initialize();

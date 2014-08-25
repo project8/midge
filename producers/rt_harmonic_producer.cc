@@ -1,8 +1,8 @@
 #include "rt_harmonic_producer.hh"
+//#include "coremsg.hh"
 
 #include <cmath>
 
-#include "coremsg.hh"
 
 namespace midge
 {
@@ -56,7 +56,10 @@ namespace midge
         t_data.set_time_interval( f_interval_sec );
         t_data.set_time_index( t_begin );
         out_stream< 0 >().command( stream::s_start );
-        coremsg( s_normal ) << "rt harmonic producer pushing <start> with interval <" << t_data.get_time_interval() << "> and index <" << t_data.get_time_index() << ">" << eom;
+        //coremsg( s_normal ) << "rt harmonic producer <" << get_name() << "> pushing <start>" << ret;
+        //coremsg( s_normal ) << "  size <" << t_data.get_size() << ">" << ret;
+        //coremsg( s_normal ) << "  time interval <" << t_data.get_time_interval() << ">" << ret;
+        //coremsg( s_normal ) << "  time index <" << t_data.get_time_index() << ">" << eom;
         out_stream< 0 >() << t_data;
 
         t_first_unwritten_index = 0;
@@ -67,12 +70,18 @@ namespace midge
             {
                 out_stream< 0 >() >> t_data;
                 out_stream< 0 >().command( stream::s_stop );
-                coremsg( s_normal ) << "rt harmonic producer pushing <stop> with interval <" << t_data.get_time_interval() << "> and index <" << t_data.get_time_index() << ">" << eom;
+                //coremsg( s_normal ) << "rt harmonic producer <" << get_name() << "> pushing <stop>" << ret;
+                //coremsg( s_normal ) << "  size <" << t_data.get_size() << ">" << ret;
+                //coremsg( s_normal ) << "  time interval <" << t_data.get_time_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  time index <" << t_data.get_time_index() << ">" << eom;
                 out_stream< 0 >() << t_data;
 
                 out_stream< 0 >() >> t_data;
                 out_stream< 0 >().command( stream::s_exit );
-                coremsg( s_normal ) << "rt harmonic producer pushing <exit> with interval <" << t_data.get_time_interval() << "> and index <" << t_data.get_time_index() << ">" << eom;
+                //coremsg( s_normal ) << "rt harmonic producer <" << get_name() << "> pushing <exit>" << ret;
+                //coremsg( s_normal ) << "  size <" << t_data.get_size() << ">" << ret;
+                //coremsg( s_normal ) << "  time interval <" << t_data.get_time_interval() << ">" << ret;
+                //coremsg( s_normal ) << "  time index <" << t_data.get_time_index() << ">" << eom;
                 out_stream< 0 >() << t_data;
 
                 return;
@@ -123,7 +132,10 @@ namespace midge
             t_previous_raw = t_current_raw;
 
             out_stream< 0 >().command( stream::s_run );
-            coremsg( s_normal ) << "rt harmonic producer pushing <run> with interval <" << t_data.get_time_interval() << "> and index <" << t_data.get_time_index() << ">" << eom;
+            //coremsg( s_normal ) << "rt harmonic producer <" << get_name() << "> pushing <run>" << ret;
+            //coremsg( s_normal ) << "  size <" << t_data.get_size() << ">" << ret;
+            //coremsg( s_normal ) << "  time interval <" << t_data.get_time_interval() << ">" << ret;
+            //coremsg( s_normal ) << "  time index <" << t_data.get_time_index() << ">" << eom;
             out_stream< 0 >() << t_data;
         }
 

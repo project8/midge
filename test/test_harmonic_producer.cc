@@ -41,31 +41,31 @@ int main()
     t_rt_in->set_interval_sec( 1.e-9 );
     t_rt_in->set_length( 10 );
     t_rt_in->set_size( 1000 );
-    t_rt_in->set_stride( 100 );
+    t_rt_in->set_stride( 10 );
     t_midge->add( t_rt_in );
 
-//    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
-//    t_rt_out->set_name( "rt_out" );
-//    t_rt_out->set_file( "test_harmonic_producer.signal.txt" );
-//    t_midge->add( t_rt_out );
+    rt_ascii_consumer* t_rt_out = new rt_ascii_consumer();
+    t_rt_out->set_name( "rt_out" );
+    t_rt_out->set_file( "test_harmonic_producer.signal.txt" );
+    t_midge->add( t_rt_out );
 
     rt_rtf_power_transformer* t_rt_rf = new rt_rtf_power_transformer();
     t_rt_rf->set_name( "rt_rf" );
     t_rt_rf->set_impedance_ohm( 50. );
     t_rt_rf->set_window( new window_rectangular() );
-    t_rt_rf->set_length( 100 );
+    t_rt_rf->set_length( 10 );
     t_midge->add( t_rt_rf );
 
-//    rtf_ascii_consumer* t_rf_out = new rtf_ascii_consumer();
-//    t_rf_out->set_name( "rf_out" );
-//    t_rf_out->set_file( "test_harmonic_producer.spectrum.txt" );
-//    t_midge->add( t_rf_out );
+    rtf_ascii_consumer* t_rf_out = new rtf_ascii_consumer();
+    t_rf_out->set_name( "rf_out" );
+    t_rf_out->set_file( "test_harmonic_producer.spectrum.txt" );
+    t_midge->add( t_rf_out );
 
-    //t_midge->join( "rt_in.out_0:rt_out.in_0" );
+    t_midge->join( "rt_in.out_0:rt_out.in_0" );
     t_midge->join( "rt_in.out_0:rt_rf.in_0" );
-    //t_midge->join( "rt_rf.out_0:rf_out.in_0" );
+    t_midge->join( "rt_rf.out_0:rf_out.in_0" );
 
-    t_midge->run( "rt_in:rt_rf" );
+    t_midge->run( "rt_in:rt_out:rt_rf:rf_out" );
 
     delete t_midge;
 
