@@ -24,6 +24,12 @@ namespace midge
             void set_size( const count_t& p_size );
             const count_t& get_size() const;
 
+            void set_time_interval( const real_t& p_time_interval );
+            const real_t& get_time_interval() const;
+
+            void set_time_index( const count_t& p_time_index );
+            const count_t& get_time_index() const;
+
             void set_frequency_interval( const real_t& p_frequency_interval );
             const real_t& get_frequency_interval() const;
 
@@ -33,6 +39,8 @@ namespace midge
         protected:
             x_type* f_raw;
             count_t f_size;
+            real_t f_time_interval;
+            count_t f_time_index;
             real_t f_frequency_interval;
             count_t f_frequency_index;
 
@@ -47,6 +55,8 @@ namespace midge
     _tf_data< x_type >::_tf_data() :
             f_raw( NULL ),
             f_size( 0 ),
+            f_time_interval( 1. ),
+            f_time_index( 0 ),
             f_frequency_interval( 1. ),
             f_frequency_index( 0 )
     {
@@ -83,6 +93,28 @@ namespace midge
     const count_t& _tf_data< x_type >::get_size() const
     {
         return f_size;
+    }
+
+    template< class x_type >
+    void _tf_data< x_type >::set_time_interval( const real_t& p_time_interval )
+    {
+        f_time_interval = p_time_interval;
+    }
+    template< class x_type >
+    const real_t& _tf_data< x_type >::get_time_interval() const
+    {
+        return f_time_interval;
+    }
+
+    template< class x_type >
+    void _tf_data< x_type >::set_time_index( const count_t& p_time_index )
+    {
+        f_time_index = p_time_index;
+    }
+    template< class x_type >
+    const count_t& _tf_data< x_type >::get_time_index() const
+    {
+        return f_time_index;
     }
 
     template< class x_type >

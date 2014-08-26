@@ -1,24 +1,4 @@
 {
-    "rt_data" :
-    {
-        "name" : "rt"
-    },
-
-    "ct_data" :
-    {
-        "name" : "ct"
-    },
-
-    "rt_data" :
-    {
-        "name" : "rtr"
-    },
-
-    "rt_data" :
-    {
-        "name" : "rti"
-    },
-
     "rt_harmonic_producer" :
     {
         "name" : "rt_in",
@@ -59,13 +39,13 @@
     "rt_ascii_consumer" :
     {
         "name" : "rtr_out",
-        "file" : "test_analytic_transform.real.txt"
+        "file" : "test_analytic_transform.re.txt"
     },
 
     "rt_ascii_consumer" :
     {
         "name" : "rti_out",
-        "file" : "test_analytic_transform.imaginary.txt"
+        "file" : "test_analytic_transform.im.txt"
     },
 
     "count_controller" :
