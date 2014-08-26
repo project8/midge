@@ -110,7 +110,7 @@ namespace midge
 
                 t_out_data.set_size( t_out_size );
                 t_out_data.set_time_interval( t_time_interval );
-                t_out_data.set_time_index( t_time_index );
+                t_out_data.set_time_index( t_time_index + t_offset );
                 t_out_data.set_frequency_interval( t_frequency_interval );
                 t_out_data.set_frequency_index( t_frequency_index );
 

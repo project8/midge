@@ -3,7 +3,7 @@
     {
         "name" : "rt_in",
         "impedance_ohm" : 50.0,
-        "power_dbm" : -10.0,
+        "power_dbm" : 0.0,
         "begin_sec" : 0.0e-9,
         "end_sec" : 20000.0e-9,
         "start_sec" : 2000.0e-9,

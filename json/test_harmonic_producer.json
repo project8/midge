@@ -3,7 +3,7 @@
     {
         "name" : "rt_in",
         "impedance_ohm" : 50.0,
-        "power_dbm" : -10.0,
+        "power_dbm" : 0.0,
         "frequency_hz" : 100.0e6,
         "phase_deg" : 60.0,
         "begin_sec" : 0.0e-9,

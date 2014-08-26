@@ -45,7 +45,8 @@ namespace midge
         plot::ordinate t_z;
 
         count_t t_first_written_index;
-        count_t t_first_unwritten_index;
+        count_t t_last_written_index;
+        count_t t_count = 0;
 
         while( true )
         {
@@ -65,7 +66,7 @@ namespace midge
                 t_z.title() = f_z_title;
 
                 t_first_written_index = t_time_index;
-                t_first_unwritten_index = t_time_index;
+                t_last_written_index = t_time_index;
 
                 in_stream< 0 >() << t_data;
                 continue;
@@ -82,16 +83,17 @@ namespace midge
                     t_z.values().push_back( t_raw[ t_index - t_frequency_index ] );
                 }
 
-                t_first_unwritten_index = t_time_index + t_size;
+                t_last_written_index = t_time_index;
+                t_count++;
 
                 in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_stop )
             {
-                t_x.count() = t_first_unwritten_index - t_first_written_index;
+                t_x.count() = t_count;
                 t_x.low() = t_first_written_index * t_time_interval;
-                t_x.high() = (t_first_unwritten_index - 1) * t_time_interval;
+                t_x.high() = t_last_written_index * t_time_interval;
 
                 t_y.count() = t_size;
                 t_y.low() = t_frequency_index * t_frequency_interval;

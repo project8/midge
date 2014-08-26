@@ -181,7 +181,7 @@ namespace midge
                     {
                         f_buffer.f_read_data[ f_current_index ] << p_data;
 
-                        if( (++f_count % 100) == 0 )
+                        if( (++f_count % 1000) == 0 )
                         {
                             coremsg( s_normal ) << "write stream <" << this << "> processed <" << f_count << "> requests" << eom;
                         }

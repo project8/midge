@@ -1,85 +1,66 @@
 {
-    "rt_data" :
-    {
-        "name" : "signal_0_data"
-    },
-
-    "rt_data" :
-    {
-        "name" : "signal_1_data"
-    },
-
-    "rt_data" :
-    {
-        "name" : "signal_data"
-    },
-
-    "rt_data" :
-    {
-        "name" : "noise_data"
-    },
-
-    "rt_data" :
-    {
-        "name" : "sum_data"
-    },
-
-    "rtf_data" :
-    {
-        "name" : "power_data"
-    },
-
-     "rt_chirp_producer" :
-    {
-        "name" : "signal_0",
-        "power_dbm" : -30.0,
-        "impedance_ohm" : 50.0,
-        "start_frequency_hz" : 200.0e6,
-        "stop_frequency_hz" : 300.0e6,
-        "phase_deg" : 60.0,
-        "start_sec" : 0.2e-4,
-        "stop_sec" : 1.0e-4,
-        "interval" : 1.0e-9,
-        "size" : 1000,
-        "stride" : 1000
-    },
-
-     "rt_chirp_producer" :
-    {
-        "name" : "signal_1",
-        "power_dbm" : -30.0,
-        "impedance_ohm" : 50.0,
-        "start_frequency_hz" : 200.0e6,
-        "stop_frequency_hz" : 300.0e6,
-        "phase_deg" : 60.0,
-        "start_sec" : 1.0e-4,
-        "stop_sec" : 1.8e-4,
-        "interval" : 1.0e-9,
-        "size" : 1000,
-        "stride" : 1000
-    },
-
     "rt_gaussian_producer" :
     {
         "name" : "noise",
-        "power_dbm" : -12.0,
         "impedance_ohm" : 50.0,
+        "power_dbm" : -15.0,
+        "begin_sec" : 0.0e-4,
+        "end_sec" : 2.0e-4,
         "start_sec" : 0.0e-4,
         "stop_sec" : 2.0e-4,
-        "interval" : 1.0e-9,
-        "seed" : 31387,
+        "interval_sec" : 1.0e-9,
+        "seed" : 031387,
+        "length" : 10,
+        "size" : 1000,
+        "stride" : 1000
+    },
+
+    "rt_chirp_producer" :
+    {
+        "name" : "event_0",
+        "power_dbm" : -33.0,
+        "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 200.0e6,
+        "stop_frequency_hz" : 300.0e6,
+        "phase_deg" : 60.0,
+        "begin_sec" : 0.0e-4,
+        "end_sec" : 2.0e-4,
+        "start_sec" : 0.2e-4,
+        "stop_sec" : 1.0e-4,
+        "interval_sec" : 1.0e-9,
+        "length" : 10,
+        "size" : 1000,
+        "stride" : 1000
+    },
+
+    "rt_chirp_producer" :
+    {
+        "name" : "event_1",
+        "power_dbm" : -30.0,
+        "impedance_ohm" : 50.0,
+        "start_frequency_hz" : 200.0e6,
+        "stop_frequency_hz" : 300.0e6,
+        "phase_deg" : 60.0,
+        "begin_sec" : 0.0e-4,
+        "end_sec" : 2.0e-4,
+        "start_sec" : 1.0e-4,
+        "stop_sec" : 1.8e-4,
+        "interval_sec" : 1.0e-9,
+        "length" : 10,
         "size" : 1000,
         "stride" : 1000
     },
 
     "rt_rt_sum_transformer" :
     {
-        "name" : "signal_sum"
+        "name" : "event",
+        "length" : 10
     },
 
     "rt_rt_sum_transformer" :
     {
-        "name" : "sum"
+        "name" : "signal",
+        "length" : 10
     },
 
     "rt_monarch_consumer" :
@@ -87,67 +68,50 @@
         "name" : "monarch",
         "file" : "simulation_event_signal.egg",
         "bits" : 8,
-        "length" : 5000,
+        "record_length" : 5000,
         "voltage_minimum" : -0.25,
-        "voltage_maximum" : 0.25,
-        "duration" : 2.0e-4
+        "voltage_maximum" : 0.25
     },
 
-    "rt_root_consumer" :
+    "rt_plot_consumer" :
     {
-        "name" : "root",
-        "file" : "simulation_event_signal.root",
-        "plot" : true,
-        "plot_key" : "event_root_canvas",
-        "plot_name" : "event_root_histogram",
-        "chart_title" : "Simulated Event",
-        "axis_title" : "Signal [volt]"
+        "name" : "signal_out",
+        "plot_key" : "signal_out_canvas",
+        "plot_name" : "signal_out_histogram",
+        "chart_title" : "Simulated Background",
+        "x_title" : "Time [sec]",
+        "y_title" : "Signal [volt]"
     },
 
     "rt_rtf_power_transformer" :
     {
         "name" : "power",
         "impedance_ohm" : 50.0,
-        "window_blackman" : 
+        "window_rectangular" : 
         {
-        }
+        },
+        "length" : 10
     },
 
-    "rtf_root_consumer" :
+    "rtf_plot_consumer" :
     {
-        "name" : "waterfall",
-        "frequency_minimum" : 0.0e6,
-        "frequency_maximum" : 500.0e6,
-        "file" : "simulation_event_waterfall.root",
-        "plot" : true,
-        "plot_key" : "waterfall_canvas",
-        "plot_name" : "waterfall_histogram",
-        "chart_title" : "Simulated Event",
-        "axis_title" : "Power [watt]"
+        "name" : "power_out",
+        "plot_key" : "power_out_canvas",
+        "plot_name" : "power_out_histogram",
+        "chart_title" : "Simulated Background",
+        "x_title" : "Time [sec]",
+        "y_title" : "Frequency [hz]",
+        "z_title" : "Power [watt]"
     },
 
-    "void_controller" :
-    {
-        "name" : "controller"
-    },
+    "join" : "event_0.out_0:event.in_0",
+    "join" : "event_1.out_0:event.in_1",
+    "join" : "noise.out_0:signal.in_0",
+    "join" : "event.out_0:signal.in_1",
+    "join" : "signal.out_0:monarch.in_0",
+    "join" : "signal.out_0:signal_out.in_0",
+    "join" : "signal.out_0:power.in_0",
+    "join" : "power.out_0:power_out.in_0",
 
-    "join" : "signal_0.out_0:signal_0_data.in",
-    "join" : "signal_0_data.out:signal_sum.in_0",
-    "join" : "signal_1.out_0:signal_1_data.in",
-    "join" : "signal_1_data.out:signal_sum.in_1",
-    "join" : "signal_sum.out_0:signal_data.in",
-    "join" : "signal_data.out:sum.in_0",
-    "join" : "noise.out_0:noise_data.in",
-    "join" : "noise_data.out:sum.in_1",
-    "join" : "sum.out_0:sum_data.in",
-    "join" : "sum_data.out:root.in_0",
-    "join" : "sum_data.out:monarch.in_0",
-    "join" : "sum_data.out:power.in_0",
-    "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:waterfall.in_0",
-    "join" : "controller.out_0:signal_0",
-    "join" : "controller.out_1:signal_1",
-    "join" : "controller.out_2:noise",
-
-    "run" : "controller"
+    "run" : "event_0:event_1:event:noise:signal:signal_out:monarch:power:power_out"
 }

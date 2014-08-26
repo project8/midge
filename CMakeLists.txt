@@ -703,6 +703,7 @@ set( midge_json_files
 	test_chirp_producer.json
 	test_gaussian_producer.json
 	test_monarch.json
+	test_comparison.json
 	generate_simulation_background.json
 	generate_simulation_event.json
 	generate_simulation.json

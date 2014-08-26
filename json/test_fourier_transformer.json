@@ -3,7 +3,7 @@
     {
         "name" : "rt_in",
         "impedance_ohm" : 50.0,
-        "carrier_power_dbm" : -10.0,
+        "carrier_power_dbm" : 0.0,
         "carrier_frequency_hz" : 250.0e6,
         "carrier_phase_deg" : 60.0,
         "signal_amplitude_hz" : 100.0e6,

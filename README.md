@@ -11,7 +11,7 @@ Midge is a lightweight framework for digital signal analysis.  Producers, consum
 >  a place of non-posession,
 >  and of non-attachment.
 >  
->It is the total end of death and decay,
+> It is the total end of death and decay,
 >
->  and this is why I call it 'Nibbana'.`
+>  and this is why I call it 'Nibbana'.
   
