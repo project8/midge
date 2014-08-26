@@ -240,6 +240,7 @@ set( midge_data_headers
 	_tf_data.hh
 	rtf_data.hh
 	ctf_data.hh
+	candidate_data.hh
 )
 set( midge_data_sources
 	rt_data.cc
@@ -248,6 +249,7 @@ set( midge_data_sources
 	cf_data.cc
 	rtf_data.cc
 	ctf_data.cc
+	candidate_data.cc
 )
 
 midge_library( data )
@@ -385,6 +387,7 @@ set( midge_transformers_headers
 	cf_rf_converter_transformer.hh
 	rtf_ctf_converter_transformer.hh
 	ctf_rtf_converter_transformer.hh
+	
 	_sum_transformer.hh
 	rt_rt_sum_transformer.hh
 	ct_ct_sum_transformer.hh
@@ -392,6 +395,7 @@ set( midge_transformers_headers
 	cf_cf_sum_transformer.hh
 	rtf_rtf_sum_transformer.hh
 	ctf_ctf_sum_transformer.hh
+	
 	_difference_transformer.hh
 	rt_rt_difference_transformer.hh
 	ct_ct_difference_transformer.hh
@@ -399,6 +403,7 @@ set( midge_transformers_headers
 	cf_cf_difference_transformer.hh
 	rtf_rtf_difference_transformer.hh
 	ctf_ctf_difference_transformer.hh
+	
 	_window_transformer.hh
 	rt_rt_window_transformer.hh
 	ct_ct_window_transformer.hh
@@ -406,13 +411,26 @@ set( midge_transformers_headers
 	cf_cf_window_transformer.hh
 	rtf_rtf_window_transformer.hh
 	ctf_ctf_window_transformer.hh
+	
+	_smoothing_transformer.hh
+	rt_rt_smoothing_transformer.hh
+	ct_ct_smoothing_transformer.hh
+	rf_rf_smoothing_transformer.hh
+	cf_cf_smoothing_transformer.hh
+	rtf_rtf_smoothing_transformer.hh
+	ctf_ctf_smoothing_transformer.hh
+	
+	_average_transformer.hh
+	rtf_rf_average_transformer.hh
+	ctf_cf_average_transformer.hh
+	
 	ct_ctf_fourier_transformer.hh
-	ctf_ct_fourier_transformer.hh
+	ctf_ct_fourier_transformer.hh	
 	rt_ct_analytic_transformer.hh
 	ctf_ctf_analytic_transformer.hh
 	rt_rtf_power_transformer.hh
 	rt_rtf_wigner_transformer.hh
-	#rf_rf_threshold_transformer.hh
+	rtf_rtf_ratio_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_converter_transformer.cc
@@ -421,31 +439,45 @@ set( midge_transformers_sources
 	cf_rf_converter_transformer.cc
 	rtf_ctf_converter_transformer.cc
 	ctf_rtf_converter_transformer.cc
+	
 	rt_rt_sum_transformer.cc
 	ct_ct_sum_transformer.cc
 	rf_rf_sum_transformer.cc
 	cf_cf_sum_transformer.cc
 	rtf_rtf_sum_transformer.cc
 	ctf_ctf_sum_transformer.cc
+	
 	rt_rt_difference_transformer.cc
 	ct_ct_difference_transformer.cc
 	rf_rf_difference_transformer.cc
 	cf_cf_difference_transformer.cc
 	rtf_rtf_difference_transformer.cc
 	ctf_ctf_difference_transformer.cc
+	
 	rt_rt_window_transformer.cc
 	ct_ct_window_transformer.cc
 	rf_rf_window_transformer.cc
 	cf_cf_window_transformer.cc
 	rtf_rtf_window_transformer.cc
 	ctf_ctf_window_transformer.cc
+	
+	rt_rt_smoothing_transformer.cc
+	ct_ct_smoothing_transformer.cc
+	rf_rf_smoothing_transformer.cc
+	cf_cf_smoothing_transformer.cc
+	rtf_rtf_smoothing_transformer.cc
+	ctf_ctf_smoothing_transformer.cc
+	
+	rtf_rf_average_transformer.cc
+	ctf_cf_average_transformer.cc
+	
 	ct_ctf_fourier_transformer.cc
 	ctf_ct_fourier_transformer.cc
 	rt_ct_analytic_transformer.cc
 	ctf_ctf_analytic_transformer.cc
 	rt_rtf_power_transformer.cc
 	rt_rtf_wigner_transformer.cc
-	#rf_rf_threshold_transformer.cc
+	rtf_rtf_ratio_transformer.cc
 )
 
 midge_library( transformers )
@@ -571,7 +603,6 @@ set( midge_bindings_headers
 	rf_plot_consumer_builder.hh
 	rtf_plot_consumer_builder.hh
 	rt_monarch_consumer_builder.hh
-	#rtf_background_consumer_builder.hh
 	#rtf_event_consumer_builder.hh
 	rt_ct_converter_transformer_builder.hh
 	ct_rt_converter_transformer_builder.hh
@@ -597,13 +628,21 @@ set( midge_bindings_headers
 	cf_cf_window_transformer_builder.hh
 	rtf_rtf_window_transformer_builder.hh
 	ctf_ctf_window_transformer_builder.hh
+	rt_rt_smoothing_transformer_builder.hh
+	ct_ct_smoothing_transformer_builder.hh
+	rf_rf_smoothing_transformer_builder.hh
+	cf_cf_smoothing_transformer_builder.hh
+	rtf_rtf_smoothing_transformer_builder.hh
+	ctf_ctf_smoothing_transformer_builder.hh
+	rtf_rf_average_transformer_builder.hh
+	ctf_cf_average_transformer_builder.hh
 	ct_ctf_fourier_transformer_builder.hh
 	ctf_ct_fourier_transformer_builder.hh
 	rt_ct_analytic_transformer_builder.hh
 	ctf_ctf_analytic_transformer_builder.hh
 	rt_rtf_power_transformer_builder.hh
 	rt_rtf_wigner_transformer_builder.hh
-	#rf_rf_threshold_transformer_builder.hh
+	rtf_rtf_ratio_transformer_builder.hh
 )
 set( midge_bindings_sources
 	midge_builder.cc
@@ -640,7 +679,6 @@ set( midge_bindings_sources
 	rf_plot_consumer_builder.cc
 	rtf_plot_consumer_builder.cc
 	rt_monarch_consumer_builder.cc
-	#rtf_background_consumer_builder.cc
 	#rtf_event_consumer_builder.cc
 	#rf_event_consumer_builder.cc
 	rt_ct_converter_transformer_builder.cc
@@ -667,13 +705,21 @@ set( midge_bindings_sources
 	cf_cf_window_transformer_builder.cc
 	rtf_rtf_window_transformer_builder.cc
 	ctf_ctf_window_transformer_builder.cc
+	rt_rt_smoothing_transformer_builder.cc
+	ct_ct_smoothing_transformer_builder.cc
+	rf_rf_smoothing_transformer_builder.cc
+	cf_cf_smoothing_transformer_builder.cc
+	rtf_rtf_smoothing_transformer_builder.cc
+	ctf_ctf_smoothing_transformer_builder.cc
+	rtf_rf_average_transformer_builder.cc
+	ctf_cf_average_transformer_builder.cc
 	ct_ctf_fourier_transformer_builder.cc
 	ctf_ct_fourier_transformer_builder.cc
 	rt_ct_analytic_transformer_builder.cc
 	ctf_ctf_analytic_transformer_builder.cc
 	rt_rtf_power_transformer_builder.cc
 	rt_rtf_wigner_transformer_builder.cc
-	#rf_rf_threshold_transformer_builder.cc
+	rtf_rtf_ratio_transformer_builder.cc
 )
 
 midge_library( bindings )

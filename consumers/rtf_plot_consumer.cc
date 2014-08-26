@@ -68,7 +68,6 @@ namespace midge
                 t_first_written_index = t_time_index;
                 t_last_written_index = t_time_index;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_run )
@@ -86,7 +85,6 @@ namespace midge
                 t_last_written_index = t_time_index;
                 t_count++;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_stop )
@@ -101,12 +99,10 @@ namespace midge
 
                 t_plot->plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y, t_z );
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_exit )
             {
-                in_stream< 0 >() << t_data;
                 return;
             }
         }

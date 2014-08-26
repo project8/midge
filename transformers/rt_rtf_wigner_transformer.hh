@@ -19,7 +19,7 @@ namespace midge
             virtual ~rt_rtf_wigner_transformer();
 
         public:
-            composable( window, window );
+            assignable( window, window );
             accessible( count_t, width );
             accessible( count_t, length );
 

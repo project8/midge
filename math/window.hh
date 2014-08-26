@@ -14,6 +14,7 @@ namespace midge
 
         public:
             void set_size( const count_t& p_size );
+            const count_t& get_size() const;
 
             const real_t* raw() const;
             const real_t& sum() const;

@@ -27,7 +27,7 @@ namespace midge
             virtual ~_window_transformer();
 
         public:
-            composable( window, window )
+            assignable( window, window )
             accessible( count_t, length )
 
         protected:

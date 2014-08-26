@@ -44,6 +44,10 @@ namespace midge
 
         return;
     }
+    const count_t& window::get_size() const
+    {
+        return f_size;
+    }
 
     const real_t* window::raw() const
     {

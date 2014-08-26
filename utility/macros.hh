@@ -28,7 +28,7 @@
     protected:\
         x_type f_##x_variable;
 
-#define composable( x_type, x_variable )\
+#define assignable( x_type, x_variable )\
     public:\
         void set_##x_variable( x_type* p_variable )\
         {\

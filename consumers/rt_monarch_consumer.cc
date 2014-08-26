@@ -82,7 +82,6 @@ namespace midge
                 t_record_index = 0;
                 t_record_count = 0;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_run )
@@ -149,7 +148,6 @@ namespace midge
 
                 t_first_unwritten_index = t_time_index + t_size;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_stop )
@@ -157,12 +155,10 @@ namespace midge
                 t_monarch->Close();
                 delete t_monarch;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_exit )
             {
-                in_stream< 0 >() << t_data;
                 return;
             }
         }

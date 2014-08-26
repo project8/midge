@@ -4,8 +4,6 @@
 #include "consumer.hh"
 #include "macros.hh"
 
-//#include "coremsg.hh"
-
 namespace midge
 {
 
@@ -62,30 +60,22 @@ namespace midge
                 t_file.write( f_file );
                 t_file << t_data;
 
-                //coremsg( s_normal ) << "file consumer <" << this->get_name() << "> pulling <start>" << eom;
-                parent::template in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_run )
             {
                 t_file << t_data;
 
-                //coremsg( s_normal ) << "file consumer <" << this->get_name() << "> pulling <run>" << eom;
-                parent::template in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_stop )
             {
                 t_file.close();
 
-                //coremsg( s_normal ) << "file consumer <" << this->get_name() << "> pulling <close>" << eom;
-                parent::template in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_exit )
             {
-                //coremsg( s_normal ) << "file consumer <" << this->get_name() << "> pulling <exit>" << eom;
-                parent::template in_stream< 0 >() << t_data;
                 return;
             }
         }

@@ -18,7 +18,7 @@
     "rt_chirp_producer" :
     {
         "name" : "event_0",
-        "power_dbm" : -33.0,
+        "power_dbm" : -32.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 200.0e6,
         "stop_frequency_hz" : 300.0e6,

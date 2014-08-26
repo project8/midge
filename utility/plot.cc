@@ -261,7 +261,7 @@ namespace midge
             throw error() << "time frequency plotter was given z values with size <" << p_z.values().size() << "> and y values with size <" << p_y.values().size() << ">";
         }
 
-        msg_normal( msg, "making two dimensional plot <" << p_name << ">" << eom );
+        msg_normal( msg, "making two dimensional plot <" << p_name << "> on canvas <" << p_key << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
@@ -330,7 +330,7 @@ namespace midge
             throw error() << "time frequency plotter was given z values with size <" << p_y.values().size() << "> and x values with size <" << p_x.values().size() << ">";
         }
 
-        msg_normal( msg, "making two dimensional graph <" << p_name << ">" << eom );
+        msg_normal( msg, "making two dimensional graph <" << p_name << "> on canvas <" << p_key << ">" << eom );
 
         real_t t_x_increment = (p_x.high() - p_x.low()) / p_x.count();
         real_t t_y_increment = (p_y.high() - p_y.low()) / p_y.count();
@@ -358,7 +358,6 @@ namespace midge
             t_axes->SetTitle( p_title.c_str() );
             t_axes->GetXaxis()->SetTitle( p_x.title().c_str() );
             t_axes->GetYaxis()->SetTitle( p_y.title().c_str() );
-            t_axes->GetZaxis()->SetTitle( "FUCK" );
             t_graph->Draw( "L" );
         }
         else

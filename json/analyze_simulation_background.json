@@ -1,58 +1,62 @@
 {
-    "rt_data" : 
-    {
-        "name" : "signal_data"
-    },
-
-    "rtf_data" :
-    {
-        "name" : "power_data"
-    },
-
     "rt_monarch_producer" :
     {
         "name" : "signal",
         "file" : "simulation_background_signal.egg",
-        "minimum_time" : 0.0,
-        "maximum_time" : 1.0,
+        "begin_sec" : 0.0,
+        "end_sec" : 2.0e-4,
         "size" : 1000,
-        "stride" : 1000
+        "stride" : 1000,
+        "length" : 10
     },
 
     "rt_rtf_power_transformer" :
     {
         "name" : "power",
         "impedance_ohm" : 50,
-        "window_blackman" :
+        "window_rectangular" :
         {
-        }
+        },
+        "length" : 10
     },
 
-    "rtf_background_consumer" :
+    "rtf_rf_average_transformer" :
     {
-        "name" : "background",
-        "file" : "simulation_background.root",
-        "length" : 75,
+        "name" : "average",
+        "length" : 10
+    },
+
+    "rf_rf_smoothing_transformer" :
+    {
+        "name" : "smoothing",
+        "width" : 75,
         "window_hanning" :
         {
         },
-        "plot" : true,
-        "plot_key" : "background_canvas",
-        "plot_name" : "background_histogram",
-        "chart_title" : "Background Spectrum",
-        "axis_title" : "Power [watt]"
+        "length" : 10
     },
 
-    "void_controller" :
+    "rf_binary_consumer" :
     {
-        "name" : "control"
+        "name" : "binary",
+        "file" : "simulation_background_spectrum.mgb"
     },
 
-    "join" : "signal.out_0:signal_data.in",
-    "join" : "signal_data.out:power.in_0",
-    "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:background.in_0",
-    "join" : "control.out_0:signal",
+    "rf_plot_consumer" :
+    {
+        "name" : "plot",
+        "plot_key" : "spectrum_out_canvas",
+        "plot_name" : "spectrum_out_histogram",
+        "chart_title" : "Background Spectrum",
+        "x_title" : "Time [sec]",
+        "y_title" : "Power [watt]"
+    },
 
-    "run" : "control"
+    "join" : "signal.out_0:power.in_0",
+    "join" : "power.out_0:average.in_0",
+    "join" : "average.out_0:smoothing.in_0",
+    "join" : "smoothing.out_0:binary.in_0",
+    "join" : "smoothing.out_0:plot.in_0",
+
+    "run" : "signal:power:average:smoothing:binary:plot"
 }

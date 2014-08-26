@@ -22,7 +22,7 @@ namespace midge
             accessible( real_t, impedance_ohm )
             accessible( real_t, begin_hz )
             accessible( real_t, end_hz )
-            composable( window, window )
+            assignable( window, window )
             accessible( count_t, length )
 
         protected:

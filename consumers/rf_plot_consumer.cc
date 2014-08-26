@@ -60,7 +60,6 @@ namespace midge
                 t_first_written_index = t_frequency_index;
                 t_first_unwritten_index = t_frequency_index;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_run )
@@ -92,7 +91,6 @@ namespace midge
 
                 t_first_unwritten_index = t_frequency_index + t_size;
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_stop )
@@ -103,12 +101,10 @@ namespace midge
 
                 t_plot->plot_one_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y );
 
-                in_stream< 0 >() << t_data;
                 continue;
             }
             if( t_command == stream::s_exit )
             {
-                in_stream< 0 >() << t_data;
                 return;
             }
         }

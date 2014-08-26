@@ -66,7 +66,7 @@ namespace midge
     template< template< class > class x_type, class x_in_type, class x_out_type >
     void _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::execute()
     {
-        command_t t_in_command;
+        command_t t_command;
         x_type< x_in_type > t_in_data;
         x_type< x_out_type > t_out_data;
 
@@ -77,9 +77,9 @@ namespace midge
         {
             parent::template in_stream< 0 >() >> t_in_data;
             parent::template out_stream< 0 >() >> t_out_data;
-            t_in_command = parent::template in_stream< 0 >().command();
+            t_command = parent::template in_stream< 0 >().command();
 
-            if( t_in_command == stream::s_start )
+            if( t_command == stream::s_start )
             {
                 t_header( t_in_data, t_out_data );
 
@@ -88,7 +88,7 @@ namespace midge
                 parent::template in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_command == stream::s_run )
+            if( t_command == stream::s_run )
             {
                 t_header( t_in_data, t_out_data );
                 t_data( t_in_data, t_out_data );
@@ -98,7 +98,7 @@ namespace midge
                 parent::template in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_command == stream::s_stop )
+            if( t_command == stream::s_stop )
             {
                 t_header( t_in_data, t_out_data );
 
@@ -107,7 +107,7 @@ namespace midge
                 parent::template in_stream< 0 >() << t_in_data;
                 continue;
             }
-            if( t_in_command == stream::s_exit )
+            if( t_command == stream::s_exit )
             {
                 t_header( t_in_data, t_out_data );
 
