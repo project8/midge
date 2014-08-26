@@ -1,5 +1,7 @@
 #include "binary.hh"
 
+#include "message.hh"
+
 namespace midge
 {
 
@@ -27,6 +29,16 @@ namespace midge
     {
         f_fstream.close();
         return;
+    }
+
+    bool binary::end()
+    {
+        f_fstream.peek();
+        if( f_fstream.good() == false )
+        {
+            return true;
+        }
+        return false;
     }
 
 }

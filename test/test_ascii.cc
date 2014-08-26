@@ -137,7 +137,27 @@ int main()
     t_ascii.close();
 
     t_ascii.read( "test_ascii.txt" );
+
+    if( t_ascii.end() == true )
+    {
+        msg( s_warning ) << "ascii file at end." << eom;
+    }
+    else
+    {
+        msg( s_normal ) << "ascii file not at end." << eom;
+    }
+
     t_ascii >> t_readable;
+
+    if( t_ascii.end() == true )
+    {
+        msg( s_normal ) << "ascii file at end." << eom;
+    }
+    else
+    {
+        msg( s_warning ) << "ascii file not at end." << eom;
+    }
+
     t_ascii.close();
 
     t_readable.print();

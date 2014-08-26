@@ -7,6 +7,8 @@
 #include "ascii.hh"
 #include "_stream.hh"
 
+#include "coremsg.hh"
+
 namespace midge
 {
 
@@ -15,107 +17,128 @@ namespace midge
         public _stream< _f_data< x_type > >
     {
         public:
-            _f_data() :
-                    f_raw( NULL ),
-                    f_size( 0 ),
-                    f_frequency_interval( 1. ),
-                    f_frequency_index( 0 )
-            {
-            }
-            virtual ~_f_data()
-            {
-                if( f_raw != NULL )
-                {
-                    fourier::get_instance()->free< x_type >( f_raw );
-                }
-            }
+            _f_data();
+            virtual ~_f_data();
 
         public:
-            x_type* raw()
-            {
-                return f_raw;
-            }
-            x_type* raw() const
-            {
-                return f_raw;
-            }
+            x_type* raw() const;
 
-            void set_size( const count_t& p_size )
-            {
-                if( f_size == p_size )
-                {
-                    return;
-                }
-                f_size = p_size;
+            void set_size( const count_t& p_size );
+            const count_t& get_size() const;
 
-                if( f_raw != NULL )
-                {
-                    fourier::get_instance()->free< x_type >( f_raw );
-                }
-                f_raw = fourier::get_instance()->allocate< x_type >( f_size );
+            void set_frequency_interval( const real_t& p_frequency_interval );
+            const real_t& get_frequency_interval() const;
 
-                return;
-            }
-            const count_t& get_size() const
-            {
-                return f_size;
-            }
-
-            void set_frequency_interval( const real_t& p_frequency_interval )
-            {
-                f_frequency_interval = p_frequency_interval;
-                return;
-            }
-            const real_t& get_frequency_interval() const
-            {
-                return f_frequency_interval;
-            }
-
-            void set_frequency_index( const count_t& p_frequency_index )
-            {
-                f_frequency_index = p_frequency_index;
-                return;
-            }
-            const count_t& get_frequency_index() const
-            {
-                return f_frequency_index;
-            }
+            void set_frequency_index( const count_t& p_frequency_index );
+            const count_t& get_frequency_index() const;
 
         protected:
-            mutable x_type* f_raw;
+            x_type* f_raw;
             count_t f_size;
             real_t f_frequency_interval;
             count_t f_frequency_index;
 
         public:
-            command_t command()
-            {
-                return stream::s_none;
-            }
-            void command( command_t )
-            {
-                return;
-            }
-
-            _f_data& operator>>( _f_data& p_data )
-            {
-                p_data.f_raw = f_raw;
-                p_data.f_size = f_size;
-                p_data.f_frequency_interval = f_frequency_interval;
-                p_data.f_frequency_index = f_frequency_index;
-                f_raw = NULL;
-                return *this;
-            }
-            _f_data& operator<<( const _f_data& p_data )
-            {
-                f_raw = p_data.f_raw;
-                f_size = p_data.f_size;
-                f_frequency_interval = p_data.f_frequency_interval;
-                f_frequency_index = p_data.f_frequency_index;
-                p_data.f_raw = NULL;
-                return *this;
-            }
+            command_t command();
+            void command( command_t );
+            _f_data& operator>>( _f_data& p_data );
+            _f_data& operator<<( const _f_data& p_data );
     };
+
+    template< class x_type >
+    _f_data< x_type >::_f_data() :
+            f_raw( NULL ),
+            f_size( 0 ),
+            f_frequency_interval( 1. ),
+            f_frequency_index( 0 )
+    {
+    }
+    template< class x_type >
+    _f_data< x_type >::~_f_data()
+    {
+    }
+
+    template< class x_type >
+    x_type* _f_data< x_type >::raw() const
+    {
+        return f_raw;
+    }
+
+    template< class x_type >
+    void _f_data< x_type >::set_size( const count_t& p_size )
+    {
+        if( f_size == p_size )
+        {
+            return;
+        }
+        f_size = p_size;
+
+        if( f_raw != NULL )
+        {
+            fourier::get_instance()->free< x_type >( f_raw );
+        }
+        f_raw = fourier::get_instance()->allocate< x_type >( f_size );
+
+        return;
+    }
+    template< class x_type >
+    const count_t& _f_data< x_type >::get_size() const
+    {
+        return f_size;
+    }
+
+    template< class x_type >
+    void _f_data< x_type >::set_frequency_interval( const real_t& p_frequency_interval )
+    {
+        f_frequency_interval = p_frequency_interval;
+    }
+    template< class x_type >
+    const real_t& _f_data< x_type >::get_frequency_interval() const
+    {
+        return f_frequency_interval;
+    }
+
+    template< class x_type >
+    void _f_data< x_type >::set_frequency_index( const count_t& p_frequency_index )
+    {
+        f_frequency_index = p_frequency_index;
+    }
+    template< class x_type >
+    const count_t& _f_data< x_type >::get_frequency_index() const
+    {
+        return f_frequency_index;
+    }
+
+    template< class x_type >
+    command_t _f_data< x_type >::command()
+    {
+        return stream::s_none;
+    }
+    template< class x_type >
+    void _f_data< x_type >::command( command_t )
+    {
+        return;
+    }
+
+    template< class x_type >
+    _f_data< x_type >& _f_data< x_type >::operator>>( _f_data< x_type >& p_data )
+    {
+
+        p_data.f_raw = f_raw;
+        p_data.f_size = f_size;
+        p_data.f_frequency_interval = f_frequency_interval;
+        p_data.f_frequency_index = f_frequency_index;
+        return *this;
+    }
+    template< class x_type >
+    _f_data< x_type >& _f_data< x_type >::operator<<( const _f_data< x_type >& p_data )
+    {
+        f_raw = p_data.f_raw;
+        f_size = p_data.f_size;
+        f_frequency_interval = p_data.f_frequency_interval;
+        f_frequency_index = p_data.f_frequency_index;
+        return *this;
+    }
 
     template< class x_data >
     class ascii::pull< _f_data< x_data > >
@@ -177,10 +200,7 @@ namespace midge
                 p_data.set_size( t_size );
                 p_data.set_frequency_interval( t_frequency_interval );
                 p_data.set_frequency_index( t_frequency_index );
-                for( count_t t_index = 0; t_index < t_size; t_index++ )
-                {
-                    p_stream >> p_data.raw()[ t_index ];
-                }
+                p_stream.f_fstream.read( reinterpret_cast< char* >( p_data.raw() ), t_size * sizeof(x_data) );
             }
     };
     template< class x_data >
@@ -192,10 +212,7 @@ namespace midge
                 p_stream << p_data.get_size();
                 p_stream << p_data.get_frequency_interval();
                 p_stream << p_data.get_frequency_index();
-                for( count_t t_index = 0; t_index < p_data.get_size(); t_index++ )
-                {
-                    p_stream << p_data.  raw()[ t_index ];
-                }
+                p_stream.f_fstream.write( reinterpret_cast< const char* >( p_data.raw() ), p_data.get_size() * sizeof(x_data) );
             }
     };
 

@@ -151,7 +151,7 @@ namespace midge
                 p_to.set_size( p_from.get_size() );
                 p_to.set_time_interval( p_from.get_time_interval() );
                 p_to.set_time_index( p_from.get_time_index() );
-                p_window.initialize( p_from.get_size() );
+                p_window.set_size( p_from.get_size() );
                 return;
             }
     };
@@ -171,7 +171,7 @@ namespace midge
                 p_to.set_size( p_from.get_size() );
                 p_to.set_frequency_interval( p_from.get_frequency_interval() );
                 p_to.set_frequency_index( p_from.get_frequency_index() );
-                p_window.initialize( p_from.get_size() );
+                p_window.set_size( p_from.get_size() );
                 return;
             }
     };
@@ -193,7 +193,7 @@ namespace midge
                 p_to.set_time_index( p_from.get_time_index() );
                 p_to.set_frequency_interval( p_from.get_frequency_interval() );
                 p_to.set_frequency_index( p_from.get_frequency_index() );
-                p_window.initialize( p_from.get_size() );
+                p_window.set_size( p_from.get_size() );
                 return;
             }
     };

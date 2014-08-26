@@ -13,8 +13,7 @@ namespace midge
             virtual ~window();
 
         public:
-            void initialize( const count_t& p_size );
-            void finalize();
+            void set_size( const count_t& p_size );
 
             const real_t* raw() const;
             const real_t& sum() const;

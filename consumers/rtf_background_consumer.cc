@@ -55,7 +55,7 @@ namespace midge
         {
             throw error() << "rf background consumer window unset";
         }
-        f_window->initialize( 2 * f_length + 1 );
+        f_window->set_size( 2 * f_length + 1 );
         f_multiplier = f_window->raw();
 
         f_average = new real_t[ f_size ];

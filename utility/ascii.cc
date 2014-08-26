@@ -29,4 +29,44 @@ namespace midge
         return;
     }
 
+    bool ascii::end()
+    {
+        int t_char;
+        while( true )
+        {
+            t_char = f_fstream.peek();
+
+            if( t_char == ' ' )
+            {
+                t_char = f_fstream.get();
+                continue;
+            }
+
+            if( t_char == '\n' )
+            {
+                t_char = f_fstream.get();
+                continue;
+            }
+
+            if( t_char == '\r' )
+            {
+                t_char = f_fstream.get();
+                continue;
+            }
+
+            if( t_char == '\t' )
+            {
+                t_char = f_fstream.get();
+                continue;
+            }
+
+            break;
+        }
+        if( f_fstream.good() == false )
+        {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -96,7 +96,7 @@ namespace midge
                     t_center = 0;
                 }
 
-                f_window->initialize( t_in_size );
+                f_window->set_size( t_in_size );
                 t_window = f_window->raw();
                 t_norm = 1. / (f_impedance_ohm * f_window->sum() * f_window->sum());
 

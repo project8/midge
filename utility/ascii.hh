@@ -31,6 +31,7 @@ namespace midge
             void read( const string& p_file );
             void write( const string& p_file );
             void close();
+            bool end();
 
         public:
             template< class x_type >

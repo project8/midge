@@ -60,6 +60,7 @@ namespace midge
             if( t_command == stream::s_start )
             {
                 t_file.write( f_file );
+                t_file << t_data;
 
                 //coremsg( s_normal ) << "file consumer <" << this->get_name() << "> pulling <start>" << eom;
                 parent::template in_stream< 0 >() << t_data;

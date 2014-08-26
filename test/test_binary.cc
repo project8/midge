@@ -138,7 +138,27 @@ int main()
     block t_readable;
 
     t_binary.read( "test_binary.mgb" );
+
+    if( t_binary.end() == true )
+    {
+        msg( s_warning ) << "binary file at end." << eom;
+    }
+    else
+    {
+        msg( s_normal ) << "binary file not at end." << eom;
+    }
+
     t_binary >> t_readable;
+
+    if( t_binary.end() == true )
+    {
+        msg( s_normal ) << "binary file at end." << eom;
+    }
+    else
+    {
+        msg( s_warning ) << "binary file not at end." << eom;
+    }
+
     t_binary.close();
 
     t_readable.print();

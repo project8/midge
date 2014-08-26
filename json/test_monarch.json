@@ -11,15 +11,9 @@
         "start_sec" : 0.0e-9,
         "stop_sec" : 20000.0e-9,
         "interval_sec" : 1.0e-9,
-        "length" : 100,
+        "length" : 10,
         "size" : 10000,
         "stride" : 100
-    },
-
-    "rt_ascii_consumer" :
-    {
-    	"name" : "rtwa_out",
-    	"file" : "test_monarch.write.txt"
     },
 
     "rt_plot_consumer" :
@@ -42,11 +36,10 @@
     	"voltage_maximum" : 0.25
     },
 
-    "join" : "rtw_in.out_0:rtwa_out.in_0",
     "join" : "rtw_in.out_0:rtwp_out.in_0",
     "join" : "rtw_in.out_0:rtwm_out.in_0",
 
-    "run" : "rtw_in:rtwa_out:rtwp_out:rtwm_out",
+    "run" : "rtw_in:rtwp_out:rtwm_out",
 
     "rt_monarch_producer" :
     {
@@ -59,12 +52,6 @@
         "stride" : 200
     },
 
-    "rt_ascii_consumer" :
-    {
-        "name" : "rtra_out",
-        "file" : "test_monarch.read.txt"
-    },
-
     "rt_plot_consumer" :
     {
         "name" : "rtrp_out",
@@ -75,8 +62,7 @@
         "y_title" : "Signal [volt]"
     },
 
-    "join" : "rtr_in.out_0:rtra_out.in_0",
     "join" : "rtr_in.out_0:rtrp_out.in_0",
 
-    "run" : "rtr_in:rtra_out:rtrp_out"
+    "run" : "rtr_in:rtrp_out"
 }

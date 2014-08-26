@@ -266,6 +266,19 @@ set( midge_producers_directory
 	producers
 )
 set( midge_producers_headers
+	_file_producer.hh
+	rt_ascii_producer.hh
+	ct_ascii_producer.hh
+	rf_ascii_producer.hh
+	cf_ascii_producer.hh
+	rtf_ascii_producer.hh
+	ctf_ascii_producer.hh
+	rt_binary_producer.hh
+	ct_binary_producer.hh
+	rf_binary_producer.hh
+	cf_binary_producer.hh
+	rtf_binary_producer.hh
+	ctf_binary_producer.hh
 	rt_harmonic_producer.hh
 	rt_chirp_producer.hh
 	rt_sinusoidal_producer.hh
@@ -273,6 +286,18 @@ set( midge_producers_headers
 	rt_monarch_producer.hh
 )
 set( midge_producers_sources
+	rt_ascii_producer.cc
+	ct_ascii_producer.cc
+	rf_ascii_producer.cc
+	cf_ascii_producer.cc
+	rtf_ascii_producer.cc
+	ctf_ascii_producer.cc
+	rt_binary_producer.cc
+	ct_binary_producer.cc
+	rf_binary_producer.cc
+	cf_binary_producer.cc
+	rtf_binary_producer.cc
+	ctf_binary_producer.cc
 	rt_harmonic_producer.cc
 	rt_chirp_producer.cc
 	rt_sinusoidal_producer.cc
@@ -513,6 +538,18 @@ set( midge_bindings_headers
 	window_hanning_builder.hh
 	window_hamming_builder.hh
 	window_blackman_builder.hh
+	rt_ascii_producer_builder.hh
+	ct_ascii_producer_builder.hh
+	rf_ascii_producer_builder.hh
+	cf_ascii_producer_builder.hh
+	rtf_ascii_producer_builder.hh
+	ctf_ascii_producer_builder.hh
+	rt_binary_producer_builder.hh
+	ct_binary_producer_builder.hh
+	rf_binary_producer_builder.hh
+	cf_binary_producer_builder.hh
+	rtf_binary_producer_builder.hh
+	ctf_binary_producer_builder.hh
 	rt_harmonic_producer_builder.hh
 	rt_chirp_producer_builder.hh
 	rt_sinusoidal_producer_builder.hh
@@ -570,6 +607,18 @@ set( midge_bindings_headers
 )
 set( midge_bindings_sources
 	midge_builder.cc
+	rt_ascii_producer_builder.cc
+	ct_ascii_producer_builder.cc
+	rf_ascii_producer_builder.cc
+	cf_ascii_producer_builder.cc
+	rtf_ascii_producer_builder.cc
+	ctf_ascii_producer_builder.cc
+	rt_binary_producer_builder.cc
+	ct_binary_producer_builder.cc
+	rf_binary_producer_builder.cc
+	cf_binary_producer_builder.cc
+	rtf_binary_producer_builder.cc
+	ctf_binary_producer_builder.cc
 	rt_harmonic_producer_builder.cc
 	rt_chirp_producer_builder.cc
 	rt_sinusoidal_producer_builder.cc

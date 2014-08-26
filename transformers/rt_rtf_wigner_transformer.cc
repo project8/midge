@@ -95,7 +95,7 @@ namespace midge
                 t_frequency_interval = 1. / ( 2. * t_time_interval * t_out_size );
                 t_frequency_index = 0;
 
-                f_window->initialize( 2 * f_width - 1 );
+                f_window->set_size( 2 * f_width - 1 );
                 t_window = f_window->raw();
                 t_norm = 2. / (f_window->sum() * f_window->sum());
 

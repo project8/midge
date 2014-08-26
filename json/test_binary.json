@@ -1,0 +1,60 @@
+{
+    "rt_harmonic_producer" :
+    {
+        "name" : "rtw_in",
+        "power_dbm" : -4.0,
+        "impedance_ohm" : 50.0,
+        "frequency_hz" : 1.0e6,
+        "phase_deg" : 270.0,
+        "begin_sec" : 0.0e-9,
+        "end_sec" : 20000.0e-9,
+        "start_sec" : 0.0e-9,
+        "stop_sec" : 20000.0e-9,
+        "interval_sec" : 1.0e-9,
+        "length" : 10,
+        "size" : 10000,
+        "stride" : 100
+    },
+
+    "rt_plot_consumer" :
+    {
+        "name" : "rtwp_out",
+        "plot_key" : "binary_write",
+        "plot_name" : "binary_write",
+        "chart_title" : "Binary Write Signal",
+        "x_title" : "Time [sec]",
+        "y_title" : "Signal [volt]"
+    },
+
+    "rt_binary_consumer" :
+    {
+    	"name" : "rtwb_out",
+    	"file" : "test_binary.mgb"
+    },
+
+    "join" : "rtw_in.out_0:rtwp_out.in_0",
+    "join" : "rtw_in.out_0:rtwb_out.in_0",
+
+    "run" : "rtw_in:rtwp_out:rtwb_out",
+
+    "rt_binary_producer" :
+    {
+        "name" : "rtrb_in",
+        "file" : "test_binary.mgb",
+        "length" : 10
+    },
+
+    "rt_plot_consumer" :
+    {
+        "name" : "rtrp_out",
+        "plot_key" : "binary_read",
+        "plot_name" : "binary_read",
+        "chart_title" : "Binary Read Signal",
+        "x_title" : "Time [sec]",
+        "y_title" : "Signal [volt]"
+    },
+
+    "join" : "rtrb_in.out_0:rtrp_out.in_0",
+
+    "run" : "rtrb_in:rtrp_out"
+}
