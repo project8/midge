@@ -107,13 +107,13 @@ namespace midge
         f_in = in< 0 >()->raw();
 
         f_ratio = new real_t[ f_size ];
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+        for( index_t t_index = 0; t_index < f_size; t_index++ )
         {
             f_ratio[ t_index ] = -1.;
         }
 
         f_background = new real_t[ f_size ];
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+        for( index_t t_index = 0; t_index < f_size; t_index++ )
         {
             f_background[ t_index ] = 0.;
         }
@@ -216,7 +216,7 @@ namespace midge
         register double t_in;
         register double t_background;
         register double t_ratio;
-        for( count_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
+        for( index_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
         {
             t_in = f_in[ t_index ];
             t_background = f_background[ t_index ];
@@ -402,7 +402,7 @@ namespace midge
         }
 
         //msg_warning( coremsg, "** adding clusters **" << eom );
-        for( count_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
+        for( index_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
         {
             if( f_ratio[ t_index ] > 0. )
             {
@@ -576,7 +576,7 @@ namespace midge
                 t_cluster_data_tree->Branch( "frequency", &t_tree_data_frequency );
                 t_cluster_data_tree->Branch( "ratio", &t_tree_data_ratio );
                 t_cluster_data_tree->Branch( "score", &t_tree_data_score );
-                for( count_t t_index = 0; t_index < t_cluster->ratios().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_cluster->ratios().size(); t_index++ )
                 {
                     t_tree_data_time = t_cluster->times().at( t_index );
                     t_tree_data_frequency = t_cluster->frequencies().at( t_index );
@@ -715,7 +715,7 @@ namespace midge
                 t_line_data_tree->Branch( "time", &t_tree_data_time );
                 t_line_data_tree->Branch( "frequency", &t_tree_data_frequency );
                 t_line_data_tree->Branch( "ratio", &t_tree_data_ratio );
-                for( count_t t_index = 0; t_index < t_line->ratios().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_line->ratios().size(); t_index++ )
                 {
                     t_tree_data_time = t_line->times().at( t_index );
                     t_tree_data_frequency = t_line->frequencies().at( t_index );
@@ -884,7 +884,7 @@ namespace midge
                 t_event_data_tree->Branch( "time", &t_tree_data_time );
                 t_event_data_tree->Branch( "frequency", &t_tree_data_frequency );
                 t_event_data_tree->Branch( "ratio", &t_tree_data_ratio );
-                for( count_t t_index = 0; t_index < t_event->data_ratios().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_event->data_ratios().size(); t_index++ )
                 {
                     t_tree_data_time = t_event->data_times().at( t_index );
                     t_tree_data_frequency = t_event->data_frequencies().at( t_index );
@@ -903,7 +903,7 @@ namespace midge
                 t_event_line_tree->SetDirectory( t_event_stream );
                 t_event_line_tree->Branch( "time", &t_tree_line_time );
                 t_event_line_tree->Branch( "frequency", &t_tree_line_frequency );
-                for( count_t t_index = 0; t_index < t_event->line_times().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_event->line_times().size(); t_index++ )
                 {
                     t_tree_line_time = t_event->line_times().at( t_index );
                     t_tree_line_frequency = t_event->line_frequencies().at( t_index );
@@ -930,7 +930,7 @@ namespace midge
                 t_event_data_tree->Branch( "time", &t_tree_data_time );
                 t_event_data_tree->Branch( "frequency", &t_tree_data_frequency );
                 t_event_data_tree->Branch( "ratio", &t_tree_data_ratio );
-                for( count_t t_index = 0; t_index < t_event->data_ratios().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_event->data_ratios().size(); t_index++ )
                 {
                     t_tree_data_time = t_event->data_times().at( t_index );
                     t_tree_data_frequency = t_event->data_frequencies().at( t_index );
@@ -949,7 +949,7 @@ namespace midge
                 t_event_line_tree->SetDirectory( t_event_stream );
                 t_event_line_tree->Branch( "time", &t_tree_line_time );
                 t_event_line_tree->Branch( "frequency", &t_tree_line_frequency );
-                for( count_t t_index = 0; t_index < t_event->line_times().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_event->line_times().size(); t_index++ )
                 {
                     t_tree_line_time = t_event->line_times().at( t_index );
                     t_tree_line_frequency = t_event->line_frequencies().at( t_index );
@@ -1196,7 +1196,7 @@ namespace midge
     {
         //msg_warning( coremsg, "cluster <" << f_id << "> created" << eom );
 
-        register count_t t_index;
+        register index_t t_index;
         register real_t t_point_frequency;
         register real_t t_point_ratio;
 
@@ -1343,7 +1343,7 @@ namespace midge
     {
         //msg_warning( coremsg, "cluster <" << f_id << "> updating:" << eom );
 
-        register count_t t_index;
+        register index_t t_index;
         register real_t t_point_time = *s_time;
         register real_t t_point_duration = t_point_time - f_time;
         register real_t t_point_frequency;
@@ -1845,7 +1845,7 @@ namespace midge
     {
         //msg_warning( coremsg, "line <" << f_id << "> created" << eom );
 
-        register count_t t_index;
+        register index_t t_index;
         register real_t t_point_time;
         register real_t t_point_duration;
         register real_t t_point_frequency;
@@ -2038,7 +2038,7 @@ namespace midge
     {
         //msg_warning( coremsg, "line <" << f_id << "> updating:" << eom );
 
-        register count_t t_index;
+        register index_t t_index;
         register real_t t_point_time = *s_time;
         register real_t t_point_duration = t_point_time - f_time;
         register real_t t_point_frequency;

@@ -15,7 +15,7 @@
 
     "point_transformer" :
     {
-        "name" : "point",
+        "name" : "unused",
         "begin_sec" : 0.0e-4,
         "end_sec" : 2.0e-4,
         "begin_hz" : 0.0e6,
@@ -25,7 +25,7 @@
 
     "point_transformer" :
     {
-        "name" : "unused",
+        "name" : "point",
         "begin_sec" : 15.0e-6,
         "end_sec" : 55.0e-6,
         "begin_hz" : 180.0e6,
@@ -45,9 +45,37 @@
         "z_title" : "Ratio [none]"
     },
 
+    "line_transformer" :
+    {
+        "name" : "line",
+        "ratio_seed" : 3.0,
+        "ratio_low" : 1.0,
+        "ratio_high" : 4.0,
+        "window_seed" : 2.0e6,
+        "window_low" : 1.0e6,
+        "window_high" : 3.0e6,
+        "count" : 15,
+        "tolerance" : 2.5,
+        "length" : 10
+    },
+
+    "point_plot_consumer" :
+    {
+        "name" : "line_plot",
+        "plot_field" : "id",
+        "plot_key" : "line_canvas",
+        "plot_name" : "line_histogram",
+        "chart_title" : "Line IDs of Points",
+        "x_title" : "Time [sec]",
+        "y_title" : "Frequency [hertz]",
+        "z_title" : "ID [none]"
+    },
+
     "join" : "background.out_0:point.in_0",
     "join" : "signal.out_0:point.in_1",
     "join" : "point.out_0:point_plot.in_0",
+    "join" : "point.out_0:line.in_0",
+    "join" : "line.out_0:line_plot.in_0",
 
-    "run" : "background:signal:point:point_plot"
+    "run" : "background:signal:point:point_plot:line:line_plot"
 }

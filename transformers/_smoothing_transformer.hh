@@ -72,7 +72,7 @@ namespace midge
     template< class x_type >
     void _smoothing_transformer< x_type >::execute()
     {
-        command_t t_in_command;
+        enum_t t_in_command;
         const x_type* t_in_data;
         x_type* t_out_data;
 
@@ -187,7 +187,7 @@ namespace midge
                 register real_t t_norm;
                 register count_t t_size = p_from->get_size();
                 register count_t t_width = (p_window->get_size() - 1) / 2;
-                for( count_t t_index = 0; t_index < t_size; t_index++ )
+                for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     t_value = 0.;
                     t_norm = 0.;
@@ -221,7 +221,7 @@ namespace midge
                 register real_t t_norm;
                 register count_t t_size = p_from->get_size();
                 register count_t t_width = (p_window->get_size() - 1) / 2;
-                for( count_t t_index = 0; t_index < t_size; t_index++ )
+                for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     t_value[ 0 ] = 0.;
                     t_value[ 1 ] = 0.;

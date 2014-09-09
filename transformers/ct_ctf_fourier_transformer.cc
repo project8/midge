@@ -21,7 +21,7 @@ namespace midge
 
     void ct_ctf_fourier_transformer::execute()
     {
-        command_t t_in_command;
+        enum_t t_in_command;
 
         ct_data* t_in_data;
         ctf_data* t_out_data;

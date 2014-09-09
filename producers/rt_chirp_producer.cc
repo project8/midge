@@ -33,7 +33,7 @@ namespace midge
 
     void rt_chirp_producer::execute()
     {
-        count_t t_index;
+        index_t t_index;
 
         rt_data* t_current_data;
         const rt_data* t_previous_data;

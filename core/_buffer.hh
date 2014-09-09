@@ -32,7 +32,7 @@ namespace midge
             void initialize( const count_t& p_length )
             {
                 f_length = p_length;
-                f_read_command = new command_t[ f_length ];
+                f_read_command = new enum_t[ f_length ];
                 f_read_data = new x_type[ f_length ];
                 f_write_stream = new _write_stream( *this );
 
@@ -41,7 +41,7 @@ namespace midge
             template< class x_r >
             void call( x_r (x_type::*p_member)() )
             {
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)();
                 }
@@ -50,7 +50,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1 >
             void call( x_r (x_type::*p_member)( x_a1 ), x_p1 p_1 )
             {
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1 );
                 }
@@ -59,7 +59,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2 ), x_p1 p_1, x_p2 p_2 )
             {
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2 );
                 }
@@ -68,7 +68,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2, class x_a3, class x_p3 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2, x_a3 ), x_p1 p_1, x_p2 p_2, x_p3 p_3 )
             {
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3 );
                 }
@@ -77,7 +77,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2, class x_a3, class x_p3, class x_a4, class x_p4 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2, x_a3, x_a4 ), x_p1 p_1, x_p2 p_2, x_p3 p_3, x_p4 p_4 )
             {
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3, p_4 );
                 }
@@ -86,7 +86,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2, class x_a3, class x_p3, class x_a4, class x_p4, class x_a5, class x_p5 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2, x_a3, x_a4, x_a5 ), x_p1 p_1, x_p2 p_2, x_p3 p_3, x_p4 p_4, x_p5 p_5 )
             {
-                for( count_t t_index = 0; t_index < f_length; t_index++ )
+                for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3, p_5 );
                 }
@@ -158,15 +158,15 @@ namespace midge
                     {
                     }
 
-                    command_t get()
+                    enum_t get()
                     {
-                        command_t t_command;
+                        enum_t t_command;
                         f_buffer.f_write_mutex.lock();
                         t_command = f_buffer.f_write_command;
                         f_buffer.f_write_mutex.unlock();
                         return t_command;
                     }
-                    void set( command_t p_command )
+                    void set( enum_t p_command )
                     {
                         f_buffer.f_read_command[ f_current_index ] = p_command;
 
@@ -180,12 +180,12 @@ namespace midge
                             f_next_index = 0;
                         }
 
-                        for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                        for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
                         }
 
-                        for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                        for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_current_index ].unlock();
                         }
@@ -207,7 +207,7 @@ namespace midge
                     mutable count_t f_next_index;
             };
 
-            command_t f_write_command;
+            enum_t f_write_command;
             mutex f_write_mutex;
             _write_stream* f_write_stream;
 
@@ -227,7 +227,7 @@ namespace midge
                     {
                     }
 
-                    command_t get()
+                    enum_t get()
                     {
                         if( ++f_next_index == f_buffer.f_length )
                         {
@@ -242,7 +242,7 @@ namespace midge
 
                         return f_buffer.f_read_command[ f_current_index ];
                     }
-                    void set( command_t p_command )
+                    void set( enum_t p_command )
                     {
                         f_buffer.f_write_mutex.lock();
                         f_buffer.f_write_command = p_command;
@@ -264,7 +264,7 @@ namespace midge
 
             count_t f_read_count;
             x_type* f_read_data;
-            command_t* f_read_command;
+            enum_t* f_read_command;
             mutex** f_read_mutexes;
             _read_stream** f_read_streams;
 

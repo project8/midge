@@ -204,7 +204,7 @@ namespace midge
             f_th1s.insert( th1_entry( p_name, t_histogram ) );
         }
 
-        for( count_t t_index = 0; t_index < p_x.values().size(); t_index++ )
+        for( index_t t_index = 0; t_index < p_x.values().size(); t_index++ )
         {
             if( p_y.values().at( t_index ) != p_y.values().at( t_index ) )
             {
@@ -279,7 +279,7 @@ namespace midge
             f_th2s.insert( th2_entry( p_name, t_histogram ) );
         }
 
-        for( count_t t_index = 0; t_index < p_z.values().size(); t_index++ )
+        for( index_t t_index = 0; t_index < p_z.values().size(); t_index++ )
         {
             if( p_z.values().at( t_index ) != p_z.values().at( t_index ) )
             {
@@ -338,7 +338,7 @@ namespace midge
         TGraph* t_graph = new TGraph();
         f_graphs.insert( graph_entry( p_name, t_graph ) );
 
-        for( count_t t_index = 0; t_index < p_y.values().size(); t_index++ )
+        for( index_t t_index = 0; t_index < p_y.values().size(); t_index++ )
         {
             if( p_y.values().at( t_index ) != p_y.values().at( t_index ) )
             {

@@ -1,9 +1,6 @@
 #include "point_transformer.hh"
 #include "pool.hh"
 
-#include <limits>
-using std::numeric_limits;
-
 #include <cmath>
 
 namespace midge
@@ -30,8 +27,8 @@ namespace midge
 
     void point_transformer::execute()
     {
-        count_t t_index;
-        command_t t_command;
+        index_t t_index;
+        enum_t t_command;
 
         const rf_data* t_background;
         count_t t_background_size;
@@ -168,7 +165,7 @@ namespace midge
                     t_frequency_value = t_index * t_background_frequency_interval;
                     t_background_value = t_background->at( t_index - t_background_frequency_index );
                     t_signal_value = t_signal->at( t_index - t_signal_frequency_index );
-                    t_ratio_value = (t_signal_value - t_background_value) / t_background_value;
+                    t_ratio_value = t_signal_value / t_background_value;
 
                     t_point = t_points->points().at( t_index - t_begin_frequency_index );
                     t_point->time() = t_time_value;

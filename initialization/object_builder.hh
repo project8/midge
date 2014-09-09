@@ -55,7 +55,7 @@ namespace midge
 
                 map_it_t t_it;
 
-                for( count_t t_index = 0; t_index < p_object->size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_object->size(); t_index++ )
                 {
                     t_pair = p_object->at( t_index );
                     t_label = t_pair.first;

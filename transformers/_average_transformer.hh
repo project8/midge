@@ -61,7 +61,7 @@ namespace midge
     template< template< class > class x_in_type, template< class > class x_out_type, class x_raw_type >
     void _average_transformer< x_in_type< x_raw_type >, x_out_type< x_raw_type > >::execute()
     {
-        command_t t_command;
+        enum_t t_command;
         const x_in_type< x_raw_type >* t_in_data;
         x_out_type< x_raw_type >* t_out_data;
 
@@ -141,7 +141,7 @@ namespace midge
         public:
             inline void initialize( x_data_out_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = 0.;
                 }
@@ -151,7 +151,7 @@ namespace midge
 
             inline void accumulate( const x_data_in_type< real_t >* p_from, x_data_out_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) += p_from->at( t_index );
                 }
@@ -161,7 +161,7 @@ namespace midge
 
             inline void finalize( x_data_out_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) /= (real_t)( f_count );
                 }
@@ -180,7 +180,7 @@ namespace midge
         public:
             inline void initialize( x_data_out_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] = 0.;
                     p_to->at( t_index )[ 1 ] = 0.;
@@ -191,7 +191,7 @@ namespace midge
 
             inline void accumulate( const x_data_in_type< complex_t >* p_from, x_data_out_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] += p_from->at( t_index )[ 0 ];
                     p_to->at( t_index )[ 1 ] += p_from->at( t_index )[ 1 ];
@@ -202,7 +202,7 @@ namespace midge
 
             inline void finalize( x_data_out_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] /= (real_t)( f_count );
                     p_to->at( t_index )[ 1 ] /= (real_t)( f_count );

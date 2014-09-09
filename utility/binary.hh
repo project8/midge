@@ -108,7 +108,7 @@ namespace midge
                         x_key t_key;
                         x_value t_value;
                         p_map.clear();
-                        for( count_t t_index = 0; t_index < t_size; t_index++ )
+                        for( index_t t_index = 0; t_index < t_size; t_index++ )
                         {
                             p_stream >> t_key >> t_value;
                             p_map.insert( pair< x_key, x_value >( t_key, t_value ) );

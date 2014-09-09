@@ -54,7 +54,7 @@ namespace midge
     void pool< x_type >::initialize( const count_t& p_size )
     {
         s_mutex.lock();
-        for( count_t t_index = 0; t_index < p_size; t_index++ )
+        for( index_t t_index = 0; t_index < p_size; t_index++ )
         {
             s_stack.push( pointer< x_type >( new x_type() ) );
         }

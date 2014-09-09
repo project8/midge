@@ -46,7 +46,7 @@ namespace midge
     template< class x_data, class x_file >
     void _file_consumer< x_data, x_file >::execute()
     {
-        command_t t_command;
+        enum_t t_command;
         const x_data* t_data;
         x_file t_file;
 

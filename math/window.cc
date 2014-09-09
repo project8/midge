@@ -36,7 +36,7 @@ namespace midge
 
         f_sum = 0.;
         f_square = 0.;
-        for( count_t t_index = 0; t_index < f_size; t_index++ )
+        for( index_t t_index = 0; t_index < f_size; t_index++ )
         {
             f_sum += f_raw[ t_index ];
             f_square += f_raw[ t_index ] * f_raw[ t_index ];

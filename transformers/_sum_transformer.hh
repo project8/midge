@@ -61,9 +61,9 @@ namespace midge
     template< class x_type >
     void _sum_transformer< x_type >::execute()
     {
-        command_t t_in_zero_command;
+        enum_t t_in_zero_command;
         const x_type* t_in_zero_data;
-        command_t t_in_one_command;
+        enum_t t_in_one_command;
         const x_type* t_in_one_data;
         x_type* t_out_data;
 
@@ -228,7 +228,7 @@ namespace midge
         public:
             inline void sum( const x_data_type< real_t >* p_from_zero, const x_data_type< real_t >* p_from_one, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from_zero->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from_zero->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = p_from_zero->at( t_index ) + p_from_one->at( t_index );
                 }
@@ -243,7 +243,7 @@ namespace midge
         public:
             inline void sum( const x_data_type< complex_t >* p_from_zero, const x_data_type< complex_t >* p_from_one, x_data_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from_zero->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from_zero->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] = p_from_zero->at( t_index )[ 0 ] + p_from_one->at( t_index )[ 0 ];
                     p_to->at( t_index )[ 1 ] = p_from_zero->at( t_index )[ 1 ] + p_from_one->at( t_index )[ 1 ];

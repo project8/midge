@@ -18,7 +18,7 @@ namespace midge
         real_t t_real_index;
         real_t t_center = .5 * (t_real_size - 1.);
         real_t t_scale = .5 * (t_real_size + 1.);
-        for( count_t t_index = 0; t_index < p_size; t_index++ )
+        for( index_t t_index = 0; t_index < p_size; t_index++ )
         {
             t_real_index = (real_t) (t_index);
             p_raw[ t_index ] = 1. - (((t_real_index - t_center) * (t_real_index - t_center)) / (t_scale * t_scale));

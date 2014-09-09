@@ -74,7 +74,7 @@ namespace midge
                 public:
                     pull( ascii& p_stream, x_type p_object[ x_size ] )
                     {
-                        for( count_t t_index = 0; t_index < x_size; t_index++ )
+                        for( index_t t_index = 0; t_index < x_size; t_index++ )
                         {
                             p_stream.f_fstream >> p_object[ t_index ];
                         }
@@ -86,7 +86,7 @@ namespace midge
                 public:
                     push( ascii& p_stream, const x_type p_object[ x_size ] )
                     {
-                        count_t t_index = 0;
+                        index_t t_index = 0;
 
                         if( t_index != x_size )
                         {
@@ -150,7 +150,7 @@ namespace midge
                         x_key t_key;
                         x_value t_value;
                         p_map.clear();
-                        for( count_t t_index = 0; t_index < t_size; t_index++ )
+                        for( index_t t_index = 0; t_index < t_size; t_index++ )
                         {
                             p_stream >> t_key;
                             p_stream >> t_value;

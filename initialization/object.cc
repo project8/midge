@@ -70,7 +70,7 @@ namespace midge
 
     value* object::at( const string& p_key, const count_t& p_index )
     {
-        count_t t_index = p_index;
+        index_t t_index = p_index;
         multimap_it_t t_first = f_multimap.lower_bound( p_key );
         multimap_it_t t_last = f_multimap.upper_bound( p_key );
         if( t_first != f_multimap.end() )
@@ -91,7 +91,7 @@ namespace midge
     }
     const value* object::at( const string& p_key, const count_t& p_index ) const
     {
-        count_t t_index = p_index;
+        index_t t_index = p_index;
         multimap_cit_t t_first = f_multimap.lower_bound( p_key );
         multimap_cit_t t_last = f_multimap.upper_bound( p_key );
         if( t_first != f_multimap.end() )

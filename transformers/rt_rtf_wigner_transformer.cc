@@ -31,9 +31,9 @@ namespace midge
 
     void rt_rtf_wigner_transformer::execute()
     {
-        count_t t_index;
+        index_t t_index;
 
-        command_t t_in_command;
+        enum_t t_in_command;
 
         rt_data* t_in_data;
         count_t t_in_size;

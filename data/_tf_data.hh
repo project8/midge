@@ -168,7 +168,7 @@ namespace midge
                 p_data.set_time_index( t_time_index );
                 p_data.set_frequency_interval( t_frequency_interval );
                 p_data.set_frequency_index( t_frequency_index );
-                for( count_t t_index = 0; t_index < t_size; t_index++ )
+                for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     p_stream >> t_frequency >> p_data.at( t_index );
                 }
@@ -185,7 +185,7 @@ namespace midge
                 p_stream << "# " << p_data.get_time_index() << "\n";
                 p_stream << "# " << p_data.get_frequency_interval() << "\n";
                 p_stream << "# " << p_data.get_frequency_index() << "\n";
-                for( count_t t_index = 0; t_index < p_data.get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_data.get_size(); t_index++ )
                 {
                     p_stream << p_data.get_time_index() * p_data.get_time_interval() << " " << (t_index + p_data.get_frequency_index()) * p_data.get_frequency_interval() << " " << p_data.at( t_index ) << "\n";
                 }

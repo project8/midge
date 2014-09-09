@@ -29,9 +29,9 @@ namespace midge
 
     void point_plot_consumer::execute()
     {
-        count_t t_index;
+        index_t t_index;
 
-        command_t t_command;
+        enum_t t_command;
         const point_data* t_points;
         pointer< point > t_point;
         count_t t_size;
@@ -89,6 +89,8 @@ namespace midge
             }
             if( t_command == stream::s_run )
             {
+                msg_normal( coremsg, "point plot consumer <" << get_name() << "> received data" << eom );
+
                 t_time_index = t_points->get_time_index();
 
                 for( t_index = 0; t_index < t_size; t_index++ )
@@ -115,13 +117,23 @@ namespace midge
             }
             if( t_command == stream::s_stop )
             {
+                msg_normal( coremsg, "point plot consumer <" << get_name() << "> plotting data" << eom );
+
                 t_x.count() = t_count;
                 t_x.low() = t_first_written_index * t_time_interval;
                 t_x.high() = t_last_written_index * t_time_interval;
 
+                msg_normal( coremsg, "  x count is <" << t_x.count() << ">" << eom );
+                msg_normal( coremsg, "  x low is <" << t_x.low() << ">" << eom );
+                msg_normal( coremsg, "  x high is <" << t_x.high() << ">" << eom );
+
                 t_y.count() = t_size;
                 t_y.low() = t_frequency_index * t_frequency_interval;
                 t_y.high() = (t_frequency_index + t_size - 1) * t_frequency_interval;
+
+                msg_normal( coremsg, "  y count is <" << t_y.count() << ">" << eom );
+                msg_normal( coremsg, "  y low is <" << t_y.low() << ">" << eom );
+                msg_normal( coremsg, "  y high is <" << t_y.high() << ">" << eom );
 
                 t_plot->plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y, t_z );
 

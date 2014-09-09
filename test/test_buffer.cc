@@ -20,9 +20,9 @@ namespace midge
         class stream
         {
             public:
-                static const command_t s_idle;
-                static const command_t s_started;
-                static const command_t s_stopped;
+                static const enum_t s_idle;
+                static const enum_t s_started;
+                static const enum_t s_stopped;
 
             public:
                 stream()
@@ -32,13 +32,13 @@ namespace midge
                 {
                 }
 
-                virtual stream& operator>( command_t& p_state ) = 0;
-                virtual stream& operator<( const command_t& p_state ) = 0;
+                virtual stream& operator>( enum_t& p_state ) = 0;
+                virtual stream& operator<( const enum_t& p_state ) = 0;
         };
 
-        const command_t stream::s_idle = 0;
-        const command_t stream::s_started = 1;
-        const command_t stream::s_stopped = 2;
+        const enum_t stream::s_idle = 0;
+        const enum_t stream::s_started = 1;
+        const enum_t stream::s_stopped = 2;
 
         template< class x_type >
         class read_stream :
@@ -94,13 +94,13 @@ namespace midge
                 {
                     delete f_write_stream;
 
-                    for( count_t t_index = 0; t_index < f_length; t_index++ )
+                    for( index_t t_index = 0; t_index < f_length; t_index++ )
                     {
                         delete f_read_state[ t_index ];
                     }
                     delete[] f_read_state;
 
-                    for( count_t t_index = 0; t_index < f_length; t_index++ )
+                    for( index_t t_index = 0; t_index < f_length; t_index++ )
                     {
                         delete f_read_data[ t_index ];
                     }
@@ -117,12 +117,12 @@ namespace midge
                     delete[] f_read_streams;
                 }
 
-                void initialize( const count_t& p_length, command_t* (p_state_factory)(), x_type* (*p_data_factory)() )
+                void initialize( const count_t& p_length, enum_t* (p_state_factory)(), x_type* (*p_data_factory)() )
                 {
                     f_length = p_length;
-                    f_read_state = new command_t*[ p_length ];
+                    f_read_state = new enum_t*[ p_length ];
                     f_read_data = new x_type*[ p_length ];
-                    for( count_t t_index = 0; t_index < p_length; t_index++ )
+                    for( index_t t_index = 0; t_index < p_length; t_index++ )
                     {
                         f_read_state[ t_index ] = (*p_state_factory)();
                         f_read_data[ t_index ] = (*p_data_factory)();
@@ -143,7 +143,7 @@ namespace midge
                     mutex** t_new_read_data_mutexes = new mutex*[ t_new_read_count ];
                     buffer_read_stream** t_new_read_streams = new buffer_read_stream*[ t_new_read_count ];
 
-                    for( count_t t_index = 0; t_index < f_read_count; t_index++ )
+                    for( index_t t_index = 0; t_index < f_read_count; t_index++ )
                     {
                         t_new_read_state_mutexes[ t_index ] = f_read_state_mutexes[ t_index ];
                         t_new_read_data_mutexes[ t_index ] = f_read_data_mutexes[ t_index ];
@@ -188,7 +188,7 @@ namespace midge
                         {
                         }
 
-                        write_stream< x_type >& operator>( command_t& p_state )
+                        write_stream< x_type >& operator>( enum_t& p_state )
                         {
                             f_buffer.f_write_state_mutex.lock();
                             p_state = f_buffer.f_write_state;
@@ -196,21 +196,21 @@ namespace midge
 
                             return *this;
                         }
-                        write_stream< x_type >& operator<( const command_t& p_state )
+                        write_stream< x_type >& operator<( const enum_t& p_state )
                         {
                             if( ++f_next_state_index == f_buffer.f_length )
                             {
                                 f_next_state_index = 0;
                             }
 
-                            for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                            for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                             {
                                 f_buffer.f_read_state_mutexes[ t_index ][ f_next_state_index ].lock();
                             }
 
                             *(f_buffer.f_read_state[ f_current_state_index ]) = p_state;
 
-                            for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                            for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                             {
                                 f_buffer.f_read_state_mutexes[ t_index ][ f_current_state_index ].unlock();
                             }
@@ -226,7 +226,7 @@ namespace midge
                                 f_next_data_index = 0;
                             }
 
-                            for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                            for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                             {
                                 f_buffer.f_read_data_mutexes[ t_index ][ f_next_data_index ].lock();
                             }
@@ -237,7 +237,7 @@ namespace midge
                         }
                         write_stream< x_type >& operator<<( x_type*& )
                         {
-                            for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                            for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                             {
                                 f_buffer.f_read_data_mutexes[ t_index ][ f_current_data_index ].unlock();
                             }
@@ -255,7 +255,7 @@ namespace midge
                         count_t f_next_data_index;
                 };
 
-                command_t f_write_state;
+                enum_t f_write_state;
                 mutex f_write_state_mutex;
                 buffer_write_stream* f_write_stream;
 
@@ -275,7 +275,7 @@ namespace midge
                         {
                         }
 
-                        read_stream< x_type >& operator>( command_t& p_state )
+                        read_stream< x_type >& operator>( enum_t& p_state )
                         {
                             f_buffer.f_read_state_mutexes[ f_stream_index ][ f_current_state_index ].lock();
 
@@ -290,7 +290,7 @@ namespace midge
 
                             return *this;
                         }
-                        read_stream< x_type >& operator<( const command_t& p_state )
+                        read_stream< x_type >& operator<( const enum_t& p_state )
                         {
                             f_buffer.f_write_state_mutex.lock();
                             f_buffer.f_write_state = p_state;
@@ -326,7 +326,7 @@ namespace midge
                 };
 
                 count_t f_read_count;
-                command_t** f_read_state;
+                enum_t** f_read_state;
                 mutex** f_read_state_mutexes;
                 x_type** f_read_data;
                 mutex** f_read_data_mutexes;
@@ -354,7 +354,7 @@ namespace midge
 
                     count_t t_count = 0;
                     count_t t_sleep;
-                    command_t t_state;
+                    enum_t t_state;
                     double* t_value;
                     while( true )
                     {
@@ -410,7 +410,7 @@ namespace midge
                 {
                     count_t t_count = 0;
                     count_t t_sleep;
-                    command_t t_state;
+                    enum_t t_state;
                     const double* t_value;
                     while( true )
                     {
@@ -454,9 +454,9 @@ namespace midge
             (*t_real) = 0.;
             return t_real;
         }
-        command_t* new_state()
+        enum_t* new_state()
         {
-            command_t* t_state = new command_t;
+            enum_t* t_state = new enum_t;
             (*t_state) = stream::s_idle;
             return t_state;
         }

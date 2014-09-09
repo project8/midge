@@ -66,7 +66,7 @@ namespace midge
     template< template< class > class x_type, class x_in_type, class x_out_type >
     void _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::execute()
     {
-        command_t t_command;
+        enum_t t_command;
         const x_type< x_in_type >* t_in_data;
         x_type< x_out_type >* t_out_data;
 
@@ -189,7 +189,7 @@ namespace midge
 
             inline void real( const x_data_type< real_t >* p_from, x_data_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] = p_from->at( t_index );
                     p_to->at( t_index )[ 1 ] = 0.;
@@ -199,7 +199,7 @@ namespace midge
 
             inline void imaginary( const x_data_type< real_t >* p_from, x_data_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] = 0.;
                     p_to->at( t_index )[ 1 ] = p_from->at( t_index );
@@ -244,7 +244,7 @@ namespace midge
 
             inline void real( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = p_from->at( t_index )[ 0 ];
                 }
@@ -253,7 +253,7 @@ namespace midge
 
             inline void imaginary( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = p_from->at( t_index )[ 1 ];
                 }
@@ -262,7 +262,7 @@ namespace midge
 
             inline void modulus( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = sqrt( p_from->at( t_index )[ 0 ] * p_from->at( t_index )[ 0 ] + p_from->at( t_index )[ 1 ] * p_from->at( t_index )[ 1 ] );
                 }
@@ -271,7 +271,7 @@ namespace midge
 
             inline void argument( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = atan2( p_from->at( t_index )[ 1 ], p_from->at( t_index )[ 0 ] );
                 }

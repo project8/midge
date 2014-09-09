@@ -21,9 +21,9 @@ namespace midge
 
     void ctf_ctf_analytic_transformer::execute()
     {
-        count_t t_index;
+        index_t t_index;
 
-        command_t t_in_command;
+        enum_t t_in_command;
 
         ctf_data* t_in_data;
         ctf_data* t_out_data;

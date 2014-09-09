@@ -27,9 +27,9 @@ namespace midge
 
     void rf_plot_consumer::execute()
     {
-        count_t t_index;
+        index_t t_index;
 
-        command_t t_command;
+        enum_t t_command;
         const rf_data* t_data;
         count_t t_size;
         real_t t_frequency_interval;

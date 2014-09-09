@@ -3,7 +3,7 @@
 
 #include "transformer.hh"
 #include "rf_data.hh"
-#include "candidate_data.hh"
+#include "point_data.hh"
 #include "line_data.hh"
 #include "typelist.hh"
 #include "macros.hh"
@@ -21,7 +21,7 @@ namespace midge
 {
 
     class line_transformer :
-        public _transformer< line_transformer, typelist_1( candidate_data ), typelist_1( line_data )>
+        public _transformer< line_transformer, typelist_1( point_data ), typelist_1( point_data )>
     {
         public:
             line_transformer();
@@ -34,7 +34,7 @@ namespace midge
             accessible( real_t, window_seed )
             accessible( real_t, window_low )
             accessible( real_t, window_high )
-            accessible( real_t, size )
+            accessible( real_t, count )
             accessible( real_t, tolerance )
             accessible( count_t, length )
 
@@ -43,11 +43,11 @@ namespace midge
             void execute();
             void finalize();
 
-            void initialize_line( candidate_data& p_candidates, line& p_line );
-            void update_line( candidate_data& p_candidates, line& p_line );
+            void initialize_line( point_data& p_points, line& p_line );
+            void update_line( point_data& p_points, line& p_line );
 
 
-            typedef list< pointer< candidate > > point_list;
+            typedef list< pointer< point > > point_list;
             typedef point_list::iterator point_it;
             typedef point_list::const_iterator point_cit;
 

@@ -129,7 +129,7 @@ namespace midge
                 p_data.set_size( t_size );
                 p_data.set_time_interval( t_time_interval );
                 p_data.set_time_index( t_time_index );
-                for( count_t t_index = 0; t_index < t_size; t_index++ )
+                for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     p_stream >> t_time >> p_data.at( t_index );
                 }
@@ -144,7 +144,7 @@ namespace midge
                 p_stream << "# " << p_data.get_size() << "\n";
                 p_stream << "# " << p_data.get_time_interval() << "\n";
                 p_stream << "# " << p_data.get_time_index() << "\n";
-                for( count_t t_index = 0; t_index < p_data.get_size(); t_index++ )
+                for( index_t t_index = 0; t_index < p_data.get_size(); t_index++ )
                 {
                     p_stream << (t_index + p_data.get_time_index()) * p_data.get_time_interval() << " " << p_data.at( t_index ) << "\n";
                 }

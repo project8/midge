@@ -429,7 +429,7 @@ set( midge_transformers_headers
 	rt_rtf_power_transformer.hh
 	rt_rtf_wigner_transformer.hh
 	point_transformer.hh
-	#line_transformer.hh
+	line_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_converter_transformer.cc
@@ -471,7 +471,7 @@ set( midge_transformers_sources
 	rt_rtf_power_transformer.cc
 	rt_rtf_wigner_transformer.cc
 	point_transformer.cc
-	#line_transformer.cc
+	line_transformer.cc
 )
 
 midge_library( transformers )
@@ -637,7 +637,7 @@ set( midge_bindings_headers
 	rt_rtf_power_transformer_builder.hh
 	rt_rtf_wigner_transformer_builder.hh
 	point_transformer_builder.hh
-	#line_transformer_builder.hh
+	line_transformer_builder.hh
 )
 set( midge_bindings_sources
 	midge_builder.cc
@@ -714,7 +714,7 @@ set( midge_bindings_sources
 	rt_rtf_power_transformer_builder.cc
 	rt_rtf_wigner_transformer_builder.cc
 	point_transformer_builder.cc
-	#line_transformer_builder.cc
+	line_transformer_builder.cc
 )
 
 midge_library( bindings )
