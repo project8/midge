@@ -17,8 +17,8 @@
 
     "rt_chirp_producer" :
     {
-        "name" : "event_0",
-        "power_dbm" : -32.0,
+        "name" : "chirp_0",
+        "power_dbm" : -30.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 200.0e6,
         "stop_frequency_hz" : 300.0e6,
@@ -35,8 +35,8 @@
 
     "rt_chirp_producer" :
     {
-        "name" : "event_1",
-        "power_dbm" : -30.0,
+        "name" : "chirp_1",
+        "power_dbm" : -32.0,
         "impedance_ohm" : 50.0,
         "start_frequency_hz" : 200.0e6,
         "stop_frequency_hz" : 300.0e6,
@@ -53,7 +53,7 @@
 
     "rt_rt_sum_transformer" :
     {
-        "name" : "event",
+        "name" : "chirp",
         "length" : 10
     },
 
@@ -66,7 +66,7 @@
     "rt_monarch_consumer" :
     {
         "name" : "monarch",
-        "file" : "simulation_event_signal.egg",
+        "file" : "simulation_signal.egg",
         "bits" : 8,
         "record_length" : 5000,
         "voltage_minimum" : -0.25,
@@ -75,10 +75,10 @@
 
     "rt_plot_consumer" :
     {
-        "name" : "signal_out",
-        "plot_key" : "signal_out_canvas",
-        "plot_name" : "signal_out_histogram",
-        "chart_title" : "Simulated Background",
+        "name" : "signal_plot",
+        "plot_key" : "signal_canvas",
+        "plot_name" : "signal_histogram",
+        "chart_title" : "Simulated Signal",
         "x_title" : "Time [sec]",
         "y_title" : "Signal [volt]"
     },
@@ -95,23 +95,23 @@
 
     "rtf_plot_consumer" :
     {
-        "name" : "power_out",
-        "plot_key" : "power_out_canvas",
-        "plot_name" : "power_out_histogram",
-        "chart_title" : "Simulated Background",
+        "name" : "power_plot",
+        "plot_key" : "power_canvas",
+        "plot_name" : "power_histogram",
+        "chart_title" : "Simulated Signal",
         "x_title" : "Time [sec]",
         "y_title" : "Frequency [hz]",
         "z_title" : "Power [watt]"
     },
 
-    "join" : "event_0.out_0:event.in_0",
-    "join" : "event_1.out_0:event.in_1",
+    "join" : "chirp_0.out_0:chirp.in_0",
+    "join" : "chirp_1.out_0:chirp.in_1",
     "join" : "noise.out_0:signal.in_0",
-    "join" : "event.out_0:signal.in_1",
+    "join" : "chirp.out_0:signal.in_1",
     "join" : "signal.out_0:monarch.in_0",
-    "join" : "signal.out_0:signal_out.in_0",
+    "join" : "signal.out_0:signal_plot.in_0",
     "join" : "signal.out_0:power.in_0",
-    "join" : "power.out_0:power_out.in_0",
+    "join" : "power.out_0:power_plot.in_0",
 
-    "run" : "event_0:event_1:event:noise:signal:signal_out:monarch:power:power_out"
+    "run" : "chirp_0:chirp_1:chirp:noise:signal:signal_plot:monarch:power:power_plot"
 }

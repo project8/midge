@@ -51,15 +51,14 @@ namespace midge
     template< class x_data, class x_file >
     void _file_producer< x_data, x_file >::execute()
     {
-        x_data t_data;
+        x_data* t_data;
         x_file t_file;
 
         t_file.read( f_file );
 
-        parent::template out_stream< 0 >() >> t_data;
-        t_file >> t_data;
-        parent::template out_stream< 0 >().command( stream::s_start );
-        parent::template out_stream< 0 >() << t_data;
+        t_data = parent::template out_stream< 0 >().data();
+        t_file >> (*t_data);
+        parent::template out_stream< 0 >().set( stream::s_start );
 
         while( true )
         {
@@ -67,21 +66,16 @@ namespace midge
             {
                 t_file.close();
 
-                parent::template out_stream< 0 >() >> t_data;
-                parent::template out_stream< 0 >().command( stream::s_stop );
-                parent::template out_stream< 0 >() << t_data;
+                parent::template out_stream< 0 >().set( stream::s_stop );
 
-                parent::template out_stream< 0 >() >> t_data;
-                parent::template out_stream< 0 >().command( stream::s_exit );
-                parent::template out_stream< 0 >() << t_data;
+                parent::template out_stream< 0 >().set( stream::s_exit );
 
                 return;
             }
 
-            parent::template out_stream< 0 >() >> t_data;
-            t_file >> t_data;
-            parent::template out_stream< 0 >().command( stream::s_run );
-            parent::template out_stream< 0 >() << t_data;
+            t_data = parent::template out_stream< 0 >().data();
+            t_file >> (*t_data);
+            parent::template out_stream< 0 >().set( stream::s_run );
         }
 
         return;

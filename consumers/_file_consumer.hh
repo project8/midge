@@ -47,24 +47,23 @@ namespace midge
     void _file_consumer< x_data, x_file >::execute()
     {
         command_t t_command;
-        x_data t_data;
+        const x_data* t_data;
         x_file t_file;
 
         while( true )
         {
-            parent::template in_stream< 0 >() >> t_data;
-            t_command = parent::template in_stream< 0 >().command();
+            t_command = parent::template in_stream< 0 >().get();
+            t_data = parent::template in_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
                 t_file.write( f_file );
-                t_file << t_data;
 
                 continue;
             }
             if( t_command == stream::s_run )
             {
-                t_file << t_data;
+                t_file << (*t_data);
 
                 continue;
             }

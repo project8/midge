@@ -27,8 +27,7 @@ namespace midge
         count_t t_index;
 
         command_t t_command;
-        rt_data t_data;
-        real_t* t_raw;
+        const rt_data* t_data;
         count_t t_size;
         real_t t_time_interval;
         count_t t_time_index;
@@ -48,14 +47,14 @@ namespace midge
 
         while( true )
         {
-            in_stream< 0 >() >> t_data;
-            t_command = in_stream< 0 >().command();
+            t_command = in_stream< 0 >().get();
+            t_data = in_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
-                t_size = t_data.get_size();
-                t_time_interval = t_data.get_time_interval();
-                t_time_index = t_data.get_time_index();
+                t_size = t_data->get_size();
+                t_time_interval = t_data->get_time_interval();
+                t_time_index = t_data->get_time_index();
 
                 t_monarch = monarch::Monarch::OpenForWriting( f_file );
 
@@ -86,14 +85,13 @@ namespace midge
             }
             if( t_command == stream::s_run )
             {
-                t_raw = t_data.raw();
-                t_time_index = t_data.get_time_index();
+                t_time_index = t_data->get_time_index();
 
                 if( t_time_index < t_first_unwritten_index )
                 {
                     for( t_index = t_first_unwritten_index; t_index < t_time_index + t_size; t_index++ )
                     {
-                        t_datum = t_raw[ t_index - t_time_index ];
+                        t_datum = t_data->at( t_index - t_time_index );
                         t_datum = (t_datum - f_voltage_minimum) * t_voltage_inverse_range * t_voltage_levels;
 
                         if( t_datum > (t_voltage_levels - 1.) )
@@ -121,7 +119,7 @@ namespace midge
                 {
                     for( t_index = t_time_index; t_index < t_time_index + t_size; t_index++ )
                     {
-                        t_datum = t_raw[ t_index - t_time_index ];
+                        t_datum = t_data->at( t_index - t_time_index );
                         t_datum = (t_datum - f_voltage_minimum) * t_voltage_inverse_range * t_voltage_levels;
 
                         if( t_datum > (t_voltage_levels - 1.) )

@@ -1,0 +1,42 @@
+{
+    "rf_binary_producer" :
+    {
+        "name" : "background",
+        "file" : "background_spectrum.mgb",
+        "length" : 10
+    },
+
+    "rtf_binary_producer" :
+    {
+        "name" : "signal",
+        "file" : "signal_spectrum.mgb",
+        "length" : 10
+    },
+
+    "line_transformer" :
+    {
+        "name" : "reconstruction",
+        "begin_sec" : 0.308,
+        "end_sec" : 0.325,
+        "begin_hz" : 40.0e6,
+        "end_hz" : 70.0e6,
+        "length" : 10
+    },
+
+    "rtf_plot_consumer" :
+    {
+        "name" : "ratio_plot",
+        "plot_key" : "ratio_canvas",
+        "plot_name" : "ratio_histogram",
+        "chart_title" : "Signal to Background Ratios",
+        "x_title" : "Time [sec]",
+        "y_title" : "Frequency [hertz]",
+        "z_title" : "None [none]"
+    },
+
+    "join" : "background.out_0:reconstruction.in_0",
+    "join" : "signal.out_0:reconstruction.in_1",
+    "join" : "reconstruction.out_0:ratio_plot.in_0",
+
+    "run" : "background:signal:reconstruction:ratio_plot"
+}

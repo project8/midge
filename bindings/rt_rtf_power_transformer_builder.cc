@@ -12,7 +12,8 @@ namespace midge
 
     static const int s_rt_rtf_power_transformer =
         rt_rtf_power_transformer_builder::lingual< string >( &rt_rtf_power_transformer::set_name, "name" ) +
-        rt_rtf_power_transformer_builder::numerical< count_t >( &rt_rtf_power_transformer::set_length, "length" ) +
+        rt_rtf_power_transformer_builder::numerical< real_t >( &rt_rtf_power_transformer::set_begin_hz, "begin_hz" ) +
+        rt_rtf_power_transformer_builder::numerical< real_t >( &rt_rtf_power_transformer::set_end_hz, "end_hz" ) +
         rt_rtf_power_transformer_builder::numerical< real_t >( &rt_rtf_power_transformer::set_impedance_ohm, "impedance_ohm" ) +
         rt_rtf_power_transformer_builder::object< window_rectangular >( &rt_rtf_power_transformer::set_window, "window_rectangular" ) +
         rt_rtf_power_transformer_builder::object< window_bartlett >( &rt_rtf_power_transformer::set_window, "window_bartlett" ) +
@@ -20,6 +21,7 @@ namespace midge
         rt_rtf_power_transformer_builder::object< window_hanning >( &rt_rtf_power_transformer::set_window, "window_hanning" ) +
         rt_rtf_power_transformer_builder::object< window_hamming >( &rt_rtf_power_transformer::set_window, "window_hamming" ) +
         rt_rtf_power_transformer_builder::object< window_blackman >( &rt_rtf_power_transformer::set_window, "window_blackman" ) +
+        rt_rtf_power_transformer_builder::numerical< count_t >( &rt_rtf_power_transformer::set_length, "length" ) +
         midge_builder::object< rt_rtf_power_transformer >( &midge::add, "rt_rtf_power_transformer" );
 
 }

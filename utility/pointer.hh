@@ -1,6 +1,8 @@
 #ifndef _midge_pointer_hh_
 #define _midge_pointer_hh_
 
+#include "types.hh"
+
 #include <cstddef>
 
 namespace midge
@@ -13,16 +15,29 @@ namespace midge
             class counter
             {
                 public:
-                    int increment()
+                    counter() :
+                        f_count( 0 )
+                    {
+                    }
+                    ~counter()
+                    {
+                    }
+
+                public:
+                    const count_t& count() const
+                    {
+                        return f_count;
+                    }
+                    const count_t& increment()
                     {
                         return ++f_count;
                     }
-                    int decrement()
+                    const count_t& decrement()
                     {
                         return --f_count;
                     }
                 private:
-                    int f_count;
+                    count_t f_count;
             };
 
         public:
@@ -78,6 +93,10 @@ namespace midge
             bool null() const
             {
                 return f_pointer == NULL;
+            }
+            count_t count() const
+            {
+                return f_counter->count();
             }
 
             pointer< x_type >& operator=( const pointer< x_type >& sp )

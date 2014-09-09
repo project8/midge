@@ -1,58 +1,53 @@
 {
-    "rt_data" : 
-    {
-        "name" : "signal_data"
-    },
-
-    "rtf_data" :
-    {
-        "name" : "power_data"
-    },
-
     "rt_monarch_producer" :
     {
-        "name" : "signal",
-        "file" : "data_background_signal.egg",
-        "minimum_time" : 0.0,
-        "maximum_time" : 1.0,
+        "name" : "background",
+        "file" : "background.egg",
+        "begin_sec" : 0.0,
+        "end_sec" : 1.0,
         "size" : 8192,
-        "stride" : 8192
+        "stride" : 8192,
+        "length" : 10
     },
 
     "rt_rtf_power_transformer" :
     {
         "name" : "power",
+        "begin_hz" : 5.0e6,
+        "end_hz" : 120.0e6,
         "impedance_ohm" : 50,
         "window_rectangular" :
         {
-        }
+        },
+        "length" : 10
     },
 
-    "rtf_background_consumer" :
+    "rtf_rf_average_transformer" :
     {
-        "name" : "background",
-        "file" : "data_background.root",
-        "length" : 60,
+        "name" : "average",
+        "length" : 10
+    },
+
+    "rf_rf_smoothing_transformer" :
+    {
+        "name" : "smoothing",
+        "width" : 60,
         "window_hanning" :
         {
         },
-        "plot" : false,
-        "plot_key" : "background_canvas",
-        "plot_name" : "background_histogram",
-        "chart_title" : "Data Spectrum",
-        "axis_title" : "Power [watt]"
+        "length" : 10
     },
 
-    "void_controller" :
+    "rf_binary_consumer" :
     {
-        "name" : "control"
+        "name" : "binary",
+        "file" : "background_spectrum.mgb"
     },
 
-    "join" : "signal.out_0:signal_data.in",
-    "join" : "signal_data.out:power.in_0",
-    "join" : "power.out_0:power_data.in",
-    "join" : "power_data.out:background.in_0",
-    "join" : "control.out_0:signal",
+    "join" : "background.out_0:power.in_0",
+    "join" : "power.out_0:average.in_0",
+    "join" : "average.out_0:smoothing.in_0",
+    "join" : "smoothing.out_0:binary.in_0",
 
-    "run" : "control"
+    "run" : "background:power:average:smoothing:binary"
 }

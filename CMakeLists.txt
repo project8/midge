@@ -240,7 +240,10 @@ set( midge_data_headers
 	_tf_data.hh
 	rtf_data.hh
 	ctf_data.hh
-	candidate_data.hh
+	point.hh
+	point_data.hh
+	line.hh
+	line_data.hh
 )
 set( midge_data_sources
 	rt_data.cc
@@ -249,7 +252,10 @@ set( midge_data_sources
 	cf_data.cc
 	rtf_data.cc
 	ctf_data.cc
-	candidate_data.cc
+	point.cc
+	point_data.cc
+	line.cc
+	line_data.cc
 )
 
 midge_library( data )
@@ -336,12 +342,11 @@ set( midge_consumers_headers
 	cf_binary_consumer.hh
 	rtf_binary_consumer.hh
 	ctf_binary_consumer.hh
+	rt_monarch_consumer.hh
 	rt_plot_consumer.hh
 	rf_plot_consumer.hh
 	rtf_plot_consumer.hh
-	rt_monarch_consumer.hh
-	#rtf_background_consumer.hh
-	#rtf_event_consumer.hh
+	point_plot_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
@@ -356,12 +361,11 @@ set( midge_consumers_sources
 	cf_binary_consumer.cc
 	rtf_binary_consumer.cc
 	ctf_binary_consumer.cc
+	rt_monarch_consumer.cc
 	rt_plot_consumer.cc
 	rf_plot_consumer.cc
 	rtf_plot_consumer.cc
-	rt_monarch_consumer.cc
-	#rtf_background_consumer.cc
-	#rtf_event_consumer.cc
+	point_plot_consumer.cc
 )
 
 midge_library( consumers )
@@ -386,8 +390,7 @@ set( midge_transformers_headers
 	rf_cf_converter_transformer.hh
 	cf_rf_converter_transformer.hh
 	rtf_ctf_converter_transformer.hh
-	ctf_rtf_converter_transformer.hh
-	
+	ctf_rtf_converter_transformer.hh	
 	_sum_transformer.hh
 	rt_rt_sum_transformer.hh
 	ct_ct_sum_transformer.hh
@@ -395,7 +398,6 @@ set( midge_transformers_headers
 	cf_cf_sum_transformer.hh
 	rtf_rtf_sum_transformer.hh
 	ctf_ctf_sum_transformer.hh
-	
 	_difference_transformer.hh
 	rt_rt_difference_transformer.hh
 	ct_ct_difference_transformer.hh
@@ -403,7 +405,6 @@ set( midge_transformers_headers
 	cf_cf_difference_transformer.hh
 	rtf_rtf_difference_transformer.hh
 	ctf_ctf_difference_transformer.hh
-	
 	_window_transformer.hh
 	rt_rt_window_transformer.hh
 	ct_ct_window_transformer.hh
@@ -411,7 +412,6 @@ set( midge_transformers_headers
 	cf_cf_window_transformer.hh
 	rtf_rtf_window_transformer.hh
 	ctf_ctf_window_transformer.hh
-	
 	_smoothing_transformer.hh
 	rt_rt_smoothing_transformer.hh
 	ct_ct_smoothing_transformer.hh
@@ -419,18 +419,17 @@ set( midge_transformers_headers
 	cf_cf_smoothing_transformer.hh
 	rtf_rtf_smoothing_transformer.hh
 	ctf_ctf_smoothing_transformer.hh
-	
 	_average_transformer.hh
 	rtf_rf_average_transformer.hh
 	ctf_cf_average_transformer.hh
-	
 	ct_ctf_fourier_transformer.hh
 	ctf_ct_fourier_transformer.hh	
 	rt_ct_analytic_transformer.hh
 	ctf_ctf_analytic_transformer.hh
 	rt_rtf_power_transformer.hh
 	rt_rtf_wigner_transformer.hh
-	rtf_rtf_ratio_transformer.hh
+	point_transformer.hh
+	#line_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_converter_transformer.cc
@@ -439,45 +438,40 @@ set( midge_transformers_sources
 	cf_rf_converter_transformer.cc
 	rtf_ctf_converter_transformer.cc
 	ctf_rtf_converter_transformer.cc
-	
 	rt_rt_sum_transformer.cc
 	ct_ct_sum_transformer.cc
 	rf_rf_sum_transformer.cc
 	cf_cf_sum_transformer.cc
 	rtf_rtf_sum_transformer.cc
 	ctf_ctf_sum_transformer.cc
-	
 	rt_rt_difference_transformer.cc
 	ct_ct_difference_transformer.cc
 	rf_rf_difference_transformer.cc
 	cf_cf_difference_transformer.cc
 	rtf_rtf_difference_transformer.cc
 	ctf_ctf_difference_transformer.cc
-	
 	rt_rt_window_transformer.cc
 	ct_ct_window_transformer.cc
 	rf_rf_window_transformer.cc
 	cf_cf_window_transformer.cc
 	rtf_rtf_window_transformer.cc
 	ctf_ctf_window_transformer.cc
-	
 	rt_rt_smoothing_transformer.cc
 	ct_ct_smoothing_transformer.cc
 	rf_rf_smoothing_transformer.cc
 	cf_cf_smoothing_transformer.cc
 	rtf_rtf_smoothing_transformer.cc
 	ctf_ctf_smoothing_transformer.cc
-	
 	rtf_rf_average_transformer.cc
 	ctf_cf_average_transformer.cc
-	
 	ct_ctf_fourier_transformer.cc
 	ctf_ct_fourier_transformer.cc
 	rt_ct_analytic_transformer.cc
 	ctf_ctf_analytic_transformer.cc
 	rt_rtf_power_transformer.cc
 	rt_rtf_wigner_transformer.cc
-	rtf_rtf_ratio_transformer.cc
+	point_transformer.cc
+	#line_transformer.cc
 )
 
 midge_library( transformers )
@@ -599,11 +593,11 @@ set( midge_bindings_headers
 	cf_binary_consumer_builder.hh
 	rtf_binary_consumer_builder.hh
 	ctf_binary_consumer_builder.hh
+	rt_monarch_consumer_builder.hh
 	rt_plot_consumer_builder.hh
 	rf_plot_consumer_builder.hh
 	rtf_plot_consumer_builder.hh
-	rt_monarch_consumer_builder.hh
-	#rtf_event_consumer_builder.hh
+	point_plot_consumer_builder.hh
 	rt_ct_converter_transformer_builder.hh
 	ct_rt_converter_transformer_builder.hh
 	rf_cf_converter_transformer_builder.hh
@@ -642,7 +636,8 @@ set( midge_bindings_headers
 	ctf_ctf_analytic_transformer_builder.hh
 	rt_rtf_power_transformer_builder.hh
 	rt_rtf_wigner_transformer_builder.hh
-	rtf_rtf_ratio_transformer_builder.hh
+	point_transformer_builder.hh
+	#line_transformer_builder.hh
 )
 set( midge_bindings_sources
 	midge_builder.cc
@@ -675,12 +670,11 @@ set( midge_bindings_sources
 	cf_binary_consumer_builder.cc
 	rtf_binary_consumer_builder.cc
 	ctf_binary_consumer_builder.cc
+	rt_monarch_consumer_builder.cc
 	rt_plot_consumer_builder.cc
 	rf_plot_consumer_builder.cc
 	rtf_plot_consumer_builder.cc
-	rt_monarch_consumer_builder.cc
-	#rtf_event_consumer_builder.cc
-	#rf_event_consumer_builder.cc
+	point_plot_consumer_builder.cc
 	rt_ct_converter_transformer_builder.cc
 	ct_rt_converter_transformer_builder.cc
 	rf_cf_converter_transformer_builder.cc
@@ -719,7 +713,8 @@ set( midge_bindings_sources
 	ctf_ctf_analytic_transformer_builder.cc
 	rt_rtf_power_transformer_builder.cc
 	rt_rtf_wigner_transformer_builder.cc
-	rtf_rtf_ratio_transformer_builder.cc
+	point_transformer_builder.cc
+	#line_transformer_builder.cc
 )
 
 midge_library( bindings )
@@ -800,14 +795,13 @@ set( midge_json_files
 	test_monarch.json
 	test_comparison.json
 	generate_simulation_background.json
-	generate_simulation_event.json
-	generate_simulation.json
+	generate_simulation_signal.json
 	analyze_simulation_background.json
-	analyze_simulation_event.json
-	analyze_simulation.json
+	analyze_simulation_signal.json
+	reconstruct_simulation.json
 	analyze_background.json
-	analyze_event.json
-	analyze.json
+	analyze_signal.json
+	reconstruct.json
 )
 
 midge_json( json )

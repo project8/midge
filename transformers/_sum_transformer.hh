@@ -62,61 +62,51 @@ namespace midge
     void _sum_transformer< x_type >::execute()
     {
         command_t t_in_zero_command;
-        x_type t_in_zero_data;
+        const x_type* t_in_zero_data;
         command_t t_in_one_command;
-        x_type t_in_one_data;
-        x_type t_out_data;
+        const x_type* t_in_one_data;
+        x_type* t_out_data;
 
-        void (*t_header)( const x_type&, const x_type&, x_type& ) = _header< x_type >::function();
-        void (*t_data)( const x_type&, const x_type&, x_type& ) = _data< x_type >::function();
+        _header< x_type > t_header;
+        _data< x_type > t_data;
 
         while( true )
         {
-            parent::template in_stream< 0 >() >> t_in_zero_data;
-            parent::template in_stream< 1 >() >> t_in_one_data;
-            parent::template out_stream< 0 >() >> t_out_data;
-            t_in_zero_command = parent::template in_stream< 0 >().command();
-            t_in_one_command = parent::template in_stream< 1 >().command();
+            t_in_zero_command = parent::template in_stream< 0 >().get();
+            t_in_zero_data = parent::template in_stream< 0 >().data();
+
+            t_in_one_command = parent::template in_stream< 1 >().get();
+            t_in_one_data = parent::template in_stream< 1 >().data();
+
+            t_out_data = parent::template out_stream< 0 >().data();
 
             if( (t_in_zero_command == stream::s_start) && (t_in_one_command == stream::s_start) )
             {
-                t_header( t_in_zero_data, t_in_one_data, t_out_data );
+                t_header.copy( t_in_zero_data, t_in_one_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_start );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_zero_data;
-                parent::template in_stream< 1 >() << t_in_one_data;
+                parent::template out_stream< 0 >().set( stream::s_start );
                 continue;
             }
             if( (t_in_zero_command == stream::s_run) && (t_in_one_command == stream::s_run) )
             {
-                t_header( t_in_zero_data, t_in_one_data, t_out_data );
-                t_data( t_in_zero_data, t_in_one_data, t_out_data );
+                t_header.copy( t_in_zero_data, t_in_one_data, t_out_data );
+                t_data.sum( t_in_zero_data, t_in_one_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_run );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_zero_data;
-                parent::template in_stream< 1 >() << t_in_one_data;
+                parent::template out_stream< 0 >().set( stream::s_run );
                 continue;
             }
             if( (t_in_zero_command == stream::s_stop) || (t_in_one_command == stream::s_stop) )
             {
-                t_header( t_in_zero_data, t_in_one_data, t_out_data );
+                t_header.copy( t_in_zero_data, t_in_one_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_stop );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_zero_data;
-                parent::template in_stream< 1 >() << t_in_one_data;
+                parent::template out_stream< 0 >().set( stream::s_stop );
                 continue;
             }
             if( (t_in_zero_command == stream::s_exit) || (t_in_one_command == stream::s_exit) )
             {
-                t_header( t_in_zero_data, t_in_one_data, t_out_data );
+                t_header.copy( t_in_zero_data, t_in_one_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_exit );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_zero_data;
-                parent::template in_stream< 1 >() << t_in_one_data;
+                parent::template out_stream< 0 >().set( stream::s_exit );
                 return;
             }
         }
@@ -137,31 +127,26 @@ namespace midge
     class _sum_transformer< x_type >::_header< _t_data< x_header_type > >
     {
         public:
-            static void (*function())( const _t_data< x_header_type >&, const _t_data< x_header_type >&, _t_data< x_header_type >& )
+            inline void copy( const _t_data< x_header_type >* p_from_zero, const _t_data< x_header_type >* p_from_one, _t_data< x_header_type >* p_to )
             {
-                return &copy;
-            }
-
-            static void copy( const _t_data< x_header_type >& p_from_zero, const _t_data< x_header_type >& p_from_one, _t_data< x_header_type >& p_to )
-            {
-                if( p_from_zero.get_size() != p_from_one.get_size() )
+                if( p_from_zero->get_size() != p_from_one->get_size() )
                 {
                     throw error() << "sum transformer size mismatch";
                 }
 
-                if( p_from_zero.get_time_interval() != p_from_one.get_time_interval() )
+                if( p_from_zero->get_time_interval() != p_from_one->get_time_interval() )
                 {
                     throw error() << "sum transformer time interval mismatch";
                 }
 
-                if( p_from_zero.get_time_index() != p_from_one.get_time_index() )
+                if( p_from_zero->get_time_index() != p_from_one->get_time_index() )
                 {
                     throw error() << "sum transformer time index mismatch";
                 }
 
-                p_to.set_size( p_from_zero.get_size() );
-                p_to.set_time_interval( p_from_zero.get_time_interval() );
-                p_to.set_time_index( p_from_zero.get_time_index() );
+                p_to->set_size( p_from_zero->get_size() );
+                p_to->set_time_interval( p_from_zero->get_time_interval() );
+                p_to->set_time_index( p_from_zero->get_time_index() );
                 return;
             }
     };
@@ -171,31 +156,26 @@ namespace midge
     class _sum_transformer< x_type >::_header< _f_data< x_header_type > >
     {
         public:
-            static void (*function())( const _f_data< x_header_type >&, const _f_data< x_header_type >&, _f_data< x_header_type >& )
+            inline void copy( const _f_data< x_header_type >* p_from_zero, const _f_data< x_header_type >* p_from_one, _f_data< x_header_type >* p_to )
             {
-                return &copy;
-            }
-
-            static void copy( const _f_data< x_header_type >& p_from_zero, const _f_data< x_header_type >& p_from_one, _f_data< x_header_type >& p_to )
-            {
-                if( p_from_zero.get_size() != p_from_one.get_size() )
+                if( p_from_zero->get_size() != p_from_one->get_size() )
                 {
                     throw error() << "sum transformer size mismatch";
                 }
 
-                if( p_from_zero.get_frequency_interval() != p_from_one.get_frequency_interval() )
+                if( p_from_zero->get_frequency_interval() != p_from_one->get_frequency_interval() )
                 {
                     throw error() << "sum transformer frequency interval mismatch";
                 }
 
-                if( p_from_zero.get_frequency_index() != p_from_one.get_frequency_index() )
+                if( p_from_zero->get_frequency_index() != p_from_one->get_frequency_index() )
                 {
                     throw error() << "sum transformer frequency index mismatch";
                 }
 
-                p_to.set_size( p_from_zero.get_size() );
-                p_to.set_frequency_interval( p_from_zero.get_frequency_interval() );
-                p_to.set_frequency_index( p_from_zero.get_frequency_index() );
+                p_to->set_size( p_from_zero->get_size() );
+                p_to->set_frequency_interval( p_from_zero->get_frequency_interval() );
+                p_to->set_frequency_index( p_from_zero->get_frequency_index() );
                 return;
             }
     };
@@ -205,43 +185,38 @@ namespace midge
     class _sum_transformer< x_type >::_header< _tf_data< x_header_type > >
     {
         public:
-            static void (*function())( const _tf_data< x_header_type >&, const _tf_data< x_header_type >&, _tf_data< x_header_type >& )
+            inline void copy( const _tf_data< x_header_type >* p_from_zero, const _tf_data< x_header_type >* p_from_one, _tf_data< x_header_type >* p_to )
             {
-                return &copy;
-            }
-
-            static void copy( const _tf_data< x_header_type >& p_from_zero, const _tf_data< x_header_type >& p_from_one, _tf_data< x_header_type >& p_to )
-            {
-                if( p_from_zero.get_size() != p_from_one.get_size() )
+                if( p_from_zero->get_size() != p_from_one->get_size() )
                 {
                     throw error() << "sum transformer size mismatch";
                 }
 
-                if( p_from_zero.get_time_interval() != p_from_one.get_time_interval() )
+                if( p_from_zero->get_time_interval() != p_from_one->get_time_interval() )
                 {
                     throw error() << "sum transformer time interval mismatch";
                 }
 
-                if( p_from_zero.get_time_index() != p_from_one.get_time_index() )
+                if( p_from_zero->get_time_index() != p_from_one->get_time_index() )
                 {
                     throw error() << "sum transformer time index mismatch";
                 }
 
-                if( p_from_zero.get_frequency_interval() != p_from_one.get_frequency_interval() )
+                if( p_from_zero->get_frequency_interval() != p_from_one->get_frequency_interval() )
                 {
                     throw error() << "sum transformer frequency interval mismatch";
                 }
 
-                if( p_from_zero.get_frequency_index() != p_from_one.get_frequency_index() )
+                if( p_from_zero->get_frequency_index() != p_from_one->get_frequency_index() )
                 {
                     throw error() << "sum transformer frequency index mismatch";
                 }
 
-                p_to.set_size( p_from_zero.get_size() );
-                p_to.set_time_interval( p_from_zero.get_time_interval() );
-                p_to.set_time_index( p_from_zero.get_time_index() );
-                p_to.set_frequency_interval( p_from_zero.get_frequency_interval() );
-                p_to.set_frequency_index( p_from_zero.get_frequency_index() );
+                p_to->set_size( p_from_zero->get_size() );
+                p_to->set_time_interval( p_from_zero->get_time_interval() );
+                p_to->set_time_index( p_from_zero->get_time_index() );
+                p_to->set_frequency_interval( p_from_zero->get_frequency_interval() );
+                p_to->set_frequency_index( p_from_zero->get_frequency_index() );
                 return;
             }
     };
@@ -251,16 +226,11 @@ namespace midge
     class _sum_transformer< x_type >::_data< x_data_type< real_t > >
     {
         public:
-            static void (*function())( const x_data_type< real_t >&, const x_data_type< real_t >&, x_data_type< real_t >& )
+            inline void sum( const x_data_type< real_t >* p_from_zero, const x_data_type< real_t >* p_from_one, x_data_type< real_t >* p_to )
             {
-                return &sum;
-            }
-
-            static inline void sum( const x_data_type< real_t >& p_from_zero, const x_data_type< real_t >& p_from_one, x_data_type< real_t >& p_to )
-            {
-                for( count_t t_index = 0; t_index < p_from_zero.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_from_zero->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = p_from_zero.raw()[ t_index ] + p_from_one.raw()[ t_index ];
+                    p_to->at( t_index ) = p_from_zero->at( t_index ) + p_from_one->at( t_index );
                 }
                 return;
             }
@@ -271,17 +241,12 @@ namespace midge
     class _sum_transformer< x_type >::_data< x_data_type< complex_t > >
     {
         public:
-            static void (*function())( const x_data_type< complex_t >&, const x_data_type< complex_t >&, x_data_type< complex_t >& )
+            inline void sum( const x_data_type< complex_t >* p_from_zero, const x_data_type< complex_t >* p_from_one, x_data_type< complex_t >* p_to )
             {
-                return &sum;
-            }
-
-            static inline void sum( const x_data_type< complex_t >& p_from_zero, const x_data_type< complex_t >& p_from_one, x_data_type< complex_t >& p_to )
-            {
-                for( count_t t_index = 0; t_index < p_from_zero.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_from_zero->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] = p_from_zero.raw()[ t_index ][ 0 ] + p_from_one.raw()[ t_index ][ 0 ];
-                    p_to.raw()[ t_index ][ 1 ] = p_from_zero.raw()[ t_index ][ 1 ] + p_from_one.raw()[ t_index ][ 1 ];
+                    p_to->at( t_index )[ 0 ] = p_from_zero->at( t_index )[ 0 ] + p_from_one->at( t_index )[ 0 ];
+                    p_to->at( t_index )[ 1 ] = p_from_zero->at( t_index )[ 1 ] + p_from_one->at( t_index )[ 1 ];
                 }
                 return;
             }

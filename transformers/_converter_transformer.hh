@@ -22,27 +22,27 @@ namespace midge
         public _transformer< _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >, typelist_1( x_type< x_in_type > ),typelist_1( x_type< x_out_type > ) >
     {
         public:
-            typedef _transformer< _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >, typelist_1( x_type< x_in_type > ),typelist_1( x_type< x_out_type > ) > parent;
+        typedef _transformer< _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >, typelist_1( x_type< x_in_type > ),typelist_1( x_type< x_out_type > ) > parent;
 
         public:
-            _converter_transformer();
-            virtual ~_converter_transformer();
+        _converter_transformer();
+        virtual ~_converter_transformer();
 
         public:
-            accessible( string_t, mode )
-            accessible( count_t, length )
+        accessible( string_t, mode )
+        accessible( count_t, length )
 
         protected:
-            void initialize();
-            void execute();
-            void finalize();
+        void initialize();
+        void execute();
+        void finalize();
 
         private:
-            template< class x_header_in_type, class x_header_out_type >
-            class _header;
+        template< class x_header_in_type, class x_header_out_type >
+        class _header;
 
-            template< class x_data_in_type, class x_data_out_type >
-            class _data;
+        template< class x_data_in_type, class x_data_out_type >
+        class _data;
     };
 
     template< template< class > class x_type, class x_in_type, class x_out_type >
@@ -67,53 +67,45 @@ namespace midge
     void _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::execute()
     {
         command_t t_command;
-        x_type< x_in_type > t_in_data;
-        x_type< x_out_type > t_out_data;
+        const x_type< x_in_type >* t_in_data;
+        x_type< x_out_type >* t_out_data;
 
-        void (*t_header)( const x_type< x_in_type >&, x_type< x_out_type >& ) = _header< x_type< x_in_type >, x_type< x_out_type > >::function();
-        void (*t_data)( const x_type< x_in_type >&, x_type< x_out_type >& ) = _data< x_type< x_in_type >, x_type< x_out_type > >::function( f_mode );
+        _header< x_type< x_in_type >, x_type< x_out_type > > t_header;
+        _data< x_type< x_in_type >, x_type< x_out_type > > t_data( f_mode );
 
         while( true )
         {
-            parent::template in_stream< 0 >() >> t_in_data;
-            parent::template out_stream< 0 >() >> t_out_data;
-            t_command = parent::template in_stream< 0 >().command();
+            t_command = parent::template in_stream< 0 >().get();
+            t_in_data = parent::template in_stream< 0 >().data();
+            t_out_data = parent::template out_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
-                t_header( t_in_data, t_out_data );
+                t_header.copy( t_in_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_start );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_start );
                 continue;
             }
             if( t_command == stream::s_run )
             {
-                t_header( t_in_data, t_out_data );
-                t_data( t_in_data, t_out_data );
+                t_header.copy( t_in_data, t_out_data );
+                t_data.convert( t_in_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_run );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_run );
                 continue;
             }
             if( t_command == stream::s_stop )
             {
-                t_header( t_in_data, t_out_data );
+                t_header.copy( t_in_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_stop );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_stop );
                 continue;
             }
             if( t_command == stream::s_exit )
             {
-                t_header( t_in_data, t_out_data );
+                t_header.copy( t_in_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_exit );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_exit );
                 return;
             }
         }
@@ -128,22 +120,16 @@ namespace midge
         return;
     }
 
-
     template< template< class > class x_type, class x_in_type, class x_out_type >
     template< class x_header_in_type, class x_header_out_type >
     class _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::_header< _t_data< x_header_in_type >, _t_data< x_header_out_type > >
     {
         public:
-            static void (*function())( const _t_data< x_header_in_type >&, _t_data< x_header_out_type >& )
+            inline void copy( const _t_data< x_header_in_type >* p_from, _t_data< x_header_out_type >* p_to )
             {
-                return &copy;
-            }
-
-            static void copy( const _t_data< x_header_in_type >& p_from, _t_data< x_header_out_type >& p_to )
-            {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_time_interval( p_from.get_time_interval() );
-                p_to.set_time_index( p_from.get_time_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_time_interval( p_from->get_time_interval() );
+                p_to->set_time_index( p_from->get_time_index() );
                 return;
             }
     };
@@ -153,16 +139,11 @@ namespace midge
     class _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::_header< _f_data< x_header_in_type >, _f_data< x_header_out_type > >
     {
         public:
-            static void (*function())( const _f_data< x_header_in_type >&, _f_data< x_header_out_type >& )
+            inline void copy( const _f_data< x_header_in_type >* p_from, _f_data< x_header_out_type >* p_to )
             {
-                return &copy;
-            }
-
-            static void copy( const _f_data< x_header_in_type >& p_from, _f_data< x_header_out_type >& p_to )
-            {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
                 return;
             }
     };
@@ -172,18 +153,13 @@ namespace midge
     class _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::_header< _tf_data< x_header_in_type >, _tf_data< x_header_out_type > >
     {
         public:
-            static void (*function())( const _tf_data< x_header_in_type >&, _tf_data< x_header_out_type >& )
+            inline void copy( const _tf_data< x_header_in_type >* p_from, _tf_data< x_header_out_type >* p_to )
             {
-                return &copy;
-            }
-
-            static void copy( const _tf_data< x_header_in_type >& p_from, _tf_data< x_header_out_type >& p_to )
-            {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_time_interval( p_from.get_time_interval() );
-                p_to.set_time_index( p_from.get_time_index() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_time_interval( p_from->get_time_interval() );
+                p_to->set_time_index( p_from->get_time_index() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
                 return;
             }
     };
@@ -193,38 +169,46 @@ namespace midge
     class _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::_data< x_data_type< real_t >, x_data_type< complex_t > >
     {
         public:
-            static void (*function( const string& p_string ))( const x_data_type< real_t >&, x_data_type< complex_t >& )
+            _data( const string& p_string )
             {
                 if( p_string == string( "real" ) )
                 {
-                    return &real;
+                    f_member = &_data::real;
                 }
                 if( p_string == string( "imaginary" ) )
                 {
-                    return &imaginary;
+                    f_member = &_data::imaginary;
                 }
-                return NULL;
             }
 
-            static inline void real( const x_data_type< real_t >& p_from, x_data_type< complex_t >& p_to )
+            inline void convert( const x_data_type< real_t >* p_from, x_data_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                (this->*f_member)( p_from, p_to );
+                return;
+            }
+
+            inline void real( const x_data_type< real_t >* p_from, x_data_type< complex_t >* p_to )
+            {
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] = p_from.raw()[ t_index ];
-                    p_to.raw()[ t_index ][ 1 ] = 0.;
+                    p_to->at( t_index )[ 0 ] = p_from->at( t_index );
+                    p_to->at( t_index )[ 1 ] = 0.;
                 }
                 return;
             }
 
-            static inline void imaginary( const x_data_type< real_t >& p_from, x_data_type< complex_t >& p_to )
+            inline void imaginary( const x_data_type< real_t >* p_from, x_data_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] = 0.;
-                    p_to.raw()[ t_index ][ 1 ] = p_from.raw()[ t_index ];
+                    p_to->at( t_index )[ 0 ] = 0.;
+                    p_to->at( t_index )[ 1 ] = p_from->at( t_index );
                 }
                 return;
             }
+
+        private:
+            void (_data::*f_member)( const x_data_type< real_t >*, x_data_type< complex_t >* );
     };
 
     template< template< class > class x_type, class x_in_type, class x_out_type >
@@ -232,62 +216,70 @@ namespace midge
     class _converter_transformer< x_type< x_in_type >, x_type< x_out_type > >::_data< x_data_type< complex_t >, x_data_type< real_t > >
     {
         public:
-            static void (*function( const string& p_string ))( const x_data_type< complex_t >&, x_data_type< real_t >& )
+            _data( const string& p_string )
             {
                 if( p_string == string( "real" ) )
                 {
-                    return &real;
+                    f_member = &_data::real;
                 }
                 if( p_string == string( "imaginary" ) )
                 {
-                    return &imaginary;
+                    f_member = &_data::imaginary;
                 }
                 if( p_string == string( "modulus" ) )
                 {
-                    return &modulus;
+                    f_member = &_data::modulus;
                 }
                 if( p_string == string( "argument" ) )
                 {
-                    return &argument;
+                    f_member = &_data::argument;
                 }
-                return NULL;
             }
 
-            static inline void real( const x_data_type< complex_t >& p_from, x_data_type< real_t >& p_to )
+            inline void convert( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                (this->*f_member)( p_from, p_to );
+                return;
+            }
+
+            inline void real( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
+            {
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = p_from.raw()[ t_index ][ 0 ];
+                    p_to->at( t_index ) = p_from->at( t_index )[ 0 ];
                 }
                 return;
             }
 
-            static inline void imaginary( const x_data_type< complex_t >& p_from, x_data_type< real_t >& p_to )
+            inline void imaginary( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = p_from.raw()[ t_index ][ 1 ];
+                    p_to->at( t_index ) = p_from->at( t_index )[ 1 ];
                 }
                 return;
             }
 
-            static inline void modulus( const x_data_type< complex_t >& p_from, x_data_type< real_t >& p_to )
+            inline void modulus( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = sqrt( p_from.raw()[ t_index ][ 0 ] * p_from.raw()[ t_index ][ 0 ] + p_from.raw()[ t_index ][ 1 ] * p_from.raw()[ t_index ][ 1 ] );
+                    p_to->at( t_index ) = sqrt( p_from->at( t_index )[ 0 ] * p_from->at( t_index )[ 0 ] + p_from->at( t_index )[ 1 ] * p_from->at( t_index )[ 1 ] );
                 }
                 return;
             }
 
-            static inline void argument( const x_data_type< complex_t >& p_from, x_data_type< real_t >& p_to )
+            inline void argument( const x_data_type< complex_t >* p_from, x_data_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = atan2( p_from.raw()[ t_index ][ 1 ], p_from.raw()[ t_index ][ 0 ] );
+                    p_to->at( t_index ) = atan2( p_from->at( t_index )[ 1 ], p_from->at( t_index )[ 0 ] );
                 }
                 return;
             }
+
+        private:
+            void (_data::*f_member)( const x_data_type< complex_t >*, x_data_type< real_t >* );
     };
 
 }

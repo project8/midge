@@ -1,7 +1,8 @@
-#ifndef _midge_rf_event_consumer_hh_
-#define _midge_rf_event_consumer_hh_
+#ifndef _midge_rf_rtf_event_consumer_hh_
+#define _midge_rf_rtf_event_consumer_hh_
 
 #include "consumer.hh"
+#include "rf_data.hh"
 #include "rtf_data.hh"
 #include "typelist.hh"
 #include "macros.hh"
@@ -19,12 +20,12 @@ using std::stack;
 namespace midge
 {
 
-    class rf_event_consumer :
-        public _consumer< rf_event_consumer, typelist_1( rtf_data ) >
+    class rf_rtf_event_consumer :
+        public _consumer< rf_rtf_event_consumer, typelist_2( rf_data, rtf_data ) >
     {
         public:
-            rf_event_consumer();
-            ~rf_event_consumer();
+            rf_rtf_event_consumer();
+            virtual ~rf_rtf_event_consumer();
 
         public:
             accessible( string, file_background )

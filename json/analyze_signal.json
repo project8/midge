@@ -1,0 +1,35 @@
+{
+    "rt_monarch_producer" :
+    {
+        "name" : "signal",
+        "file" : "signal.egg",
+        "begin_sec" : 0.0,
+        "end_sec" : 1.0,
+        "size" : 8192,
+        "stride" : 8192,
+        "length" : 10
+    },
+
+    "rt_rtf_power_transformer" :
+    {
+        "name" : "power",
+        "begin_hz" : 5.0e6,
+        "end_hz" : 120.0e6,
+        "impedance_ohm" : 50,
+        "window_rectangular" :
+        {
+        },
+        "length" : 10
+    },
+
+    "rtf_binary_consumer" :
+    {
+        "name" : "binary",
+        "file" : "signal_spectrum.mgb"
+    },
+
+    "join" : "signal.out_0:power.in_0",
+    "join" : "power.out_0:binary.in_0",
+
+    "run" : "signal:power:binary"
+}

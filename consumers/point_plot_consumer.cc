@@ -1,4 +1,4 @@
-#include "rtf_plot_consumer.hh"
+#include "point_plot_consumer.hh"
 
 #include "plot.hh"
 
@@ -7,7 +7,8 @@
 namespace midge
 {
 
-    rtf_plot_consumer::rtf_plot_consumer() :
+    point_plot_consumer::point_plot_consumer() :
+            f_plot_field( "id" ),
             f_plot_key( "" ),
             f_plot_name( "" ),
             f_chart_title( "" ),
@@ -16,22 +17,23 @@ namespace midge
             f_z_title( "" )
     {
     }
-    rtf_plot_consumer::~rtf_plot_consumer()
+    point_plot_consumer::~point_plot_consumer()
     {
     }
 
-    void rtf_plot_consumer::initialize()
+    void point_plot_consumer::initialize()
     {
         plot::get_instance()->initialize();
         return;
     }
 
-    void rtf_plot_consumer::execute()
+    void point_plot_consumer::execute()
     {
         count_t t_index;
 
         command_t t_command;
-        const rtf_data* t_data;
+        const point_data* t_points;
+        pointer< point > t_point;
         count_t t_size;
         real_t t_time_interval;
         count_t t_time_index;
@@ -47,18 +49,34 @@ namespace midge
         count_t t_last_written_index;
         count_t t_count = 0;
 
+        bool t_field;
+        if( f_plot_field == "id" )
+        {
+            t_field = 0;
+        }
+        else if( f_plot_field == "ratio" )
+        {
+            t_field = 1;
+        }
+        else
+        {
+            throw error() << "point plot consumer plot field must be either <id> or <ratio>";
+            return;
+        }
+
+
         while( true )
         {
             t_command = in_stream< 0 >().get();
-            t_data = in_stream< 0 >().data();
+            t_points = in_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
-                t_size = t_data->get_size();
-                t_time_interval = t_data->get_time_interval();
-                t_time_index = t_data->get_time_index();
-                t_frequency_interval = t_data->get_frequency_interval();
-                t_frequency_index = t_data->get_frequency_index();
+                t_size = t_points->points().size();
+                t_time_interval = t_points->get_time_interval();
+                t_time_index = t_points->get_time_index();
+                t_frequency_interval = t_points->get_frequency_interval();
+                t_frequency_index = t_points->get_frequency_index();
 
                 t_x.title() = f_x_title;
                 t_y.title() = f_y_title;
@@ -71,13 +89,23 @@ namespace midge
             }
             if( t_command == stream::s_run )
             {
-                t_time_index = t_data->get_time_index();
+                t_time_index = t_points->get_time_index();
 
-                for( t_index = t_frequency_index; t_index < t_frequency_index + t_size; t_index++ )
+                for( t_index = 0; t_index < t_size; t_index++ )
                 {
-                    t_x.values().push_back( t_time_index * t_time_interval );
-                    t_y.values().push_back( t_index * t_frequency_interval );
-                    t_z.values().push_back( t_data->at( t_index - t_frequency_index ) );
+                    t_point = t_points->points().at( t_index );
+                    t_x.values().push_back( t_point->time() );
+                    t_y.values().push_back( t_point->frequency() );
+                    if( t_field == 0 )
+                    {
+                        t_z.values().push_back( t_point->id() );
+                        continue;
+                    }
+                    if( t_field == 1 )
+                    {
+                        t_z.values().push_back( t_point->ratio() );
+                        continue;
+                    }
                 }
 
                 t_last_written_index = t_time_index;
@@ -108,7 +136,7 @@ namespace midge
         return;
     }
 
-    void rtf_plot_consumer::finalize()
+    void point_plot_consumer::finalize()
     {
         plot::get_instance()->finalize();
         return;

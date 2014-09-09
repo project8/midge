@@ -62,48 +62,49 @@ namespace midge
     void _average_transformer< x_in_type< x_raw_type >, x_out_type< x_raw_type > >::execute()
     {
         command_t t_command;
-        x_in_type< x_raw_type > t_in_data;
-        x_out_type< x_raw_type > t_out_data;
+        const x_in_type< x_raw_type >* t_in_data;
+        x_out_type< x_raw_type >* t_out_data;
 
         _header< x_in_type< x_raw_type >, x_out_type< x_raw_type > > t_header;
         _data< x_in_type< x_raw_type >, x_out_type< x_raw_type > > t_data;
 
         while( true )
         {
-            parent::template in_stream< 0 >() >> t_in_data;
-            t_command = parent::template in_stream< 0 >().command();
+            t_command = parent::template in_stream< 0 >().get();
+            t_in_data = parent::template in_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
+                t_out_data = parent::template out_stream< 0 >().data();
+                t_header.copy( t_in_data, t_out_data );
+                parent::template out_stream< 0 >().set( stream::s_start );
+
+                t_out_data = parent::template out_stream< 0 >().data();
                 t_header.copy( t_in_data, t_out_data );
                 t_data.initialize( t_out_data );
+
                 continue;
             }
             if( t_command == stream::s_run )
             {
                 t_data.accumulate( t_in_data, t_out_data );
+
                 continue;
             }
             if( t_command == stream::s_stop )
             {
                 t_data.finalize( t_out_data );
+                parent::template out_stream< 0 >().set( stream::s_run );
 
-                parent::template out_stream< 0 >().command( stream::s_start );
-                parent::template out_stream< 0 >() << t_out_data;
-
-                parent::template out_stream< 0 >().command( stream::s_run );
-                parent::template out_stream< 0 >() << t_out_data;
-
-                parent::template out_stream< 0 >().command( stream::s_stop );
-                parent::template out_stream< 0 >() << t_out_data;
+                t_out_data = parent::template out_stream< 0 >().data();
+                t_header.copy( t_in_data, t_out_data );
+                parent::template out_stream< 0 >().set( stream::s_stop );
 
                 continue;
             }
             if( t_command == stream::s_exit )
             {
-                parent::template out_stream< 0 >().command( stream::s_exit );
-                parent::template out_stream< 0 >() << t_out_data;
-
+                parent::template out_stream< 0 >().set( stream::s_exit );
                 return;
             }
         }
@@ -123,11 +124,11 @@ namespace midge
     class _average_transformer< x_in_type< x_raw_type >, x_out_type< x_raw_type > >::_header< _tf_data< x_header_raw_type >, _f_data< x_header_raw_type > >
     {
         public:
-            inline void copy( const _tf_data< x_header_raw_type >& p_from, _f_data< x_header_raw_type >& p_to )
+            inline void copy( const _tf_data< x_header_raw_type >* p_from, _f_data< x_header_raw_type >* p_to )
             {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
                 return;
             }
     };
@@ -138,31 +139,31 @@ namespace midge
     class _average_transformer< x_in_type< x_raw_type >, x_out_type< x_raw_type > >::_data< x_data_in_type< real_t >, x_data_out_type< real_t > >
     {
         public:
-            inline void initialize( x_data_out_type< real_t >& p_to )
+            inline void initialize( x_data_out_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = 0.;
+                    p_to->at( t_index ) = 0.;
                 }
                 f_count = 0;
                 return;
             }
 
-            inline void accumulate( const x_data_in_type< real_t >& p_from, x_data_out_type< real_t >& p_to )
+            inline void accumulate( const x_data_in_type< real_t >* p_from, x_data_out_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] += p_from.raw()[ t_index ];
+                    p_to->at( t_index ) += p_from->at( t_index );
                 }
                 ++f_count;
                 return;
             }
 
-            inline void finalize( x_data_out_type< real_t >& p_to )
+            inline void finalize( x_data_out_type< real_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] /= (real_t)( f_count );
+                    p_to->at( t_index ) /= (real_t)( f_count );
                 }
                 f_count = 0;
                 return;
@@ -177,34 +178,34 @@ namespace midge
     class _average_transformer< x_in_type< x_raw_type >, x_out_type< x_raw_type > >::_data< x_data_in_type< complex_t >, x_data_out_type< complex_t > >
     {
         public:
-            inline void initialize( x_data_out_type< complex_t >& p_to )
+            inline void initialize( x_data_out_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] = 0.;
-                    p_to.raw()[ t_index ][ 1 ] = 0.;
+                    p_to->at( t_index )[ 0 ] = 0.;
+                    p_to->at( t_index )[ 1 ] = 0.;
                 }
                 f_count = 0;
                 return;
             }
 
-            inline void accumulate( const x_data_in_type< complex_t >& p_from, x_data_out_type< complex_t >& p_to )
+            inline void accumulate( const x_data_in_type< complex_t >* p_from, x_data_out_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] += p_from.raw()[ t_index ][ 0 ];
-                    p_to.raw()[ t_index ][ 1 ] += p_from.raw()[ t_index ][ 1 ];
+                    p_to->at( t_index )[ 0 ] += p_from->at( t_index )[ 0 ];
+                    p_to->at( t_index )[ 1 ] += p_from->at( t_index )[ 1 ];
                 }
                 ++f_count;
                 return;
             }
 
-            inline void finalize( x_data_out_type< complex_t >& p_to )
+            inline void finalize( x_data_out_type< complex_t >* p_to )
             {
-                for( count_t t_index = 0; t_index < p_to.get_size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_to->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] /= (real_t)( f_count );
-                    p_to.raw()[ t_index ][ 1 ] /= (real_t)( f_count );
+                    p_to->at( t_index )[ 0 ] /= (real_t)( f_count );
+                    p_to->at( t_index )[ 1 ] /= (real_t)( f_count );
                 }
                 f_count = 0;
                 return;

@@ -49,9 +49,9 @@ namespace midge
         return f_size;
     }
 
-    const real_t* window::raw() const
+    const real_t& window::at( const count_t& p_index ) const
     {
-        return f_raw;
+        return f_raw[ p_index ];
     }
     const real_t& window::sum() const
     {

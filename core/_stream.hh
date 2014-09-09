@@ -16,8 +16,7 @@ namespace midge
             virtual ~_stream();
 
         public:
-            virtual _stream< x_type >& operator>>( x_type& p_data ) = 0;
-            virtual _stream< x_type >& operator<<( const x_type& p_data ) = 0;
+            virtual x_type* data() = 0;
     };
 
     template< class x_type >

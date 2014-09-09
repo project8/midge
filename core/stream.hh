@@ -20,8 +20,8 @@ namespace midge
             virtual ~stream();
 
         public:
-            virtual command_t command() = 0;
-            virtual void command( command_t p_command ) = 0;
+            virtual command_t get() = 0;
+            virtual void set( command_t p_command ) = 0;
     };
 
 }

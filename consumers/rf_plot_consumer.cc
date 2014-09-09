@@ -30,8 +30,7 @@ namespace midge
         count_t t_index;
 
         command_t t_command;
-        rf_data t_data;
-        real_t* t_raw;
+        const rf_data* t_data;
         count_t t_size;
         real_t t_frequency_interval;
         count_t t_frequency_index;
@@ -45,14 +44,14 @@ namespace midge
 
         while( true )
         {
-            in_stream< 0 >() >> t_data;
-            t_command = in_stream< 0 >().command();
+            t_command = in_stream< 0 >().get();
+            t_data = in_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
-                t_size = t_data.get_size();
-                t_frequency_interval = t_data.get_frequency_interval();
-                t_frequency_index = t_data.get_frequency_index();
+                t_size = t_data->get_size();
+                t_frequency_interval = t_data->get_frequency_interval();
+                t_frequency_index = t_data->get_frequency_index();
 
                 t_x.title() = f_x_title;
                 t_y.title() = f_y_title;
@@ -64,15 +63,14 @@ namespace midge
             }
             if( t_command == stream::s_run )
             {
-                t_raw = t_data.raw();
-                t_frequency_index = t_data.get_frequency_index();
+                t_frequency_index = t_data->get_frequency_index();
 
                 if( t_frequency_index < t_first_unwritten_index )
                 {
                     for( t_index = t_first_unwritten_index; t_index < t_frequency_index + t_size; t_index++ )
                     {
                         t_x.values().push_back( t_index * t_frequency_interval );
-                        t_y.values().push_back( t_raw[ t_index - t_frequency_index ] );
+                        t_y.values().push_back( t_data->at( t_index - t_frequency_index ) );
                     }
                 }
                 else
@@ -85,7 +83,7 @@ namespace midge
                     for( t_index = t_frequency_index; t_index < t_frequency_index + t_size; t_index++ )
                     {
                         t_x.values().push_back( t_index * t_frequency_interval );
-                        t_y.values().push_back( t_raw[ t_index - t_frequency_index ] );
+                        t_y.values().push_back( t_data->at( t_index - t_frequency_index ) );
                     }
                 }
 

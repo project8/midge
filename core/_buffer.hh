@@ -158,7 +158,7 @@ namespace midge
                     {
                     }
 
-                    command_t command()
+                    command_t get()
                     {
                         command_t t_command;
                         f_buffer.f_write_mutex.lock();
@@ -166,20 +166,9 @@ namespace midge
                         f_buffer.f_write_mutex.unlock();
                         return t_command;
                     }
-                    void command( command_t p_command )
+                    void set( command_t p_command )
                     {
                         f_buffer.f_read_command[ f_current_index ] = p_command;
-                    }
-
-                    _stream< x_type >& operator>>( x_type& p_data )
-                    {
-                        f_buffer.f_read_data[ f_current_index ] >> p_data;
-
-                        return *this;
-                    }
-                    _stream< x_type >& operator<<( const x_type& p_data )
-                    {
-                        f_buffer.f_read_data[ f_current_index ] << p_data;
 
                         if( (++f_count % 1000) == 0 )
                         {
@@ -203,7 +192,12 @@ namespace midge
 
                         f_current_index = f_next_index;
 
-                        return *this;
+                        return;
+                    }
+
+                    x_type* data()
+                    {
+                        return &(f_buffer.f_read_data[ f_current_index ]);
                     }
 
                 private:
@@ -233,19 +227,7 @@ namespace midge
                     {
                     }
 
-                    command_t command()
-                    {
-                        return f_buffer.f_read_command[ f_current_index ];
-                    }
-                    void command( command_t p_command )
-                    {
-                        f_buffer.f_write_mutex.lock();
-                        f_buffer.f_write_command = p_command;
-                        f_buffer.f_write_mutex.unlock();
-                        return;
-                    }
-
-                    _stream< x_type >& operator>>( x_type& p_data )
+                    command_t get()
                     {
                         if( ++f_next_index == f_buffer.f_length )
                         {
@@ -258,15 +240,19 @@ namespace midge
 
                         f_current_index = f_next_index;
 
-                        f_buffer.f_read_data[ f_current_index ] >> p_data;
-
-                        return *this;
+                        return f_buffer.f_read_command[ f_current_index ];
                     }
-                    _stream< x_type >& operator<<( const x_type& p_data )
+                    void set( command_t p_command )
                     {
-                        f_buffer.f_read_data[ f_current_index ] << p_data;
+                        f_buffer.f_write_mutex.lock();
+                        f_buffer.f_write_command = p_command;
+                        f_buffer.f_write_mutex.unlock();
+                        return;
+                    }
 
-                        return *this;
+                    x_type* data()
+                    {
+                        return &(f_buffer.f_read_data[ f_current_index ]);
                     }
 
                 private:

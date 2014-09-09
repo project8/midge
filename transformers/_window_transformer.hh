@@ -71,53 +71,46 @@ namespace midge
     void _window_transformer< x_type >::execute()
     {
         command_t t_in_command;
-        x_type t_in_data;
-        x_type t_out_data;
+        const x_type* t_in_data;
+        x_type* t_out_data;
 
-        void (*t_header)( const x_type&, x_type&, window& ) = _header< x_type >::function();
-        void (*t_data)( const x_type&, x_type&, window& ) = _data< x_type >::function();
+        _header< x_type > t_header;
+        _data< x_type > t_data;
 
         while( true )
         {
-            parent::template in_stream< 0 >() >> t_in_data;
-            parent::template out_stream< 0 >() >> t_out_data;
-            t_in_command = parent::template in_stream< 0 >().command();
+            t_in_command = parent::template in_stream< 0 >().get();
+            t_in_data = parent::template in_stream< 0 >().data();
+
+            t_out_data = parent::template out_stream< 0 >().data();
 
             if( t_in_command == stream::s_start )
             {
-                t_header( t_in_data, t_out_data, *f_window );
+                t_header.copy( t_in_data, t_out_data, f_window );
 
-                parent::template out_stream< 0 >().command( stream::s_start );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_start );
                 continue;
             }
             if( t_in_command == stream::s_run )
             {
-                t_header( t_in_data, t_out_data, *f_window );
-                t_data( t_in_data, t_out_data, *f_window );
+                t_header.copy( t_in_data, t_out_data, f_window );
+                t_data.window( t_in_data, t_out_data, f_window );
 
-                parent::template out_stream< 0 >().command( stream::s_run );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_run );
                 continue;
             }
             if( t_in_command == stream::s_stop )
             {
-                t_header( t_in_data, t_out_data, *f_window );
+                t_header.copy( t_in_data, t_out_data, f_window );
 
-                parent::template out_stream< 0 >().command( stream::s_stop );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_stop );
                 continue;
             }
             if( t_in_command == stream::s_exit )
             {
-                t_header( t_in_data, t_out_data, *f_window );
+                t_header.copy( t_in_data, t_out_data, f_window );
 
-                parent::template out_stream< 0 >().command( stream::s_exit );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_exit );
                 return;
             }
         }
@@ -141,17 +134,12 @@ namespace midge
     class _window_transformer< x_type >::_header< _t_data< x_header_type > >
     {
         public:
-            static void (*function())( const _t_data< x_header_type >&, _t_data< x_header_type >&, window& )
+            inline void copy( const _t_data< x_header_type >* p_from, _t_data< x_header_type >* p_to, window* p_window )
             {
-                return &copy;
-            }
-
-            static void copy( const _t_data< x_header_type >& p_from, _t_data< x_header_type >& p_to, window& p_window )
-            {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_time_interval( p_from.get_time_interval() );
-                p_to.set_time_index( p_from.get_time_index() );
-                p_window.set_size( p_from.get_size() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_time_interval( p_from->get_time_interval() );
+                p_to->set_time_index( p_from->get_time_index() );
+                p_window->set_size( p_from->get_size() );
                 return;
             }
     };
@@ -161,17 +149,12 @@ namespace midge
     class _window_transformer< x_type >::_header< _f_data< x_header_type > >
     {
         public:
-            static void (*function())( const _f_data< x_header_type >&, _f_data< x_header_type >&, window& )
+            inline void copy( const _f_data< x_header_type >* p_from, _f_data< x_header_type >* p_to, window* p_window )
             {
-                return &copy;
-            }
-
-            static void copy( const _f_data< x_header_type >& p_from, _f_data< x_header_type >& p_to, window& p_window )
-            {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
-                p_window.set_size( p_from.get_size() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
+                p_window->set_size( p_from->get_size() );
                 return;
             }
     };
@@ -181,19 +164,14 @@ namespace midge
     class _window_transformer< x_type >::_header< _tf_data< x_header_type > >
     {
         public:
-            static void (*function())( const _tf_data< x_header_type >&, _tf_data< x_header_type >&, window& )
+            inline void copy( const _tf_data< x_header_type >* p_from, _tf_data< x_header_type >* p_to, window* p_window )
             {
-                return &copy;
-            }
-
-            static void copy( const _tf_data< x_header_type >& p_from, _tf_data< x_header_type >& p_to, window& p_window )
-            {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_time_interval( p_from.get_time_interval() );
-                p_to.set_time_index( p_from.get_time_index() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
-                p_window.set_size( p_from.get_size() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_time_interval( p_from->get_time_interval() );
+                p_to->set_time_index( p_from->get_time_index() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
+                p_window->set_size( p_from->get_size() );
                 return;
             }
     };
@@ -203,17 +181,12 @@ namespace midge
     class _window_transformer< x_type >::_data< x_data_type< real_t > >
     {
         public:
-            static void (*function())( const x_data_type< real_t >&, x_data_type< real_t >&, window& )
+            inline void window( const x_data_type< real_t >* p_from, x_data_type< real_t >* p_to, window* p_window )
             {
-                return &window;
-            }
-
-            static inline void window( const x_data_type< real_t >& p_from, x_data_type< real_t >& p_to, window& p_window )
-            {
-                register real_t t_norm = 1. / (p_window.sum() * p_window.sum());
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                register real_t t_norm = 1. / (p_window->sum() * p_window->sum());
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ] = p_from.raw()[ t_index ] * p_window.raw()[ t_index ] * t_norm;
+                    p_to->at( t_index ) = p_from->at( t_index ) * p_window->at( t_index ) * t_norm;
                 }
                 return;
             }
@@ -224,18 +197,13 @@ namespace midge
     class _window_transformer< x_type >::_data< x_data_type< complex_t > >
     {
         public:
-            static void (*function())( const x_data_type< complex_t >&, x_data_type< complex_t >&, window& )
+            inline void window( const x_data_type< complex_t >* p_from, x_data_type< complex_t >* p_to, window* p_window )
             {
-                return &window;
-            }
-
-            static inline void window( const x_data_type< complex_t >& p_from, x_data_type< complex_t >& p_to, window& p_window )
-            {
-                register real_t t_norm = 1. / (p_window.sum() * p_window.sum());
-                for( count_t t_index = 0; t_index < p_from.get_size(); t_index++ )
+                register real_t t_norm = 1. / (p_window->sum() * p_window->sum());
+                for( count_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
-                    p_to.raw()[ t_index ][ 0 ] = p_from.raw()[ t_index ][ 0 ] * p_window.raw()[ t_index ] * t_norm;
-                    p_to.raw()[ t_index ][ 1 ] = p_from.raw()[ t_index ][ 1 ] * p_window.raw()[ t_index ] * t_norm;
+                    p_to->at( t_index )[ 0 ] = p_from->at( t_index )[ 0 ] * p_window->at( t_index ) * t_norm;
+                    p_to->at( t_index )[ 1 ] = p_from->at( t_index )[ 1 ] * p_window->at( t_index ) * t_norm;
                 }
                 return;
             }

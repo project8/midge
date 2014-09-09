@@ -1,4 +1,4 @@
-#include "rf_event_consumer.hh"
+#include "rf_rtf_event_consumer.hh"
 
 #include "plot.hh"
 
@@ -13,7 +13,7 @@ using std::numeric_limits;
 namespace midge
 {
 
-    rf_event_consumer::rf_event_consumer() :
+    rf_rtf_event_consumer::rf_rtf_event_consumer() :
             f_file_background( "" ),
             f_frequency_minimum( 0. ),
             f_frequency_maximum( 0. ),
@@ -80,11 +80,11 @@ namespace midge
             f_complete_lines()
     {
     }
-    rf_event_consumer::~rf_event_consumer()
+    rf_rtf_event_consumer::~rf_rtf_event_consumer()
     {
     }
 
-    bool rf_event_consumer::start_consumer()
+    bool rf_rtf_event_consumer::start_consumer()
     {
         if( f_plot_any == true )
         {
@@ -201,7 +201,7 @@ namespace midge
         return true;
     }
 
-    bool rf_event_consumer::execute_consumer()
+    bool rf_rtf_event_consumer::execute_consumer()
     {
         //msg_warning( coremsg, "** START **" << eom );
 
@@ -415,7 +415,7 @@ namespace midge
         return true;
     }
 
-    bool rf_event_consumer::stop_consumer()
+    bool rf_rtf_event_consumer::stop_consumer()
     {
         if( f_ratio_stream != NULL )
         {
@@ -522,7 +522,7 @@ namespace midge
         return true;
     }
 
-    void rf_event_consumer::write_clusters()
+    void rf_rtf_event_consumer::write_clusters()
     {
         if( f_file_cluster.size() > 0 )
         {
@@ -601,7 +601,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::plot_cluster_data()
+    void rf_rtf_event_consumer::plot_cluster_data()
     {
         if( (f_plot_any == true) && (f_plot_cluster == true) )
         {
@@ -643,7 +643,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::delete_clusters()
+    void rf_rtf_event_consumer::delete_clusters()
     {
         cluster_it t_cluster_it;
         cluster* t_cluster;
@@ -663,7 +663,7 @@ namespace midge
         }
     }
 
-    void rf_event_consumer::write_lines()
+    void rf_rtf_event_consumer::write_lines()
     {
         if( f_file_line.size() > 0 )
         {
@@ -740,7 +740,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::plot_line_data()
+    void rf_rtf_event_consumer::plot_line_data()
     {
         if( (f_plot_any == true) && (f_plot_line == true) )
         {
@@ -782,7 +782,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::plot_line_lines()
+    void rf_rtf_event_consumer::plot_line_lines()
     {
         if( (f_plot_any == true) && (f_plot_line == true) )
         {
@@ -815,7 +815,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::delete_lines()
+    void rf_rtf_event_consumer::delete_lines()
     {
         line_it t_line_it;
         line* t_line;
@@ -842,7 +842,7 @@ namespace midge
         }
     }
 
-    void rf_event_consumer::write_events()
+    void rf_rtf_event_consumer::write_events()
     {
         if( f_file_event.size() > 0 )
         {
@@ -973,7 +973,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::plot_event_data()
+    void rf_rtf_event_consumer::plot_event_data()
     {
         if( (f_plot_any == true) && (f_plot_event == true) )
         {
@@ -1022,7 +1022,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::plot_event_lines()
+    void rf_rtf_event_consumer::plot_event_lines()
     {
         if( (f_plot_any == true) && (f_plot_event == true) )
         {
@@ -1073,7 +1073,7 @@ namespace midge
         }
         return;
     }
-    void rf_event_consumer::delete_events()
+    void rf_rtf_event_consumer::delete_events()
     {
         event_it t_event_it;
         event* t_event;
@@ -1097,75 +1097,75 @@ namespace midge
     //cluster
     //*******
 
-    void rf_event_consumer::cluster::set_time( real_t* p_time )
+    void rf_rtf_event_consumer::cluster::set_time( real_t* p_time )
     {
         s_time = p_time;
         return;
     }
-    void rf_event_consumer::cluster::set_ratio( real_t* p_ratio )
+    void rf_rtf_event_consumer::cluster::set_ratio( real_t* p_ratio )
     {
         s_ratio = p_ratio;
         return;
     }
-    void rf_event_consumer::cluster::set_interval( const real_t& p_interval )
+    void rf_rtf_event_consumer::cluster::set_interval( const real_t& p_interval )
     {
         s_interval = p_interval;
         return;
     }
-    void rf_event_consumer::cluster::set_min_index( const count_t& p_min_index )
+    void rf_rtf_event_consumer::cluster::set_min_index( const count_t& p_min_index )
     {
         s_min_index = p_min_index;
         return;
     }
-    void rf_event_consumer::cluster::set_max_index( const count_t& p_max_index )
+    void rf_rtf_event_consumer::cluster::set_max_index( const count_t& p_max_index )
     {
         s_max_index = p_max_index;
         return;
     }
-    void rf_event_consumer::cluster::set_window( const real_t& p_window )
+    void rf_rtf_event_consumer::cluster::set_window( const real_t& p_window )
     {
         s_window = p_window;
         return;
     }
-    void rf_event_consumer::cluster::set_add_coefficient( const real_t& p_add_coefficient )
+    void rf_rtf_event_consumer::cluster::set_add_coefficient( const real_t& p_add_coefficient )
     {
         s_add_coefficient = p_add_coefficient;
         return;
     }
-    void rf_event_consumer::cluster::set_add_power( const real_t& p_add_power )
+    void rf_rtf_event_consumer::cluster::set_add_power( const real_t& p_add_power )
     {
         s_add_power = p_add_power;
         return;
     }
-    void rf_event_consumer::cluster::set_gap_coefficient( const real_t& p_gap_coefficient )
+    void rf_rtf_event_consumer::cluster::set_gap_coefficient( const real_t& p_gap_coefficient )
     {
         s_gap_coefficient = p_gap_coefficient;
         return;
     }
-    void rf_event_consumer::cluster::set_gap_power( const real_t& p_gap_power )
+    void rf_rtf_event_consumer::cluster::set_gap_power( const real_t& p_gap_power )
     {
         s_gap_power = p_gap_power;
         return;
     }
-    void rf_event_consumer::cluster::set_id( const count_t& p_id )
+    void rf_rtf_event_consumer::cluster::set_id( const count_t& p_id )
     {
         s_id = p_id;
         return;
     }
 
-    real_t* rf_event_consumer::cluster::s_time = NULL;
-    real_t* rf_event_consumer::cluster::s_ratio = NULL;
-    real_t rf_event_consumer::cluster::s_interval = 1.;
-    count_t rf_event_consumer::cluster::s_min_index = 0;
-    count_t rf_event_consumer::cluster::s_max_index = 0;
-    real_t rf_event_consumer::cluster::s_window = 1.;
-    real_t rf_event_consumer::cluster::s_add_coefficient = 1.;
-    real_t rf_event_consumer::cluster::s_add_power = 0.;
-    real_t rf_event_consumer::cluster::s_gap_coefficient = 2.;
-    real_t rf_event_consumer::cluster::s_gap_power = 0.;
-    count_t rf_event_consumer::cluster::s_id = 0;
+    real_t* rf_rtf_event_consumer::cluster::s_time = NULL;
+    real_t* rf_rtf_event_consumer::cluster::s_ratio = NULL;
+    real_t rf_rtf_event_consumer::cluster::s_interval = 1.;
+    count_t rf_rtf_event_consumer::cluster::s_min_index = 0;
+    count_t rf_rtf_event_consumer::cluster::s_max_index = 0;
+    real_t rf_rtf_event_consumer::cluster::s_window = 1.;
+    real_t rf_rtf_event_consumer::cluster::s_add_coefficient = 1.;
+    real_t rf_rtf_event_consumer::cluster::s_add_power = 0.;
+    real_t rf_rtf_event_consumer::cluster::s_gap_coefficient = 2.;
+    real_t rf_rtf_event_consumer::cluster::s_gap_power = 0.;
+    count_t rf_rtf_event_consumer::cluster::s_id = 0;
 
-    rf_event_consumer::cluster::cluster( const real_t& p_time, const real_t& p_frequency ) :
+    rf_rtf_event_consumer::cluster::cluster( const real_t& p_time, const real_t& p_frequency ) :
             f_id( s_id++ ),
             f_time( *s_time ),
             f_duration( 0. ),
@@ -1262,7 +1262,7 @@ namespace midge
             t_init_dev_stat = t_loop_rff_sum;
             t_init_dev_stat += t_init_frequency * t_init_frequency * t_loop_r_sum;
             t_init_dev_stat -= 2. * t_init_frequency * t_loop_rf_sum;
-            t_init_deviation = sqrt( t_init_dev_stat / t_loop_r_sum );
+            t_init_deviation = sqrt( fabs( t_init_dev_stat ) / t_loop_r_sum );
 
             t_next_indices.first = (count_t) (floor( t_init_min / s_interval ));
             if( t_next_indices.first < s_min_index )
@@ -1334,12 +1334,12 @@ namespace midge
         //msg_warning( coremsg, "  occupation is <" << f_occupation << ">" << eom );
         //msg_warning( coremsg, "  score is <" << f_score << ">" << eom );
     }
-    rf_event_consumer::cluster::~cluster()
+    rf_rtf_event_consumer::cluster::~cluster()
     {
         //msg_warning( coremsg, "cluster <" << f_id << "> destroyed" << eom );
     }
 
-    void rf_event_consumer::cluster::update()
+    void rf_rtf_event_consumer::cluster::update()
     {
         //msg_warning( coremsg, "cluster <" << f_id << "> updating:" << eom );
 
@@ -1671,65 +1671,65 @@ namespace midge
         return;
     }
 
-    const count_t& rf_event_consumer::cluster::id() const
+    const count_t& rf_rtf_event_consumer::cluster::id() const
     {
         return f_id;
     }
-    const real_t& rf_event_consumer::cluster::time() const
+    const real_t& rf_rtf_event_consumer::cluster::time() const
     {
         return f_time;
     }
-    const real_t& rf_event_consumer::cluster::duration() const
+    const real_t& rf_rtf_event_consumer::cluster::duration() const
     {
         return f_duration;
     }
-    const real_t& rf_event_consumer::cluster::frequency() const
+    const real_t& rf_rtf_event_consumer::cluster::frequency() const
     {
         return f_frequency;
     }
-    const real_t& rf_event_consumer::cluster::slope() const
+    const real_t& rf_rtf_event_consumer::cluster::slope() const
     {
         return f_slope;
     }
-    const real_t& rf_event_consumer::cluster::correlation() const
+    const real_t& rf_rtf_event_consumer::cluster::correlation() const
     {
         return f_correlation;
     }
-    const real_t& rf_event_consumer::cluster::deviation() const
+    const real_t& rf_rtf_event_consumer::cluster::deviation() const
     {
         return f_deviation;
     }
-    const real_t& rf_event_consumer::cluster::occupation() const
+    const real_t& rf_rtf_event_consumer::cluster::occupation() const
     {
         return f_occupation;
     }
-    const real_t& rf_event_consumer::cluster::score() const
+    const real_t& rf_rtf_event_consumer::cluster::score() const
     {
         return f_score;
     }
 
-    const vector< real_t >& rf_event_consumer::cluster::times() const
+    const vector< real_t >& rf_rtf_event_consumer::cluster::times() const
     {
         return f_times;
     }
-    const vector< real_t >& rf_event_consumer::cluster::frequencies() const
+    const vector< real_t >& rf_rtf_event_consumer::cluster::frequencies() const
     {
         return f_frequencies;
     }
-    const vector< real_t >& rf_event_consumer::cluster::ratios() const
+    const vector< real_t >& rf_rtf_event_consumer::cluster::ratios() const
     {
         return f_ratios;
     }
-    const vector< real_t >& rf_event_consumer::cluster::scores() const
+    const vector< real_t >& rf_rtf_event_consumer::cluster::scores() const
     {
         return f_scores;
     }
-    const vector< real_t >& rf_event_consumer::cluster::gaps() const
+    const vector< real_t >& rf_rtf_event_consumer::cluster::gaps() const
     {
         return f_gaps;
     }
 
-    real_t rf_event_consumer::cluster::weight( const real_t& p_frequency ) const
+    real_t rf_rtf_event_consumer::cluster::weight( const real_t& p_frequency ) const
     {
         if( p_frequency > 1. * s_window )
         {
@@ -1746,75 +1746,75 @@ namespace midge
     //line
     //****
 
-    void rf_event_consumer::line::set_time( real_t* p_time )
+    void rf_rtf_event_consumer::line::set_time( real_t* p_time )
     {
         s_time = p_time;
         return;
     }
-    void rf_event_consumer::line::set_ratio( real_t* p_ratio )
+    void rf_rtf_event_consumer::line::set_ratio( real_t* p_ratio )
     {
         s_ratio = p_ratio;
         return;
     }
-    void rf_event_consumer::line::set_interval( const real_t& p_interval )
+    void rf_rtf_event_consumer::line::set_interval( const real_t& p_interval )
     {
         s_interval = p_interval;
         return;
     }
-    void rf_event_consumer::line::set_min_index( const count_t& p_min_index )
+    void rf_rtf_event_consumer::line::set_min_index( const count_t& p_min_index )
     {
         s_min_index = p_min_index;
         return;
     }
-    void rf_event_consumer::line::set_max_index( const count_t& p_max_index )
+    void rf_rtf_event_consumer::line::set_max_index( const count_t& p_max_index )
     {
         s_max_index = p_max_index;
         return;
     }
-    void rf_event_consumer::line::set_tolerance( const real_t& p_tolerance )
+    void rf_rtf_event_consumer::line::set_tolerance( const real_t& p_tolerance )
     {
         s_tolerance = p_tolerance;
         return;
     }
-    void rf_event_consumer::line::set_add_coefficient( const real_t& p_add_coefficient )
+    void rf_rtf_event_consumer::line::set_add_coefficient( const real_t& p_add_coefficient )
     {
         s_add_coefficient = p_add_coefficient;
         return;
     }
-    void rf_event_consumer::line::set_add_power( const real_t& p_add_power )
+    void rf_rtf_event_consumer::line::set_add_power( const real_t& p_add_power )
     {
         s_add_power = p_add_power;
         return;
     }
-    void rf_event_consumer::line::set_gap_coefficient( const real_t& p_gap_coefficient )
+    void rf_rtf_event_consumer::line::set_gap_coefficient( const real_t& p_gap_coefficient )
     {
         s_gap_coefficient = p_gap_coefficient;
         return;
     }
-    void rf_event_consumer::line::set_gap_power( const real_t& p_gap_power )
+    void rf_rtf_event_consumer::line::set_gap_power( const real_t& p_gap_power )
     {
         s_gap_power = p_gap_power;
         return;
     }
-    void rf_event_consumer::line::set_id( const count_t& p_id )
+    void rf_rtf_event_consumer::line::set_id( const count_t& p_id )
     {
         s_id = p_id;
         return;
     }
 
-    real_t* rf_event_consumer::line::s_time = NULL;
-    real_t* rf_event_consumer::line::s_ratio = NULL;
-    real_t rf_event_consumer::line::s_interval = 1.;
-    count_t rf_event_consumer::line::s_min_index = 0;
-    count_t rf_event_consumer::line::s_max_index = 0;
-    real_t rf_event_consumer::line::s_tolerance = 1.;
-    real_t rf_event_consumer::line::s_add_coefficient = 1.;
-    real_t rf_event_consumer::line::s_add_power = 0.;
-    real_t rf_event_consumer::line::s_gap_coefficient = 2.;
-    real_t rf_event_consumer::line::s_gap_power = 0.;
-    count_t rf_event_consumer::line::s_id = 0;
+    real_t* rf_rtf_event_consumer::line::s_time = NULL;
+    real_t* rf_rtf_event_consumer::line::s_ratio = NULL;
+    real_t rf_rtf_event_consumer::line::s_interval = 1.;
+    count_t rf_rtf_event_consumer::line::s_min_index = 0;
+    count_t rf_rtf_event_consumer::line::s_max_index = 0;
+    real_t rf_rtf_event_consumer::line::s_tolerance = 1.;
+    real_t rf_rtf_event_consumer::line::s_add_coefficient = 1.;
+    real_t rf_rtf_event_consumer::line::s_add_power = 0.;
+    real_t rf_rtf_event_consumer::line::s_gap_coefficient = 2.;
+    real_t rf_rtf_event_consumer::line::s_gap_power = 0.;
+    count_t rf_rtf_event_consumer::line::s_id = 0;
 
-    rf_event_consumer::line::line( const cluster& p_cluster ) :
+    rf_rtf_event_consumer::line::line( const cluster& p_cluster ) :
             f_id( s_id++ ),
             f_time( p_cluster.time() ),
             f_duration( p_cluster.duration() ),
@@ -2029,12 +2029,12 @@ namespace midge
         //msg_warning( coremsg, "  occupation is <" << f_occupation << ">" << eom );
         //msg_warning( coremsg, "  score is <" << f_score << ">" << eom );
     }
-    rf_event_consumer::line::~line()
+    rf_rtf_event_consumer::line::~line()
     {
         //msg_warning( coremsg, "line <" << f_id << "> destroyed" << eom );
     }
 
-    void rf_event_consumer::line::update()
+    void rf_rtf_event_consumer::line::update()
     {
         //msg_warning( coremsg, "line <" << f_id << "> updating:" << eom );
 
@@ -2366,65 +2366,65 @@ namespace midge
         return;
     }
 
-    const count_t& rf_event_consumer::line::id() const
+    const count_t& rf_rtf_event_consumer::line::id() const
     {
         return f_id;
     }
-    const real_t& rf_event_consumer::line::time() const
+    const real_t& rf_rtf_event_consumer::line::time() const
     {
         return f_time;
     }
-    const real_t& rf_event_consumer::line::duration() const
+    const real_t& rf_rtf_event_consumer::line::duration() const
     {
         return f_duration;
     }
-    const real_t& rf_event_consumer::line::frequency() const
+    const real_t& rf_rtf_event_consumer::line::frequency() const
     {
         return f_frequency;
     }
-    const real_t& rf_event_consumer::line::slope() const
+    const real_t& rf_rtf_event_consumer::line::slope() const
     {
         return f_slope;
     }
-    const real_t& rf_event_consumer::line::correlation() const
+    const real_t& rf_rtf_event_consumer::line::correlation() const
     {
         return f_correlation;
     }
-    const real_t& rf_event_consumer::line::deviation() const
+    const real_t& rf_rtf_event_consumer::line::deviation() const
     {
         return f_deviation;
     }
-    const real_t& rf_event_consumer::line::occupation() const
+    const real_t& rf_rtf_event_consumer::line::occupation() const
     {
         return f_occupation;
     }
-    const real_t& rf_event_consumer::line::score() const
+    const real_t& rf_rtf_event_consumer::line::score() const
     {
         return f_score;
     }
 
-    const vector< real_t >& rf_event_consumer::line::times() const
+    const vector< real_t >& rf_rtf_event_consumer::line::times() const
     {
         return f_times;
     }
-    const vector< real_t >& rf_event_consumer::line::frequencies() const
+    const vector< real_t >& rf_rtf_event_consumer::line::frequencies() const
     {
         return f_frequencies;
     }
-    const vector< real_t >& rf_event_consumer::line::ratios() const
+    const vector< real_t >& rf_rtf_event_consumer::line::ratios() const
     {
         return f_ratios;
     }
-    const vector< real_t >& rf_event_consumer::line::scores() const
+    const vector< real_t >& rf_rtf_event_consumer::line::scores() const
     {
         return f_scores;
     }
-    const vector< real_t >& rf_event_consumer::line::gaps() const
+    const vector< real_t >& rf_rtf_event_consumer::line::gaps() const
     {
         return f_gaps;
     }
 
-    real_t rf_event_consumer::line::weight( const real_t& p_frequency ) const
+    real_t rf_rtf_event_consumer::line::weight( const real_t& p_frequency ) const
     {
         if( p_frequency > 1. * s_tolerance * f_deviation )
         {
@@ -2441,15 +2441,15 @@ namespace midge
     //event
     //*****
 
-    void rf_event_consumer::event::set_id( const count_t& p_id )
+    void rf_rtf_event_consumer::event::set_id( const count_t& p_id )
     {
         s_id = p_id;
         return;
     }
 
-    count_t rf_event_consumer::event::s_id = 0;
+    count_t rf_rtf_event_consumer::event::s_id = 0;
 
-    rf_event_consumer::event::event( const line& p_line ) :
+    rf_rtf_event_consumer::event::event( const line& p_line ) :
             f_id( s_id++ ),
             f_time( p_line.time() ),
             f_duration( p_line.duration() ),
@@ -2464,11 +2464,11 @@ namespace midge
         f_line_frequencies.at( 0 ) = p_line.frequency();
         f_line_frequencies.at( 1 ) = p_line.frequency() + p_line.slope() * p_line.duration();
     }
-    rf_event_consumer::event::~event()
+    rf_rtf_event_consumer::event::~event()
     {
     }
 
-    void rf_event_consumer::event::add( const line& p_line )
+    void rf_rtf_event_consumer::event::add( const line& p_line )
     {
         f_duration = p_line.time() + p_line.duration() - f_time;
 
@@ -2484,38 +2484,38 @@ namespace midge
         return;
     }
 
-    const count_t& rf_event_consumer::event::id() const
+    const count_t& rf_rtf_event_consumer::event::id() const
     {
         return f_id;
     }
 
-    const real_t& rf_event_consumer::event::time() const
+    const real_t& rf_rtf_event_consumer::event::time() const
     {
         return f_time;
     }
-    const real_t& rf_event_consumer::event::duration() const
+    const real_t& rf_rtf_event_consumer::event::duration() const
     {
         return f_duration;
     }
 
-    const vector< real_t >& rf_event_consumer::event::line_times() const
+    const vector< real_t >& rf_rtf_event_consumer::event::line_times() const
     {
         return f_line_times;
     }
-    const vector< real_t >& rf_event_consumer::event::line_frequencies() const
+    const vector< real_t >& rf_rtf_event_consumer::event::line_frequencies() const
     {
         return f_line_frequencies;
     }
 
-    const vector< real_t >& rf_event_consumer::event::data_times() const
+    const vector< real_t >& rf_rtf_event_consumer::event::data_times() const
     {
         return f_data_times;
     }
-    const vector< real_t >& rf_event_consumer::event::data_frequencies() const
+    const vector< real_t >& rf_rtf_event_consumer::event::data_frequencies() const
     {
         return f_data_frequencies;
     }
-    const vector< real_t >& rf_event_consumer::event::data_ratios() const
+    const vector< real_t >& rf_rtf_event_consumer::event::data_ratios() const
     {
         return f_data_ratios;
     }

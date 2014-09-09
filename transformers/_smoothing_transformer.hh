@@ -73,54 +73,47 @@ namespace midge
     void _smoothing_transformer< x_type >::execute()
     {
         command_t t_in_command;
-        x_type t_in_data;
-        x_type t_out_data;
+        const x_type* t_in_data;
+        x_type* t_out_data;
 
         _header< x_type > t_header;
         _data< x_type > t_data;
 
         while( true )
         {
-            parent::template in_stream< 0 >() >> t_in_data;
-            parent::template out_stream< 0 >() >> t_out_data;
-            t_in_command = parent::template in_stream< 0 >().command();
+            t_in_command = parent::template in_stream< 0 >().get();
+            t_in_data = parent::template in_stream< 0 >().data();
+
+            t_out_data = parent::template out_stream< 0 >().data();
 
             if( t_in_command == stream::s_start )
             {
                 t_header.copy( t_in_data, t_out_data );
                 f_window->set_size( 2 * f_width + 1 );
 
-                parent::template out_stream< 0 >().command( stream::s_start );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_start );
                 continue;
             }
             if( t_in_command == stream::s_run )
             {
                 t_header.copy( t_in_data, t_out_data );
-                t_data.smooth( t_in_data, t_out_data, *f_window );
+                t_data.smooth( t_in_data, t_out_data, f_window );
 
-                parent::template out_stream< 0 >().command( stream::s_run );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_run );
                 continue;
             }
             if( t_in_command == stream::s_stop )
             {
                 t_header.copy( t_in_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_stop );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_stop );
                 continue;
             }
             if( t_in_command == stream::s_exit )
             {
                 t_header.copy( t_in_data, t_out_data );
 
-                parent::template out_stream< 0 >().command( stream::s_exit );
-                parent::template out_stream< 0 >() << t_out_data;
-                parent::template in_stream< 0 >() << t_in_data;
+                parent::template out_stream< 0 >().set( stream::s_exit );
                 return;
             }
         }
@@ -144,11 +137,11 @@ namespace midge
     class _smoothing_transformer< x_type >::_header< _t_data< x_header_type > >
     {
         public:
-            inline void copy( const _t_data< x_header_type >& p_from, _t_data< x_header_type >& p_to )
+            inline void copy( const _t_data< x_header_type >* p_from, _t_data< x_header_type >* p_to )
             {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_time_interval( p_from.get_time_interval() );
-                p_to.set_time_index( p_from.get_time_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_time_interval( p_from->get_time_interval() );
+                p_to->set_time_index( p_from->get_time_index() );
                 return;
             }
     };
@@ -158,11 +151,11 @@ namespace midge
     class _smoothing_transformer< x_type >::_header< _f_data< x_header_type > >
     {
         public:
-            inline void copy( const _f_data< x_header_type >& p_from, _f_data< x_header_type >& p_to )
+            inline void copy( const _f_data< x_header_type >* p_from, _f_data< x_header_type >* p_to )
             {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
                 return;
             }
     };
@@ -172,13 +165,13 @@ namespace midge
     class _smoothing_transformer< x_type >::_header< _tf_data< x_header_type > >
     {
         public:
-            inline void copy( const _tf_data< x_header_type >& p_from, _tf_data< x_header_type >& p_to )
+            inline void copy( const _tf_data< x_header_type >* p_from, _tf_data< x_header_type >* p_to )
             {
-                p_to.set_size( p_from.get_size() );
-                p_to.set_time_interval( p_from.get_time_interval() );
-                p_to.set_time_index( p_from.get_time_index() );
-                p_to.set_frequency_interval( p_from.get_frequency_interval() );
-                p_to.set_frequency_index( p_from.get_frequency_index() );
+                p_to->set_size( p_from->get_size() );
+                p_to->set_time_interval( p_from->get_time_interval() );
+                p_to->set_time_index( p_from->get_time_index() );
+                p_to->set_frequency_interval( p_from->get_frequency_interval() );
+                p_to->set_frequency_index( p_from->get_frequency_index() );
                 return;
             }
     };
@@ -188,12 +181,12 @@ namespace midge
     class _smoothing_transformer< x_type >::_data< x_data_type< real_t > >
     {
         public:
-            inline void smooth( const x_data_type< real_t >& p_from, x_data_type< real_t >& p_to, window& p_window )
+            inline void smooth( const x_data_type< real_t >* p_from, x_data_type< real_t >* p_to, window* p_window )
             {
                 register real_t t_value;
                 register real_t t_norm;
-                register count_t t_size = p_from.get_size();
-                register count_t t_width = (p_window.get_size() - 1) / 2;
+                register count_t t_size = p_from->get_size();
+                register count_t t_width = (p_window->get_size() - 1) / 2;
                 for( count_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     t_value = 0.;
@@ -208,10 +201,10 @@ namespace midge
                         {
                             continue;
                         }
-                        t_value += p_from.raw()[ t_index + t_sub - t_width ] * p_window.raw()[ t_sub ];
-                        t_norm += p_window.raw()[ t_sub ];
+                        t_value += p_from->at( t_index + t_sub - t_width ) * p_window->at( t_sub );
+                        t_norm += p_window->at( t_sub );
                     }
-                    p_to.raw()[ t_index ] = t_value / t_norm;
+                    p_to->at( t_index ) = t_value / t_norm;
                 }
                 return;
             }
@@ -222,12 +215,12 @@ namespace midge
     class _smoothing_transformer< x_type >::_data< x_data_type< complex_t > >
     {
         public:
-            inline void smooth( const x_data_type< complex_t >& p_from, x_data_type< complex_t >& p_to, window& p_window )
+            inline void smooth( const x_data_type< complex_t >* p_from, x_data_type< complex_t >* p_to, window* p_window )
             {
                 register complex_t t_value;
                 register real_t t_norm;
-                register count_t t_size = p_from.get_size();
-                register count_t t_width = (p_window.get_size() - 1) / 2;
+                register count_t t_size = p_from->get_size();
+                register count_t t_width = (p_window->get_size() - 1) / 2;
                 for( count_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     t_value[ 0 ] = 0.;
@@ -243,12 +236,12 @@ namespace midge
                         {
                             continue;
                         }
-                        t_value[ 0 ] += p_from.raw()[ t_index + t_sub - t_width ][ 0 ] * p_window.raw()[ t_sub ];
-                        t_value[ 1 ] += p_from.raw()[ t_index + t_sub - t_width ][ 1 ] * p_window.raw()[ t_sub ];
-                        t_norm += p_window.raw()[ t_sub ];
+                        t_value[ 0 ] += p_from->at( t_index + t_sub - t_width )[ 0 ] * p_window->at( t_sub );
+                        t_value[ 1 ] += p_from->at( t_index + t_sub - t_width )[ 1 ] * p_window->at( t_sub );
+                        t_norm += p_window->at( t_sub );
                     }
-                    p_to.raw()[ t_index ][ 0 ] = t_value[ 0 ] / t_norm;
-                    p_to.raw()[ t_index ][ 1 ] = t_value[ 1 ] / t_norm;
+                    p_to->at( t_index )[ 0 ] = t_value[ 0 ] / t_norm;
+                    p_to->at( t_index )[ 1 ] = t_value[ 1 ] / t_norm;
                 }
                 return;
             }

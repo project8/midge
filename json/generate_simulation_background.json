@@ -1,7 +1,7 @@
 {
     "rt_gaussian_producer" :
     {
-        "name" : "signal",
+        "name" : "background",
         "impedance_ohm" : 50.0,
         "power_dbm" : -15.0,
         "begin_sec" : 0.0e-4,
@@ -18,7 +18,7 @@
     "rt_monarch_consumer" :
     {
         "name" : "monarch",
-        "file" : "simulation_background_signal.egg",
+        "file" : "simulation_background.egg",
         "bits" : 8,
         "record_length" : 5000,
         "voltage_minimum" : -0.25,
@@ -27,9 +27,9 @@
 
     "rt_plot_consumer" :
     {
-        "name" : "signal_out",
-        "plot_key" : "signal_out_canvas",
-        "plot_name" : "signal_out_histogram",
+        "name" : "background_plot",
+        "plot_key" : "background_canvas",
+        "plot_name" : "background_histogram",
         "chart_title" : "Simulated Background",
         "x_title" : "Time [sec]",
         "y_title" : "Signal [volt]"
@@ -47,19 +47,19 @@
 
     "rtf_plot_consumer" :
     {
-        "name" : "power_out",
-        "plot_key" : "power_out_canvas",
-        "plot_name" : "power_out_histogram",
+        "name" : "power_plot",
+        "plot_key" : "power_canvas",
+        "plot_name" : "power_histogram",
         "chart_title" : "Simulated Background",
         "x_title" : "Time [sec]",
         "y_title" : "Frequency [hz]",
         "z_title" : "Power [watt]"
     },
 
-    "join" : "signal.out_0:monarch.in_0",
-    "join" : "signal.out_0:signal_out.in_0",
-    "join" : "signal.out_0:power.in_0",
-    "join" : "power.out_0:power_out.in_0",
+    "join" : "background.out_0:monarch.in_0",
+    "join" : "background.out_0:background_plot.in_0",
+    "join" : "background.out_0:power.in_0",
+    "join" : "power.out_0:power_plot.in_0",
 
-    "run" : "signal:signal_out:monarch:power:power_out"
+    "run" : "background:background_plot:monarch:power:power_plot"
 }

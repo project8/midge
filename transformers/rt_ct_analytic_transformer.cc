@@ -27,11 +27,8 @@ namespace midge
 
         command_t t_in_command;
 
-        rt_data t_in_data;
-        real_t* t_in_raw;
-
-        ct_data t_out_data;
-        complex_t* t_out_raw;
+        rt_data* t_in_data;
+        ct_data* t_out_data;
 
         count_t t_size;
         real_t t_time_interval;
@@ -51,13 +48,13 @@ namespace midge
 
         while( true )
         {
-            in_stream< 0 >() >> t_in_data;
-            out_stream< 0 >() >> t_out_data;
-            t_in_command = in_stream< 0 >().command();
+            t_in_command = in_stream< 0 >().get();
+            t_in_data = in_stream< 0 >().data();
+            t_out_data = out_stream< 0 >().data();
 
             if( t_in_command == stream::s_start )
             {
-                t_size = t_in_data.get_size();
+                t_size = t_in_data->get_size();
                 if( t_size % 2 == 0 )
                 {
                     t_under = (t_size / 2) - 1;
@@ -72,8 +69,8 @@ namespace midge
                 }
                 t_norm = 1. / (real_t) ( t_size );
 
-                t_time_interval = t_in_data.get_time_interval();
-                t_time_index = t_in_data.get_time_index();
+                t_time_interval = t_in_data->get_time_interval();
+                t_time_index = t_in_data->get_time_index();
 
                 t_signal = t_fourier->allocate< complex_t >( t_size );
                 t_transform = t_fourier->allocate< complex_t >( t_size );
@@ -81,30 +78,26 @@ namespace midge
                 t_forward_generator = t_fourier->forward( t_size, t_signal, t_transform );
                 t_backward_generator = t_fourier->backward( t_size, t_transform, t_analytic );
 
-                t_out_data.set_size( t_size );
-                t_out_data.set_time_interval( t_time_interval );
-                t_out_data.set_time_index( t_time_index );
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
 
-                out_stream< 0 >().command( stream::s_start );
-                out_stream< 0 >() << t_out_data;
-                in_stream< 0 >() << t_in_data;
+                out_stream< 0 >().set( stream::s_start );
                 continue;
             }
             if( t_in_command == stream::s_run )
             {
-                t_time_interval = t_in_data.get_time_interval();
-                t_time_index = t_in_data.get_time_index();
-                t_in_raw = t_in_data.raw();
+                t_time_interval = t_in_data->get_time_interval();
+                t_time_index = t_in_data->get_time_index();
 
-                t_out_data.set_size( t_size );
-                t_out_data.set_time_interval( t_time_interval );
-                t_out_data.set_time_index( t_time_index );
-                t_out_raw = t_out_data.raw();
+                t_out_data->set_size( t_size );
+                t_out_data->set_time_interval( t_time_interval );
+                t_out_data->set_time_index( t_time_index );
 
                 // input to complex signal
                 for( t_index = 0; t_index < t_size; t_index++ )
                 {
-                    t_signal[ t_index ][ 0 ] = t_in_raw[ t_index ];
+                    t_signal[ t_index ][ 0 ] = t_in_data->at( t_index );
                     t_signal[ t_index ][ 1 ] = 0.;
                 }
 
@@ -136,13 +129,11 @@ namespace midge
                 // analytic signal to output
                 for( t_index = 0; t_index < t_size; t_index++ )
                 {
-                    t_out_raw[ t_index ][ 0 ] = t_analytic[ t_index ][ 0 ];
-                    t_out_raw[ t_index ][ 1 ] = t_analytic[ t_index ][ 1 ];
+                    t_out_data->at( t_index )[ 0 ] = t_analytic[ t_index ][ 0 ];
+                    t_out_data->at( t_index )[ 1 ] = t_analytic[ t_index ][ 1 ];
                 }
 
-                out_stream< 0 >().command( stream::s_run );
-                out_stream< 0 >() << t_out_data;
-                in_stream< 0 >() << t_in_data;
+                out_stream< 0 >().set( stream::s_run );
                 continue;
             }
             if( t_in_command == stream::s_stop )
@@ -153,16 +144,12 @@ namespace midge
                 t_fourier->destroy( t_forward_generator );
                 t_fourier->destroy( t_backward_generator );
 
-                out_stream< 0 >().command( stream::s_stop );
-                out_stream< 0 >() << t_out_data;
-                in_stream< 0 >() << t_in_data;
+                out_stream< 0 >().set( stream::s_stop );
                 continue;
             }
             if( t_in_command == stream::s_exit )
             {
-                out_stream< 0 >().command( stream::s_exit );
-                out_stream< 0 >() << t_out_data;
-                in_stream< 0 >() << t_in_data;
+                out_stream< 0 >().set( stream::s_exit );
                 return;
             }
         }
