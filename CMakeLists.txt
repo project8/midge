@@ -31,7 +31,9 @@ set( MIDGE_ENABLE_DEBUG_MESSAGES "false" CACHE BOOL "enable debug messages" )
 if( MIDGE_ENABLE_DEBUG_MESSAGES )
 	add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
 endif()
+
 add_definitions( -Wall )
+#add_definitions( -std=c++11 )
 
 ############
 # external #

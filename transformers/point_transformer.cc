@@ -131,6 +131,7 @@ namespace midge
                 t_end_time_index = (count_t) (ceil( f_end_sec / t_signal_time_interval ));
 
                 t_points->points().resize( t_end_frequency_index - t_begin_frequency_index + 1 );
+                t_points->set_size( t_end_frequency_index - t_begin_frequency_index + 1 );
                 t_points->set_time_interval( t_signal_time_interval );
                 t_points->set_time_index( t_begin_time_index );
                 t_points->set_frequency_interval( t_background_frequency_interval );
@@ -153,6 +154,7 @@ namespace midge
                 }
 
                 t_points->points().resize( t_end_frequency_index - t_begin_frequency_index + 1 );
+                t_points->set_size( t_end_frequency_index - t_begin_frequency_index + 1 );
                 t_points->set_time_interval( t_signal_time_interval );
                 t_points->set_time_index( t_signal_time_index );
                 t_points->set_frequency_interval( t_background_frequency_interval );

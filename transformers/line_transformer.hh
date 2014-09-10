@@ -28,24 +28,22 @@ namespace midge
             virtual ~line_transformer();
 
         public:
-            accessible( real_t, ratio_seed )
-            accessible( real_t, ratio_low )
-            accessible( real_t, ratio_high )
-            accessible( real_t, window_seed )
-            accessible( real_t, window_low )
-            accessible( real_t, window_high )
-            accessible( real_t, count )
+            accessible( real_t, threshold )
+            accessible( real_t, window )
             accessible( real_t, tolerance )
+            accessible( count_t, count )
+            accessible( real_t, hit_factor )
+            accessible( real_t, hit_power )
+            accessible( real_t, miss_factor )
+            accessible( real_t, miss_power )
+            accessible( real_t, score_low )
+            accessible( real_t, score_high )
             accessible( count_t, length )
 
         protected:
             void initialize();
             void execute();
             void finalize();
-
-            void initialize_line( point_data& p_points, line& p_line );
-            void update_line( point_data& p_points, line& p_line );
-
 
             typedef list< pointer< point > > point_list;
             typedef point_list::iterator point_it;

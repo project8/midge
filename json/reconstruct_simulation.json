@@ -27,9 +27,9 @@
     {
         "name" : "point",
         "begin_sec" : 15.0e-6,
-        "end_sec" : 55.0e-6,
+        "end_sec" : 185.0e-6,
         "begin_hz" : 180.0e6,
-        "end_hz" : 250.0e6,
+        "end_hz" : 320.0e6,
         "length" : 10
     },
 
@@ -48,14 +48,16 @@
     "line_transformer" :
     {
         "name" : "line",
-        "ratio_seed" : 3.0,
-        "ratio_low" : 1.0,
-        "ratio_high" : 4.0,
-        "window_seed" : 2.0e6,
-        "window_low" : 1.0e6,
-        "window_high" : 3.0e6,
-        "count" : 15,
-        "tolerance" : 2.5,
+        "threshold" : 1.5,
+        "window" : 2.0e6,
+        "tolerance" : 3.0,
+        "count" : 50,
+        "hit_factor" : 1.0,
+        "hit_power" : 2.0,
+        "miss_factor" : 3.0,
+        "miss_power" : 3.0,
+        "score_low" : 0.0,
+        "score_high" : 30.0,
         "length" : 10
     },
 

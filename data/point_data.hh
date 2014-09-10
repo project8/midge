@@ -18,6 +18,7 @@ namespace midge
 
         public:
             ;referrable( vector< pointer< point > >, points )
+            ;accessible( count_t, size )
             ;accessible( real_t, time_interval )
             ;accessible( count_t, time_index )
             ;accessible( real_t, frequency_interval )
