@@ -72,7 +72,7 @@ namespace midge
 
             if( t_command == stream::s_start )
             {
-                t_size = t_points->points().size();
+                t_size = t_points->get_size();
                 t_time_interval = t_points->get_time_interval();
                 t_time_index = t_points->get_time_index();
                 t_frequency_interval = t_points->get_frequency_interval();

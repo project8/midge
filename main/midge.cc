@@ -17,6 +17,9 @@ int main( int p_count, char** p_values )
         return (-1);
     }
 
+    msg_normal( coremsg, "welcome to midge" << eom );
+    msg_normal( coremsg, "processing..." << eom );
+
     string t_input_file( p_values[ 1 ] );
 
     lexer t_lexer;
@@ -69,6 +72,9 @@ int main( int p_count, char** p_values )
         msg_error( coremsg, "unknown error occurred during execution" << eom );
         return -1;
     }
+
+    msg_normal( coremsg, "...processing complete" << eom );
+    msg_normal( coremsg, "goodbye" << eom );
 
     return 0;
 }

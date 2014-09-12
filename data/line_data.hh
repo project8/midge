@@ -2,6 +2,7 @@
 #define _midge_line_data_hh_
 
 #include "line.hh"
+#include "pointer.hh"
 
 #include <vector>
 using std::vector;

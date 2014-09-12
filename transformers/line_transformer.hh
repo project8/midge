@@ -21,7 +21,7 @@ namespace midge
 {
 
     class line_transformer :
-        public _transformer< line_transformer, typelist_1( point_data ), typelist_1( point_data )>
+        public _transformer< line_transformer, typelist_1( point_data ), typelist_1( line_data )>
     {
         public:
             line_transformer();
@@ -30,14 +30,14 @@ namespace midge
         public:
             accessible( real_t, threshold )
             accessible( real_t, window )
-            accessible( real_t, tolerance )
+            accessible( real_t, width )
             accessible( count_t, count )
             accessible( real_t, hit_factor )
             accessible( real_t, hit_power )
             accessible( real_t, miss_factor )
             accessible( real_t, miss_power )
             accessible( real_t, score_low )
-            accessible( real_t, score_high )
+            accessible( real_t, quality_high )
             accessible( count_t, length )
 
         protected:

@@ -349,6 +349,7 @@ set( midge_consumers_headers
 	rf_plot_consumer.hh
 	rtf_plot_consumer.hh
 	point_plot_consumer.hh
+	line_plot_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
@@ -368,6 +369,7 @@ set( midge_consumers_sources
 	rf_plot_consumer.cc
 	rtf_plot_consumer.cc
 	point_plot_consumer.cc
+	line_plot_consumer.cc
 )
 
 midge_library( consumers )
@@ -600,6 +602,7 @@ set( midge_bindings_headers
 	rf_plot_consumer_builder.hh
 	rtf_plot_consumer_builder.hh
 	point_plot_consumer_builder.hh
+	line_plot_consumer_builder.hh
 	rt_ct_converter_transformer_builder.hh
 	ct_rt_converter_transformer_builder.hh
 	rf_cf_converter_transformer_builder.hh
@@ -677,6 +680,7 @@ set( midge_bindings_sources
 	rf_plot_consumer_builder.cc
 	rtf_plot_consumer_builder.cc
 	point_plot_consumer_builder.cc
+	line_plot_consumer_builder.cc
 	rt_ct_converter_transformer_builder.cc
 	ct_rt_converter_transformer_builder.cc
 	rf_cf_converter_transformer_builder.cc

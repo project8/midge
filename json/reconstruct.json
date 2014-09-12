@@ -13,30 +13,72 @@
         "length" : 10
     },
 
-    "line_transformer" :
+    "point_transformer" :
     {
-        "name" : "reconstruction",
-        "begin_sec" : 0.308,
-        "end_sec" : 0.325,
-        "begin_hz" : 40.0e6,
-        "end_hz" : 70.0e6,
+        "name" : "unused",
+        "begin_sec" : 0.0,
+        "end_sec" : 1.0,
+        "begin_hz" : 5.0e6,
+        "end_hz" : 120.0e6,
         "length" : 10
     },
 
-    "rtf_plot_consumer" :
+    "point_transformer" :
     {
-        "name" : "ratio_plot",
-        "plot_key" : "ratio_canvas",
-        "plot_name" : "ratio_histogram",
-        "chart_title" : "Signal to Background Ratios",
-        "x_title" : "Time [sec]",
-        "y_title" : "Frequency [hertz]",
-        "z_title" : "None [none]"
+        "name" : "point",
+        "begin_sec" : 0.065,
+        "end_sec" : 0.088,
+        "begin_hz" : 52.0e6,
+        "end_hz" : 80.0e6,
+        "length" : 10
     },
 
-    "join" : "background.out_0:reconstruction.in_0",
-    "join" : "signal.out_0:reconstruction.in_1",
-    "join" : "reconstruction.out_0:ratio_plot.in_0",
+    "point_plot_consumer" :
+    {
+        "name" : "point_plot",
+        "plot_field" : "ratio",
+        "plot_key" : "point_canvas",
+        "plot_name" : "point_histogram",
+        "chart_title" : "Points",
+        "x_title" : "Time [sec]",
+        "y_title" : "Frequency [hertz]",
+        "z_title" : "Ratio [none]"
+    },
 
-    "run" : "background:signal:reconstruction:ratio_plot"
+    "line_transformer" :
+    {
+        "name" : "line",
+        "threshold" : 1.5,
+        "window" : 65.0e3,
+        "width" : 65.0e3,
+        "count" : 50,
+        "hit_factor" : 1.0,
+        "hit_power" : 2.0,
+        "miss_factor" : 10.0,
+        "miss_power" : 3.0,
+        "score_low" : 0.0,
+        "quality_high" : 500.0,
+        "length" : 10
+    },
+
+    "line_plot_consumer" :
+    {
+        "name" : "line_plot",
+        "plot_overlay" : false,
+        "plot_field" : "quality",
+        "plot_key" : "line_canvas",
+        "plot_name" : "line_histogram",
+        "chart_title" : "Lines",
+        "x_title" : "Time [sec]",
+        "y_title" : "Frequency [hertz]",
+        "z_title" : "ID [none]"
+    },
+
+    "join" : "background.out_0:point.in_0",
+    "join" : "signal.out_0:point.in_1",
+    "join" : "point.out_0:line.in_0",
+    "join" : "point.out_0:point_plot.in_0",
+    "join" : "line.out_0:line_plot.in_0",
+
+    "run" : "background:signal:point:point_plot:line:line_plot"
 }

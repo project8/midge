@@ -2,6 +2,7 @@
 #define _midge_pointer_hh_
 
 #include "types.hh"
+#include "error.hh"
 
 #include <cstddef>
 
@@ -16,7 +17,7 @@ namespace midge
             {
                 public:
                     counter() :
-                        f_count( 0 )
+                            f_count( 0 )
                     {
                     }
                     ~counter()
@@ -72,21 +73,41 @@ namespace midge
 
             x_type& operator*()
             {
+//                if( f_pointer == NULL )
+//                {
+//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with *";
+//                }
+
                 return *f_pointer;
             }
 
             const x_type& operator*() const
             {
+//                if( f_pointer == NULL )
+//                {
+//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with *";
+//                }
+
                 return *f_pointer;
             }
 
             x_type* operator->()
             {
+//                if( f_pointer == NULL )
+//                {
+//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with ->";
+//                }
+
                 return f_pointer;
             }
 
             const x_type* operator->() const
             {
+//                if( f_pointer == NULL )
+//                {
+//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with ->";
+//                }
+
                 return f_pointer;
             }
 
@@ -134,7 +155,5 @@ namespace midge
             counter* f_counter;
     };
 }
-
-
 
 #endif
