@@ -118,6 +118,7 @@ namespace midge
     }
 
     plot::plot() :
+            f_mutex(),
             f_count( 0 ),
             f_application( NULL ),
             f_plots(),

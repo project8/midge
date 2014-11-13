@@ -6,6 +6,11 @@ namespace midge
 
     static const int s_point_transformer =
         point_transformer_builder::lingual< string >( &point_transformer::set_name, "name" ) +
+        point_transformer_builder::numerical< real_t >( &point_transformer::set_threshold, "threshold" ) +
+        point_transformer_builder::numerical< real_t >( &point_transformer::set_high_factor, "high_factor" ) +
+        point_transformer_builder::numerical< real_t >( &point_transformer::set_high_power, "high_power" ) +
+        point_transformer_builder::numerical< real_t >( &point_transformer::set_low_factor, "low_factor" ) +
+        point_transformer_builder::numerical< real_t >( &point_transformer::set_low_power, "low_power" ) +
         point_transformer_builder::numerical< real_t >( &point_transformer::set_begin_sec, "begin_sec" ) +
         point_transformer_builder::numerical< real_t >( &point_transformer::set_end_sec, "end_sec" ) +
         point_transformer_builder::numerical< real_t >( &point_transformer::set_begin_hz, "begin_hz" ) +

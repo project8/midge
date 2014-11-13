@@ -16,6 +16,11 @@
     "point_transformer" :
     {
         "name" : "point",
+        "threshold" : 1.5,
+        "high_factor" : 1.0,
+        "high_power" : 1.5,
+        "low_factor" : 1.0,
+        "low_power" : 1.0,
         "begin_sec" : 15.0e-6,
         "end_sec" : 185.0e-6,
         "begin_hz" : 180.0e6,
@@ -26,7 +31,7 @@
     "point_plot_consumer" :
     {
         "name" : "point_plot",
-        "plot_field" : "ratio",
+        "plot_field" : "score",
         "plot_key" : "point_canvas",
         "plot_name" : "point_histogram",
         "chart_title" : "Points",
@@ -38,22 +43,19 @@
     "line_transformer" :
     {
         "name" : "line",
-        "threshold" : 1.5,
-        "window" : 3.0e6,
-        "width" : 1.5e6,
-        "count" : 50,
-        "hit_factor" : 1.0,
-        "hit_power" : 2.0,
-        "miss_factor" : 3.0,
-        "miss_power" : 3.0,
+        "threshold" : 2.0,
+        "window" : 2.0e6,
+        "width" : 1.0e6,
+        "count" : 30,
         "score_low" : 0.0,
-        "quality_high" : 1000.0,
+        "quality_high" : 100.0,
         "length" : 10
     },
 
     "line_plot_consumer" :
     {
         "name" : "line_plot",
+        "plot_overlay" : true,
         "plot_field" : "quality",
         "plot_key" : "line_canvas",
         "plot_name" : "line_histogram",

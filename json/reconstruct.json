@@ -15,47 +15,38 @@
 
     "point_transformer" :
     {
-        "name" : "unused",
+        "name" : "point",
+        "threshold" : 1.5,
+        "high_factor" : 1.0,
+        "high_power" : 2.0,
+        "low_factor" : 3.0,
+        "low_power" : 1.0,
         "begin_sec" : 0.0,
         "end_sec" : 1.0,
-        "begin_hz" : 5.0e6,
-        "end_hz" : 120.0e6,
-        "length" : 10
-    },
-
-    "point_transformer" :
-    {
-        "name" : "point",
-        "begin_sec" : 0.065,
-        "end_sec" : 0.088,
-        "begin_hz" : 52.0e6,
-        "end_hz" : 80.0e6,
-        "length" : 10
+        "begin_hz" : 15.0e6,
+        "end_hz" : 110.0e6,
+        "length" : 20
     },
 
     "point_plot_consumer" :
     {
         "name" : "point_plot",
-        "plot_field" : "ratio",
+        "plot_field" : "score",
         "plot_key" : "point_canvas",
         "plot_name" : "point_histogram",
         "chart_title" : "Points",
         "x_title" : "Time [sec]",
         "y_title" : "Frequency [hertz]",
-        "z_title" : "Ratio [none]"
+        "z_title" : "Score [none]"
     },
 
     "line_transformer" :
     {
         "name" : "line",
-        "threshold" : 1.5,
+        "threshold" : 5.0,
         "window" : 65.0e3,
-        "width" : 65.0e3,
-        "count" : 50,
-        "hit_factor" : 1.0,
-        "hit_power" : 2.0,
-        "miss_factor" : 10.0,
-        "miss_power" : 3.0,
+        "width" : 35.0e3,
+        "count" : 30,
         "score_low" : 0.0,
         "quality_high" : 500.0,
         "length" : 10
@@ -77,8 +68,6 @@
     "join" : "background.out_0:point.in_0",
     "join" : "signal.out_0:point.in_1",
     "join" : "point.out_0:line.in_0",
-    "join" : "point.out_0:point_plot.in_0",
-    "join" : "line.out_0:line_plot.in_0",
 
-    "run" : "background:signal:point:point_plot:line:line_plot"
+    "run" : "background:signal:point:line"
 }

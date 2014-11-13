@@ -33,7 +33,6 @@ namespace midge
 
         enum_t t_command;
         const point_data* t_points;
-        pointer< point > t_point;
         count_t t_size;
         real_t t_time_interval;
         count_t t_time_index;
@@ -49,7 +48,7 @@ namespace midge
         count_t t_last_written_index;
         count_t t_count = 0;
 
-        bool t_field;
+        enum_t t_field;
         if( f_plot_field == "id" )
         {
             t_field = 0;
@@ -58,9 +57,13 @@ namespace midge
         {
             t_field = 1;
         }
+        else if( f_plot_field == "score" )
+        {
+            t_field = 2;
+        }
         else
         {
-            throw error() << "point plot consumer plot field must be either <id> or <ratio>";
+            throw error() << "point plot consumer plot field must be either <id>, <ratio> or <score>";
             return;
         }
 
@@ -93,17 +96,21 @@ namespace midge
 
                 for( t_index = 0; t_index < t_size; t_index++ )
                 {
-                    t_point = t_points->points().at( t_index );
-                    t_x.values().push_back( t_point->time() );
-                    t_y.values().push_back( t_point->frequency() );
+                    t_x.values().push_back( t_points->points().at( t_index ).time() );
+                    t_y.values().push_back( t_points->points().at( t_index ).frequency() );
                     if( t_field == 0 )
                     {
-                        t_z.values().push_back( t_point->id() );
+                        t_z.values().push_back( t_points->points().at( t_index ).id() );
                         continue;
                     }
                     if( t_field == 1 )
                     {
-                        t_z.values().push_back( t_point->ratio() );
+                        t_z.values().push_back( t_points->points().at( t_index ).ratio() );
+                        continue;
+                    }
+                    if( t_field == 2 )
+                    {
+                        t_z.values().push_back( t_points->points().at( t_index ).score() );
                         continue;
                     }
                 }

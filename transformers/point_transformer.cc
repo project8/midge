@@ -1,5 +1,4 @@
 #include "point_transformer.hh"
-#include "pool.hh"
 
 #include <cmath>
 
@@ -7,10 +6,17 @@ namespace midge
 {
 
     point_transformer::point_transformer() :
+            f_threshold( 2. ),
+            f_high_factor( 2. ),
+            f_high_power( 1. ),
+            f_low_factor( 1. ),
+            f_low_power( 2. ),
             f_begin_sec( 0. ),
             f_end_sec( 10. ),
             f_begin_hz( 5. ),
             f_end_hz( 120.e6 ),
+            f_object_pool( 1000000 ),
+            f_pointer_pool( 10000000 ),
             f_length( 10 )
     {
     }
@@ -22,6 +28,13 @@ namespace midge
     void point_transformer::initialize()
     {
         out_buffer< 0 >().initialize( f_length );
+
+        point::set_threshold( f_threshold );
+        point::set_high_factor( f_high_factor );
+        point::set_high_power( f_high_power );
+        point::set_low_factor( f_low_factor );
+        point::set_low_power( f_low_power );
+
         return;
     }
 
@@ -42,8 +55,8 @@ namespace midge
         real_t t_signal_time_interval;
         count_t t_signal_time_index;
 
+        point* t_point;
         point_data* t_points;
-        pointer< point > t_point;
         count_t t_begin_time_index;
         count_t t_end_time_index;
         count_t t_begin_frequency_index;
@@ -130,6 +143,7 @@ namespace midge
                 t_begin_time_index = (count_t) (floor( f_begin_sec / t_signal_time_interval ));
                 t_end_time_index = (count_t) (ceil( f_end_sec / t_signal_time_interval ));
 
+
                 t_points->points().resize( t_end_frequency_index - t_begin_frequency_index + 1 );
                 t_points->set_size( t_end_frequency_index - t_begin_frequency_index + 1 );
                 t_points->set_time_interval( t_signal_time_interval );
@@ -161,7 +175,6 @@ namespace midge
                 t_points->set_frequency_index( t_begin_frequency_index );
 
                 t_time_value = t_signal_time_interval * t_signal_time_index;
-                pool< point >::allocate( t_points->points() );
                 for( t_index = t_begin_frequency_index; t_index <= t_end_frequency_index; t_index++ )
                 {
                     t_frequency_value = t_index * t_background_frequency_interval;
@@ -169,10 +182,13 @@ namespace midge
                     t_signal_value = t_signal->at( t_index - t_signal_frequency_index );
                     t_ratio_value = t_signal_value / t_background_value;
 
-                    t_point = t_points->points().at( t_index - t_begin_frequency_index );
+                    t_point = &(t_points->points().at( t_index - t_begin_frequency_index ));
+
+                    t_point->id() = 0;
                     t_point->time() = t_time_value;
                     t_point->frequency() = t_frequency_value;
                     t_point->ratio() = t_ratio_value;
+                    t_point->update();
                 }
 
                 out_stream< 0 >().set( stream::s_run );

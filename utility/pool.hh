@@ -15,40 +15,22 @@ namespace midge
     {
         public:
             static void initialize( const count_t& p_size );
+            static count_t count();
             static void finalize();
 
-            static void allocate( pointer< x_type >& p_data );
-
-            template< template< class > class x_container >
-            static void allocate( x_container< pointer< x_type > >& p_data );
-
-            template< template< class, class > class x_container, class x_1 >
-            static void allocate( x_container< pointer< x_type >, x_1 >& p_data );
-
-            template< template< class, class, class > class x_container, class x_1, class x_2 >
-            static void allocate( x_container< pointer< x_type >, x_1, x_2 >& p_data );
-
-            static void free( pointer< x_type >& p_data );
-
-            template< template< class > class x_container >
-            static void free( x_container< pointer< x_type > >& p_data );
-
-            template< template< class, class > class x_container, class x_1 >
-            static void free( x_container< pointer< x_type >, x_1 >& p_data );
-
-            template< template< class, class, class > class x_container, class x_1, class x_2 >
-            static void free( x_container< pointer< x_type >, x_1, x_2 >& p_data );
+            static x_type* allocate();
+            static void free( x_type* p_pointer );
 
         private:
             static mutex s_mutex;
-            static stack< pointer< x_type > > s_stack;
+            static stack< x_type* > s_stack;
     };
 
     template< class x_type >
     mutex pool< x_type >::s_mutex = mutex();
 
     template< class x_type >
-    stack< pointer< x_type > > pool< x_type >::s_stack = stack< pointer< x_type > >();
+    stack< x_type* > pool< x_type >::s_stack = stack< x_type* >();
 
     template< class x_type >
     void pool< x_type >::initialize( const count_t& p_size )
@@ -56,10 +38,19 @@ namespace midge
         s_mutex.lock();
         for( index_t t_index = 0; t_index < p_size; t_index++ )
         {
-            s_stack.push( pointer< x_type >( new x_type() ) );
+            s_stack.push( new x_type() );
         }
         s_mutex.unlock();
         return;
+    }
+    template< class x_type >
+    count_t pool< x_type >::count()
+    {
+        count_t t_count;
+        s_mutex.lock();
+        t_count = s_stack.size();
+        s_mutex.unlock();
+        return t_count;
     }
     template< class x_type >
     void pool< x_type >::finalize()
@@ -67,6 +58,7 @@ namespace midge
         s_mutex.lock();
         while( s_stack.empty() == false )
         {
+            delete s_stack.top();
             s_stack.pop();
         }
         s_mutex.unlock();
@@ -74,139 +66,28 @@ namespace midge
     }
 
     template< class x_type >
-    void pool< x_type >::allocate( pointer< x_type >& p_data )
+    x_type* pool< x_type >::allocate()
     {
+        x_type* t_pointer;
         s_mutex.lock();
         if( s_stack.size() > 0 )
         {
-            p_data = s_stack.top();
+            t_pointer = s_stack.top();
             s_stack.pop();
         }
         else
         {
-            p_data = new x_type();
+            t_pointer = NULL;
+            throw error() << "pool< " << typeid(x_type).name() << " > is empty";
         }
         s_mutex.unlock();
-        return;
+        return t_pointer;
     }
-
     template< class x_type >
-    template< template< class > class x_container >
-    void pool< x_type >::allocate( x_container< pointer< x_type > >& p_data )
+    void pool< x_type >::free( x_type* p_pointer )
     {
         s_mutex.lock();
-        typename x_container< pointer< x_type > >::iterator t_it = p_data.begin();
-        while( (s_stack.empty() == false) && (t_it == p_data.end()) )
-        {
-            (*t_it) = s_stack.top();
-            ++t_it;
-            s_stack.pop();
-        }
-        while( t_it != p_data.end() )
-        {
-            (*t_it) = new x_type();
-            ++t_it;
-        }
-        s_mutex.unlock();
-        return;
-    }
-
-    template< class x_type >
-    template< template< class, class > class x_container, class x_1 >
-    void pool< x_type >::allocate( x_container< pointer< x_type >, x_1 >& p_data )
-    {
-        s_mutex.lock();
-        typename x_container< pointer< x_type >, x_1 >::iterator t_it = p_data.begin();
-        while( (s_stack.empty() == false) && (t_it == p_data.end()) )
-        {
-            (*t_it) = s_stack.top();
-            ++t_it;
-            s_stack.pop();
-        }
-        while( t_it != p_data.end() )
-        {
-            (*t_it) = new x_type();
-            ++t_it;
-        }
-        s_mutex.unlock();
-        return;
-    }
-
-    template< class x_type >
-    template< template< class, class, class > class x_container, class x_1, class x_2 >
-    void pool< x_type >::allocate( x_container< pointer< x_type >, x_1, x_2 >& p_data )
-    {
-        s_mutex.lock();
-        typename x_container< pointer< x_type >, x_1, x_2 >::iterator t_it = p_data.begin();
-        while( (s_stack.empty() == false) && (t_it == p_data.end()) )
-        {
-            (*t_it) = s_stack.top();
-            ++t_it;
-            s_stack.pop();
-        }
-        while( t_it != p_data.end() )
-        {
-            (*t_it) = new x_type();
-            ++t_it;
-        }
-        s_mutex.unlock();
-        return;
-    }
-
-    template< class x_type >
-    void pool< x_type >::free( pointer< x_type >& p_data )
-    {
-        s_mutex.lock();
-        s_stack.push( p_data );
-        p_data = NULL;
-        s_mutex.unlock();
-        return;
-    }
-
-    template< class x_type >
-    template< template< class > class x_container >
-    void pool< x_type >::free( x_container< pointer< x_type > >& p_data )
-    {
-        s_mutex.lock();
-        typename x_container< pointer< x_type > >::iterator t_it = p_data.begin();
-        while( t_it != p_data.end() )
-        {
-            s_stack.push( *t_it );
-            (*t_it) = NULL;
-            t_it++;
-        }
-        s_mutex.unlock();
-        return;
-    }
-
-    template< class x_type >
-    template< template< class, class > class x_container, class x_1 >
-    void pool< x_type >::free( x_container< pointer< x_type >, x_1 >& p_data )
-    {
-        s_mutex.lock();
-        typename x_container< pointer< x_type >, x_1 >::iterator t_it = p_data.begin();
-        while( t_it != p_data.end() )
-        {
-            s_stack.push( *t_it );
-            (*t_it) = NULL;
-            t_it++;
-        }
-        s_mutex.unlock();
-        return;
-    }
-
-    template< class x_type >
-    template< template< class, class, class > class x_container, class x_1, class x_2 >
-    void pool< x_type >::free( x_container< pointer< x_type >, x_1, x_2 >& p_data )
-    {
-        s_mutex.lock();
-        typename x_container< pointer< x_type >, x_1, x_2 >::iterator t_it = p_data.begin();
-        while( t_it != p_data.end() )
-        {
-            s_stack.push( *t_it );
-            (*t_it) = NULL;
-            t_it++;
-        }
+        s_stack.push( p_pointer );
         s_mutex.unlock();
         return;
     }

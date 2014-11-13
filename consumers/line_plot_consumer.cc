@@ -34,8 +34,6 @@ namespace midge
 
         enum_t t_command;
         const line_data* t_lines;
-        pointer< line > t_line;
-        pointer< point > t_point;
         count_t t_size;
         real_t t_time_interval;
         count_t t_time_index;
@@ -131,60 +129,57 @@ namespace midge
 
                 for( t_index = 0; t_index < t_lines->lines().size(); t_index++ )
                 {
-                    t_line = t_lines->lines().at( t_index );
-
-                    for( line::point_it t_it = t_line->global().begin(); t_it != t_line->global().end(); ++t_it )
+                    for( line::point_cit t_it = t_lines->lines().at( t_index ).points().begin(); t_it != t_lines->lines().at( t_index ).points().end(); ++t_it )
                     {
-                        t_point = *t_it;
-                        t_x.values().push_back( t_point->time() );
-                        t_y.values().push_back( t_point->frequency() );
+                        t_x.values().push_back( t_it->time() );
+                        t_y.values().push_back( t_it->frequency() );
                         if( t_field == 0 )
                         {
-                            t_z.values().push_back( t_point->ratio() );
+                            t_z.values().push_back( t_it->ratio() );
                             continue;
                         }
                         if( t_field == 1 )
                         {
-                            t_z.values().push_back( t_line->id() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).id() );
                             continue;
                         }
                         if( t_field == 2 )
                         {
-                            t_z.values().push_back( t_line->frequency() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).frequency() );
                             continue;
                         }
                         if( t_field == 3 )
                         {
-                            t_z.values().push_back( t_line->slope() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).slope() );
                             continue;
                         }
                         if( t_field == 4 )
                         {
-                            t_z.values().push_back( t_line->duration() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).duration() );
                             continue;
                         }
                         if( t_field == 5 )
                         {
-                            t_z.values().push_back( t_line->correlation() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).correlation() );
                             continue;
                         }
                         if( t_field == 6 )
                         {
-                            t_z.values().push_back( t_line->deviation() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).deviation() );
                             continue;
                         }
                         if( t_field == 7 )
                         {
-                            t_z.values().push_back( t_line->quality() );
+                            t_z.values().push_back( t_lines->lines().at( t_index ).quality() );
                             continue;
                         }
                     }
 
                     t_coordinates.resize( t_coordinates.size() + 1 );
-                    t_coordinates.back().first.first = t_line->time();
-                    t_coordinates.back().first.second = t_line->frequency();
-                    t_coordinates.back().second.first = t_line->time() + t_line->duration();
-                    t_coordinates.back().second.second = t_line->frequency() + t_line->slope() * t_line->duration();
+                    t_coordinates.back().first.first = t_lines->lines().at( t_index ).time();
+                    t_coordinates.back().first.second = t_lines->lines().at( t_index ).frequency();
+                    t_coordinates.back().second.first = t_lines->lines().at( t_index ).time() + t_lines->lines().at( t_index ).duration();
+                    t_coordinates.back().second.second = t_lines->lines().at( t_index ).frequency() + t_lines->lines().at( t_index ).slope() * t_lines->lines().at( t_index ).duration();
                 }
 
                 t_last_written_index = t_time_index;

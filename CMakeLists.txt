@@ -49,7 +49,7 @@ find_package( FFTW REQUIRED )
 find_package( GSL REQUIRED )
 
 # root
-find_package( ROOT 5.24.0 REQUIRED )
+find_package( ROOT REQUIRED )
 
 # monarch
 set( Monarch_INSTALL_DIR "/usr/local" CACHE PATH "path to monarch installation" )
@@ -60,14 +60,14 @@ set( Monarch_LIBRARIES -lMonarchCore -lMonarchProto )
 # midge
 set( midge_external_directories
 	${GSL_LIBRARY_DIRS}
-	${ROOT_LIBRARY_DIRS}
+    ${ROOT_LIBRARY_DIRS}
 	${Monarch_LIBRARY_DIR}
 )
 
 set( midge_external_includes
 	${FFTW_INCLUDE_DIR}
 	${GSL_INCLUDE_DIRS}
-	${ROOT_INCLUDE_DIR}
+    ${ROOT_INCLUDE_DIR}
 	${Monarch_INCLUDE_DIR}
 )
 
@@ -75,7 +75,7 @@ set( midge_external_libraries
 	${CMAKE_THREAD_LIBS_INIT}
 	${FFTW_LIBRARIES}
 	${GSL_LIBRARIES}
-	${ROOT_LIBRARIES}
+    ${ROOT_LIBRARIES}
 	${Monarch_LIBRARIES}
 )
 

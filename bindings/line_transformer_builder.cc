@@ -10,10 +10,6 @@ namespace midge
         line_transformer_builder::numerical< real_t >( &line_transformer::set_window, "window" ) +
         line_transformer_builder::numerical< real_t >( &line_transformer::set_width, "width" ) +
         line_transformer_builder::numerical< count_t >( &line_transformer::set_count, "count" ) +
-        line_transformer_builder::numerical< real_t >( &line_transformer::set_hit_factor, "hit_factor" ) +
-        line_transformer_builder::numerical< real_t >( &line_transformer::set_hit_power, "hit_power" ) +
-        line_transformer_builder::numerical< real_t >( &line_transformer::set_miss_factor, "miss_factor" ) +
-        line_transformer_builder::numerical< real_t >( &line_transformer::set_miss_power, "miss_power" ) +
         line_transformer_builder::numerical< count_t >( &line_transformer::set_score_low, "score_low" ) +
         line_transformer_builder::numerical< real_t >( &line_transformer::set_quality_high, "quality_high" ) +
         line_transformer_builder::numerical< count_t >( &line_transformer::set_length, "length" ) +

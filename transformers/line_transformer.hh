@@ -32,12 +32,10 @@ namespace midge
             accessible( real_t, window )
             accessible( real_t, width )
             accessible( count_t, count )
-            accessible( real_t, hit_factor )
-            accessible( real_t, hit_power )
-            accessible( real_t, miss_factor )
-            accessible( real_t, miss_power )
             accessible( real_t, score_low )
             accessible( real_t, quality_high )
+            accessible( count_t, object_pool )
+            accessible( count_t, pointer_pool )
             accessible( count_t, length )
 
         protected:
@@ -45,11 +43,11 @@ namespace midge
             void execute();
             void finalize();
 
-            typedef list< pointer< point > > point_list;
+            typedef list< point* > point_list;
             typedef point_list::iterator point_it;
             typedef point_list::const_iterator point_cit;
 
-            typedef list< pointer< line > > line_list;
+            typedef list< line* > line_list;
             typedef line_list::iterator line_it;
             typedef line_list::const_iterator line_cit;
 

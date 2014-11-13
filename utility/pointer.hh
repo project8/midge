@@ -3,6 +3,8 @@
 
 #include "types.hh"
 #include "error.hh"
+#include "mutex.hh"
+#include "pool.hh"
 
 #include <cstddef>
 
@@ -25,18 +27,22 @@ namespace midge
                     }
 
                 public:
-                    const count_t& count() const
+                    count_t count() const
                     {
-                        return f_count;
+                        count_t t_count = f_count;
+                        return t_count;
                     }
-                    const count_t& increment()
+                    count_t increment()
                     {
-                        return ++f_count;
+                        count_t t_count = ++f_count;
+                        return t_count;
                     }
-                    const count_t& decrement()
+                    count_t decrement()
                     {
-                        return --f_count;
+                        count_t t_count = --f_count;
+                        return t_count;
                     }
+
                 private:
                     count_t f_count;
             };
@@ -44,70 +50,155 @@ namespace midge
         public:
             pointer() :
                     f_pointer( NULL ),
-                    f_counter( new counter() )
-            {
-                f_counter->increment();
-            }
-            pointer( x_type* p_value ) :
-                    f_pointer( p_value ),
-                    f_counter( new counter() )
+                    f_counter( pool< counter >::allocate() )
             {
                 f_counter->increment();
             }
 
-            pointer( const pointer< x_type >& sp ) :
-                    f_pointer( sp.f_pointer ),
-                    f_counter( sp.f_counter )
+            pointer( x_type* p_pointer ) :
+                    f_pointer( p_pointer ),
+                    f_counter( pool< counter >::allocate() )
             {
                 f_counter->increment();
+            }
+
+            pointer< x_type >& operator=( x_type* p_pointer )
+            {
+                if( f_pointer != p_pointer )
+                {
+                    if( f_counter->decrement() == 0 )
+                    {
+                        if( f_pointer != NULL )
+                        {
+                            pool< x_type >::free( f_pointer );
+                        }
+                        pool< counter >::free( f_counter );
+                    }
+
+                    f_pointer = p_pointer;
+                    f_counter = pool< counter >::allocate();
+                    f_counter->increment();
+                }
+                return *this;
+            }
+
+            pointer( const pointer< x_type >& p_pointer ) :
+                    f_pointer( p_pointer.f_pointer ),
+                    f_counter( p_pointer.f_counter )
+            {
+                f_counter->increment();
+            }
+
+            pointer< x_type >& operator=( const pointer< x_type >& p_pointer )
+            {
+                if( this != &p_pointer )
+                {
+                    if( f_counter->decrement() == 0 )
+                    {
+                        if( f_pointer != NULL )
+                        {
+                            pool< x_type >::free( f_pointer );
+                        }
+                        pool< counter >::free( f_counter );
+                    }
+
+                    f_pointer = p_pointer.f_pointer;
+                    f_counter = p_pointer.f_counter;
+                    f_counter->increment();
+                }
+                return *this;
             }
 
             ~pointer()
             {
                 if( f_counter->decrement() == 0 )
                 {
-                    delete f_pointer;
-                    delete f_counter;
+                    if( f_pointer != NULL )
+                    {
+                        pool< x_type >::free( f_pointer );
+                    }
+                    pool< counter >::free( f_counter );
                 }
+            }
+
+            static void initialize( const count_t& p_size )
+            {
+                pool< counter >::initialize( p_size );
+                return;
+            }
+            static count_t count()
+            {
+                return pool< counter >::count();
+            }
+            static void finalize()
+            {
+                pool< counter >::finalize();
+                return;
+            }
+
+            void allocate()
+            {
+                if( f_counter->decrement() == 0 )
+                {
+                    if( f_pointer != NULL )
+                    {
+                        pool< x_type >::free( f_pointer );
+                    }
+                    pool< counter >::free( f_counter );
+                }
+                f_pointer = pool< x_type >::allocate();
+                f_counter = pool< counter >::allocate();
+                return;
+            }
+
+            void free()
+            {
+                if( f_counter->decrement() == 0 )
+                {
+                    if( f_pointer != NULL )
+                    {
+                        pool< x_type >::free( f_pointer );
+                    }
+                    pool< counter >::free( f_counter );
+                }
+                f_pointer = NULL;
+                f_counter = pool< counter >::allocate();
+                return;
             }
 
             x_type& operator*()
             {
-//                if( f_pointer == NULL )
-//                {
-//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with *";
-//                }
-
+                if( f_pointer == NULL )
+                {
+                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with *";
+                }
                 return *f_pointer;
             }
 
             const x_type& operator*() const
             {
-//                if( f_pointer == NULL )
-//                {
-//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with *";
-//                }
-
+                if( f_pointer == NULL )
+                {
+                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with * (const)";
+                }
                 return *f_pointer;
             }
 
             x_type* operator->()
             {
-//                if( f_pointer == NULL )
-//                {
-//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with ->";
-//                }
-
+                if( f_pointer == NULL )
+                {
+                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with ->";
+                }
                 return f_pointer;
             }
 
             const x_type* operator->() const
             {
-//                if( f_pointer == NULL )
-//                {
-//                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with ->";
-//                }
-
+                if( f_pointer == NULL )
+                {
+                    throw error() << "pointer of type <" << typeid(x_type).name() << "> tried to dereference null pointer with -> (const)";
+                }
                 return f_pointer;
             }
 
@@ -118,23 +209,6 @@ namespace midge
             count_t count() const
             {
                 return f_counter->count();
-            }
-
-            pointer< x_type >& operator=( const pointer< x_type >& sp )
-            {
-                if( this != &sp )
-                {
-                    if( f_counter->decrement() == 0 )
-                    {
-                        delete f_pointer;
-                        delete f_counter;
-                    }
-
-                    f_pointer = sp.f_pointer;
-                    f_counter = sp.f_counter;
-                    f_counter->increment();
-                }
-                return *this;
             }
 
             bool operator==( const pointer< x_type >& sp ) const
@@ -153,6 +227,7 @@ namespace midge
         private:
             x_type* f_pointer;
             counter* f_counter;
+            mutable mutex f_mutex;
     };
 }
 

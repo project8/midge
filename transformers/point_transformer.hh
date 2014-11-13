@@ -28,10 +28,17 @@ namespace midge
             virtual ~point_transformer();
 
         public:
+            accessible( real_t, threshold )
+            accessible( real_t, high_factor )
+            accessible( real_t, high_power )
+            accessible( real_t, low_factor )
+            accessible( real_t, low_power )
             accessible( real_t, begin_sec )
             accessible( real_t, end_sec )
             accessible( real_t, begin_hz )
             accessible( real_t, end_hz )
+            accessible( count_t, object_pool )
+            accessible( count_t, pointer_pool )
             accessible( count_t, length )
 
         protected:

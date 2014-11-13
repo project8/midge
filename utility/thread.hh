@@ -84,7 +84,7 @@ namespace midge
                     callable();
                     virtual ~callable();
 
-                    virtual void execute() = 0;
+                    virtual void execute( mutex& p_mutex ) = 0;
             };
 
             template< class x_type, class x_r, class x_a1 = _, class x_a2 = _, class x_a3 = _ >
@@ -125,8 +125,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (f_object->*f_member)( f_a1, f_a2, f_a3 );
                 return;
             }
@@ -165,8 +166,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (f_object->*f_member)( f_a1, f_a2 );
                 return;
             }
@@ -203,8 +205,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (f_object->*f_member)( f_a1 );
                 return;
             }
@@ -239,8 +242,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (f_object->*f_member)();
                 return;
             }
@@ -276,8 +280,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (*f_function)( f_a1, f_a2, f_a3 );
                 return;
             }
@@ -314,8 +319,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (*f_function)( f_a1, f_a2 );
                 return;
             }
@@ -350,8 +356,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (*f_function)( f_a1 );
                 return;
             }
@@ -384,8 +391,9 @@ namespace midge
             {
             }
 
-            void execute()
+            void execute( mutex& p_mutex )
             {
+                p_mutex.unlock();
                 (*f_function)();
                 return;
             }

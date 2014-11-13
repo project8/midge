@@ -2,7 +2,6 @@
 #define _midge_line_data_hh_
 
 #include "line.hh"
-#include "pointer.hh"
 
 #include <vector>
 using std::vector;
@@ -17,7 +16,7 @@ namespace midge
             virtual ~line_data();
 
         public:
-            ;referrable( vector< pointer< line > >, lines )
+            ;referrable( vector< line >, lines )
             ;accessible( count_t, size )
             ;accessible( real_t, time_interval )
             ;accessible( count_t, time_index )

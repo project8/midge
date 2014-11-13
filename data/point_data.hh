@@ -2,7 +2,6 @@
 #define _midge_point_data_hh_
 
 #include "point.hh"
-#include "pointer.hh"
 
 #include <vector>
 using std::vector;
@@ -17,7 +16,7 @@ namespace midge
             virtual ~point_data();
 
         public:
-            ;referrable( vector< pointer< point > >, points )
+            ;referrable( vector< point >, points )
             ;accessible( count_t, size )
             ;accessible( real_t, time_interval )
             ;accessible( count_t, time_index )

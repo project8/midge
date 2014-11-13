@@ -90,6 +90,8 @@ int main()
     t_thread_two.stop();
     t_thread_three.stop();
 
+    usleep( 1000000 );
+
     return 0;
 }
 
