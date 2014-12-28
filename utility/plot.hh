@@ -14,6 +14,9 @@
 #include "TH1D.h"
 #include "TH2D.h"
 
+#include <stack>
+using std::stack;
+
 #include <vector>
 using std::vector;
 
@@ -25,7 +28,6 @@ using std::pair;
 
 namespace midge
 {
-
 
     class plot :
         public singleton< plot >
@@ -43,10 +45,10 @@ namespace midge
             {
                 public:
                     ordinate();
-                    ordinate( const count_t& t_size );
+                    ordinate( const count_t& p_size );
                     ~ordinate();
 
-                    void operator()( const count_t& t_size );
+                    void operator()( const count_t& p_size );
 
                 public:
                     string_t& title();
@@ -56,8 +58,6 @@ namespace midge
                     const values_t& values() const;
 
                 private:
-                    ordinate( const ordinate& );
-
                     string_t f_title;
                     values_t f_values;
             };
@@ -66,10 +66,10 @@ namespace midge
             {
                 public:
                     abscissa();
-                    abscissa( const count_t& t_size );
+                    abscissa( const count_t& p_size );
                     ~abscissa();
 
-                    void operator()( const count_t& t_size );
+                    void operator()( const count_t& p_size );
 
                 public:
                     string_t& title();
@@ -88,13 +88,102 @@ namespace midge
                     const values_t& values() const;
 
                 private:
-                    abscissa( const abscissa& );
-
                     string_t f_title;
                     count_t f_count;
                     real_t f_low;
                     real_t f_high;
                     values_t f_values;
+            };
+
+            class plot_one_dimensional
+            {
+                public:
+                    plot_one_dimensional( const string_t& p_key, const string_t& p_name, const string_t& p_title, const abscissa& p_x_axis, const ordinate& p_y_values );
+                    ~plot_one_dimensional();
+
+                    string& key();
+                    const string& key() const;
+
+                    string& name();
+                    const string& name() const;
+
+                    string& title();
+                    const string& title() const;
+
+                    abscissa& x_axis();
+                    const abscissa& x_axis() const;
+
+                    ordinate& y_values();
+                    const ordinate& y_values() const;
+
+                private:
+                    string f_key;
+                    string f_name;
+                    string f_title;
+                    abscissa f_x_axis;
+                    ordinate f_y_values;
+            };
+
+            class plot_two_dimensional
+            {
+                public:
+                    plot_two_dimensional( const string_t& p_key, const string_t& p_name, const string_t& p_title, const abscissa& p_x_axis, const abscissa& p_y_axis, const ordinate& p_z_values );
+                    ~plot_two_dimensional();
+
+                    string& key();
+                    const string& key() const;
+
+                    string& name();
+                    const string& name() const;
+
+                    string& title();
+                    const string& title() const;
+
+                    abscissa& x_axis();
+                    const abscissa& x_axis() const;
+
+                    abscissa& y_axis();
+                    const abscissa& y_axis() const;
+
+                    ordinate& z_values();
+                    const ordinate& z_values() const;
+
+                private:
+                    string f_key;
+                    string f_name;
+                    string f_title;
+                    abscissa f_x_axis;
+                    abscissa f_y_axis;
+                    ordinate f_z_values;
+            };
+
+            class graph_two_dimensional
+            {
+                public:
+                    graph_two_dimensional( const string_t& p_key, const string_t& p_name, const string_t& p_title, const abscissa& p_x_values, const abscissa& p_y_values );
+                    ~graph_two_dimensional();
+
+                    string& key();
+                    const string& key() const;
+
+                    string& name();
+                    const string& name() const;
+
+                    string& title();
+                    const string& title() const;
+
+                    abscissa& x_values();
+                    const abscissa& x_values() const;
+
+                    abscissa& y_values();
+                    const abscissa& y_values() const;
+
+                private:
+                    string f_key;
+                    string f_name;
+                    string f_title;
+                    abscissa f_x_values;
+                    abscissa f_y_values;
             };
 
         private:
@@ -103,37 +192,31 @@ namespace midge
 
         public:
             void initialize();
-            void plot_one_dimensional
-            (
-                const string_t& p_key,
-                const string_t& p_name,
-                const string_t& p_title,
-                const abscissa& p_x_axis,
-                const ordinate& p_y_values
-            );
-            void plot_two_dimensional
-            (
-                const string_t& p_key,
-                const string_t& p_name,
-                const string_t& p_title,
-                const abscissa& p_x_axis,
-                const abscissa& p_y_axis,
-                const ordinate& p_z_values
-            );
-            void graph_two_dimensional
-            (
-                const string_t& p_key,
-                const string_t& p_name,
-                const string_t& p_title,
-                const abscissa& p_x_axis,
-                const abscissa& p_y_axis
-            );
+            void create_plot_one_dimensional( const string_t& p_key, const string_t& p_name, const string_t& p_title, const abscissa& p_x_axis, const ordinate& p_y_values );
+            void create_plot_two_dimensional( const string_t& p_key, const string_t& p_name, const string_t& p_title, const abscissa& p_x_axis, const abscissa& p_y_axis, const ordinate& p_z_values );
+            void create_graph_two_dimensional( const string_t& p_key, const string_t& p_name, const string_t& p_title, const abscissa& p_x_axis, const abscissa& p_y_axis );
             void finalize();
 
         private:
+            void draw_plot_one_dimensional( const plot_one_dimensional& p_plot );
+            void draw_plot_two_dimensional( const plot_two_dimensional& p_plot );
+            void draw_graph_two_dimensional( const graph_two_dimensional& p_graph );
+
             mutex f_mutex;
             count_t f_count;
             TApplication* f_application;
+
+            typedef stack< plot_one_dimensional > plot1_stack;
+
+            plot1_stack f_plot1s;
+
+            typedef stack< plot_two_dimensional > plot2_stack;
+
+            plot2_stack f_plot2s;
+
+            typedef stack< graph_two_dimensional > graph2_stack;
+
+            graph2_stack f_graph2s;
 
             typedef pair< TCanvas*, TH1* > plot_pair;
             typedef map< string_t, pair< TCanvas*, TH1* > > plot_map;

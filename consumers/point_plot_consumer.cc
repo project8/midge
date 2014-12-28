@@ -130,7 +130,7 @@ namespace midge
                 t_y.low() = t_frequency_index * t_frequency_interval;
                 t_y.high() = (t_frequency_index + t_size - 1) * t_frequency_interval;
 
-                t_plot->plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y, t_z );
+                t_plot->create_plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y, t_z );
 
                 continue;
             }

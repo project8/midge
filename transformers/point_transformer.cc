@@ -62,11 +62,11 @@ namespace midge
         count_t t_begin_frequency_index;
         count_t t_end_frequency_index;
 
-        register real_t t_time_value;
-        register real_t t_frequency_value;
-        register real_t t_background_value;
-        register real_t t_signal_value;
-        register real_t t_ratio_value;
+        real_t t_time_value;
+        real_t t_frequency_value;
+        real_t t_background_value;
+        real_t t_signal_value;
+        real_t t_ratio_value;
 
         while( true )
         {

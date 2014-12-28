@@ -183,10 +183,10 @@ namespace midge
         public:
             inline void smooth( const x_data_type< real_t >* p_from, x_data_type< real_t >* p_to, window* p_window )
             {
-                register real_t t_value;
-                register real_t t_norm;
-                register count_t t_size = p_from->get_size();
-                register count_t t_width = (p_window->get_size() - 1) / 2;
+                real_t t_value;
+                real_t t_norm;
+                count_t t_size = p_from->get_size();
+                count_t t_width = (p_window->get_size() - 1) / 2;
                 for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     t_value = 0.;
@@ -217,10 +217,10 @@ namespace midge
         public:
             inline void smooth( const x_data_type< complex_t >* p_from, x_data_type< complex_t >* p_to, window* p_window )
             {
-                register complex_t t_value;
-                register real_t t_norm;
-                register count_t t_size = p_from->get_size();
-                register count_t t_width = (p_window->get_size() - 1) / 2;
+                complex_t t_value;
+                real_t t_norm;
+                count_t t_size = p_from->get_size();
+                count_t t_width = (p_window->get_size() - 1) / 2;
                 for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
                     t_value[ 0 ] = 0.;

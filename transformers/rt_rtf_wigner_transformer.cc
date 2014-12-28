@@ -151,10 +151,10 @@ namespace midge
 
                 t_fourier->execute( t_backward_generator );
 
-                register real_t t_a;
-                register real_t t_b;
-                register real_t t_c;
-                register real_t t_d;
+                real_t t_a;
+                real_t t_b;
+                real_t t_c;
+                real_t t_d;
                 for( t_index = 0; t_index < f_width; t_index++ )
                 {
                     t_a = t_analytic[ t_offset + t_index ][ 0 ] * f_window->at( f_width - 1 + t_index );

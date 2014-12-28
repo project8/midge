@@ -97,7 +97,7 @@ namespace midge
                 t_x.low() = t_first_written_index * t_frequency_interval;
                 t_x.high() = (t_first_unwritten_index - 1) * t_frequency_interval;
 
-                t_plot->plot_one_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y );
+                t_plot->create_plot_one_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y );
 
                 continue;
             }

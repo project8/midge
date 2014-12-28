@@ -183,7 +183,7 @@ namespace midge
         public:
             inline void window( const x_data_type< real_t >* p_from, x_data_type< real_t >* p_to, window* p_window )
             {
-                register real_t t_norm = 1. / (p_window->sum() * p_window->sum());
+                real_t t_norm = 1. / (p_window->sum() * p_window->sum());
                 for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index ) = p_from->at( t_index ) * p_window->at( t_index ) * t_norm;
@@ -199,7 +199,7 @@ namespace midge
         public:
             inline void window( const x_data_type< complex_t >* p_from, x_data_type< complex_t >* p_to, window* p_window )
             {
-                register real_t t_norm = 1. / (p_window->sum() * p_window->sum());
+                real_t t_norm = 1. / (p_window->sum() * p_window->sum());
                 for( index_t t_index = 0; t_index < p_from->get_size(); t_index++ )
                 {
                     p_to->at( t_index )[ 0 ] = p_from->at( t_index )[ 0 ] * p_window->at( t_index ) * t_norm;

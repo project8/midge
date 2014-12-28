@@ -213,9 +213,9 @@ namespace midge
         f_count++;
 
         //msg_warning( coremsg, "** updating ratios **" << eom );
-        register double t_in;
-        register double t_background;
-        register double t_ratio;
+        double t_in;
+        double t_background;
+        double t_ratio;
         for( index_t t_index = f_frequency_minimum_index; t_index <= f_frequency_maximum_index; t_index++ )
         {
             t_in = f_in[ t_index ];
@@ -447,7 +447,7 @@ namespace midge
                     t_ratio_values.values().at( t_index ) = f_ratio_ratio;
                 }
 
-                plot::get_instance()->plot_two_dimensional( f_plot_ratio_key, f_plot_ratio_name, f_chart_ratio_title, t_ratio_times, t_ratio_frequencies, t_ratio_values );
+                plot::get_instance()->create_plot_two_dimensional( f_plot_ratio_key, f_plot_ratio_name, f_chart_ratio_title, t_ratio_times, t_ratio_frequencies, t_ratio_values );
             }
 
             f_ratio_stream->cd();
@@ -639,7 +639,7 @@ namespace midge
             t_cluster_data_scores.title() = f_axis_cluster_title;
             t_cluster_data_scores.values() = t_scores;
 
-            plot::get_instance()->plot_two_dimensional( f_plot_cluster_key, f_plot_cluster_name, f_chart_cluster_title, t_cluster_data_times, t_cluster_data_frequencies, t_cluster_data_scores );
+            plot::get_instance()->create_plot_two_dimensional( f_plot_cluster_key, f_plot_cluster_name, f_chart_cluster_title, t_cluster_data_times, t_cluster_data_frequencies, t_cluster_data_scores );
         }
         return;
     }
@@ -778,7 +778,7 @@ namespace midge
             t_line_data_values.title() = f_axis_line_title;
             t_line_data_values.values() = t_scores;
 
-            plot::get_instance()->plot_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_data_times, t_line_data_frequencies, t_line_data_values );
+            plot::get_instance()->create_plot_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_data_times, t_line_data_frequencies, t_line_data_values );
         }
         return;
     }
@@ -810,7 +810,7 @@ namespace midge
                 t_line_line_frequencies.values().at( 0 ) = t_line->frequency();
                 t_line_line_frequencies.values().at( 1 ) = t_line->frequency() + t_line->slope() * t_line->duration();
 
-                plot::get_instance()->graph_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_line_times, t_line_line_frequencies );
+                plot::get_instance()->create_graph_two_dimensional( f_plot_line_key, f_plot_line_name, f_chart_line_title, t_line_line_times, t_line_line_frequencies );
             }
         }
         return;
@@ -1018,7 +1018,7 @@ namespace midge
             t_event_data_values.title() = f_axis_event_title;
             t_event_data_values.values() = t_ratios;
 
-            plot::get_instance()->plot_two_dimensional( f_plot_event_key, f_plot_event_name, f_chart_event_title, t_event_data_times, t_event_data_frequencies, t_event_data_values );
+            plot::get_instance()->create_plot_two_dimensional( f_plot_event_key, f_plot_event_name, f_chart_event_title, t_event_data_times, t_event_data_frequencies, t_event_data_values );
         }
         return;
     }
@@ -1048,7 +1048,7 @@ namespace midge
                 t_event_line_frequencies.high() = f_frequency_maximum_index * f_interval;
                 t_event_line_frequencies.values() = t_event->line_frequencies();
 
-                plot::get_instance()->graph_two_dimensional( f_plot_event_key, f_plot_event_name, f_chart_event_title, t_event_line_times, t_event_line_frequencies );
+                plot::get_instance()->create_graph_two_dimensional( f_plot_event_key, f_plot_event_name, f_chart_event_title, t_event_line_times, t_event_line_frequencies );
             }
             for( event_it t_it = f_active_events.begin(); t_it != f_active_events.end(); t_it++ )
             {
@@ -1068,7 +1068,7 @@ namespace midge
                 t_event_line_frequencies.high() = f_frequency_maximum_index * f_interval;
                 t_event_line_frequencies.values() = t_event->line_frequencies();
 
-                plot::get_instance()->graph_two_dimensional( f_plot_event_key, f_plot_event_name, f_chart_event_title, t_event_line_times, t_event_line_frequencies );
+                plot::get_instance()->create_graph_two_dimensional( f_plot_event_key, f_plot_event_name, f_chart_event_title, t_event_line_times, t_event_line_frequencies );
             }
         }
         return;
@@ -1196,15 +1196,15 @@ namespace midge
     {
         //msg_warning( coremsg, "cluster <" << f_id << "> created" << eom );
 
-        register index_t t_index;
-        register real_t t_point_frequency;
-        register real_t t_point_ratio;
+        index_t t_index;
+        real_t t_point_frequency;
+        real_t t_point_ratio;
 
-        register real_t t_init_frequency = f_frequency;
-        register real_t t_init_min = t_init_frequency - s_window;
-        register real_t t_init_max = t_init_frequency + s_window;
-        register real_t t_init_dev_stat;
-        register real_t t_init_deviation = 0.;
+        real_t t_init_frequency = f_frequency;
+        real_t t_init_min = t_init_frequency - s_window;
+        real_t t_init_max = t_init_frequency + s_window;
+        real_t t_init_dev_stat;
+        real_t t_init_deviation = 0.;
 
         pair< count_t, count_t > t_current_indices( (count_t) (floor( t_init_min / s_interval )), (count_t) (ceil( t_init_max / s_interval )) );
         if( t_current_indices.first < s_min_index )
@@ -1218,9 +1218,9 @@ namespace midge
 
         pair< count_t, count_t > t_next_indices;
 
-        register real_t t_loop_r_sum;
-        register real_t t_loop_rf_sum;
-        register real_t t_loop_rff_sum;
+        real_t t_loop_r_sum;
+        real_t t_loop_rf_sum;
+        real_t t_loop_rff_sum;
         while( true )
         {
             //msg_warning( coremsg, "  initializing:" << eom );
@@ -1343,24 +1343,24 @@ namespace midge
     {
         //msg_warning( coremsg, "cluster <" << f_id << "> updating:" << eom );
 
-        register index_t t_index;
-        register real_t t_point_time = *s_time;
-        register real_t t_point_duration = t_point_time - f_time;
-        register real_t t_point_frequency;
-        register real_t t_point_ratio;
+        index_t t_index;
+        real_t t_point_time = *s_time;
+        real_t t_point_duration = t_point_time - f_time;
+        real_t t_point_frequency;
+        real_t t_point_ratio;
 
-        register real_t t_update_tt_stat;
-        register real_t t_update_ff_stat;
-        register real_t t_update_tf_stat;
-        register real_t t_update_ttf_stat;
-        register real_t t_update_dev_stat;
-        register real_t t_update_frequency = f_frequency;
-        register real_t t_update_slope = f_slope;
-        register real_t t_update_correlation = f_correlation;
-        register real_t t_update_deviation = f_deviation;
-        register real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
-        register real_t t_update_min = t_update_center - s_window;
-        register real_t t_update_max = t_update_center + s_window;
+        real_t t_update_tt_stat;
+        real_t t_update_ff_stat;
+        real_t t_update_tf_stat;
+        real_t t_update_ttf_stat;
+        real_t t_update_dev_stat;
+        real_t t_update_frequency = f_frequency;
+        real_t t_update_slope = f_slope;
+        real_t t_update_correlation = f_correlation;
+        real_t t_update_deviation = f_deviation;
+        real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+        real_t t_update_min = t_update_center - s_window;
+        real_t t_update_max = t_update_center + s_window;
 
         pair< count_t, count_t > t_current_indices( (count_t) (floor( t_update_min / s_interval )), (count_t) (ceil( t_update_max / s_interval )) );
         if( t_current_indices.first < s_min_index )
@@ -1373,13 +1373,13 @@ namespace midge
         }
         pair< count_t, count_t > t_next_indices;
 
-        register bool_t t_loop_add;
-        register real_t t_loop_r_sum;
-        register real_t t_loop_rt_sum;
-        register real_t t_loop_rf_sum;
-        register real_t t_loop_rtt_sum;
-        register real_t t_loop_rff_sum;
-        register real_t t_loop_rtf_sum;
+        bool_t t_loop_add;
+        real_t t_loop_r_sum;
+        real_t t_loop_rt_sum;
+        real_t t_loop_rf_sum;
+        real_t t_loop_rtt_sum;
+        real_t t_loop_rff_sum;
+        real_t t_loop_rtf_sum;
         while( true )
         {
             //msg_warning( coremsg, "  updating:" << eom );
@@ -1845,26 +1845,26 @@ namespace midge
     {
         //msg_warning( coremsg, "line <" << f_id << "> created" << eom );
 
-        register index_t t_index;
-        register real_t t_point_time;
-        register real_t t_point_duration;
-        register real_t t_point_frequency;
-        register real_t t_point_ratio;
-        register real_t t_point_center;
-        register real_t t_point_max;
-        register real_t t_point_min;
+        index_t t_index;
+        real_t t_point_time;
+        real_t t_point_duration;
+        real_t t_point_frequency;
+        real_t t_point_ratio;
+        real_t t_point_center;
+        real_t t_point_max;
+        real_t t_point_min;
 
-        register real_t t_init_tt_stat;
-        register real_t t_init_ff_stat;
-        register real_t t_init_tf_stat;
-        register real_t t_init_ttf_stat;
-        register real_t t_init_dev_stat;
-        register real_t t_init_time = f_time;
-        register real_t t_init_duration = f_duration;
-        register real_t t_init_frequency = f_frequency;
-        register real_t t_init_slope = f_slope;
-        register real_t t_init_correlation = f_correlation;
-        register real_t t_init_deviation = f_deviation;
+        real_t t_init_tt_stat;
+        real_t t_init_ff_stat;
+        real_t t_init_tf_stat;
+        real_t t_init_ttf_stat;
+        real_t t_init_dev_stat;
+        real_t t_init_time = f_time;
+        real_t t_init_duration = f_duration;
+        real_t t_init_frequency = f_frequency;
+        real_t t_init_slope = f_slope;
+        real_t t_init_correlation = f_correlation;
+        real_t t_init_deviation = f_deviation;
 
         set< count_t > t_current_indices;
         for( t_index = 0; t_index < p_cluster.times().size(); t_index++ )
@@ -1874,14 +1874,14 @@ namespace midge
 
         set< count_t > t_next_indices;
 
-        register real_t t_loop_t_min;
-        register real_t t_loop_t_max;
-        register real_t t_loop_r_sum;
-        register real_t t_loop_rt_sum;
-        register real_t t_loop_rf_sum;
-        register real_t t_loop_rtt_sum;
-        register real_t t_loop_rff_sum;
-        register real_t t_loop_rtf_sum;
+        real_t t_loop_t_min;
+        real_t t_loop_t_max;
+        real_t t_loop_r_sum;
+        real_t t_loop_rt_sum;
+        real_t t_loop_rf_sum;
+        real_t t_loop_rtt_sum;
+        real_t t_loop_rff_sum;
+        real_t t_loop_rtf_sum;
         while( true )
         {
             //msg_warning( coremsg, "  initializing:" << eom );
@@ -2038,24 +2038,24 @@ namespace midge
     {
         //msg_warning( coremsg, "line <" << f_id << "> updating:" << eom );
 
-        register index_t t_index;
-        register real_t t_point_time = *s_time;
-        register real_t t_point_duration = t_point_time - f_time;
-        register real_t t_point_frequency;
-        register real_t t_point_ratio;
+        index_t t_index;
+        real_t t_point_time = *s_time;
+        real_t t_point_duration = t_point_time - f_time;
+        real_t t_point_frequency;
+        real_t t_point_ratio;
 
-        register real_t t_update_tt_stat;
-        register real_t t_update_ff_stat;
-        register real_t t_update_tf_stat;
-        register real_t t_update_ttf_stat;
-        register real_t t_update_dev_stat;
-        register real_t t_update_frequency = f_frequency;
-        register real_t t_update_slope = f_slope;
-        register real_t t_update_correlation = f_correlation;
-        register real_t t_update_deviation = f_deviation;
-        register real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
-        register real_t t_update_min = t_update_center - s_tolerance * f_deviation;
-        register real_t t_update_max = t_update_center + s_tolerance * f_deviation;
+        real_t t_update_tt_stat;
+        real_t t_update_ff_stat;
+        real_t t_update_tf_stat;
+        real_t t_update_ttf_stat;
+        real_t t_update_dev_stat;
+        real_t t_update_frequency = f_frequency;
+        real_t t_update_slope = f_slope;
+        real_t t_update_correlation = f_correlation;
+        real_t t_update_deviation = f_deviation;
+        real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+        real_t t_update_min = t_update_center - s_tolerance * f_deviation;
+        real_t t_update_max = t_update_center + s_tolerance * f_deviation;
 
         pair< count_t, count_t > t_current_indices( (count_t) (floor( t_update_min / s_interval )), (count_t) (ceil( t_update_max / s_interval )) );
         if( t_current_indices.first < s_min_index )
@@ -2068,13 +2068,13 @@ namespace midge
         }
         pair< count_t, count_t > t_next_indices;
 
-        register bool_t t_loop_add;
-        register real_t t_loop_r_sum;
-        register real_t t_loop_rt_sum;
-        register real_t t_loop_rf_sum;
-        register real_t t_loop_rtt_sum;
-        register real_t t_loop_rff_sum;
-        register real_t t_loop_rtf_sum;
+        bool_t t_loop_add;
+        real_t t_loop_r_sum;
+        real_t t_loop_rt_sum;
+        real_t t_loop_rf_sum;
+        real_t t_loop_rtt_sum;
+        real_t t_loop_rff_sum;
+        real_t t_loop_rtf_sum;
         while( true )
         {
             //msg_warning( coremsg, "  updating:" << eom );

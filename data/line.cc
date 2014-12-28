@@ -98,33 +98,33 @@ namespace midge
         point_it t_point_it;
         group_it t_group_it;
 
-        register count_t t_point_id;
-        register real_t t_point_time = s_data->get_time_interval() * s_data->get_time_index();
-        register real_t t_point_duration = t_point_time - f_time;
-        register real_t t_point_frequency;
-        register real_t t_point_ratio;
-        register real_t t_point_score;
+        count_t t_point_id;
+        real_t t_point_time = s_data->get_time_interval() * s_data->get_time_index();
+        real_t t_point_duration = t_point_time - f_time;
+        real_t t_point_frequency;
+        real_t t_point_ratio;
+        real_t t_point_score;
 
-        register real_t t_update_frequency = f_frequency;
-        register real_t t_update_slope = f_slope;
-        register real_t t_update_deviation = f_deviation;
-        register real_t t_update_correlation = f_correlation;
-        register real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
-        register real_t t_update_min = t_update_center - s_window;
-        register real_t t_update_max = t_update_center + s_window;
-        register real_t t_update_low_score = 0.;
-        register real_t t_update_high_score = 0.;
-        register real_t t_update_global_score = 0;
+        real_t t_update_frequency = f_frequency;
+        real_t t_update_slope = f_slope;
+        real_t t_update_deviation = f_deviation;
+        real_t t_update_correlation = f_correlation;
+        real_t t_update_center = t_update_frequency + t_update_slope * t_point_duration;
+        real_t t_update_min = t_update_center - s_window;
+        real_t t_update_max = t_update_center + s_window;
+        real_t t_update_low_score = 0.;
+        real_t t_update_high_score = 0.;
+        real_t t_update_global_score = 0;
 
-        register real_t t_update_tt_stat;
-        register real_t t_update_ff_stat;
-        register real_t t_update_tf_stat;
-        register real_t t_update_ttf_stat;
-        register real_t t_update_dev_stat;
+        real_t t_update_tt_stat;
+        real_t t_update_ff_stat;
+        real_t t_update_tf_stat;
+        real_t t_update_ttf_stat;
+        real_t t_update_dev_stat;
 
-        register count_t t_index;
-        register pair< count_t, count_t > t_current_indices;
-        register pair< count_t, count_t > t_next_indices;
+        count_t t_index;
+        pair< count_t, count_t > t_current_indices;
+        pair< count_t, count_t > t_next_indices;
 
         t_current_indices.first = (count_t) (floor( t_update_min / s_data->get_frequency_interval() ));
         if( t_current_indices.first < s_data->get_frequency_index() )
@@ -139,17 +139,17 @@ namespace midge
         }
 
         point_list t_loop_low;
-        register count_t t_loop_low_count;
+        count_t t_loop_low_count;
 
         point_list t_loop_high;
-        register count_t t_loop_high_count;
+        count_t t_loop_high_count;
 
-        register real_t t_loop_r_sum;
-        register real_t t_loop_rt_sum;
-        register real_t t_loop_rf_sum;
-        register real_t t_loop_rtt_sum;
-        register real_t t_loop_rff_sum;
-        register real_t t_loop_rtf_sum;
+        real_t t_loop_r_sum;
+        real_t t_loop_rt_sum;
+        real_t t_loop_rf_sum;
+        real_t t_loop_rtt_sum;
+        real_t t_loop_rff_sum;
+        real_t t_loop_rtf_sum;
 
         while( true )
         {
