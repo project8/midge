@@ -7,6 +7,8 @@
 #include <string>
 using std::string;
 
+#include <typeinfo>
+
 namespace midge
 {
 
