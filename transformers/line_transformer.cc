@@ -1,8 +1,6 @@
 #include "line_transformer.hh"
 
 #include <cmath>
-#include <pthread.h>
-#include <mach/mach_time.h>
 
 namespace midge
 {
