@@ -15,7 +15,6 @@ namespace midge
         public:
             ;accessible_static( real_t, window )
             ;accessible_static( real_t, width )
-            ;accessible_static( real_t, gap )
             ;accessible_static( count_t, count )
 
             ;assignable_static( point_data, data )
@@ -57,8 +56,13 @@ namespace midge
 
             group_list f_low;
             count_t f_low_count;
+
             group_list f_high;
             count_t f_high_count;
+
+            group_list f_line;
+            count_t f_line_count;
+
             real_t f_r_sum;
             real_t f_rt_sum;
             real_t f_rf_sum;

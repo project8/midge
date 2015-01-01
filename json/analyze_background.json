@@ -2,7 +2,7 @@
     "rt_monarch_producer" :
     {
         "name" : "background",
-        "file" : "background.egg",
+        "file" : "<file>.egg",
         "begin_sec" : 0.0,
         "end_sec" : 1.0,
         "size" : 8192,
@@ -38,16 +38,34 @@
         "length" : 10
     },
 
+    "rf_plot_consumer" :
+    {
+        "name" : "plot",
+        "plot_key" : "canvas",
+        "plot_name" : "histogram",
+        "chart_title" : "Smoothed Background Spectrum",
+        "x_title" : "Time [sec]",
+        "y_title" : "Power [watt]"
+    },
+
     "rf_binary_consumer" :
     {
         "name" : "binary",
-        "file" : "background_spectrum.mgb"
+        "file" : "<file>_background.mgb"
+    },
+
+    "rf_ascii_consumer" :
+    {
+        "name" : "ascii",
+        "file" : "<file>_background.mga"
     },
 
     "join" : "background.out_0:power.in_0",
     "join" : "power.out_0:average.in_0",
     "join" : "average.out_0:smoothing.in_0",
     "join" : "smoothing.out_0:binary.in_0",
+    "join" : "smoothing.out_0:ascii.in_0",
+    "join" : "smoothing.out_0:plot.in_0",
 
-    "run" : "background:power:average:smoothing:binary"
+    "run" : "background:power:average:smoothing:binary:ascii:plot"
 }

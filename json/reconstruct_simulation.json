@@ -46,7 +46,7 @@
         "threshold" : 2.0,
         "window" : 2.0e6,
         "width" : 1.0e6,
-        "count" : 30,
+        "count" : 50,
         "score_low" : 0.0,
         "quality_high" : 100.0,
         "length" : 10

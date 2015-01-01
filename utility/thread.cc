@@ -65,7 +65,7 @@ namespace midge
         t_thread->f_state_mutex.unlock();
         if( t_thread->f_start != NULL )
         {
-            pthread_cleanup_push( &::midge::thread::thread_stop, t_thread_ptr )
+            pthread_cleanup_push( &::midge::thread::thread_stop, t_thread_ptr );
             t_thread->f_start->execute( t_thread->f_thread_mutex );
             pthread_cleanup_pop( 0 );
         }

@@ -23,11 +23,13 @@ namespace midge
             f_duration( 0. ),
             f_correlation( 0. ),
             f_deviation( 0. ),
-            f_low(),
-            f_high(),
             f_points(),
+            f_low(),
             f_low_count( 0 ),
+            f_high(),
             f_high_count( 0 ),
+            f_line(),
+            f_line_count( 0 ),
             f_r_sum( 0. ),
             f_rt_sum( 0. ),
             f_rf_sum( 0. ),
@@ -47,11 +49,13 @@ namespace midge
             f_duration( a_copy.f_duration ),
             f_correlation( a_copy.f_correlation ),
             f_deviation( a_copy.f_deviation ),
-            f_low( a_copy.f_low ),
-            f_high( a_copy.f_high ),
             f_points( a_copy.f_points ),
+            f_low( a_copy.f_low ),
             f_low_count( a_copy.f_low_count ),
+            f_high( a_copy.f_high ),
             f_high_count( a_copy.f_high_count ),
+            f_line( a_copy.f_line ),
+            f_line_count( a_copy.f_line_count ),
             f_r_sum( a_copy.f_r_sum ),
             f_rt_sum( a_copy.f_rt_sum ),
             f_rf_sum( a_copy.f_rf_sum ),
@@ -76,11 +80,13 @@ namespace midge
         f_duration = 0.;
         f_correlation = 0.;
         f_deviation = 0.;
-        f_low.clear();
-        f_high.clear();
         f_points.clear();
+        f_low.clear();
         f_low_count = 0;
+        f_high.clear();
         f_high_count = 0;
+        f_line.clear();
+        f_line_count = 0;
         f_r_sum = 0.;
         f_rt_sum = 0.;
         f_rf_sum = 0.;

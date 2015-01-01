@@ -2,14 +2,14 @@
     "rf_binary_producer" :
     {
         "name" : "background",
-        "file" : "background_spectrum.mgb",
+        "file" : "<background>",
         "length" : 10
     },
 
     "rtf_binary_producer" :
     {
         "name" : "signal",
-        "file" : "signal_spectrum.mgb",
+        "file" : "<signal>",
         "length" : 10
     },
 
@@ -18,11 +18,11 @@
         "name" : "point",
         "threshold" : 1.5,
         "high_factor" : 1.0,
-        "high_power" : 2.0,
+        "high_power" : 1.5,
         "low_factor" : 3.0,
         "low_power" : 1.0,
         "begin_sec" : 0.0,
-        "end_sec" : 1.0,
+        "end_sec" : 10.0,
         "begin_hz" : 15.0e6,
         "end_hz" : 110.0e6,
         "length" : 20
@@ -48,7 +48,7 @@
         "width" : 35.0e3,
         "count" : 30,
         "score_low" : 0.0,
-        "quality_high" : 500.0,
+        "quality_high" : 100.0,
         "length" : 10
     },
 
@@ -68,6 +68,7 @@
     "join" : "background.out_0:point.in_0",
     "join" : "signal.out_0:point.in_1",
     "join" : "point.out_0:line.in_0",
+    "join" : "line.out_0:line_plot.in_0",
 
-    "run" : "background:signal:point:line"
+    "run" : "background:signal:point:line:line_plot"
 }

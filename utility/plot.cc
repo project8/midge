@@ -468,7 +468,7 @@ namespace midge
             {
                 continue;
             }
-            t_histogram->Fill( p_plot.x_axis().values().at( t_index ), p_plot.y_values().values().at( t_index ) );
+            t_histogram->SetBinContent( t_histogram->FindFixBin( p_plot.x_axis().values().at( t_index ) ), p_plot.y_values().values().at( t_index ) );
         }
         real_t t_y_low = t_histogram->GetMinimum();
         real_t t_y_high = t_histogram->GetMaximum();
@@ -485,8 +485,11 @@ namespace midge
             t_axes->SetTitle( p_plot.title().c_str() );
             t_axes->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
             t_axes->GetYaxis()->SetTitle( p_plot.y_values().title().c_str() );
-            t_histogram->SetStats( kFALSE );
-            t_histogram->Draw( "LP SAME" );
+            t_histogram->SetMarkerStyle( 1 );
+            t_histogram->SetMarkerColor( kRed );
+            t_histogram->SetLineColor( kRed + 2 );
+            t_histogram->SetStats( false );
+            t_histogram->Draw( "LP0 SAME" );
         }
         else
         {
@@ -497,7 +500,11 @@ namespace midge
             t_histogram->SetTitle( p_plot.title().c_str() );
             t_histogram->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
             t_histogram->GetYaxis()->SetTitle( p_plot.y_values().title().c_str() );
-            t_histogram->Draw( "LP" );
+            t_histogram->SetMarkerStyle( 1 );
+            t_histogram->SetMarkerColor( kRed );
+            t_histogram->SetLineColor( kRed + 2 );
+            t_histogram->SetStats( false );
+            t_histogram->Draw( "LP0" );
             f_plots.insert( plot_entry( p_plot.key(), plot_pair( t_canvas, t_axes ) ) );
         }
 
@@ -539,7 +546,7 @@ namespace midge
             {
                 continue;
             }
-            t_histogram->Fill( p_plot.x_axis().values().at( t_index ), p_plot.y_axis().values().at( t_index ), p_plot.z_values().values().at( t_index ) );
+            t_histogram->SetBinContent( t_histogram->FindFixBin( p_plot.x_axis().values().at( t_index ), p_plot.y_axis().values().at( t_index ) ), p_plot.z_values().values().at( t_index ) );
         }
 
         TCanvas* t_canvas;

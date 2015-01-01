@@ -13,7 +13,9 @@ set( MODULE_VERSION "${MODULE_VERSION_MAJOR}.${MODULE_VERSION_MINOR}.${MODULE_VE
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/" )
 
 # rpath settings
-set( CMAKE_MACOSX_RPATH TRUE )
+if( APPLE )
+	set( CMAKE_MACOSX_RPATH TRUE )
+endif()
 set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 set( CMAKE_SKIP_RPATH FALSE )
 set( CMAKE_SKIP_BUILD_RPATH  FALSE )
@@ -33,7 +35,7 @@ if( MIDGE_ENABLE_DEBUG_MESSAGES )
 endif()
 
 add_definitions( -Wall )
-#add_definitions( -std=c++11 )
+add_definitions( -std=c++11 )
 
 ############
 # external #
@@ -499,9 +501,11 @@ set( midge_initialization_headers
 	boolean.hh
 	null.hh
 	processor.hh
+	arguments.hh
 	lexer.hh
 	reporter.hh
 	serializer.hh
+	evaluator.hh
 	compiler.hh
 	object_builder.hh
 	lingual_builder.hh
@@ -518,10 +522,12 @@ set( midge_initialization_sources
 	boolean.cc
 	null.cc
 	processor.cc
+	arguments.cc
 	lexer.cc
 	reporter.cc
 	serializer.cc
 	compiler.cc
+	evaluator.cc
 )
 
 midge_library( initialization )

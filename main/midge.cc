@@ -1,5 +1,7 @@
+#include "arguments.hh"
 #include "lexer.hh"
 #include "compiler.hh"
+#include "evaluator.hh"
 #include "coremsg.hh"
 #include "midge_builder.hh"
 using namespace midge;
@@ -10,42 +12,49 @@ using std::endl;
 
 int main( int p_count, char** p_values )
 {
-    if( p_count < 2 )
+    arguments t_arguments;
+    t_arguments.required( "exec" );
+
+    try
     {
-        cout << "usage:" << endl;
-        cout << "  midge <input filename>" << endl;
-        return (-1);
+        t_arguments.start( p_count, p_values );
+    }
+    catch( const error& t_error )
+    {
+        msg_error( coremsg, "error occured in arguments:" << ret );
+        msg_error( coremsg, "  " << t_error.what() << eom );
+        return -1;
     }
 
     msg_normal( coremsg, "welcome to midge" << eom );
     msg_normal( coremsg, "processing..." << eom );
 
-    string t_input_file( p_values[ 1 ] );
-
     lexer t_lexer;
+    evaluator t_evaluator( t_arguments );
     compiler t_compiler;
 
-    t_compiler.insert_after( &t_lexer );
+    t_evaluator.insert_after( &t_lexer );
+    t_compiler.insert_after( &t_evaluator );
 
     try
     {
-        t_lexer( t_input_file );
+        t_lexer( t_arguments.value< string >( "exec" ) );
     }
     catch( const error& t_error )
     {
-        msg_error( coremsg, "error occurred during input:" << ret );
+        msg_error( coremsg, "error occurred during lexing:" << ret );
         msg_error( coremsg, "  " << t_error.what() << eom );
         return -1;
     }
-    catch( const exception& t_exception )
+
+    try
     {
-        msg_error( coremsg, "exception occurred during execution:" << ret );
-        msg_error( coremsg, "  " << t_exception.what() << eom );
-        return -1;
+        t_arguments.stop();
     }
-    catch( ... )
+    catch( const error& t_error )
     {
-        msg_error( coremsg, "unknown error occurred during input" << eom );
+        msg_error( msg, "an error occured in arguments:" << ret );
+        msg_error( msg, "  " << t_error.what() << eom );
         return -1;
     }
 
@@ -59,17 +68,6 @@ int main( int p_count, char** p_values )
     {
         msg_error( coremsg, "error occurred during execution:" << ret );
         msg_error( coremsg, "  " << t_error.what() << eom );
-        return -1;
-    }
-    catch( const exception& t_exception )
-    {
-        msg_error( coremsg, "exception occurred during execution:" << ret );
-        msg_error( coremsg, "  " << t_exception.what() << eom );
-        return -1;
-    }
-    catch( ... )
-    {
-        msg_error( coremsg, "unknown error occurred during execution" << eom );
         return -1;
     }
 

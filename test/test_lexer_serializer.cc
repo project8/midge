@@ -1,4 +1,7 @@
+#include "message.hh"
+#include "arguments.hh"
 #include "lexer.hh"
+#include "evaluator.hh"
 #include "serializer.hh"
 using namespace midge;
 
@@ -8,34 +11,47 @@ using std::endl;
 
 int main( int p_count, char** p_values )
 {
-    if( p_count < 3 )
-    {
-        cout << "usage:" << endl;
-        cout << "  test_lexer_serializer <input filename> <output filename>" << endl;
-        return (-1);
-    }
-
-    string t_input_file( p_values[ 1 ] );
-    string t_output_file( p_values[ 2 ] );
-
-    lexer t_lexer;
-    serializer t_serializer( t_output_file );
-
-    t_serializer.insert_after( &t_lexer );
+    arguments t_arguments;
+    t_arguments.required( "input" );
+    t_arguments.required( "output" );
 
     try
     {
-        t_lexer( t_input_file );
+        t_arguments.start( p_count, p_values );
     }
     catch( const error& t_error )
     {
-        cout << "an error occurred:" << endl;
-        cout << "  " << t_error.what() << endl;
+        msg_error( msg, "an error occured in arguments:" << ret );
+        msg_error( msg, "  " << t_error.what() << eom );
         return -1;
     }
-    catch( ... )
+
+    lexer t_lexer;
+    evaluator t_evaluator( t_arguments );
+    serializer t_serializer( t_arguments.value< string >( "output" ) );
+
+    t_evaluator.insert_after( &t_lexer );
+    t_serializer.insert_after( &t_evaluator );
+
+    try
     {
-        cout << "an unknown error occurred" << endl;
+        t_lexer( t_arguments.value< string >( "input" ) );
+    }
+    catch( const error& t_error )
+    {
+        msg_error( msg, "an error occurred during lexing:" << ret );
+        msg_error( msg, "  " << t_error.what() << eom );
+        return -1;
+    }
+
+    try
+    {
+        t_arguments.stop();
+    }
+    catch( const error& t_error )
+    {
+        msg_error( msg, "an error occured in arguments:" << ret );
+        msg_error( msg, "  " << t_error.what() << eom );
         return -1;
     }
 
