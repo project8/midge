@@ -25,6 +25,8 @@ namespace midge
         {
             f_thread_mutex.lock();
             pthread_create( &f_thread, 0, &thread::thread_start, this );
+            f_thread_mutex.lock();
+            f_thread_mutex.unlock();
         }
         return;
     }
@@ -44,6 +46,8 @@ namespace midge
         {
             f_thread_mutex.lock();
             pthread_cancel( f_thread );
+            f_thread_mutex.lock();
+            f_thread_mutex.unlock();
         }
         return;
     }
@@ -63,10 +67,11 @@ namespace midge
         t_thread->f_state_mutex.lock();
         t_thread->f_state = ::midge::thread::e_executing;
         t_thread->f_state_mutex.unlock();
+        t_thread->f_thread_mutex.unlock();
         if( t_thread->f_start != NULL )
         {
             pthread_cleanup_push( &::midge::thread::thread_stop, t_thread_ptr );
-            t_thread->f_start->execute( t_thread->f_thread_mutex );
+            t_thread->f_start->execute();
             pthread_cleanup_pop( 0 );
         }
         t_thread->f_state_mutex.lock();
@@ -81,9 +86,10 @@ namespace midge
         t_thread->f_state_mutex.lock();
         t_thread->f_state = ::midge::thread::e_cancelling;
         t_thread->f_state_mutex.unlock();
+        t_thread->f_thread_mutex.unlock();
         if( t_thread->f_stop != NULL )
         {
-            t_thread->f_stop->execute( t_thread->f_thread_mutex );
+            t_thread->f_stop->execute();
         }
         t_thread->f_state_mutex.lock();
         t_thread->f_state = ::midge::thread::e_cancelled;

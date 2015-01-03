@@ -211,11 +211,15 @@ namespace midge
             (*t_it)->start();
         }
 
+        //usleep( 1000000 );
+
         msg_normal( coremsg, "joining threads..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
         {
             (*t_it)->join();
         }
+
+        //usleep( 1000000 );
 
         msg_normal( coremsg, "...done" << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )

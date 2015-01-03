@@ -84,7 +84,7 @@ namespace midge
                     callable();
                     virtual ~callable();
 
-                    virtual void execute( mutex& p_mutex ) = 0;
+                    virtual void execute() = 0;
             };
 
             template< class x_type, class x_r, class x_a1 = _, class x_a2 = _, class x_a3 = _ >
@@ -114,20 +114,19 @@ namespace midge
     {
         public:
             _callable( x_type* p_object, x_r (x_type::*p_member)( x_a1, x_a2, x_a3 ), x_a1 p_a1, x_a2 p_a2, x_a3 p_a3 ) :
-                f_object( p_object ),
-                f_member( p_member ),
-                f_a1( p_a1 ),
-                f_a2( p_a2 ),
-                f_a3( p_a3 )
+                        f_object( p_object ),
+                        f_member( p_member ),
+                        f_a1( p_a1 ),
+                        f_a2( p_a2 ),
+                        f_a3( p_a3 )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (f_object->*f_member)( f_a1, f_a2, f_a3 );
                 return;
             }
@@ -156,19 +155,18 @@ namespace midge
     {
         public:
             _callable( x_type* p_object, x_r (x_type::*p_member)( x_a1, x_a2 ), x_a1 p_a1, x_a2 p_a2 ) :
-                f_object( p_object ),
-                f_member( p_member ),
-                f_a1( p_a1 ),
-                f_a2( p_a2 )
+                        f_object( p_object ),
+                        f_member( p_member ),
+                        f_a1( p_a1 ),
+                        f_a2( p_a2 )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (f_object->*f_member)( f_a1, f_a2 );
                 return;
             }
@@ -196,18 +194,17 @@ namespace midge
     {
         public:
             _callable( x_type* p_object, x_r (x_type::*p_member)( x_a1 ), x_a1 p_a1 ) :
-                f_object( p_object ),
-                f_member( p_member ),
-                f_a1( p_a1 )
+                        f_object( p_object ),
+                        f_member( p_member ),
+                        f_a1( p_a1 )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (f_object->*f_member)( f_a1 );
                 return;
             }
@@ -234,17 +231,16 @@ namespace midge
     {
         public:
             _callable( x_type* p_object, x_r (x_type::*p_member)() ) :
-                f_object( p_object ),
-                f_member( p_member )
+                        f_object( p_object ),
+                        f_member( p_member )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (f_object->*f_member)();
                 return;
             }
@@ -270,19 +266,18 @@ namespace midge
     {
         public:
             _callable( x_r (*p_function)( x_a1, x_a2, x_a3 ), x_a1 p_a1, x_a2 p_a2, x_a3 p_a3 ) :
-                f_function( p_function ),
-                f_a1( p_a1 ),
-                f_a2( p_a2 ),
-                f_a3( p_a3 )
+                        f_function( p_function ),
+                        f_a1( p_a1 ),
+                        f_a2( p_a2 ),
+                        f_a3( p_a3 )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (*f_function)( f_a1, f_a2, f_a3 );
                 return;
             }
@@ -310,18 +305,17 @@ namespace midge
     {
         public:
             _callable( x_r (*p_function)( x_a1, x_a2 ), x_a1 p_a1, x_a2 p_a2 ) :
-                f_function( p_function ),
-                f_a1( p_a1 ),
-                f_a2( p_a2 )
+                        f_function( p_function ),
+                        f_a1( p_a1 ),
+                        f_a2( p_a2 )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (*f_function)( f_a1, f_a2 );
                 return;
             }
@@ -348,17 +342,16 @@ namespace midge
     {
         public:
             _callable( x_r (*p_function)( x_a1 ), x_a1 p_a1 ) :
-                f_function( p_function ),
-                f_a1( p_a1 )
+                        f_function( p_function ),
+                        f_a1( p_a1 )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (*f_function)( f_a1 );
                 return;
             }
@@ -384,16 +377,15 @@ namespace midge
     {
         public:
             _callable( x_r (*p_function)() ) :
-                f_function( p_function )
+                        f_function( p_function )
             {
             }
             virtual ~_callable()
             {
             }
 
-            void execute( mutex& p_mutex )
+            void execute()
             {
-                p_mutex.unlock();
                 (*f_function)();
                 return;
             }
