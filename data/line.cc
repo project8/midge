@@ -74,8 +74,8 @@ namespace midge
 
         f_score = 0.;
         f_quality = 0.;
-        f_time = s_data->points().at( p_index ).time();
-        f_frequency = s_data->points().at( p_index ).frequency();
+        f_time = s_data->at( p_index ).time();
+        f_frequency = s_data->at( p_index ).frequency();
         f_slope = 0.;
         f_duration = 0.;
         f_correlation = 0.;
@@ -187,7 +187,7 @@ namespace midge
 
             for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
             {
-                point& t_loop_point = s_data->points().at( t_index - s_data->get_frequency_index() );
+                point& t_loop_point = s_data->at( t_index - s_data->get_frequency_index() );
                 t_point_id = t_loop_point.id();
                 t_point_frequency = t_loop_point.frequency();
                 t_point_ratio = t_loop_point.ratio();
@@ -317,9 +317,9 @@ namespace midge
 
         for( t_index = t_current_indices.first; t_index <= t_current_indices.second; t_index++ )
         {
-            s_data->points().at( t_index - s_data->get_frequency_index() ).id() = f_id;
-            s_data->points().at( t_index - s_data->get_frequency_index() ).ratio() = 0.;
-            s_data->points().at( t_index - s_data->get_frequency_index() ).update();
+            s_data->at( t_index - s_data->get_frequency_index() ).id() = f_id;
+            s_data->at( t_index - s_data->get_frequency_index() ).ratio() = 0.;
+            s_data->at( t_index - s_data->get_frequency_index() ).update();
         }
 
         f_frequency = t_update_frequency;

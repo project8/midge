@@ -107,9 +107,9 @@ namespace midge
                 }
 
                 //msg_warning( coremsg, "** creating new lines <" << t_count << "> **" << eom );
-                for( index_t t_index = 0; t_index < t_input->points().size(); t_index++ )
+                for( index_t t_index = 0; t_index < t_input->get_size(); t_index++ )
                 {
-                    if( (t_input->points().at( t_index ).id() == 0) && (t_input->points().at( t_index ).ratio() > f_threshold) )
+                    if( (t_input->at( t_index ).id() == 0) && (t_input->at( t_index ).ratio() > f_threshold) )
                     {
                         t_line = new line();
                         t_line->id() = ++t_id;

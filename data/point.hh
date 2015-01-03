@@ -3,6 +3,8 @@
 
 #include "types.hh"
 #include "macros.hh"
+#include "ascii.hh"
+#include "binary.hh"
 
 namespace midge
 {
@@ -29,6 +31,44 @@ namespace midge
             ;referrable( real_t, frequency )
             ;referrable( real_t, ratio )
             ;referrable( real_t, score )
+    };
+
+    template< >
+    class ascii::pull< point >
+    {
+        public:
+            pull( ascii& p_stream, point& p_data )
+            {
+                p_stream >> p_data.id() >> p_data.time() >> p_data.frequency() >> p_data.ratio() >> p_data.score();
+            }
+    };
+    template< >
+    class ascii::push< point >
+    {
+        public:
+            push( ascii& p_stream, const point& p_data )
+            {
+                p_stream << p_data.id() << " " << p_data.time() << " " << p_data.frequency() << " " << p_data.ratio() << " " << p_data.score() << '\n';
+            }
+    };
+
+    template< >
+    class binary::pull< point >
+    {
+        public:
+            pull( binary& p_stream, point& p_data )
+            {
+                p_stream >> p_data.id() >> p_data.time() >> p_data.frequency() >> p_data.ratio() >> p_data.score();
+            }
+    };
+    template< >
+    class binary::push< point >
+    {
+        public:
+            push( binary& p_stream, const point& p_data )
+            {
+                p_stream << p_data.id() << p_data.time() << p_data.frequency() << p_data.ratio() << p_data.score();
+            }
     };
 
 }

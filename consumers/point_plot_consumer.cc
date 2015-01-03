@@ -96,21 +96,21 @@ namespace midge
 
                 for( t_index = 0; t_index < t_size; t_index++ )
                 {
-                    t_x.values().push_back( t_points->points().at( t_index ).time() );
-                    t_y.values().push_back( t_points->points().at( t_index ).frequency() );
+                    t_x.values().push_back( t_points->at( t_index ).time() );
+                    t_y.values().push_back( t_points->at( t_index ).frequency() );
                     if( t_field == 0 )
                     {
-                        t_z.values().push_back( t_points->points().at( t_index ).id() );
+                        t_z.values().push_back( t_points->at( t_index ).id() );
                         continue;
                     }
                     if( t_field == 1 )
                     {
-                        t_z.values().push_back( t_points->points().at( t_index ).ratio() );
+                        t_z.values().push_back( t_points->at( t_index ).ratio() );
                         continue;
                     }
                     if( t_field == 2 )
                     {
-                        t_z.values().push_back( t_points->points().at( t_index ).score() );
+                        t_z.values().push_back( t_points->at( t_index ).score() );
                         continue;
                     }
                 }

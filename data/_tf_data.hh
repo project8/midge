@@ -149,13 +149,13 @@ namespace midge
             {
                 string_t t_hash;
                 real_t t_frequency;
+                real_t t_time;
 
                 count_t t_size;
                 real_t t_time_interval;
                 count_t t_time_index;
                 real_t t_frequency_interval;
                 count_t t_frequency_index;
-                ;
 
                 p_stream >> t_hash >> t_size;
                 p_stream >> t_hash >> t_time_interval;
@@ -170,7 +170,7 @@ namespace midge
                 p_data.set_frequency_index( t_frequency_index );
                 for( index_t t_index = 0; t_index < t_size; t_index++ )
                 {
-                    p_stream >> t_frequency >> p_data.at( t_index );
+                    p_stream >> t_time >> t_frequency >> p_data.at( t_index );
                 }
             }
     };
