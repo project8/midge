@@ -17,11 +17,73 @@ namespace midge
 
         public:
             ;referrable( vector< line >, lines )
-            ;accessible( count_t, size )
-            ;accessible( real_t, time_interval )
-            ;accessible( count_t, time_index )
-            ;accessible( real_t, frequency_interval )
-            ;accessible( count_t, frequency_index )
+            ;referrable( count_t, size )
+            ;referrable( real_t, time_interval )
+            ;referrable( count_t, time_index )
+            ;referrable( real_t, frequency_interval )
+            ;referrable( count_t, frequency_index )
+    };
+
+    template< >
+    class ascii::pull< line_data >
+    {
+        public:
+            pull( ascii& p_stream, line_data& p_data )
+            {
+                p_stream >>
+                p_data.size() >>
+                p_data.frequency_interval() >>
+                p_data.frequency_index() >>
+                p_data.time_interval() >>
+                p_data.time_index() >>
+                p_data.lines();
+            }
+    };
+    template< >
+    class ascii::push< line_data >
+    {
+        public:
+            push( ascii& p_stream, const line_data& p_data )
+            {
+                p_stream <<
+                p_data.size() << " " <<
+                p_data.frequency_interval() << " " <<
+                p_data.frequency_index() << " " <<
+                p_data.time_interval() << " " <<
+                p_data.time_index() << "\n" <<
+                p_data.lines() << "\n";
+            }
+    };
+
+    template< >
+    class binary::pull< line_data >
+    {
+        public:
+            pull( binary& p_stream, line_data& p_data )
+            {
+                p_stream >>
+                p_data.size() >>
+                p_data.frequency_interval() >>
+                p_data.frequency_index() >>
+                p_data.time_interval() >>
+                p_data.time_index() >>
+                p_data.lines();
+            }
+    };
+    template< >
+    class binary::push< line_data >
+    {
+        public:
+            push( binary& p_stream, const line_data& p_data )
+            {
+                p_stream <<
+                p_data.size() <<
+                p_data.frequency_interval() <<
+                p_data.frequency_index() <<
+                p_data.time_interval() <<
+                p_data.time_index() <<
+                p_data.lines();
+            }
     };
 
 }

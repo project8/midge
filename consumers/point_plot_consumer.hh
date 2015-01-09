@@ -1,3 +1,6 @@
+#ifndef _midge_point_plot_consumer_hh_
+#define _midge_point_plot_consumer_hh_
+
 #include "consumer.hh"
 #include "point_data.hh"
 #include "typelist.hh"
@@ -29,3 +32,5 @@ namespace midge
     };
 
 }
+
+#endif

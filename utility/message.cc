@@ -11,6 +11,9 @@ using std::endl;
 
 namespace midge
 {
+    mutex message::f_outer = mutex();
+    mutex message::f_inner = mutex();
+    set< pthread_t > message::f_threads = set< pthread_t >();
 
     message::message( const string& aKey, const string& aDescription, const string& aPrefix, const string& aSuffix ) :
             f_key( aKey ),
@@ -50,11 +53,7 @@ namespace midge
             f_terminal_severity( messages::get_instance()->get_terminal_severity() ),
             f_terminal_stream( messages::get_instance()->get_terminal_stream() ),
             f_log_severity( messages::get_instance()->get_log_severity() ),
-            f_log_stream( messages::get_instance()->get_log_stream() ),
-
-            f_outer(),
-            f_inner(),
-            f_threads()
+            f_log_stream( messages::get_instance()->get_log_stream() )
     {
         f_message_line.setf( messages::get_instance()->get_format(), std::ios::floatfield );
         f_message_line.precision( messages::get_instance()->GetPrecision() );

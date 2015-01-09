@@ -13,7 +13,7 @@ using std::endl;
 int main( int p_count, char** p_values )
 {
     arguments t_arguments;
-    t_arguments.required( "exec" );
+    t_arguments.required( "json" );
 
     try
     {
@@ -38,7 +38,7 @@ int main( int p_count, char** p_values )
 
     try
     {
-        t_lexer( t_arguments.value< string >( "exec" ) );
+        t_lexer( t_arguments.value< string >( "json" ) );
     }
     catch( const error& t_error )
     {

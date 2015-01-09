@@ -248,6 +248,8 @@ set( midge_data_headers
 	point_data.hh
 	line.hh
 	line_data.hh
+	event.hh
+	event_data.hh
 )
 set( midge_data_sources
 	rt_data.cc
@@ -260,6 +262,8 @@ set( midge_data_sources
 	point_data.cc
 	line.cc
 	line_data.cc
+	event.cc
+	event_data.cc
 )
 
 midge_library( data )
@@ -285,12 +289,18 @@ set( midge_producers_headers
 	cf_ascii_producer.hh
 	rtf_ascii_producer.hh
 	ctf_ascii_producer.hh
+	point_ascii_producer.hh
+	line_ascii_producer.hh
+	event_ascii_producer.hh
 	rt_binary_producer.hh
 	ct_binary_producer.hh
 	rf_binary_producer.hh
 	cf_binary_producer.hh
 	rtf_binary_producer.hh
 	ctf_binary_producer.hh
+	point_binary_producer.hh
+	line_binary_producer.hh
+	event_binary_producer.hh
 	rt_harmonic_producer.hh
 	rt_chirp_producer.hh
 	rt_sinusoidal_producer.hh
@@ -304,12 +314,18 @@ set( midge_producers_sources
 	cf_ascii_producer.cc
 	rtf_ascii_producer.cc
 	ctf_ascii_producer.cc
+	point_ascii_producer.cc
+	line_ascii_producer.cc
+	event_ascii_producer.cc
 	rt_binary_producer.cc
 	ct_binary_producer.cc
 	rf_binary_producer.cc
 	cf_binary_producer.cc
 	rtf_binary_producer.cc
 	ctf_binary_producer.cc
+	point_binary_producer.cc
+	line_binary_producer.cc
+	event_binary_producer.cc
 	rt_harmonic_producer.cc
 	rt_chirp_producer.cc
 	rt_sinusoidal_producer.cc
@@ -340,18 +356,26 @@ set( midge_consumers_headers
 	cf_ascii_consumer.hh
 	rtf_ascii_consumer.hh
 	ctf_ascii_consumer.hh
+	point_ascii_consumer.hh
+	line_ascii_consumer.hh
+	event_ascii_consumer.hh
 	rt_binary_consumer.hh
 	ct_binary_consumer.hh
 	rf_binary_consumer.hh
 	cf_binary_consumer.hh
 	rtf_binary_consumer.hh
 	ctf_binary_consumer.hh
+	point_binary_consumer.hh
+	line_binary_consumer.hh
+	event_binary_consumer.hh
 	rt_monarch_consumer.hh
 	rt_plot_consumer.hh
 	rf_plot_consumer.hh
 	rtf_plot_consumer.hh
 	point_plot_consumer.hh
 	line_plot_consumer.hh
+	event_plot_consumer.hh
+	event_spectrum_consumer.hh
 )
 set( midge_consumers_sources
 	rt_ascii_consumer.cc
@@ -360,18 +384,26 @@ set( midge_consumers_sources
 	cf_ascii_consumer.cc
 	rtf_ascii_consumer.cc
 	ctf_ascii_consumer.cc
+	point_ascii_consumer.cc
+	line_ascii_consumer.cc
+	event_ascii_consumer.cc
 	rt_binary_consumer.cc
 	ct_binary_consumer.cc
 	rf_binary_consumer.cc
 	cf_binary_consumer.cc
 	rtf_binary_consumer.cc
 	ctf_binary_consumer.cc
+	point_binary_consumer.cc
+	line_binary_consumer.cc
+	event_binary_consumer.cc
 	rt_monarch_consumer.cc
 	rt_plot_consumer.cc
 	rf_plot_consumer.cc
 	rtf_plot_consumer.cc
 	point_plot_consumer.cc
 	line_plot_consumer.cc
+	event_plot_consumer.cc
+	event_spectrum_consumer.cc
 )
 
 midge_library( consumers )
@@ -436,6 +468,7 @@ set( midge_transformers_headers
 	rt_rtf_wigner_transformer.hh
 	point_transformer.hh
 	line_transformer.hh
+	event_transformer.hh
 )
 set( midge_transformers_sources
 	rt_ct_converter_transformer.cc
@@ -478,6 +511,7 @@ set( midge_transformers_sources
 	rt_rtf_wigner_transformer.cc
 	point_transformer.cc
 	line_transformer.cc
+	event_transformer.cc
 )
 
 midge_library( transformers )
@@ -580,12 +614,18 @@ set( midge_bindings_headers
 	cf_ascii_producer_builder.hh
 	rtf_ascii_producer_builder.hh
 	ctf_ascii_producer_builder.hh
+	point_ascii_producer_builder.hh
+	line_ascii_producer_builder.hh
+	event_ascii_producer_builder.hh
 	rt_binary_producer_builder.hh
 	ct_binary_producer_builder.hh
 	rf_binary_producer_builder.hh
 	cf_binary_producer_builder.hh
 	rtf_binary_producer_builder.hh
 	ctf_binary_producer_builder.hh
+	point_binary_producer_builder.hh
+	line_binary_producer_builder.hh
+	event_binary_producer_builder.hh
 	rt_harmonic_producer_builder.hh
 	rt_chirp_producer_builder.hh
 	rt_sinusoidal_producer_builder.hh
@@ -597,18 +637,26 @@ set( midge_bindings_headers
 	cf_ascii_consumer_builder.hh
 	rtf_ascii_consumer_builder.hh
 	ctf_ascii_consumer_builder.hh
+	point_ascii_consumer_builder.hh
+	line_ascii_consumer_builder.hh
+	event_ascii_consumer_builder.hh
 	rt_binary_consumer_builder.hh
 	ct_binary_consumer_builder.hh
 	rf_binary_consumer_builder.hh
 	cf_binary_consumer_builder.hh
 	rtf_binary_consumer_builder.hh
 	ctf_binary_consumer_builder.hh
+	point_binary_consumer_builder.hh
+	line_binary_consumer_builder.hh
+	event_binary_consumer_builder.hh
 	rt_monarch_consumer_builder.hh
 	rt_plot_consumer_builder.hh
 	rf_plot_consumer_builder.hh
 	rtf_plot_consumer_builder.hh
 	point_plot_consumer_builder.hh
 	line_plot_consumer_builder.hh
+	event_plot_consumer_builder.hh
+	event_spectrum_consumer_builder.hh
 	rt_ct_converter_transformer_builder.hh
 	ct_rt_converter_transformer_builder.hh
 	rf_cf_converter_transformer_builder.hh
@@ -649,6 +697,7 @@ set( midge_bindings_headers
 	rt_rtf_wigner_transformer_builder.hh
 	point_transformer_builder.hh
 	line_transformer_builder.hh
+	event_transformer_builder.hh
 )
 set( midge_bindings_sources
 	midge_builder.cc
@@ -658,12 +707,18 @@ set( midge_bindings_sources
 	cf_ascii_producer_builder.cc
 	rtf_ascii_producer_builder.cc
 	ctf_ascii_producer_builder.cc
+	point_ascii_producer_builder.cc
+	line_ascii_producer_builder.cc
+	event_ascii_producer_builder.cc
 	rt_binary_producer_builder.cc
 	ct_binary_producer_builder.cc
 	rf_binary_producer_builder.cc
 	cf_binary_producer_builder.cc
 	rtf_binary_producer_builder.cc
 	ctf_binary_producer_builder.cc
+	point_binary_producer_builder.cc
+	line_binary_producer_builder.cc
+	event_binary_producer_builder.cc
 	rt_harmonic_producer_builder.cc
 	rt_chirp_producer_builder.cc
 	rt_sinusoidal_producer_builder.cc
@@ -675,18 +730,26 @@ set( midge_bindings_sources
 	cf_ascii_consumer_builder.cc
 	rtf_ascii_consumer_builder.cc
 	ctf_ascii_consumer_builder.cc
+	point_ascii_consumer_builder.cc
+	line_ascii_consumer_builder.cc
+	event_ascii_consumer_builder.cc
 	rt_binary_consumer_builder.cc
 	ct_binary_consumer_builder.cc
 	rf_binary_consumer_builder.cc
 	cf_binary_consumer_builder.cc
 	rtf_binary_consumer_builder.cc
 	ctf_binary_consumer_builder.cc
+	point_binary_consumer_builder.cc
+	line_binary_consumer_builder.cc
+	event_binary_consumer_builder.cc
 	rt_monarch_consumer_builder.cc
 	rt_plot_consumer_builder.cc
 	rf_plot_consumer_builder.cc
 	rtf_plot_consumer_builder.cc
 	point_plot_consumer_builder.cc
 	line_plot_consumer_builder.cc
+	event_plot_consumer_builder.cc
+	event_spectrum_consumer_builder.cc
 	rt_ct_converter_transformer_builder.cc
 	ct_rt_converter_transformer_builder.cc
 	rf_cf_converter_transformer_builder.cc
@@ -727,6 +790,7 @@ set( midge_bindings_sources
 	rt_rtf_wigner_transformer_builder.cc
 	point_transformer_builder.cc
 	line_transformer_builder.cc
+	event_transformer_builder.cc
 )
 
 midge_library( bindings )
@@ -813,7 +877,10 @@ set( midge_json_files
 	reconstruct_simulation.json
 	analyze_background.json
 	analyze_signal.json
-	reconstruct.json
+	reconstruct_600.json
+	reconstruct_650.json
+	reconstruct_1200.json
+	reconstruct_1250.json
 )
 
 midge_json( json )

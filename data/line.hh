@@ -1,7 +1,6 @@
 #ifndef _midge_line_hh_
 #define _midge_line_hh_
 
-#include "point.hh"
 #include "point_data.hh"
 
 #include <list>
@@ -12,12 +11,16 @@ namespace midge
 
     class line
     {
+        private:
+            static count_t s_id;
+
         public:
             ;accessible_static( real_t, window )
             ;accessible_static( real_t, width )
+            ;accessible_static( real_t, trim )
+            ;accessible_static( real_t, block )
             ;accessible_static( count_t, count )
-
-            ;assignable_static( point_data, data )
+            ;assignable_static( point_data, point_data )
 
         public:
             typedef list< point > point_list;
@@ -35,30 +38,25 @@ namespace midge
             ~line();
 
             void initialize( const count_t& t_index );
-            void update();
+            bool update();
             void finalize();
 
         public:
+            ;referrable( bool_t, free )
             ;referrable( count_t, id )
-            ;referrable( count_t, count )
-            ;referrable( real_t, score )
-            ;referrable( real_t, quality )
             ;referrable( real_t, time )
             ;referrable( real_t, frequency )
             ;referrable( real_t, slope )
             ;referrable( real_t, duration )
             ;referrable( real_t, correlation )
             ;referrable( real_t, deviation )
+            ;referrable( real_t, score )
+            ;referrable( real_t, quality )
             ;referrable( point_list, points )
 
-        public:
-            real_t weight( const real_t& p_frequency ) const;
-
-            group_list f_low;
-            count_t f_low_count;
-
-            group_list f_high;
-            count_t f_high_count;
+        private:
+            group_list f_cluster;
+            count_t f_cluster_count;
 
             group_list f_line;
             count_t f_line_count;
@@ -69,6 +67,88 @@ namespace midge
             real_t f_rtt_sum;
             real_t f_rff_sum;
             real_t f_rtf_sum;
+    };
+
+    template< >
+    class ascii::pull< line >
+    {
+        public:
+            pull( ascii& p_stream, line& p_data )
+            {
+                p_stream >>
+                p_data.free() >>
+                p_data.id() >>
+                p_data.time() >>
+                p_data.frequency() >>
+                p_data.slope() >>
+                p_data.duration() >>
+                p_data.deviation() >>
+                p_data.correlation() >>
+                p_data.score() >>
+                p_data.quality() >>
+                p_data.points();
+            }
+    };
+    template< >
+    class ascii::push< line >
+    {
+        public:
+            push( ascii& p_stream, const line& p_data )
+            {
+                p_stream <<
+                p_data.free() << " " <<
+                p_data.id() << " " <<
+                p_data.time() << " " <<
+                p_data.frequency() << " " <<
+                p_data.slope() << " " <<
+                p_data.duration() << " " <<
+                p_data.deviation() << " " <<
+                p_data.correlation() << " " <<
+                p_data.score() << " " <<
+                p_data.quality() << '\n' <<
+                p_data.points() << '\n';
+            }
+    };
+
+    template< >
+    class binary::pull< line >
+    {
+        public:
+            pull( binary& p_stream, line& p_data )
+            {
+                p_stream >>
+                p_data.free() >>
+                p_data.id() >>
+                p_data.time() >>
+                p_data.frequency() >>
+                p_data.slope() >>
+                p_data.duration() >>
+                p_data.deviation() >>
+                p_data.correlation() >>
+                p_data.score() >>
+                p_data.quality() >>
+                p_data.points();
+            }
+    };
+    template< >
+    class binary::push< line >
+    {
+        public:
+            push( binary& p_stream, const line& p_data )
+            {
+                p_stream <<
+                p_data.free() <<
+                p_data.id() <<
+                p_data.time() <<
+                p_data.frequency() <<
+                p_data.slope() <<
+                p_data.duration() <<
+                p_data.deviation() <<
+                p_data.correlation() <<
+                p_data.score() <<
+                p_data.quality() <<
+                p_data.points();
+            }
     };
 
 }

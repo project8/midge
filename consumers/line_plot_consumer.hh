@@ -1,3 +1,6 @@
+#ifndef _midge_line_plot_consumer_hh_
+#define _midge_line_plot_consumer_hh_
+
 #include "consumer.hh"
 #include "line_data.hh"
 #include "typelist.hh"
@@ -30,3 +33,5 @@ namespace midge
     };
 
 }
+
+#endif

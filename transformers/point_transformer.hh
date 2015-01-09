@@ -37,8 +37,6 @@ namespace midge
             accessible( real_t, end_sec )
             accessible( real_t, begin_hz )
             accessible( real_t, end_hz )
-            accessible( count_t, object_pool )
-            accessible( count_t, pointer_pool )
             accessible( count_t, length )
 
         protected:

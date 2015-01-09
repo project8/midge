@@ -143,11 +143,11 @@ namespace midge
             message_severity f_log_severity;
             ostream* f_log_stream;
 
-            void acquire();
-            void release();
-            mutex f_outer;
-            mutex f_inner;
-            set< pthread_t > f_threads;
+            static void acquire();
+            static void release();
+            static mutex f_outer;
+            static mutex f_inner;
+            static set< pthread_t > f_threads;
     };
 
     inline message& message::operator()( const message_severity& aSeverity )

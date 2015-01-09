@@ -1,0 +1,73 @@
+{
+    "rf_binary_producer" :
+    {
+        "name" : "background",
+        "file" : "<background>",
+        "length" : 10
+    },
+
+    "rtf_binary_producer" :
+    {
+        "name" : "signal",
+        "file" : "<signal>",
+        "length" : 10
+    },
+
+    "point_transformer" :
+    {
+        "name" : "point",
+        "threshold" : 1.5,
+        "high_factor" : 1.0,
+        "high_power" : 1.5,
+        "low_factor" : 3.0,
+        "low_power" : 1.0,
+        "begin_sec" : 0.0,
+        "end_sec" : 10.0,
+        "begin_hz" : 15.0e6,
+        "end_hz" : 110.0e6,
+        "length" : 20
+    },
+
+    "line_transformer" :
+    {
+        "name" : "line",
+        "threshold" : 3.0,
+        "window" : 65.0e3,
+        "width" : 35.0e3,
+        "block" : 5.0,
+        "trim" : 0.5,
+        "count" : 40,
+        "score" : 0.0,
+        "quality" : 100.0,
+        "length" : 10
+    },
+
+    "event_transformer" :
+    {
+        "name" : "event",
+        "time" : 1.0e-3,
+        "frequency" : 20.0e6,
+        "tolerance" : 1.0,
+        "delay" : 2.0e-3,
+        "length" : 10
+    },
+
+    "event_spectrum_consumer" :
+    {
+        "name" : "spectrum",
+        "field_gauss" : 9420.8,
+        "frequency_mhz" : 24850.0,
+        "start_kev" : 28.0,
+        "stop_kev" : 33.0,
+        "count" : 500,
+        "file" : "events_32kev.root"
+    },
+
+    "join" : "background.out_0:point.in_0",
+    "join" : "signal.out_0:point.in_1",
+    "join" : "point.out_0:line.in_0",
+    "join" : "line.out_0:event.in_0",
+    "join" : "event.out_0:spectrum.in_0",
+
+    "run" : "background:signal:point:line:event:spectrum"
+}

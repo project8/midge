@@ -31,7 +31,7 @@
     "point_plot_consumer" :
     {
         "name" : "point_plot",
-        "plot_field" : "score",
+        "plot_field" : "ratio",
         "plot_key" : "point_canvas",
         "plot_name" : "point_histogram",
         "chart_title" : "Points",
@@ -46,9 +46,11 @@
         "threshold" : 2.0,
         "window" : 2.0e6,
         "width" : 1.0e6,
-        "count" : 50,
-        "score_low" : 0.0,
-        "quality_high" : 100.0,
+        "trim" : 0.5,
+        "block" : 1.0,
+        "count" : 30,
+        "score" : 0.0,
+        "quality" : 100.0,
         "length" : 10
     },
 
@@ -56,13 +58,36 @@
     {
         "name" : "line_plot",
         "plot_overlay" : true,
-        "plot_field" : "quality",
+        "plot_field" : "point_ratio",
         "plot_key" : "line_canvas",
         "plot_name" : "line_histogram",
         "chart_title" : "Lines",
         "x_title" : "Time [sec]",
         "y_title" : "Frequency [hertz]",
-        "z_title" : "ID [none]"
+        "z_title" : "Ratio [none]"
+    },
+
+    "event_transformer" :
+    {
+        "name" : "event",
+        "time" : 5.0e-6,
+        "frequency" : 200.0e6,
+        "tolerance" : 1.0,
+        "delay" : 10.0e-6,
+        "length" : 10
+    },
+
+    "event_plot_consumer" :
+    {
+        "name" : "event_plot",
+        "plot_overlay" : true,
+        "plot_field" : "point_ratio",
+        "plot_key" : "event_canvas",
+        "plot_name" : "event_histogram",
+        "chart_title" : "Events",
+        "x_title" : "Time [sec]",
+        "y_title" : "Frequency [hertz]",
+        "z_title" : "Ratio [none]"
     },
 
     "join" : "background.out_0:point.in_0",
@@ -70,6 +95,8 @@
     "join" : "point.out_0:point_plot.in_0",
     "join" : "point.out_0:line.in_0",
     "join" : "line.out_0:line_plot.in_0",
+    "join" : "line.out_0:event.in_0",
+    "join" : "event.out_0:event_plot.in_0",
 
-    "run" : "background:signal:point:point_plot:line:line_plot"
+    "run" : "background:signal:point:point_plot:line:line_plot:event:event_plot"
 }

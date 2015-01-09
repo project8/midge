@@ -2,7 +2,8 @@
 
 #include "plot.hh"
 
-#include <cmath>
+#include <limits>
+using std::numeric_limits;
 
 namespace midge
 {
@@ -30,15 +31,17 @@ namespace midge
 
     void line_plot_consumer::execute()
     {
-        index_t t_index;
-
+        count_t t_count;
         enum_t t_command;
-        const line_data* t_lines;
+
+        line_data* t_lines;
         count_t t_size;
-        real_t t_time_interval;
-        count_t t_time_index;
         real_t t_frequency_interval;
         count_t t_frequency_index;
+        real_t t_time_interval;
+        count_t t_time_index;
+        count_t t_start_time_index = numeric_limits< count_t >::max();
+        count_t t_stop_time_index = numeric_limits< count_t >::min();
 
         plot* t_plot = plot::get_instance();
         plot::abscissa t_x;
@@ -46,49 +49,62 @@ namespace midge
         plot::ordinate t_z;
         vector< pair< pair< real_t, real_t >, pair< real_t, real_t > > > t_coordinates;
 
-        count_t t_first_written_index;
-        count_t t_last_written_index;
-        count_t t_count = 0;
-
         enum_t t_field;
-        if( f_plot_field == "ratio" )
+        if( f_plot_field == "point_id" )
         {
             t_field = 0;
         }
-        else if( f_plot_field == "id" )
+        else if( f_plot_field == "point_ratio" )
         {
             t_field = 1;
         }
-        else if( f_plot_field == "frequency" )
+        else if( f_plot_field == "point_score" )
         {
             t_field = 2;
         }
-        else if( f_plot_field == "slope" )
+        else if( f_plot_field == "id" )
         {
             t_field = 3;
         }
-        else if( f_plot_field == "duration" )
+        else if( f_plot_field == "time" )
         {
             t_field = 4;
         }
-        else if( f_plot_field == "correlation" )
+        else if( f_plot_field == "duration" )
         {
             t_field = 5;
         }
-        else if( f_plot_field == "deviation" )
+        else if( f_plot_field == "frequency" )
         {
             t_field = 6;
         }
-        else if( f_plot_field == "quality" )
+        else if( f_plot_field == "slope" )
         {
             t_field = 7;
         }
+        else if( f_plot_field == "correlation" )
+        {
+            t_field = 8;
+        }
+        else if( f_plot_field == "deviation" )
+        {
+            t_field = 9;
+        }
+        else if( f_plot_field == "score" )
+        {
+            t_field = 10;
+        }
+        else if( f_plot_field == "quality" )
+        {
+            t_field = 11;
+        }
         else
         {
-            throw error() << "line plot consumer plot field must be one of <ratio>, <id>, <frequency>, <slope>, <duration>, <correlation> or <deviation>";
+            throw error() << "line plot consumer plot field must be one of <point_id>, <point_ratio>, <point_score>, <id>, <time>, <duration>, <frequency>, <slope>, <correlation>, <deviation>, <score> or <quality>";
             return;
         }
 
+        t_count = 0;
         while( true )
         {
             t_command = in_stream< 0 >().get();
@@ -96,129 +112,217 @@ namespace midge
 
             if( t_command == stream::s_start )
             {
-                //msg_warning( coremsg, "line plot consumer starting:" << eom );
-
-                t_size = t_lines->get_size();
-                t_time_interval = t_lines->get_time_interval();
-                t_time_index = t_lines->get_time_index();
-                t_frequency_interval = t_lines->get_frequency_interval();
-                t_frequency_index = t_lines->get_frequency_index();
-
-                t_x.title() = f_x_title;
-                t_y.title() = f_y_title;
-                t_z.title() = f_z_title;
-
-                t_first_written_index = t_time_index;
-                t_last_written_index = t_time_index;
-
-                //msg_warning( coremsg, "  size is <" << t_size << ">" << eom );
-                //msg_warning( coremsg, "  time interval is <" << t_time_interval << ">" << eom );
-                //msg_warning( coremsg, "  time index is <" << t_time_index << ">" << eom );
-                //msg_warning( coremsg, "  frequency interval is <" << t_frequency_interval << ">" << eom );
-                //msg_warning( coremsg, "  frequency index is <" << t_frequency_index << ">" << eom );
-
                 continue;
             }
             if( t_command == stream::s_run )
             {
-                //msg_warning( coremsg, "line plot consumer executing:" << eom );
+                t_size = t_lines->size();
+                t_frequency_interval = t_lines->frequency_interval();
+                t_frequency_index = t_lines->frequency_index();
+                t_time_interval = t_lines->time_interval();
+                t_time_index = t_lines->time_index();
 
-                t_time_index = t_lines->get_time_index();
-
-                //msg_warning( coremsg, "  time index is <" << t_time_index << ">" << eom );
-
-                for( t_index = 0; t_index < t_lines->lines().size(); t_index++ )
+                for( vector< line >::iterator t_line_it = t_lines->lines().begin(); t_line_it != t_lines->lines().end(); t_line_it++ )
                 {
-                    for( line::point_cit t_it = t_lines->lines().at( t_index ).points().begin(); t_it != t_lines->lines().at( t_index ).points().end(); ++t_it )
+                    t_coordinates.resize( t_coordinates.size() + 1 );
+
+                    for( line::point_cit t_point_it = t_line_it->points().begin(); t_point_it != t_line_it->points().end(); t_point_it++ )
                     {
-                        t_x.values().push_back( t_it->time() );
-                        t_y.values().push_back( t_it->frequency() );
+                        t_x.values().push_back( t_point_it->time() );
+                        t_y.values().push_back( t_point_it->frequency() );
                         if( t_field == 0 )
                         {
-                            t_z.values().push_back( t_it->ratio() );
+                            t_z.values().push_back( t_point_it->id() );
                             continue;
                         }
                         if( t_field == 1 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).id() );
+                            t_z.values().push_back( t_point_it->ratio() );
                             continue;
                         }
                         if( t_field == 2 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).frequency() );
+                            t_z.values().push_back( t_point_it->score() );
                             continue;
                         }
                         if( t_field == 3 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).slope() );
+                            t_z.values().push_back( t_line_it->id() );
                             continue;
                         }
                         if( t_field == 4 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).duration() );
+                            t_z.values().push_back( t_line_it->time() );
                             continue;
                         }
                         if( t_field == 5 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).correlation() );
+                            t_z.values().push_back( t_line_it->duration() );
                             continue;
                         }
                         if( t_field == 6 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).deviation() );
+                            t_z.values().push_back( t_line_it->frequency() );
                             continue;
                         }
                         if( t_field == 7 )
                         {
-                            t_z.values().push_back( t_lines->lines().at( t_index ).quality() );
+                            t_z.values().push_back( t_line_it->slope() );
+                            continue;
+                        }
+                        if( t_field == 8 )
+                        {
+                            t_z.values().push_back( t_line_it->correlation() );
+                            continue;
+                        }
+                        if( t_field == 9 )
+                        {
+                            t_z.values().push_back( t_line_it->deviation() );
+                            continue;
+                        }
+                        if( t_field == 10 )
+                        {
+                            t_z.values().push_back( t_line_it->score() );
+                            continue;
+                        }
+                        if( t_field == 11 )
+                        {
+                            t_z.values().push_back( t_line_it->quality() );
                             continue;
                         }
                     }
 
-                    t_coordinates.resize( t_coordinates.size() + 1 );
-                    t_coordinates.back().first.first = t_lines->lines().at( t_index ).time();
-                    t_coordinates.back().first.second = t_lines->lines().at( t_index ).frequency();
-                    t_coordinates.back().second.first = t_lines->lines().at( t_index ).time() + t_lines->lines().at( t_index ).duration();
-                    t_coordinates.back().second.second = t_lines->lines().at( t_index ).frequency() + t_lines->lines().at( t_index ).slope() * t_lines->lines().at( t_index ).duration();
+                    t_coordinates.back().first.first = t_line_it->time();
+                    t_coordinates.back().first.second = t_line_it->frequency();
+                    t_coordinates.back().second.first = t_line_it->time() + t_line_it->duration();
+                    t_coordinates.back().second.second = t_line_it->frequency() + t_line_it->slope() * t_line_it->duration();
                 }
 
-                t_last_written_index = t_time_index;
+                if( t_start_time_index > t_time_index )
+                {
+                    t_start_time_index = t_time_index;
+                }
+
+                if( t_stop_time_index < t_time_index )
+                {
+                    t_stop_time_index = t_time_index;
+                }
+
                 t_count++;
 
                 continue;
             }
             if( t_command == stream::s_stop )
             {
-                t_x.count() = t_count;
-                t_x.low() = t_first_written_index * t_time_interval;
-                t_x.high() = t_last_written_index * t_time_interval;
-
-                t_y.count() = t_size;
-                t_y.low() = t_frequency_index * t_frequency_interval;
-                t_y.high() = (t_frequency_index + t_size - 1) * t_frequency_interval;
-
-                t_plot->create_plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y, t_z );
-
-                if( f_plot_overlay == true )
+                for( vector< line >::iterator t_line_it = t_lines->lines().begin(); t_line_it != t_lines->lines().end(); t_line_it++ )
                 {
-                    for( t_index = 0; t_index < t_coordinates.size(); t_index++ )
+                    for( line::point_cit t_point_it = t_line_it->points().begin(); t_point_it != t_line_it->points().end(); t_point_it++ )
                     {
-                        t_x.values().clear();
-                        t_x.values().push_back( t_coordinates.at( t_index ).first.first );
-                        t_x.values().push_back( t_coordinates.at( t_index ).second.first );
-
-                        t_y.values().clear();
-                        t_y.values().push_back( t_coordinates.at( t_index ).first.second );
-                        t_y.values().push_back( t_coordinates.at( t_index ).second.second );
-
-                        t_plot->create_graph_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y );
+                        t_x.values().push_back( t_point_it->time() );
+                        t_y.values().push_back( t_point_it->frequency() );
+                        if( t_field == 0 )
+                        {
+                            t_z.values().push_back( t_point_it->id() );
+                            continue;
+                        }
+                        if( t_field == 1 )
+                        {
+                            t_z.values().push_back( t_point_it->ratio() );
+                            continue;
+                        }
+                        if( t_field == 2 )
+                        {
+                            t_z.values().push_back( t_point_it->score() );
+                            continue;
+                        }
+                        if( t_field == 3 )
+                        {
+                            t_z.values().push_back( t_line_it->id() );
+                            continue;
+                        }
+                        if( t_field == 4 )
+                        {
+                            t_z.values().push_back( t_line_it->time() );
+                            continue;
+                        }
+                        if( t_field == 5 )
+                        {
+                            t_z.values().push_back( t_line_it->duration() );
+                            continue;
+                        }
+                        if( t_field == 6 )
+                        {
+                            t_z.values().push_back( t_line_it->frequency() );
+                            continue;
+                        }
+                        if( t_field == 7 )
+                        {
+                            t_z.values().push_back( t_line_it->slope() );
+                            continue;
+                        }
+                        if( t_field == 8 )
+                        {
+                            t_z.values().push_back( t_line_it->correlation() );
+                            continue;
+                        }
+                        if( t_field == 9 )
+                        {
+                            t_z.values().push_back( t_line_it->deviation() );
+                            continue;
+                        }
+                        if( t_field == 10 )
+                        {
+                            t_z.values().push_back( t_line_it->score() );
+                            continue;
+                        }
+                        if( t_field == 11 )
+                        {
+                            t_z.values().push_back( t_line_it->quality() );
+                            continue;
+                        }
                     }
+
+                    t_coordinates.resize( t_coordinates.size() + 1 );
+                    t_coordinates.back().first.first = t_line_it->time();
+                    t_coordinates.back().first.second = t_line_it->frequency();
+                    t_coordinates.back().second.first = t_line_it->time() + t_line_it->duration();
+                    t_coordinates.back().second.second = t_line_it->frequency() + t_line_it->slope() * t_line_it->duration();
                 }
 
                 continue;
             }
             if( t_command == stream::s_exit )
             {
+                t_x.count() = t_count;
+                t_x.low() = t_start_time_index * t_time_interval;
+                t_x.high() = t_stop_time_index * t_time_interval;
+
+                t_y.count() = t_size;
+                t_y.low() = t_frequency_index * t_frequency_interval;
+                t_y.high() = (t_frequency_index + t_size - 1) * t_frequency_interval;
+
+                t_x.title() = f_x_title;
+                t_y.title() = f_y_title;
+                t_z.title() = f_z_title;
+
+                t_plot->create_plot_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y, t_z );
+
+                if( f_plot_overlay == true )
+                {
+                    for( vector< pair< pair< real_t, real_t >, pair< real_t, real_t > > >::iterator t_coordinates_it = t_coordinates.begin(); t_coordinates_it != t_coordinates.end(); t_coordinates_it++ )
+                    {
+                        t_x.values().clear();
+                        t_x.values().push_back( t_coordinates_it->first.first );
+                        t_x.values().push_back( t_coordinates_it->second.first );
+
+                        t_y.values().clear();
+                        t_y.values().push_back( t_coordinates_it->first.second );
+                        t_y.values().push_back( t_coordinates_it->second.second );
+
+                        t_plot->create_graph_two_dimensional( f_plot_key, f_plot_name, f_chart_title, t_x, t_y );
+                    }
+                }
+
                 return;
             }
         }

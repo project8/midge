@@ -12,6 +12,9 @@ using std::string;
 #include <vector>
 using std::vector;
 
+#include <list>
+using std::list;
+
 #include <map>
 using std::map;
 
@@ -91,6 +94,35 @@ namespace midge
                     {
                         p_stream << p_vector.size();
                         for( typename vector< x_value >::const_iterator t_it = p_vector.begin(); t_it != p_vector.end(); t_it++ )
+                        {
+                            p_stream << (*t_it);
+                        }
+                    }
+            };
+
+            template< class x_value >
+            class pull< list< x_value > >
+            {
+                public:
+                    pull( binary& p_stream, list< x_value >& p_list )
+                    {
+                        count_t t_size;
+                        p_stream >> t_size;
+                        p_list.resize( t_size );
+                        for( typename list< x_value >::iterator t_it = p_list.begin(); t_it != p_list.end(); t_it++ )
+                        {
+                            p_stream >> (*t_it);
+                        }
+                    }
+            };
+            template< class x_value >
+            class push< list< x_value > >
+            {
+                public:
+                    push( binary& p_stream, const list< x_value >& p_list )
+                    {
+                        p_stream << p_list.size();
+                        for( typename list< x_value >::const_iterator t_it = p_list.begin(); t_it != p_list.end(); t_it++ )
                         {
                             p_stream << (*t_it);
                         }

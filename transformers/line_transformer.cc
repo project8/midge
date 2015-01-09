@@ -6,15 +6,15 @@ namespace midge
 {
 
     line_transformer::line_transformer() :
-            f_threshold( 2.0 ),
-            f_window( 65.e-3 ),
-            f_width( 45.e-3 ),
-            f_count( 20 ),
-            f_score_low( 0. ),
-            f_quality_high( 10. ),
-            f_object_pool( 10000 ),
-            f_pointer_pool( 100000 ),
-            f_length( 10 )
+                f_threshold( 3.0 ),
+                f_window( 65.e-3 ),
+                f_width( 35.e-3 ),
+                f_trim( 0.5 ),
+                f_block( 5.0 ),
+                f_count( 20 ),
+                f_score( 0. ),
+                f_quality( 10. ),
+                f_length( 10 )
     {
     }
 
@@ -28,6 +28,8 @@ namespace midge
 
         line::set_window( f_window );
         line::set_width( f_width );
+        line::set_trim( f_trim );
+        line::set_block( f_block );
         line::set_count( f_count );
 
         return;
@@ -36,35 +38,43 @@ namespace midge
     void line_transformer::execute()
     {
         line_list t_active_lines;
-
         line_stack t_line_complete_stack;
         line_stack t_line_discard_stack;
 
         enum_t t_command;
+        point_data* t_points;
+        line_data* t_lines;
 
-        point_data* t_input;
-        line_data* t_current;
-        line_data* t_previous;
+        count_t t_size;
+        real_t t_time_interval;
+        count_t t_time_index;
+        real_t t_frequency_interval;
+        count_t t_frequency_index;
 
         line_it t_line_it;
         line* t_line;
 
-        count_t t_id = 0;
-
         while( true )
         {
             t_command = in_stream< 0 >().get();
-            t_input = in_stream< 0 >().data();
-            t_current = out_stream< 0 >().data();
+            t_points = in_stream< 0 >().data();
+            t_lines = out_stream< 0 >().data();
 
             if( t_command == stream::s_start )
             {
-                t_current->lines().clear();
-                t_current->set_size( t_input->get_size() );
-                t_current->set_time_interval( t_input->get_time_interval() );
-                t_current->set_time_index( t_input->get_time_index() );
-                t_current->set_frequency_interval( t_input->get_frequency_interval() );
-                t_current->set_frequency_index( t_input->get_frequency_index() );
+                t_size = t_points->size();
+                t_frequency_interval = t_points->frequency_interval();
+                t_frequency_index = t_points->frequency_index();
+                t_time_interval = t_points->time_interval();
+                t_time_index = t_points->time_index();
+
+                t_lines->size() = t_size;
+                t_lines->frequency_interval() = t_frequency_interval;
+                t_lines->frequency_index() = t_frequency_index;
+                t_lines->time_interval() = t_time_interval;
+                t_lines->time_index() = t_time_index;
+
+                t_lines->lines().clear();
 
                 out_stream< 0 >().set( stream::s_start );
                 continue;
@@ -72,74 +82,91 @@ namespace midge
 
             if( t_command == stream::s_run )
             {
-                t_current->lines().clear();
-                t_current->set_size( t_input->get_size() );
-                t_current->set_time_interval( t_input->get_time_interval() );
-                t_current->set_time_index( t_input->get_time_index() );
-                t_current->set_frequency_interval( t_input->get_frequency_interval() );
-                t_current->set_frequency_index( t_input->get_frequency_index() );
+                t_size = t_points->size();
+                t_frequency_interval = t_points->frequency_interval();
+                t_frequency_index = t_points->frequency_index();
+                t_time_interval = t_points->time_interval();
+                t_time_index = t_points->time_index();
 
-                line::set_data( t_input );
+                t_lines->size() = t_size;
+                t_lines->frequency_interval() = t_frequency_interval;
+                t_lines->frequency_index() = t_frequency_index;
+                t_lines->time_interval() = t_time_interval;
+                t_lines->time_index() = t_time_index;
 
-                //msg_warning( coremsg, "** updating active lines <" << t_count << "> **" << eom );
+                t_lines->lines().clear();
+                line::set_point_data( t_points );
+
+                //msg_warning( coremsg, "** updating active lines **" << eom );
                 for( t_line_it = t_active_lines.begin(); t_line_it != t_active_lines.end(); t_line_it++ )
                 {
                     t_line = *t_line_it;
 
                     //msg_warning( coremsg, "**   updating active line <" << t_line->id() << "> **" << eom );
-                    t_line->update();
-
-                    if( t_line->score() < f_score_low )
+                    if( t_line->update() == true )
                     {
-                        t_line->finalize();
+                        if( t_line->score() < f_score )
+                        {
+                            t_line->finalize();
 
-                        if( t_line->quality() > f_quality_high )
-                        {
-                            //msg_warning( coremsg, "**   will complete active line <" << t_line->id() << "> **" << eom );
-                            t_line_complete_stack.push( t_line_it );
+                            if( t_line->quality() > f_quality )
+                            {
+                                //msg_warning( coremsg, "**   will complete active line <" << t_line->id() << "> **" << eom );
+                                t_line_complete_stack.push( t_line_it );
+                            }
+                            else
+                            {
+                                //msg_warning( coremsg, "**   will discard active line <" << t_line->id() << "> **" << eom );
+                                t_line_discard_stack.push( t_line_it );
+                            }
                         }
-                        else
-                        {
-                            //msg_warning( coremsg, "**   will discard active line <" << t_line->id() << "> **" << eom );
-                            t_line_discard_stack.push( t_line_it );
-                        }
+                    }
+                    else
+                    {
+                        //msg_warning( coremsg, "**   will discard active line <" << t_line->id() << "> **" << eom );
+                        t_line_discard_stack.push( t_line_it );
                     }
                 }
 
-                //msg_warning( coremsg, "** creating new lines <" << t_count << "> **" << eom );
-                for( index_t t_index = 0; t_index < t_input->get_size(); t_index++ )
+                //msg_warning( coremsg, "** creating new lines **" << eom );
+                for( index_t t_index = 0; t_index < t_points->points().size(); t_index++ )
                 {
-                    if( (t_input->at( t_index ).id() == 0) && (t_input->at( t_index ).ratio() > f_threshold) )
+                    if( t_points->points().at( t_index ).ratio() > f_threshold )
                     {
                         t_line = new line();
-                        t_line->id() = ++t_id;
 
                         //msg_warning( coremsg, "**   initializing created line <" << t_line->id() << "> **" << eom );
                         t_line->initialize( t_index );
 
                         //msg_warning( coremsg, "**   updating created line <" << t_line->id() << "> **" << eom );
-                        t_line->update();
-
-                        //msg_warning( coremsg, "**   activating created line <" << t_line->id() << "> **" << eom );
-                        t_active_lines.push_back( t_line );
+                        if( t_line->update() == true )
+                        {
+                            //msg_warning( coremsg, "**   activating created line <" << t_line->id() << "> **" << eom );
+                            t_active_lines.push_back( t_line );
+                        }
+                        else
+                        {
+                            //msg_warning( coremsg, "**   deleting created line <" << t_line->id() << "> **" << eom );
+                            delete t_line;
+                        }
                     }
                 }
 
-                //msg_warning( coremsg, "** completing lines <" << t_count << "> **" << eom );
+                //msg_warning( coremsg, "** completing lines **" << eom );
                 while( t_line_complete_stack.empty() == false )
                 {
                     t_line = *(t_line_complete_stack.top());
 
                     //msg_warning( coremsg, "**   completing line <" << t_line->id() << "> **" << eom );
 
-                    t_current->lines().push_back( *t_line );
+                    t_lines->lines().push_back( *t_line );
                     delete t_line;
 
                     t_active_lines.erase( t_line_complete_stack.top() );
                     t_line_complete_stack.pop();
                 }
 
-                //msg_warning( coremsg, "** discarding lines <" << t_count << "> **" << eom );
+                //msg_warning( coremsg, "** discarding lines **" << eom );
                 while( t_line_discard_stack.empty() == false )
                 {
                     t_line = *(t_line_discard_stack.top());
@@ -152,22 +179,28 @@ namespace midge
                     t_line_discard_stack.pop();
                 }
 
-                t_previous = t_current;
-
                 out_stream< 0 >().set( stream::s_run );
                 continue;
             }
 
             if( t_command == stream::s_stop )
             {
-                t_current->lines().clear();
-                t_current->set_size( t_previous->get_size() );
-                t_current->set_time_interval( t_previous->get_time_interval() );
-                t_current->set_time_index( t_previous->get_time_index() );
-                t_current->set_frequency_interval( t_previous->get_frequency_interval() );
-                t_current->set_frequency_index( t_previous->get_frequency_index() );
+                t_size = t_points->size();
+                t_frequency_interval = t_points->frequency_interval();
+                t_frequency_index = t_points->frequency_index();
+                t_time_interval = t_points->time_interval();
+                t_time_index = t_points->time_index();
 
-                //msg_warning( coremsg, "** finalizing active lines <" << t_count << "> **" << eom );
+                t_lines->size() = t_size;
+                t_lines->frequency_interval() = t_frequency_interval;
+                t_lines->frequency_index() = t_frequency_index;
+                t_lines->time_interval() = t_time_interval;
+                t_lines->time_index() = t_time_index;
+
+                t_lines->lines().clear();
+                line::set_point_data( t_points );
+
+                //msg_warning( coremsg, "** finalizing active lines **" << eom );
                 for( t_line_it = t_active_lines.begin(); t_line_it != t_active_lines.end(); t_line_it++ )
                 {
                     t_line = *t_line_it;
@@ -175,7 +208,7 @@ namespace midge
                     //msg_warning( coremsg, "**   finalizing active line <" << t_line->id() << "> **" << eom );
                     t_line->finalize();
 
-                    if( t_line->quality() > f_quality_high )
+                    if( t_line->quality() > f_quality )
                     {
                         //msg_warning( coremsg, "**   will complete active line <" << t_line->id() << "> **" << eom );
                         t_line_complete_stack.push( t_line_it );
@@ -187,21 +220,21 @@ namespace midge
                     }
                 }
 
-                //msg_warning( coremsg, "** completing lines <" << t_count << "> **" << eom );
+                //msg_warning( coremsg, "** completing lines **" << eom );
                 while( t_line_complete_stack.empty() == false )
                 {
                     t_line = *(t_line_complete_stack.top());
 
                     //msg_warning( coremsg, "**   completing line <" << t_line->id() << "> **" << eom );
 
-                    t_current->lines().push_back( *t_line );
+                    t_lines->lines().push_back( *t_line );
                     delete t_line;
 
                     t_active_lines.erase( t_line_complete_stack.top() );
                     t_line_complete_stack.pop();
                 }
 
-                //msg_warning( coremsg, "** completing lines <" << t_count << "> **" << eom );
+                //msg_warning( coremsg, "** discarding lines **" << eom );
                 while( t_line_discard_stack.empty() == false )
                 {
                     t_line = *(t_line_discard_stack.top());
@@ -214,7 +247,6 @@ namespace midge
                     t_line_discard_stack.pop();
                 }
 
-                out_stream< 0 >().set( stream::s_run );
                 out_stream< 0 >().set( stream::s_stop );
                 continue;
             }

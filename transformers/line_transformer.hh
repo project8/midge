@@ -2,14 +2,10 @@
 #define _midge_line_transformer_hh_
 
 #include "transformer.hh"
-#include "rf_data.hh"
 #include "point_data.hh"
 #include "line_data.hh"
 #include "typelist.hh"
 #include "macros.hh"
-
-#include <set>
-using std::multiset;
 
 #include <list>
 using std::list;
@@ -31,11 +27,11 @@ namespace midge
             accessible( real_t, threshold )
             accessible( real_t, window )
             accessible( real_t, width )
+            accessible( real_t, trim )
+            accessible( real_t, block )
             accessible( count_t, count )
-            accessible( real_t, score_low )
-            accessible( real_t, quality_high )
-            accessible( count_t, object_pool )
-            accessible( count_t, pointer_pool )
+            accessible( real_t, score )
+            accessible( real_t, quality )
             accessible( count_t, length )
 
         protected:

@@ -484,27 +484,34 @@ namespace midge
             t_axes = t_plot_it->second.second;
             t_axes->SetTitle( p_plot.title().c_str() );
             t_axes->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
+            t_axes->GetXaxis()->SetTitleOffset( 1.2 );
             t_axes->GetYaxis()->SetTitle( p_plot.y_values().title().c_str() );
-            t_histogram->SetMarkerStyle( 1 );
-            t_histogram->SetMarkerColor( kRed );
-            t_histogram->SetLineColor( kRed + 2 );
+            t_axes->GetYaxis()->SetTitleOffset( 1.2 );
+            t_histogram->SetLineColor( kRed );
+            t_histogram->SetLineWidth( 2 );
             t_histogram->SetStats( false );
-            t_histogram->Draw( "LP0 SAME" );
+            t_histogram->Draw( "L SAME" );
         }
         else
         {
-            t_canvas = new TCanvas( p_plot.key().c_str(), p_plot.key().c_str(), 0, 0, 1024, 768 );
+            t_canvas = new TCanvas( p_plot.key().c_str() );
+            t_canvas->SetWindowSize( 1024, 768 );
+            t_canvas->SetFillColor( kWhite );
+            t_canvas->SetLeftMargin( .12 );
+            t_canvas->SetRightMargin( .08 );
+            t_canvas->SetBottomMargin( .12 );
             t_canvas->cd( 0 );
             t_axes = t_canvas->DrawFrame( p_plot.x_axis().low() - .5 * t_x_increment, t_y_low - .5 * t_y_increment, p_plot.x_axis().high() + .5 * t_x_increment, t_y_high + .5 * t_y_increment );
-            t_histogram->SetStats( kFALSE );
-            t_histogram->SetTitle( p_plot.title().c_str() );
-            t_histogram->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
-            t_histogram->GetYaxis()->SetTitle( p_plot.y_values().title().c_str() );
-            t_histogram->SetMarkerStyle( 1 );
-            t_histogram->SetMarkerColor( kRed );
-            t_histogram->SetLineColor( kRed + 2 );
+            t_axes->SetStats( kFALSE );
+            t_axes->SetTitle( p_plot.title().c_str() );
+            t_axes->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
+            t_axes->GetXaxis()->SetTitleOffset( 1.2 );
+            t_axes->GetYaxis()->SetTitle( p_plot.y_values().title().c_str() );
+            t_axes->GetYaxis()->SetTitleOffset( 1.2 );
+            t_histogram->SetLineColor( kRed );
+            t_histogram->SetLineWidth( 2 );
             t_histogram->SetStats( false );
-            t_histogram->Draw( "LP0" );
+            t_histogram->Draw( "L SAME" );
             f_plots.insert( plot_entry( p_plot.key(), plot_pair( t_canvas, t_axes ) ) );
         }
 
@@ -559,20 +566,31 @@ namespace midge
             t_axes = t_plot_it->second.second;
             t_axes->SetTitle( p_plot.title().c_str() );
             t_axes->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
+            t_axes->GetXaxis()->SetTitleOffset( 1.2 );
             t_axes->GetYaxis()->SetTitle( p_plot.y_axis().title().c_str() );
-            t_axes->GetZaxis()->SetTitle( p_plot.z_values().title().c_str() );
+            t_axes->GetYaxis()->SetTitleOffset( 1.2 );
+            t_histogram->GetZaxis()->SetTitle( p_plot.z_values().title().c_str() );
+            t_histogram->GetZaxis()->SetTitleOffset( 1.2 );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "COL SAME" );
         }
         else
         {
-            t_canvas = new TCanvas( p_plot.key().c_str(), p_plot.key().c_str(), 0, 0, 1024, 768 );
+            t_canvas = new TCanvas( p_plot.key().c_str() );
+            t_canvas->SetWindowSize( 1024, 768 );
+            t_canvas->SetFillColor( kWhite );
+            t_canvas->SetLeftMargin( .10 );
+            t_canvas->SetRightMargin( .15 );
+            t_canvas->SetBottomMargin( .12 );
             t_canvas->cd( 0 );
             t_axes = t_canvas->DrawFrame( p_plot.x_axis().low() - .5 * t_x_increment, p_plot.y_axis().low() - .5 * t_y_increment, p_plot.x_axis().high() + .5 * t_x_increment, p_plot.y_axis().high() + .5 * t_y_increment );
             t_axes->SetTitle( p_plot.title().c_str() );
             t_axes->GetXaxis()->SetTitle( p_plot.x_axis().title().c_str() );
+            t_axes->GetXaxis()->SetTitleOffset( 1.2 );
             t_axes->GetYaxis()->SetTitle( p_plot.y_axis().title().c_str() );
-            t_axes->GetZaxis()->SetTitle( p_plot.z_values().title().c_str() );
+            t_axes->GetYaxis()->SetTitleOffset( 1.2 );
+            t_histogram->GetZaxis()->SetTitle( p_plot.z_values().title().c_str() );
+            t_histogram->GetZaxis()->SetTitleOffset( 1.2 );
             t_histogram->SetStats( kFALSE );
             t_histogram->Draw( "COLZ SAME" );
             f_plots.insert( plot_entry( p_plot.key(), plot_pair( t_canvas, t_axes ) ) );
@@ -614,17 +632,30 @@ namespace midge
             t_axes = t_plot_it->second.second;
             t_axes->SetTitle( p_graph.title().c_str() );
             t_axes->GetXaxis()->SetTitle( p_graph.x_values().title().c_str() );
+            t_axes->GetXaxis()->SetTitleOffset( 1.2 );
             t_axes->GetYaxis()->SetTitle( p_graph.y_values().title().c_str() );
+            t_axes->GetYaxis()->SetTitleOffset( 1.2 );
+            t_graph->SetLineWidth( 2 );
+            t_graph->SetLineColor( kRed );
             t_graph->Draw( "L" );
         }
         else
         {
-            t_canvas = new TCanvas( p_graph.key().c_str(), p_graph.key().c_str(), 0, 0, 1024, 768 );
+            t_canvas = new TCanvas( p_graph.key().c_str() );
+            t_canvas->SetWindowSize( 1024, 768 );
+            t_canvas->SetFillColor( kWhite );
+            t_canvas->SetLeftMargin( .10 );
+            t_canvas->SetRightMargin( .15 );
+            t_canvas->SetBottomMargin( .12 );
             t_canvas->cd( 0 );
             t_axes = t_canvas->DrawFrame( p_graph.x_values().low() - .5 * t_x_increment, p_graph.y_values().low() - .5 * t_y_increment, p_graph.x_values().high() + .5 * t_x_increment, p_graph.y_values().high() + .5 * t_y_increment );
             t_axes->SetTitle( p_graph.title().c_str() );
             t_axes->GetXaxis()->SetTitle( p_graph.x_values().title().c_str() );
+            t_axes->GetXaxis()->SetTitleOffset( 1.2 );
             t_axes->GetYaxis()->SetTitle( p_graph.y_values().title().c_str() );
+            t_axes->GetYaxis()->SetTitleOffset( 1.2 );
+            t_graph->SetLineWidth( 2 );
+            t_graph->SetLineColor( kRed );
             t_graph->Draw( "L" );
             f_plots.insert( plot_entry( p_graph.key(), plot_pair( t_canvas, t_axes ) ) );
         }

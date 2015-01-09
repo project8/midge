@@ -12,6 +12,9 @@ using std::string;
 #include <vector>
 using std::vector;
 
+#include <list>
+using std::list;
+
 #include <map>
 using std::map;
 
@@ -123,7 +126,7 @@ namespace midge
                     push( ascii& p_stream, const vector< x_value >& p_vector )
                     {
                         const count_t t_size = p_vector.size();
-                        p_stream << t_size << " ";
+                        p_stream << t_size << "\n";
 
                         typename vector< x_value >::const_iterator t_it = p_vector.begin();
                         if( t_it != p_vector.end() )
@@ -135,6 +138,46 @@ namespace midge
                                 p_stream << " " << (*t_it);
                                 t_it++;
                             }
+                            p_stream << "\n";
+                        }
+                    }
+            };
+
+            template< class x_value >
+            class pull< list< x_value > >
+            {
+                public:
+                    pull( ascii& p_stream, list< x_value >& p_list )
+                    {
+                        count_t t_size;
+                        p_stream >> t_size;
+                        p_list.resize( t_size );
+                        for( typename list< x_value >::iterator t_it = p_list.begin(); t_it != p_list.end(); t_it++ )
+                        {
+                            p_stream >> (*t_it);
+                        }
+                    }
+            };
+            template< class x_value >
+            class push< list< x_value > >
+            {
+                public:
+                    push( ascii& p_stream, const list< x_value >& p_list )
+                    {
+                        const count_t t_size = p_list.size();
+                        p_stream << t_size << "\n";
+
+                        typename list< x_value >::const_iterator t_it = p_list.begin();
+                        if( t_it != p_list.end() )
+                        {
+                            p_stream << (*t_it);
+                            t_it++;
+                            while( t_it != p_list.end() )
+                            {
+                                p_stream << " " << (*t_it);
+                                t_it++;
+                            }
+                            p_stream << "\n";
                         }
                     }
             };
@@ -165,7 +208,7 @@ namespace midge
                     push( ascii& p_stream, const map< x_key, x_value >& p_map )
                     {
                         const count_t t_size = p_map.size();
-                        p_stream << t_size << " ";
+                        p_stream << t_size << "\n";
 
                         typename map< x_key, x_value >::const_iterator t_it = p_map.begin();
                         if( t_it != p_map.end() )
@@ -177,6 +220,7 @@ namespace midge
                                 p_stream << " " << t_it->first << " " << t_it->second;
                                 t_it++;
                             }
+                            p_stream << "\n";
                         }
                     }
             };
