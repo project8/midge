@@ -56,7 +56,7 @@
     {
         "name" : "spectrum",
         "field_gauss" : 9420.8,
-        "frequency_mhz" : 23400.0,
+        "frequency_mhz" : 25400.0,
         "start_kev" : 17.0,
         "stop_kev" : 20.0,
         "count" : 500,
