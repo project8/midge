@@ -68,7 +68,7 @@ namespace midge
             t_spectrum = new TH1D( "spectrum", "spectrum", t_count, t_start, t_stop );
             t_spectrum->SetDirectory( t_file );
             t_spectrum->SetStats( kFALSE );
-            t_spectrum->SetTitle( "Raw Spectrum" );
+            t_spectrum->SetTitle( "Project8 Krypton Energy Spectrum" );
             t_spectrum->GetXaxis()->SetTitle( "Energy [keV]" );
             t_spectrum->GetYaxis()->SetTitle( t_title.str().c_str() );
         }
@@ -124,6 +124,8 @@ namespace midge
                 t_time_interval = t_events->time_interval();
                 t_time_index = t_events->time_index();
 
+                t_event_time_sec = t_time_index * t_time_interval;
+
                 for( vector< event >::const_iterator t_event_it = t_events->events().begin(); t_event_it != t_events->events().end(); t_event_it++ )
                 {
                     t_event_frequency_mhz = t_event_it->frequency() * 1.e-6 + f_frequency_mhz;
@@ -131,10 +133,8 @@ namespace midge
                     t_bin = t_raw->FindFixBin( t_event_energy_kev );
                     t_raw->SetBinContent( t_bin, t_raw->GetBinContent( t_bin ) + 1. );
 
-                    msg_warning( msg, "got event of energy <" << t_event_energy_kev << ">" << eom );
+                    msg_warning( msg, "got event of energy <" << t_event_energy_kev << "> at time <" << t_event_time_sec << ">" << eom );
                 }
-
-                t_event_time_sec = t_time_index * t_time_interval;
 
                 if( t_start_time_sec > t_event_time_sec )
                 {

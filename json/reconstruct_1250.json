@@ -31,7 +31,7 @@
     "line_transformer" :
     {
         "name" : "line",
-        "threshold" : 3.0,
+        "threshold" : 5.0,
         "window" : 65.0e3,
         "width" : 35.0e3,
         "block" : 5.0,
@@ -46,7 +46,7 @@
     {
         "name" : "event",
         "time" : 1.0e-3,
-        "frequency" : 20.0e6,
+        "frequency" : 30.0e6,
         "tolerance" : 1.0,
         "delay" : 2.0e-3,
         "length" : 10
@@ -57,9 +57,9 @@
         "name" : "spectrum",
         "field_gauss" : 9420.8,
         "frequency_mhz" : 25450.0,
-        "start_kev" : 17.0,
-        "stop_kev" : 20.0,
-        "count" : 500,
+        "start_kev" : 16.0,
+        "stop_kev" : 19.0,
+        "count" : 300,
         "file" : "events_18kev.root"
     },
 
