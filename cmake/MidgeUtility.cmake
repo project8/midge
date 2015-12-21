@@ -1,3 +1,64 @@
+# module settings
+set( MODULE_VERSION_MAJOR 0 )
+set( MODULE_VERSION_MINOR 1 )
+set( MODULE_VERSION_PATCH 0 )
+set( MODULE_VERSION "${MODULE_VERSION_MAJOR}.${MODULE_VERSION_MINOR}.${MODULE_VERSION_PATCH}" )
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/" )
+
+# rpath settings
+if( APPLE )
+    set( CMAKE_MACOSX_RPATH TRUE )
+endif()
+set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+set( CMAKE_SKIP_RPATH FALSE )
+set( CMAKE_SKIP_BUILD_RPATH  FALSE )
+set( CMAKE_BUILD_WITH_INSTALL_RPATH TRUE )
+
+
+
+macro( midge_prepare_project )
+
+
+    #########
+    # flags #
+    #########
+    
+    set( MIDGE_ENABLE_DEBUG_MESSAGES "false" CACHE BOOL "enable debug messages" )
+    if( MIDGE_ENABLE_DEBUG_MESSAGES )
+        add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
+    endif()
+    
+    add_definitions( -Wall )
+    add_definitions( -std=c++11 )
+    
+    ############
+    # external #
+    ############
+    
+    # threads
+    find_package( Threads REQUIRED )
+    
+    # midge
+    
+    set( midge_external_libraries 
+        ${CMAKE_THREAD_LIBS_INIT}
+    )
+    
+    link_directories( ${midge_external_directories} )
+    include_directories( ${midge_external_includes} )
+
+
+endmacro( prepare_midge )
+
+
+
+macro( midge_build_library )
+endmacro( midge_build_library )
+
+macro( midge_build_executables )
+endmacro( midge_build_executables )
+
+
 #########################################
 # macro to define and install libraries #
 #########################################
@@ -39,7 +100,7 @@ macro( midge_executables name )
 	
 	foreach( program ${midge_${name}_programs} )
 		add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${midge_${name}_directory}/${program}.cc )
-		target_link_libraries( ${program} ${midge_${name}_dependency_names} ${midge_external_libraries} )
+		target_link_libraries( ${program} _midge ${midge_${name}_dependency_names} ${midge_external_libraries} )
 		install( TARGETS ${program} DESTINATION bin )
 	endforeach( program )
 	

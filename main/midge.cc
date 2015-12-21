@@ -1,9 +1,9 @@
-#include "arguments.hh"
-#include "lexer.hh"
-#include "compiler.hh"
-#include "evaluator.hh"
-#include "coremsg.hh"
-#include "midge_builder.hh"
+#include "../library/bindings/midge_builder.hh"
+#include "../library/core/coremsg.hh"
+#include "../library/initialization/arguments.hh"
+#include "../library/initialization/compiler.hh"
+#include "../library/initialization/evaluator.hh"
+#include "../library/initialization/lexer.hh"
 using namespace midge;
 
 #include <iostream>
