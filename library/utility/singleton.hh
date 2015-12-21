@@ -1,7 +1,7 @@
 #ifndef _midge_singleton_hh_
 #define _midge_singleton_hh_
 
-#include "../library/utility/mutex.hh"
+#include "mutex.hh"
 
 namespace midge
 {

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../utility/error.hh"
+#include "error.hh"
 using std::string;
 
 #include <sstream>

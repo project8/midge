@@ -1,4 +1,4 @@
-#include "../library/core/output.hh"
+#include "output.hh"
 
 namespace midge
 {

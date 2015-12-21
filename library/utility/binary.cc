@@ -1,7 +1,7 @@
 #include "message.hh"
-#include "../library/utility/binary.hh"
+#include "binary.hh"
 
-#include "../library/utility/message.hh"
+#include "message.hh"
 
 namespace midge
 {

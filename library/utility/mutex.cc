@@ -1,4 +1,4 @@
-#include "../library/utility/mutex.hh"
+#include "mutex.hh"
 
 namespace midge
 {

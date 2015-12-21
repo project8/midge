@@ -15,7 +15,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/message.hh
 	${util_dir}/ascii.hh
 	${util_dir}/binary.hh
-	${util_dir}/plot.hh
+	#${util_dir}/plot.hh
 	${util_dir}/mutex.hh
 	${util_dir}/thread.hh
 	${util_dir}/types.hh
@@ -33,29 +33,11 @@ set( midge_sources ${midge_sources}
 	${util_dir}/message.cc
 	${util_dir}/ascii.cc
 	${util_dir}/binary.cc
-	${util_dir}/plot.cc
+	#${util_dir}/plot.cc
 	${util_dir}/mutex.cc
 	${util_dir}/thread.cc
 )
 
-set( midge_utility_test_dependencies
-	utility
-)
-set( midge_utility_test_directory
-	test
-)
-set( midge_utility_test_programs
-	test_typelength
-	test_typeat
-	test_typechain
-	test_message
-	test_ascii
-	test_binary
-	test_thread
-	test_buffer
-)
-
-midge_executables( utility_test )
 
 
 ########
@@ -136,20 +118,6 @@ set( midge_sources ${midge_sources}
 )
 
 
-set( midge_test_initialization_directory
-	test
-)
-
-set( midge_test_initialization_programs
-	test_lexer_reporter
-	test_lexer_serializer
-	test_lexer_compiler_reporter
-	test_lexer_compiler_serializer
-	test_builder
-)
-
-midge_executables( test_initialization )
-
 ############
 # bindings #
 ############
@@ -166,63 +134,15 @@ set( midge_sources ${midge_sources}
 # library #
 ###########
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${bind_dir} )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${core_dir} )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${init_dir} )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${util_dir} )
+set( midge_library "_${midge_project_name}" )
 
-add_library( _midge SHARED ${midge_sources} )
-target_link_libraries( _midge ${midge_external_libraries} )
+add_library( ${midge_library} ${midge_sources} )
+target_link_libraries( ${midge_library} ${midge_external_libraries} )
 
-install( FILES ${midge_headers} DESTINATION include )
+pbuilder_install_headers( ${midge_headers} )
 
-install( TARGETS _midge DESTINATION lib )
+pbuilder_install_libraries( ${midge_library} )
 
+# bump the midge_library variable up to parent-scope
+set( midge_library ${midge_library} PARENT_SCOPE )
 
-
-########
-# test #
-########
-
-set( midge_test_dependencies
-	utility
-	math
-	core
-	data
-	producers
-	consumers
-	transformers
-	initialization
-)
-set( midge_test_directory
-	test
-)
-set( midge_test_programs
-	test_harmonic_producer
-	test_chirp_producer
-	test_sinusoidal_producer
-	test_gaussian_producer
-	test_fourier_transformer
-	test_analytic_transformer
-	test_power_transformer
-	test_wigner_transformer
-)
-
-midge_executables( test )
-
-########
-# json #
-########
-
-set( midge_json_directory
-	test/json
-)
-set( midge_json_files
-	test_types.json
-	test_arrays.json
-	test_objects.json
-	test_builder.json
-	test_comparison.json
-)
-
-midge_json( json )

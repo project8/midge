@@ -1,4 +1,4 @@
-#include "../library/initialization/processor.hh"
+#include "processor.hh"
 
 namespace midge
 {

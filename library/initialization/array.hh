@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../library/initialization/value.hh"
+#include "value.hh"
 using std::vector;
 
 namespace midge

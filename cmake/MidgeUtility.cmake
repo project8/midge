@@ -1,23 +1,24 @@
+# Include the build script
+include( ${CMAKE_CURRENT_LIST_DIR}/PackageBuilder.cmake )
+
+# Main directory for midge
+set( midge_dir ${CMAKE_CURRENT_LIST_DIR}/.. )
+
 # module settings
 set( MODULE_VERSION_MAJOR 0 )
 set( MODULE_VERSION_MINOR 1 )
 set( MODULE_VERSION_PATCH 0 )
 set( MODULE_VERSION "${MODULE_VERSION_MAJOR}.${MODULE_VERSION_MINOR}.${MODULE_VERSION_PATCH}" )
+
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/" )
 
-# rpath settings
-if( APPLE )
-    set( CMAKE_MACOSX_RPATH TRUE )
-endif()
-set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-set( CMAKE_SKIP_RPATH FALSE )
-set( CMAKE_SKIP_BUILD_RPATH  FALSE )
-set( CMAKE_BUILD_WITH_INSTALL_RPATH TRUE )
 
 
 
 macro( midge_prepare_project )
 
+    # custom midge name
+    set( midge_project_name midge_${PROJECT_NAME} )
 
     #########
     # flags #
@@ -44,18 +45,36 @@ macro( midge_prepare_project )
         ${CMAKE_THREAD_LIBS_INIT}
     )
     
-    link_directories( ${midge_external_directories} )
-    include_directories( ${midge_external_includes} )
+    #link_directories( BEFORE ${midge_external_directories} ) # currently there are no external directories
+    #include_directories( BEFORE ${midge_external_includes} ) # currently there are no external includes
+    
+    
+    ############
+    # internal #
+    ############
+    
+    include_directories( BEFORE 
+        ${midge_dir}/library/bindings
+        ${midge_dir}/library/core
+        ${midge_dir}/library/initialization
+        ${midge_dir}/library/utility
+    )
+    
+    link_directories(
+        ${midge_dir}/library
+    )
 
-
-endmacro( prepare_midge )
+endmacro( midge_prepare_project )
 
 
 
 macro( midge_build_library )
+    add_subdirectory( ${midge_dir}/library )
 endmacro( midge_build_library )
 
 macro( midge_build_executables )
+    add_subdirectory( ${midge_dir}/main )
+    add_subdirectory( ${midge_dir}/test )
 endmacro( midge_build_executables )
 
 
@@ -95,28 +114,16 @@ endmacro( midge_library )
 macro( midge_executables name )
 
 	foreach( dependency ${midge_${name}_dependencies} )
-		list( APPEND midge_${name}_dependency_names _midge_${dependency} )
+		list( APPEND midge_${name}_dependency_names ${dependency} )
 	endforeach( dependency )
 	
 	foreach( program ${midge_${name}_programs} )
-		add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${midge_${name}_directory}/${program}.cc )
-		target_link_libraries( ${program} _midge ${midge_${name}_dependency_names} ${midge_external_libraries} )
-		install( TARGETS ${program} DESTINATION bin )
+		add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${program}.cc )
+		target_link_libraries( ${program} ${MIDGE_LIBRARY} ${midge_${name}_dependency_names} ${midge_external_libraries} )
+		pbuilder_install_executables( ${program} )
 	endforeach( program )
 	
 endmacro( midge_executables )
 
-####################################
-# macro to define and install json #
-####################################
 
-macro( midge_json name )
-
-	foreach( base ${midge_${name}_files} )
-		list( APPEND midge_${name}_file_files ${CMAKE_CURRENT_SOURCE_DIR}/${midge_${name}_directory}/${base} )
-	endforeach( base )
-	
-	install( FILES ${midge_${name}_file_files} DESTINATION json )
-	
-endmacro( midge_json )
 

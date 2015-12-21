@@ -1,7 +1,7 @@
 #ifndef _midge_processor_hh_
 #define _midge_processor_hh_
 
-#include "../utility/error.hh"
+#include "error.hh"
 
 namespace midge
 {

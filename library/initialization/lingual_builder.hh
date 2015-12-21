@@ -3,9 +3,9 @@
 
 #include <map>
 
-#include "../library/initialization/lingual.hh"
-#include "../library/initialization/value.hh"
-#include "../utility/typelist.hh"
+#include "lingual.hh"
+#include "value.hh"
+#include "typelist.hh"
 using std::map;
 
 namespace midge

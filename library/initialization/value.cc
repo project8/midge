@@ -1,4 +1,4 @@
-#include "../library/initialization/value.hh"
+#include "value.hh"
 
 namespace midge
 {

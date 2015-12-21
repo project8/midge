@@ -2,8 +2,8 @@
 #define midge_thread_hh_
 
 #include <pthread.h>
-#include "../library/utility/mutex.hh"
-#include "../library/utility/typenull.hh"
+#include "mutex.hh"
+#include "typenull.hh"
 
 namespace midge
 {

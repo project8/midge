@@ -1,4 +1,4 @@
-#include "../library/core/producer.hh"
+#include "producer.hh"
 
 namespace midge
 {

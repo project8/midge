@@ -1,4 +1,4 @@
-#include "../library/utility/message.hh"
+#include "message.hh"
 
 #include <iomanip>
 #include <ostream>

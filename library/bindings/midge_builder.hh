@@ -1,8 +1,8 @@
 #ifndef _midge_midge_builder_hh_
 #define _midge_midge_builder_hh_
 
-#include "../core/midge.hh"
-#include "../initialization/object_builder.hh"
+#include "midge.hh"
+#include "object_builder.hh"
 
 namespace midge
 {

@@ -3,9 +3,9 @@
 
 #include <map>
 
-#include "../library/core/coremsg.hh"
-#include "../library/core/node.hh"
-#include "../utility/thread.hh"
+#include "coremsg.hh"
+#include "node.hh"
+#include "thread.hh"
 using std::map;
 
 #include <vector>

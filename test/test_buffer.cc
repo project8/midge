@@ -1,13 +1,12 @@
-#include "gsl/gsl_rng.h"
-#include "gsl/gsl_randist.h"
+#include <random>
 
 #include <cmath>
 #include <unistd.h>
-#include "../utility/error.hh"
-#include "../utility/message.hh"
-#include "../utility/mutex.hh"
-#include "../utility/thread.hh"
-#include "../utility/types.hh"
+#include "error.hh"
+#include "message.hh"
+#include "mutex.hh"
+#include "thread.hh"
+#include "types.hh"
 
 message_declare( testmsg )
 message_define( testmsg, test, test )
@@ -339,14 +338,10 @@ namespace midge
                 writer( buffer< real_t >* p_buffer, const count_t& p_seed ) :
                         f_stream( *(p_buffer->write()) ),
                         f_seed( p_seed ),
-                        f_rng( gsl_rng_alloc( gsl_rng_mt19937 ) )
-                {
-                    gsl_rng_set( f_rng, f_seed );
-                }
+                        f_rng( p_seed )
+                {}
                 ~writer()
-                {
-                    gsl_rng_free( f_rng );
-                }
+                {}
 
                 void execute()
                 {
@@ -355,6 +350,9 @@ namespace midge
                     count_t t_sleep;
                     enum_t t_state;
                     double* t_value;
+                    std::uniform_real_distribution<> t_dist_uniform_0_20( 0., 20. );
+                    std::uniform_real_distribution<> t_dist_uniform_0_10( 0., 10. );
+                    std::uniform_real_distribution<> t_dist_uniform_50k_150k( 50000., 150000. );
                     while( true )
                     {
                         f_stream > t_state;
@@ -365,7 +363,7 @@ namespace midge
                             f_stream < stream::s_stopped;
                             break;
                         }
-                        if( gsl_ran_flat( f_rng, 0., 20. ) < 1. )
+                        if( t_dist_uniform_0_20( f_rng ) < 1. )
                         {
                             testmsg( s_normal ) << "writer <" << f_seed << "> initiates stop" << eom;
                             f_stream < stream::s_stopped;
@@ -374,10 +372,10 @@ namespace midge
                         f_stream < stream::s_started;
 
                         f_stream >> t_value;
-                        (*t_value) = gsl_ran_flat( f_rng, 0., 10. );
+                        (*t_value) = t_dist_uniform_0_10( f_rng );
                         testmsg( s_normal ) << "writer <" << f_seed << "> pushing a value of <" << *t_value << "> at <" << t_count << ">" << eom;
                         f_stream << t_value;
-                        t_sleep = (count_t) (round(gsl_ran_flat( f_rng, 50000., 150000. )));
+                        t_sleep = (count_t) (round(t_dist_uniform_50k_150k( f_rng )));
                         usleep( t_sleep );
                         t_count++;
                     }
@@ -387,7 +385,7 @@ namespace midge
             private:
                 write_stream< real_t >& f_stream;
                 count_t f_seed;
-                gsl_rng* f_rng;
+                std::mt19937 f_rng;
         };
 
         class reader
@@ -396,14 +394,10 @@ namespace midge
                 reader( buffer< real_t >* p_buffer, const count_t& p_seed ) :
                         f_stream( *(p_buffer->read()) ),
                         f_seed( p_seed ),
-                        f_rng( gsl_rng_alloc( gsl_rng_mt19937 ) )
-                {
-                    gsl_rng_set( f_rng, f_seed );
-                }
+                        f_rng( p_seed )
+                {}
                 ~reader()
-                {
-                    gsl_rng_free( f_rng );
-                }
+                {}
 
                 void execute()
                 {
@@ -411,6 +405,8 @@ namespace midge
                     count_t t_sleep;
                     enum_t t_state;
                     const double* t_value;
+                    std::uniform_real_distribution<> t_dist_uniform_0_20( 0., 20. );
+                    std::uniform_real_distribution<> t_dist_uniform_200k_600k( 200000., 600000. );
                     while( true )
                     {
 
@@ -423,7 +419,7 @@ namespace midge
                             break;
                         }
 
-                        if( gsl_ran_flat( f_rng, 0., 20. ) < 1. )
+                        if( t_dist_uniform_0_20( f_rng ) < 1. )
                         {
                             testmsg( s_normal ) << "  reader <" << f_seed << "> initiates stop" << eom;
                             f_stream < stream::s_stopped;
@@ -434,7 +430,7 @@ namespace midge
                         f_stream >> t_value;
                         testmsg( s_normal ) << "  reader <" << f_seed << "> pulling a value of <" << *t_value << "> at <" << t_count << ">" << eom;
                         f_stream << t_value;
-                        t_sleep = (count_t) (round(gsl_ran_flat( f_rng, 200000., 600000. )));
+                        t_sleep = (count_t) (round(t_dist_uniform_200k_600k( f_rng )));
                         usleep( t_sleep );
                         t_count++;
                     }
@@ -444,7 +440,7 @@ namespace midge
             private:
                 read_stream< real_t >& f_stream;
                 count_t f_seed;
-                gsl_rng* f_rng;
+                std::mt19937 f_rng;
         };
 
         real_t* new_real()

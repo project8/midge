@@ -1,4 +1,4 @@
-#include "../library/initialization/lingual.hh"
+#include "lingual.hh"
 
 namespace midge
 {

@@ -3,10 +3,10 @@
 
 #include <sstream>
 
-#include "../library/core/_input.hh"
-#include "../library/core/_stream.hh"
-#include "../library/core/node.hh"
-#include "../utility/typenull.hh"
+#include "_input.hh"
+#include "_stream.hh"
+#include "node.hh"
+#include "typenull.hh"
 using std::stringstream;
 
 #include <vector>

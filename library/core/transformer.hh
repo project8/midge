@@ -3,13 +3,13 @@
 
 #include <vector>
 
-#include "../library/core/_in.hh"
-#include "../library/core/_out.hh"
-#include "../library/core/coremsg.hh"
-#include "../library/core/node.hh"
-#include "../utility/typeat.hh"
-#include "../utility/typechain.hh"
-#include "../utility/typelength.hh"
+#include "_in.hh"
+#include "_out.hh"
+#include "coremsg.hh"
+#include "node.hh"
+#include "typeat.hh"
+#include "typechain.hh"
+#include "typelength.hh"
 using std::vector;
 
 #include <iostream>

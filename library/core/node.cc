@@ -1,6 +1,6 @@
-#include "../library/core/node.hh"
+#include "node.hh"
 
-#include "../utility/error.hh"
+#include "error.hh"
 
 namespace midge
 {

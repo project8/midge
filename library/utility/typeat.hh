@@ -1,8 +1,8 @@
 #ifndef _midge_typeat_hh_
 #define _midge_typeat_hh_
 
-#include "../library/utility/typenode.hh"
-#include "../library/utility/typenull.hh"
+#include "typenode.hh"
+#include "typenull.hh"
 
 namespace midge
 {

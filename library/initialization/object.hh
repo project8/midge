@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "../library/initialization/value.hh"
+#include "value.hh"
 using std::pair;
 
 #include <map>

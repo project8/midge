@@ -1,7 +1,7 @@
 #ifndef _midge_lingual_hh_
 #define _midge_lingual_hh_
 
-#include "../library/initialization/value.hh"
+#include "value.hh"
 
 namespace midge
 {

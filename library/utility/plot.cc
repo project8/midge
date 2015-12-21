@@ -1,9 +1,9 @@
-#include "../library/utility/plot.hh"
+#include "plot.hh"
 
 #include <limits>
 
-#include "../library/utility/error.hh"
-#include "../library/utility/message.hh"
+#include "error.hh"
+#include "message.hh"
 using std::numeric_limits;
 
 namespace midge

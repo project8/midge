@@ -3,8 +3,8 @@
 
 #include <map>
 
-#include "../library/core/input.hh"
-#include "../library/core/output.hh"
+#include "input.hh"
+#include "output.hh"
 using std::map;
 
 #include <string>

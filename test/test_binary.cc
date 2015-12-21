@@ -1,7 +1,7 @@
 #include <fstream>
 
-#include "../utility/binary.hh"
-#include "../utility/message.hh"
+#include "binary.hh"
+#include "message.hh"
 using std::fstream;
 
 #include <string>

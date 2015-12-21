@@ -1,13 +1,12 @@
-#include "../library/core/midge.hh"
+#include "midge.hh"
 
 #include "input.hh"
-#include "random.hh"
 
 #include <unistd.h>
-#include "../library/core/coremsg.hh"
-#include "../library/core/input.hh"
-#include "../library/core/output.hh"
-#include "../utility/error.hh"
+#include "coremsg.hh"
+#include "input.hh"
+#include "output.hh"
+#include "error.hh"
 
 namespace midge
 {

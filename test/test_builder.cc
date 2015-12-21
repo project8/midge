@@ -1,6 +1,6 @@
-#include "../initialization/compiler.hh"
-#include "../initialization/lexer.hh"
-#include "../initialization/object_builder.hh"
+#include "compiler.hh"
+#include "lexer.hh"
+#include "object_builder.hh"
 using namespace midge;
 
 #include <iostream>

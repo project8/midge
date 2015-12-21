@@ -1,4 +1,4 @@
-#include "../library/utility/error.hh"
+#include "error.hh"
 
 #include <iostream>
 using std::cout;

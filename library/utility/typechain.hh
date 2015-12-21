@@ -1,10 +1,10 @@
 #ifndef _midge_typechain_hh_
 #define _midge_typechain_hh_
 
-#include "../library/utility/typebind.hh"
-#include "../library/utility/typeint.hh"
-#include "../library/utility/typenode.hh"
-#include "../library/utility/typenull.hh"
+#include "typebind.hh"
+#include "typeint.hh"
+#include "typenode.hh"
+#include "typenull.hh"
 
 namespace midge
 {

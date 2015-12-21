@@ -1,11 +1,10 @@
-#include "gsl/gsl_rng.h"
-#include "gsl/gsl_randist.h"
+#include <random>
 
 #include <cmath>
 #include <unistd.h>
-#include "../utility/message.hh"
-#include "../utility/thread.hh"
-#include "../utility/types.hh"
+#include "message.hh"
+#include "thread.hh"
+#include "types.hh"
 
 message_declare( sleepmsg )
 message_define( sleepmsg, sleep, sleep )
@@ -19,22 +18,18 @@ namespace midge
             public:
                 sleeper( const count_t& p_seed ) :
                         f_seed( p_seed ),
-                        f_rng( NULL )
-                {
-                    f_rng = gsl_rng_alloc( gsl_rng_mt19937 );
-                    gsl_rng_set( f_rng, f_seed );
-                }
+                        f_rng( p_seed )
+                {}
                 ~sleeper()
-                {
-                    gsl_rng_free( f_rng );
-                }
+                {}
 
                 void start()
                 {
                     count_t t_time;
+                    std::uniform_real_distribution<> t_dist_uniform_250k_750k( 250000., 750000. );
                     while( true )
                     {
-                        t_time = (useconds_t) (round( gsl_ran_flat( f_rng, 250000., 750000. ) ));
+                        t_time = (useconds_t) (round( t_dist_uniform_250k_750k( f_rng ) ));
                         sleepmsg( s_normal ) << "<" << f_seed << "> says: yawn! just let me sleep for <" << t_time << "> more microseconds..." << eom;
                         usleep( t_time );
                     }
@@ -49,7 +44,7 @@ namespace midge
 
             private:
                 count_t f_seed;
-                gsl_rng* f_rng;
+                std::mt19937 f_rng;
 
         };
     }

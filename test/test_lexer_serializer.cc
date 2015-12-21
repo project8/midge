@@ -1,9 +1,8 @@
-#include "../initialization/arguments.hh"
-#include "../initialization/compiler.hh"
-#include "../initialization/evaluator.hh"
-#include "../initialization/lexer.hh"
-#include "../initialization/reporter.hh"
-#include "../utility/message.hh"
+#include "arguments.hh"
+#include "evaluator.hh"
+#include "lexer.hh"
+#include "serializer.hh"
+#include "message.hh"
 using namespace midge;
 
 #include <iostream>
@@ -14,6 +13,7 @@ int main( int p_count, char** p_values )
 {
     arguments t_arguments;
     t_arguments.required( "input" );
+    t_arguments.required( "output" );
 
     try
     {
@@ -28,10 +28,10 @@ int main( int p_count, char** p_values )
 
     lexer t_lexer;
     evaluator t_evaluator( t_arguments );
-    compiler t_compiler;
+    serializer t_serializer( t_arguments.value< string >( "output" ) );
 
     t_evaluator.insert_after( &t_lexer );
-    t_compiler.insert_after( &t_evaluator );
+    t_serializer.insert_after( &t_evaluator );
 
     try
     {
@@ -54,8 +54,6 @@ int main( int p_count, char** p_values )
         msg_error( msg, "  " << t_error.what() << eom );
         return -1;
     }
-
-    reporter()( t_compiler() );
 
     return 0;
 }

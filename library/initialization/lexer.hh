@@ -3,7 +3,7 @@
 
 #include <stack>
 
-#include "../library/initialization/processor.hh"
+#include "processor.hh"
 using std::stack;
 
 #include <string>

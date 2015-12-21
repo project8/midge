@@ -2,10 +2,10 @@
 #define _midge_pointer_hh_
 
 #include <cstddef>
-#include "../library/utility/error.hh"
-#include "../library/utility/mutex.hh"
-#include "../library/utility/pool.hh"
-#include "../library/utility/types.hh"
+#include "error.hh"
+#include "mutex.hh"
+#include "pool.hh"
+#include "types.hh"
 
 namespace midge
 {

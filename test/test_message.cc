@@ -1,4 +1,4 @@
-#include "../utility/message.hh"
+#include "message.hh"
 
 message_declare( testmsg );
 message_define( testmsg, test, test )

@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "../library/utility/typelist.hh"
+#include "typelist.hh"
 using std::string;
 
 namespace midge

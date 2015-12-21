@@ -1,4 +1,4 @@
-#include "../library/bindings/midge_builder.hh"
+#include "midge_builder.hh"
 
 namespace midge
 {

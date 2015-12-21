@@ -1,5 +1,5 @@
-#include "../utility/typeat.hh"
-#include "../utility/typelist.hh"
+#include "typeat.hh"
+#include "typelist.hh"
 using namespace midge;
 
 #include <iostream>

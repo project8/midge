@@ -1,5 +1,5 @@
-#include "../utility/typelength.hh"
-#include "../utility/typelist.hh"
+#include "typelength.hh"
+#include "typelist.hh"
 using namespace midge;
 
 #include <iostream>

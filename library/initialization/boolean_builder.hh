@@ -3,9 +3,9 @@
 
 #include <map>
 
-#include "../library/initialization/boolean.hh"
-#include "../library/initialization/value.hh"
-#include "../utility/typelist.hh"
+#include "boolean.hh"
+#include "value.hh"
+#include "typelist.hh"
 using std::map;
 
 namespace midge

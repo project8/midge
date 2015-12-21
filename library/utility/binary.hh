@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "../library/utility/types.hh"
+#include "types.hh"
 using std::fstream;
 
 #include <string>

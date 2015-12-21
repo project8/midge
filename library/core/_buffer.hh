@@ -1,9 +1,11 @@
 #ifndef _midge__buffer_hh_
 #define _midge__buffer_hh_
 
-#include "../library/core/_stream.hh"
-#include "../utility/error.hh"
-#include "../utility/macros.hh"
+#include "_stream.hh"
+#include "error.hh"
+#include "macros.hh"
+#include "coremsg.hh"
+#include "mutex.hh"
 
 namespace midge
 {

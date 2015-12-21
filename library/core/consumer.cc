@@ -1,4 +1,4 @@
-#include "../library/core/consumer.hh"
+#include "consumer.hh"
 
 namespace midge
 {

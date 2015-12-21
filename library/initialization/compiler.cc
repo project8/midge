@@ -1,12 +1,12 @@
 #include "object.hh"
-#include "../library/initialization/compiler.hh"
+#include "compiler.hh"
 
-#include "../library/initialization/array.hh"
-#include "../library/initialization/boolean.hh"
-#include "../library/initialization/lingual.hh"
-#include "../library/initialization/null.hh"
-#include "../library/initialization/numerical.hh"
-#include "../library/initialization/object.hh"
+#include "array.hh"
+#include "boolean.hh"
+#include "lingual.hh"
+#include "null.hh"
+#include "numerical.hh"
+#include "object.hh"
 
 namespace midge
 {

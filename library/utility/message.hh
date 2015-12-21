@@ -5,8 +5,8 @@
 
 #include <set>
 
-#include "../library/utility/mutex.hh"
-#include "../library/utility/types.hh"
+#include "mutex.hh"
+#include "types.hh"
 using std::set;
 
 #include <vector>
@@ -194,7 +194,7 @@ namespace midge
 
 }
 
-#include "../library/utility/singleton.hh"
+#include "singleton.hh"
 
 namespace midge
 {
@@ -251,7 +251,7 @@ namespace midge
 
 }
 
-#include "../library/utility/initializer.hh"
+#include "initializer.hh"
 
 #define message_declare( x_name )\
 namespace midge\

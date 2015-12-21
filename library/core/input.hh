@@ -1,8 +1,8 @@
 #ifndef _midge_input_hh_
 #define _midge_input_hh_
 
-#include "../library/core/stream.hh"
-#include "../utility/macros.hh"
+#include "stream.hh"
+#include "macros.hh"
 
 namespace midge
 {

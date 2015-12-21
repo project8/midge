@@ -3,8 +3,8 @@
 
 #include <stack>
 
-#include "../library/initialization/processor.hh"
-#include "../library/initialization/value.hh"
+#include "processor.hh"
+#include "value.hh"
 using std::stack;
 
 #include <fstream>

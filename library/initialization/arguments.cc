@@ -1,4 +1,4 @@
-#include "../library/initialization/arguments.hh"
+#include "arguments.hh"
 
 namespace midge
 {

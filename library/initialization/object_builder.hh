@@ -3,13 +3,13 @@
 
 #include <map>
 
-#include "../library/initialization/boolean_builder.hh"
-#include "../library/initialization/lingual_builder.hh"
-#include "../library/initialization/null_builder.hh"
-#include "../library/initialization/numerical_builder.hh"
-#include "../library/initialization/object.hh"
-#include "../library/initialization/value.hh"
-#include "../utility/typelist.hh"
+#include "boolean_builder.hh"
+#include "lingual_builder.hh"
+#include "null_builder.hh"
+#include "numerical_builder.hh"
+#include "object.hh"
+#include "value.hh"
+#include "typelist.hh"
 using std::map;
 
 namespace midge

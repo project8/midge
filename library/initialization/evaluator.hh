@@ -1,8 +1,8 @@
 #ifndef _midge_evaluator_hh_
 #define _midge_evaluator_hh_
 
-#include "../library/initialization/arguments.hh"
-#include "../library/initialization/processor.hh"
+#include "arguments.hh"
+#include "processor.hh"
 
 namespace midge
 {

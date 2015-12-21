@@ -1,8 +1,8 @@
 #ifndef _midge_typelist_hh_
 #define _midge_typelist_hh_
 
-#include "../library/utility/typenode.hh"
-#include "../library/utility/typenull.hh"
+#include "typenode.hh"
+#include "typenull.hh"
 
 #define typelist_0() ::midge::_
 #define typelist_1(one) ::midge::typenode< one, ::midge::_ >

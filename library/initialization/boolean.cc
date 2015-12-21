@@ -1,4 +1,4 @@
-#include "../library/initialization/boolean.hh"
+#include "boolean.hh"
 
 #include <sstream>
 using std::stringstream;

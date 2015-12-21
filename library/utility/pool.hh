@@ -3,8 +3,8 @@
 
 #include <stack>
 
-#include "../library/utility/mutex.hh"
-#include "../library/utility/pointer.hh"
+#include "mutex.hh"
+#include "pointer.hh"
 using std::stack;
 
 namespace midge

@@ -1,4 +1,4 @@
-#include "../library/core/stream.hh"
+#include "stream.hh"
 
 namespace midge
 {

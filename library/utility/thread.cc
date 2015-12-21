@@ -1,4 +1,4 @@
-#include "../library/utility/thread.hh"
+#include "thread.hh"
 
 namespace midge
 {

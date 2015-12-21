@@ -1,8 +1,8 @@
 #ifndef midge_output_hh_
 #define midge_output_hh_
 
-#include "../library/core/stream.hh"
-#include "../utility/macros.hh"
+#include "stream.hh"
+#include "macros.hh"
 
 namespace midge
 {

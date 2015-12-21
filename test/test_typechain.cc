@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "../utility/typechain.hh"
-#include "../utility/typelist.hh"
-#include "../utility/types.hh"
+#include "typechain.hh"
+#include "typelist.hh"
+#include "types.hh"
 using std::cout;
 using std::endl;
 

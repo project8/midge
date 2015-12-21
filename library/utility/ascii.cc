@@ -1,4 +1,4 @@
-#include "../library/utility/ascii.hh"
+#include "ascii.hh"
 
 namespace midge
 {

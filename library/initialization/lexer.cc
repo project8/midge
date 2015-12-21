@@ -1,4 +1,4 @@
-#include "../library/initialization/lexer.hh"
+#include "lexer.hh"
 
 #define _midge_debug_lexer_ 0
 

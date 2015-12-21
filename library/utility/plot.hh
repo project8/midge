@@ -12,9 +12,9 @@
 
 #include <stack>
 
-#include "../library/utility/mutex.hh"
-#include "../library/utility/singleton.hh"
-#include "../library/utility/types.hh"
+#include "mutex.hh"
+#include "singleton.hh"
+#include "types.hh"
 using std::stack;
 
 #include <vector>

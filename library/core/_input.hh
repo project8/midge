@@ -1,9 +1,9 @@
 #ifndef _midge__input_hh_
 #define _midge__input_hh_
 
-#include "../library/core/_stream.hh"
-#include "../library/core/input.hh"
-#include "../utility/error.hh"
+#include "_stream.hh"
+#include "input.hh"
+#include "error.hh"
 
 namespace midge
 {

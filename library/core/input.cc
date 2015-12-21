@@ -1,4 +1,4 @@
-#include "../library/core/input.hh"
+#include "input.hh"
 
 namespace midge
 {

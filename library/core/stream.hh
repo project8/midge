@@ -1,7 +1,7 @@
 #ifndef _midge_stream_hh_
 #define _midge_stream_hh_
 
-#include "../utility/types.hh"
+#include "types.hh"
 
 namespace midge
 {
