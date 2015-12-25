@@ -113,13 +113,9 @@ endmacro( midge_library )
 
 macro( midge_executables name )
 
-	foreach( dependency ${midge_${name}_dependencies} )
-		list( APPEND midge_${name}_dependency_names ${dependency} )
-	endforeach( dependency )
-	
 	foreach( program ${midge_${name}_programs} )
 		add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${program}.cc )
-		target_link_libraries( ${program} ${MIDGE_LIBRARY} ${midge_${name}_dependency_names} ${midge_external_libraries} )
+		target_link_libraries( ${program} ${midge_library} ${midge_${name}_dependencies} ${midge_external_libraries} )
 		pbuilder_install_executables( ${program} )
 	endforeach( program )
 	
