@@ -137,7 +137,7 @@ set( midge_sources ${midge_sources}
 set( midge_library "_${midge_project_name}" )
 
 add_library( ${midge_library} ${midge_sources} )
-target_link_libraries( ${midge_library} ${midge_external_libraries} )
+target_link_libraries( ${midge_library} ${EXTERNAL_LIBRARIES} )
 
 pbuilder_install_headers( ${midge_headers} )
 

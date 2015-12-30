@@ -41,9 +41,10 @@ macro( midge_prepare_project )
     
     # midge
     
-    set( midge_external_libraries 
-        ${CMAKE_THREAD_LIBS_INIT}
-    )
+    #set( midge_external_libraries 
+    #    ${CMAKE_THREAD_LIBS_INIT}
+    #)
+    pbuilder_add_ext_libraries( ${CMAKE_THREAD_LIBS_INIT} )
     
     #link_directories( BEFORE ${midge_external_directories} ) # currently there are no external directories
     #include_directories( BEFORE ${midge_external_includes} ) # currently there are no external includes
@@ -99,7 +100,7 @@ macro( midge_library name )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/${midge_${name}_directory} )
 	
 	add_library( _midge_${name} SHARED ${midge_${name}_header_files} ${midge_${name}_source_files} )
-	target_link_libraries( _midge_${name} ${midge_${name}_dependency_names} ${midge_external_libraries} )
+	target_link_libraries( _midge_${name} ${midge_${name}_dependency_names} ${EXTERNAL_LIBRARIES} )
 	
 	install( FILES ${midge_${name}_header_files} DESTINATION include )
 	
@@ -115,7 +116,7 @@ macro( midge_executables name )
 
 	foreach( program ${midge_${name}_programs} )
 		add_executable( ${program} ${CMAKE_CURRENT_SOURCE_DIR}/${program}.cc )
-		target_link_libraries( ${program} ${midge_library} ${midge_${name}_dependencies} ${midge_external_libraries} )
+		target_link_libraries( ${program} ${midge_library} ${midge_${name}_dependencies} ${EXTERNAL_LIBRARIES} )
 		pbuilder_install_executables( ${program} )
 	endforeach( program )
 	
