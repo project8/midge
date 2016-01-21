@@ -5,8 +5,9 @@
 if( Midge_ENABLE_EXECUTABLES )
 
     set( lib_dependencies 
-        Midge
+        ${Midge_EXE_LIBRARIES}
     )
+    message(STATUS "midge lib dep: ${lib_dependencies}" )
     
     set( programs
         midge

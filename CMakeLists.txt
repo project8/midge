@@ -74,11 +74,6 @@ pbuilder_add_submodule( Scarab scarab/library )
 # Build Midge #
 ###############
 
-macro( midge_build_executables )
-    message(STATUS "midge source dir (from build_executables called from ${CMAKE_CURRENT_LIST_DIR}): ${Midge_SOURCE_DIR}")
-    add_subdirectory( ${Midge_SOURCE_DIR}/main )
-endmacro( midge_build_executables )
-
 include_directories( BEFORE 
     ${PROJECT_SOURCE_DIR}/library/bindings
     ${PROJECT_SOURCE_DIR}/library/core
