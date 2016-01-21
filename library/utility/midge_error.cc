@@ -1,6 +1,6 @@
-#include "error.hh"
-
 #include <iostream>
+
+#include "midge_error.hh"
 using std::cout;
 using std::endl;
 

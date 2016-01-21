@@ -1,6 +1,6 @@
 #include "object.hh"
 
-#include "error.hh"
+#include "midge_error.hh"
 
 namespace midge
 {

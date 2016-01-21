@@ -2,7 +2,8 @@
 
 #include <cmath>
 #include <unistd.h>
-#include "error.hh"
+
+#include "midge_error.hh"
 #include "message.hh"
 #include "mutex.hh"
 #include "thread.hh"

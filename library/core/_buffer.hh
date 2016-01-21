@@ -1,8 +1,8 @@
 #ifndef _midge__buffer_hh_
 #define _midge__buffer_hh_
 
+#include "midge_error.hh"
 #include "_stream.hh"
-#include "error.hh"
 #include "macros.hh"
 #include "coremsg.hh"
 #include "mutex.hh"

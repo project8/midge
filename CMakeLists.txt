@@ -15,47 +15,29 @@ include( PackageBuilder )
 pbuilder_prepare_project()
 
 
-##################
-# mantis options #
-##################
+#################
+# midge options #
+#################
 
 # require C++11
 set_option( USE_CPP11 TRUE )
 
+
 option( MIDGE_ENABLE_DEBUG_MESSAGES "enable debug messages" FALSE )
-if( MIDGE_ENABLE_DEBUG_MESSAGES )
+string( TOLOWER ${CMAKE_BUILD_TYPE} LC_BUILD_TYPE )
+if( LC_BUILD_TYPE STREQUAL "debug" )
+    set( MIDGE_ENABLE_DEBUG_MESSAGES FALSE CACHE INTERNAL "" FORCE )
     add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
-else()
+else( LC_BUILD_TYPE STREQUAL "debug" )
+    set( MIDGE_ENABLE_DEBUG_MESSAGES TRUE CACHE INTERNAL "" FORCE )
     remove_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
-endif()
-    
+endif( LC_BUILD_TYPE STREQUAL "debug" )
 
-# Option to build the client library and executables
-option( Mantis_BUILD_CLIENT "Enable building of the client library and applications" TRUE  )
+  
 
-# Option to build the server library and executables, and options to build different servers
-option( Mantis_BUILD_SERVER "Enable building of the server library and applications" TRUE )
-
-# add an option to perform iterator time profiling
-option( Mantis_ENABLE_ITERATOR_TIMING "Flag to enable iterator time profiling" FALSE )
-if( Mantis_ENABLE_ITERATOR_TIMING )
-    add_definitions( -DENABLE_ITERATOR_TIMING )
-else( Mantis_ENABLE_ITERATOR_TIMING )
-    remove_definitions( -DENABLE_ITERATOR_TIMING )
-endif( Mantis_ENABLE_ITERATOR_TIMING )
-
-# add an option to build the validation tests
-if (Mantis_ENABLE_TESTING)
-    enable_testing ()
-endif (Mantis_ENABLE_TESTING)
-
-# add an option to build docs
-option( Mantis_BUILD_DOCS "Enable make targets for both doxygen and sphinx (requires Doxygen, Sphinx, and Breathe)" FALSE )
-
-
-#######################
-# mantis dependencies #
-#######################
+######################
+# midge dependencies #
+######################
 
 ######
 # Git
@@ -101,18 +83,20 @@ pbuilder_add_submodule( Scarab scarab/library )
 ###############
 
 macro( midge_build_executables )
-    add_subdirectory( ${midge_dir}/main )
-    add_subdirectory( ${midge_dir}/test )
+    message(STATUS "midge source dir (from build_executables called from ${CMAKE_CURRENT_LIST_DIR}): ${Midge_SOURCE_DIR}")
+    add_subdirectory( ${Midge_SOURCE_DIR}/main )
 endmacro( midge_build_executables )
 
 include_directories( BEFORE 
     ${PROJECT_SOURCE_DIR}/library/bindings
     ${PROJECT_SOURCE_DIR}/library/core
     ${PROJECT_SOURCE_DIR}/library/initialization
-    ${PROJECT_BINARY_DIR}/library/utility
+    ${PROJECT_SOURCE_DIR}/library/utility
 )
 
 add_subdirectory( library )
+
+add_subdirectory( test )
 
 
 pbuilder_variables_for_parent()

@@ -13,7 +13,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/macros.hh
 	${util_dir}/initializer.hh
 	${util_dir}/singleton.hh
-	${util_dir}/error.hh
+	${util_dir}/midge_error.hh
 	${util_dir}/message.hh
 	${util_dir}/ascii.hh
 	${util_dir}/binary.hh
@@ -31,7 +31,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/typechain.hh
 )
 set( midge_sources ${midge_sources}
-	${util_dir}/error.cc
+	${util_dir}/midge_error.cc
 	${util_dir}/message.cc
 	${util_dir}/ascii.cc
 	${util_dir}/binary.cc
@@ -136,5 +136,5 @@ set( midge_sources ${midge_sources}
 # library #
 ###########
 
-pbuilder_library( midge midge_sources "" )
+pbuilder_library( Midge midge_sources "" )
 pbuilder_install_headers( ${midge_headers} )

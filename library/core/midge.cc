@@ -3,10 +3,11 @@
 #include "input.hh"
 
 #include <unistd.h>
+
+#include "midge_error.hh"
 #include "coremsg.hh"
 #include "input.hh"
 #include "output.hh"
-#include "error.hh"
 
 namespace midge
 {

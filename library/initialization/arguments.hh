@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "error.hh"
+#include "midge_error.hh"
 using std::string;
 
 #include <sstream>

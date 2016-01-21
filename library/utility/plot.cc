@@ -2,8 +2,8 @@
 
 #include <limits>
 
-#include "error.hh"
 #include "message.hh"
+#include "midge_error.hh"
 using std::numeric_limits;
 
 namespace midge
