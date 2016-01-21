@@ -1,8 +1,10 @@
 # Include the build script
-include( ${CMAKE_CURRENT_LIST_DIR}/PackageBuilder.cmake )
-
 # Main directory for midge
 set( midge_dir ${CMAKE_CURRENT_LIST_DIR}/.. )
+
+list( APPEND CMAKE_MODULE_PATH ${midge_dir}/scarab/cmake )
+
+include( PackageBuilder )
 
 # module settings
 set( MODULE_VERSION_MAJOR 0 )

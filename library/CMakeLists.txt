@@ -1,3 +1,5 @@
+# CMakeLists.txt for midge/library
+
 set( core_dir core )
 set( bind_dir bindings )
 set( init_dir initialization )
@@ -134,15 +136,5 @@ set( midge_sources ${midge_sources}
 # library #
 ###########
 
-set( midge_library "_${midge_project_name}" )
-
-add_library( ${midge_library} ${midge_sources} )
-target_link_libraries( ${midge_library} ${EXTERNAL_LIBRARIES} )
-
+pbuilder_library( midge midge_sources "" )
 pbuilder_install_headers( ${midge_headers} )
-
-pbuilder_install_libraries( ${midge_library} )
-
-# bump the midge_library variable up to parent-scope
-set( midge_library ${midge_library} PARENT_SCOPE )
-
