@@ -1,39 +1,29 @@
 #ifndef _midge_message_hh_
 #define _midge_message_hh_
 
-#include <pthread.h>
-
-#include <set>
-
-#include "mutex.hh"
 #include "types.hh"
-using std::set;
-
-#include <vector>
-using std::vector;
-
-#include <map>
-using std::map;
-
-#include <utility>
-using std::pair;
-
-#include <string>
-using std::string;
-
-#include <sstream>
-using std::stringstream;
-
-#include <ostream>
-using std::ostream;
 
 #include <iomanip>
-using std::setprecision;
-using std::fixed;
+#include <map>
+#include <ostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <thread>
+#include <vector>
 
 namespace midge
 {
-    using scarab::mutex;
+    using std::set;
+    using std::vector;
+    using std::map;
+    using std::ostream;
+    using std::pair;
+    using std::string;
+    using std::stringstream;
+    using std::setprecision;
+    using std::fixed;
 
     class message_line
     {
@@ -146,9 +136,9 @@ namespace midge
 
             static void acquire();
             static void release();
-            static mutex f_outer;
-            static mutex f_inner;
-            static set< pthread_t > f_threads;
+            static std::mutex f_outer;
+            static std::mutex f_inner;
+            static set< std::thread::id > f_threads;
     };
 
     inline message& message::operator()( const message_severity& aSeverity )

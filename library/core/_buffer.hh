@@ -5,11 +5,11 @@
 #include "_stream.hh"
 #include "macros.hh"
 #include "coremsg.hh"
-#include "mutex.hh"
+
+#include <mutex>
 
 namespace midge
 {
-    using scarab::mutex;
 
     template< class x_type >
     class _buffer
@@ -119,7 +119,7 @@ namespace midge
             {
                 count_t t_new_read_index = f_read_count;
                 count_t t_new_read_count = f_read_count + 1;
-                mutex** t_new_read_mutexes = new mutex*[ t_new_read_count ];
+                std::mutex** t_new_read_mutexes = new std::mutex*[ t_new_read_count ];
                 _read_stream** t_new_read_streams = new _read_stream*[ t_new_read_count ];
 
                 for( count_t t_read_index = 0; t_read_index < f_read_count; t_read_index++ )
@@ -132,7 +132,7 @@ namespace midge
 
                 delete[] f_read_mutexes;
                 f_read_mutexes = t_new_read_mutexes;
-                f_read_mutexes[ t_new_read_index ] = new mutex[ f_length ];
+                f_read_mutexes[ t_new_read_index ] = new std::mutex[ f_length ];
                 f_read_mutexes[ t_new_read_index ][ 0 ].lock();
                 f_read_mutexes[ t_new_read_index ][ f_length - 1 ].lock();
 
@@ -211,7 +211,7 @@ namespace midge
             };
 
             enum_t f_write_command;
-            mutex f_write_mutex;
+            std::mutex f_write_mutex;
             _write_stream* f_write_stream;
 
         protected:
@@ -268,7 +268,7 @@ namespace midge
             count_t f_read_count;
             x_type* f_read_data;
             enum_t* f_read_command;
-            mutex** f_read_mutexes;
+            std::mutex** f_read_mutexes;
             _read_stream** f_read_streams;
 
     };

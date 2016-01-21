@@ -56,19 +56,11 @@ endif( GIT_FOUND )
 ########
 
 # Boost (1.46 required for filesystem version 3)
-#find_package( Boost 1.46.0 REQUIRED COMPONENTS atomic filesystem thread date_time )
+#find_package( Boost 1.46.0 REQUIRED COMPONENTS filesystem date_time )
 # make sure dynamic linking is assumed for all boost libraries
 #add_definitions( -DBOOST_ALL_DYN_LINK )
 #include_directories( ${Boost_INCLUDE_DIRS} )
 #pbuilder_add_ext_libraries( ${Boost_LIBRARIES} )
-
-
-##########
-# Threads
-##########
-
-find_package( Threads )
-pbuilder_add_ext_libraries( ${CMAKE_THREAD_LIBS_INIT} )
 
 
 ########

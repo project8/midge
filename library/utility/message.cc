@@ -2,8 +2,6 @@
 
 #include <iomanip>
 #include <ostream>
-using std::cout;
-using std::endl;
 
 #include <cstdio>
 #include <cstdlib>
@@ -11,9 +9,12 @@ using std::endl;
 
 namespace midge
 {
-    mutex message::f_outer;
-    mutex message::f_inner;
-    set< pthread_t > message::f_threads = set< pthread_t >();
+    using std::cout;
+    using std::endl;
+
+    std::mutex message::f_outer;
+    std::mutex message::f_inner;
+    set< std::thread::id > message::f_threads = set< std::thread::id >();
 
     message::message( const string& aKey, const string& aDescription, const string& aPrefix, const string& aSuffix ) :
             f_key( aKey ),
@@ -216,9 +217,9 @@ namespace midge
     {
         bool_t t_flag;
         f_outer.lock();
-        if( f_threads.find( pthread_self() ) == f_threads.end() )
+        if( f_threads.find( std::this_thread::get_id() ) == f_threads.end() )
         {
-            f_threads.insert( pthread_self() );
+            f_threads.insert( std::this_thread::get_id() );
             t_flag = true;
         }
         else
@@ -238,13 +239,13 @@ namespace midge
     {
         bool_t t_flag;
         f_outer.lock();
-        if( f_threads.find( pthread_self() ) == f_threads.end() )
+        if( f_threads.find( std::this_thread::get_id() ) == f_threads.end() )
         {
             t_flag = false;
         }
         else
         {
-            f_threads.erase( pthread_self() );
+            f_threads.erase( std::this_thread::get_id() );
             t_flag = true;
         }
         f_outer.unlock();

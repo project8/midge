@@ -1,13 +1,14 @@
 #ifndef midge_thread_hh_
 #define midge_thread_hh_
 
-#include <pthread.h>
-#include "mutex.hh"
 #include "typenull.hh"
+
+#include <atomic>
+#include <thread>
+#include <mutex>
 
 namespace midge
 {
-    using scarab::mutex;
 
     class thread
     {
@@ -90,13 +91,13 @@ namespace midge
             template< class x_type, class x_r, class x_a1 = _, class x_a2 = _, class x_a3 = _ >
             class _callable;
 
-            static void* thread_start( void* voidthread );
-            static void thread_stop( void* voidthread );
+            void thread_start();
+            void thread_stop();
 
-            pthread_t f_thread;
-            mutex f_thread_mutex;
-            state f_state;
-            mutex f_state_mutex;
+            std::thread f_thread;
+            std::mutex f_thread_mutex;
+            std::atomic< state > f_state;
+            std::atomic< bool > f_canceled;
             callable* f_start;
             callable* f_stop;
     };
