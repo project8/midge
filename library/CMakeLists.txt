@@ -12,13 +12,11 @@ set( util_dir utility )
 set( midge_headers ${midge_headers}
 	${util_dir}/macros.hh
 	${util_dir}/initializer.hh
-	${util_dir}/singleton.hh
 	${util_dir}/midge_error.hh
 	${util_dir}/message.hh
 	${util_dir}/ascii.hh
 	${util_dir}/binary.hh
 	#${util_dir}/plot.hh
-	${util_dir}/mutex.hh
 	${util_dir}/thread.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh
@@ -36,7 +34,6 @@ set( midge_sources ${midge_sources}
 	${util_dir}/ascii.cc
 	${util_dir}/binary.cc
 	#${util_dir}/plot.cc
-	${util_dir}/mutex.cc
 	${util_dir}/thread.cc
 )
 

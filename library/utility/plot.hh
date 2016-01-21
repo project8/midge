@@ -28,12 +28,14 @@ using std::pair;
 
 namespace midge
 {
+    using scarab::mutex;
 
     class plot :
-        public singleton< plot >
+        public scarab::singleton< plot >
     {
         public:
-            friend class singleton< plot > ;
+            friend class scarab::singleton< plot >;
+            friend class scarab::destroyer< plot >;
 
         public:
             typedef vector< real_t > values_t;

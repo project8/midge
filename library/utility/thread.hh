@@ -7,6 +7,7 @@
 
 namespace midge
 {
+    using scarab::mutex;
 
     class thread
     {

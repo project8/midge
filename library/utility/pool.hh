@@ -9,6 +9,7 @@ using std::stack;
 
 namespace midge
 {
+    using scarab::mutex;
 
     template< class x_type >
     class pool

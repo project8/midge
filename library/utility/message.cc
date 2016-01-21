@@ -11,8 +11,8 @@ using std::endl;
 
 namespace midge
 {
-    mutex message::f_outer = mutex();
-    mutex message::f_inner = mutex();
+    mutex message::f_outer;
+    mutex message::f_inner;
     set< pthread_t > message::f_threads = set< pthread_t >();
 
     message::message( const string& aKey, const string& aDescription, const string& aPrefix, const string& aSuffix ) :

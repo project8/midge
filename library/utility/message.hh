@@ -33,6 +33,7 @@ using std::fixed;
 
 namespace midge
 {
+    using scarab::mutex;
 
     class message_line
     {
@@ -200,11 +201,12 @@ namespace midge
 {
 
     class messages :
-        public singleton< messages >
+        public scarab::singleton< messages >
     {
 
         public:
-            friend class singleton< messages > ;
+            friend class scarab::singleton< messages >;
+            friend class scarab::destroyer< messages >;
 
         private:
             messages();
