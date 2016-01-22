@@ -1,7 +1,9 @@
 #include "numerical.hh"
 
 #include <sstream>
+
 using std::stringstream;
+using std::string;
 
 namespace midge
 {

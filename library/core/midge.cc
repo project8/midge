@@ -9,6 +9,8 @@
 #include "input.hh"
 #include "output.hh"
 
+using std::string;
+
 namespace midge
 {
 

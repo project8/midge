@@ -1,6 +1,8 @@
 #include "boolean.hh"
 
 #include <sstream>
+
+using std::string;
 using std::stringstream;
 
 namespace midge

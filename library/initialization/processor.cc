@@ -1,5 +1,7 @@
 #include "processor.hh"
 
+using std::string;
+
 namespace midge
 {
 

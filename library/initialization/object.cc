@@ -2,6 +2,9 @@
 
 #include "midge_error.hh"
 
+using std::pair;
+using std::string;
+
 namespace midge
 {
 

@@ -5,10 +5,8 @@
 
 #include "input.hh"
 #include "output.hh"
-using std::map;
 
 #include <string>
-using std::string;
 
 namespace midge
 {
@@ -28,22 +26,22 @@ namespace midge
             virtual void finalize() = 0;
 
         public:
-            input* in( const string& p_label );
-            output* out( const string& p_label );
+            input* in( const std::string& p_label );
+            output* out( const std::string& p_label );
 
         protected:
-            void in( input*, const string& p_label );
-            void out( output*, const string& p_label );
+            void in( input*, const std::string& p_label );
+            void out( output*, const std::string& p_label );
 
         private:
-            typedef map< string, input* > input_map;
+            typedef std::map< std::string, input* > input_map;
             typedef input_map::iterator input_it;
             typedef input_map::const_iterator input_cit;
             typedef input_map::value_type input_entry;
 
             input_map f_input_map;
 
-            typedef map< string, output* > output_map;
+            typedef std::map< std::string, output* > output_map;
             typedef output_map::iterator output_it;
             typedef output_map::const_iterator output_cit;
             typedef output_map::value_type output_entry;

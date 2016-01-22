@@ -39,10 +39,10 @@ namespace midge
             //*********
 
         public:
-            virtual void process_key( string p_string );
-            virtual void process_lingual( string p_string );
-            virtual void process_numerical( string p_string );
-            virtual void process_boolean( string p_string );
+            virtual void process_key( std::string p_string );
+            virtual void process_lingual( std::string p_string );
+            virtual void process_numerical( std::string p_string );
+            virtual void process_boolean( std::string p_string );
             virtual void process_null();
             virtual void process_object_start();
             virtual void process_object_stop();

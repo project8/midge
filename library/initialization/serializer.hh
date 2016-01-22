@@ -5,10 +5,8 @@
 
 #include "processor.hh"
 #include "value.hh"
-using std::stack;
 
 #include <fstream>
-using std::ofstream;
 
 namespace midge
 {
@@ -17,7 +15,7 @@ namespace midge
         public processor
     {
         public:
-            serializer( const string& p_file );
+            serializer( const std::string& p_file );
             virtual ~serializer();
 
         public:
@@ -27,10 +25,10 @@ namespace midge
             void dispatch( value* p_value );
 
         public:
-            virtual void process_key( string p_string );
-            virtual void process_lingual( string p_string );
-            virtual void process_numerical( string p_string );
-            virtual void process_boolean( string p_string );
+            virtual void process_key( std::string p_string );
+            virtual void process_lingual( std::string p_string );
+            virtual void process_numerical( std::string p_string );
+            virtual void process_boolean( std::string p_string );
             virtual void process_null();
             virtual void process_object_start();
             virtual void process_object_stop();
@@ -40,8 +38,8 @@ namespace midge
             virtual void process_stop();
 
         private:
-            string f_file;
-            ofstream f_stream;
+            std::string f_file;
+            std::ofstream f_stream;
 
             class context
             {
@@ -49,12 +47,12 @@ namespace midge
                     context();
                     ~context();
 
-                    string pad;
-                    string key;
-                    string comma;
+                    std::string pad;
+                    std::string key;
+                    std::string comma;
             };
 
-            stack< context > f_contexts;
+            std::stack< context > f_contexts;
     };
 }
 

@@ -3,11 +3,14 @@
 #include "lexer.hh"
 #include "serializer.hh"
 #include "message.hh"
-using namespace midge;
 
 #include <iostream>
+
+using namespace midge;
+
 using std::cout;
 using std::endl;
+using std::string;
 
 int main( int p_count, char** p_values )
 {

@@ -2,16 +2,16 @@
 
 #include "binary.hh"
 #include "message.hh"
-using std::fstream;
 
 #include <string>
+#include <vector>
+#include <map>
+
+using std::fstream;
+using std::vector;
+using std::map;
 using std::string;
 
-#include <vector>
-using std::vector;
-
-#include <map>
-using std::map;
 
 namespace midge
 {

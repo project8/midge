@@ -8,6 +8,8 @@
 #include "numerical.hh"
 #include "object.hh"
 
+using std::string;
+
 namespace midge
 {
 

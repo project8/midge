@@ -8,10 +8,8 @@
 #include "_stream.hh"
 #include "node.hh"
 #include "typenull.hh"
-using std::stringstream;
 
 #include <vector>
-using std::vector;
 
 namespace midge
 {
@@ -24,7 +22,7 @@ namespace midge
             _out() :
                     f_buffer( new _buffer< x_type > )
             {
-                stringstream t_name;
+                std::stringstream t_name;
                 t_name << "out_" << x_index::result;
                 node::out( new _output< _out< x_type, x_index >, x_type >( this, &_out< x_type, x_index >::out ), t_name.str() );
             }

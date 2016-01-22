@@ -10,7 +10,6 @@
 #include "object.hh"
 #include "value.hh"
 #include "typelist.hh"
-using std::map;
 
 namespace midge
 {
@@ -48,13 +47,13 @@ namespace midge
             }
             void operator()( ::midge::object* p_object )
             {
-                pair< string, value* > t_pair;
-                string t_label;
+                std::pair< std::string, value* > t_pair;
+                std::string t_label;
                 value* t_value;
 
                 map_it_t t_it;
 
-                for( index_t t_index = 0; t_index < p_object->size(); t_index++ )
+                for( count_t t_index = 0; t_index < p_object->size(); t_index++ )
                 {
                     t_pair = p_object->at( t_index );
                     t_label = t_pair.first;
@@ -85,11 +84,11 @@ namespace midge
 
         public:
             template< class x_child, class x_member >
-            static int object( x_member p_member, const string& p_label )
+            static int object( x_member p_member, const std::string& p_label )
             {
                 if( f_entries == NULL )
                 {
-                    f_entries = new map< string, entry* >();
+                    f_entries = new std::map< std::string, entry* >();
                 }
 
                 map_it_t t_it = f_entries->find( p_label );
@@ -106,11 +105,11 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int lingual( x_member p_member, const string& p_label )
+            static int lingual( x_member p_member, const std::string& p_label )
             {
                 if( f_entries == NULL )
                 {
-                    f_entries = new map< string, entry* >();
+                    f_entries = new std::map< std::string, entry* >();
                 }
 
                 map_it_t t_it = f_entries->find( p_label );
@@ -127,11 +126,11 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int numerical( x_member p_member, const string& p_label )
+            static int numerical( x_member p_member, const std::string& p_label )
             {
                 if( f_entries == NULL )
                 {
-                    f_entries = new map< string, entry* >();
+                    f_entries = new std::map< std::string, entry* >();
                 }
 
                 map_it_t t_it = f_entries->find( p_label );
@@ -148,11 +147,11 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int boolean( x_member p_member, const string& p_label )
+            static int boolean( x_member p_member, const std::string& p_label )
             {
                 if( f_entries == NULL )
                 {
-                    f_entries = new map< string, entry* >();
+                    f_entries = new std::map< std::string, entry* >();
                 }
 
                 map_it_t t_it = f_entries->find( p_label );
@@ -169,11 +168,11 @@ namespace midge
             }
 
             template< class x_child, class x_member >
-            static int null( x_member p_member, const string& p_label )
+            static int null( x_member p_member, const std::string& p_label )
             {
                 if( f_entries == NULL )
                 {
-                    f_entries = new map< string, entry* >();
+                    f_entries = new std::map< std::string, entry* >();
                 }
 
                 map_it_t t_it = f_entries->find( p_label );
@@ -259,7 +258,7 @@ namespace midge
                     void (x_target::*f_member)( x_argument* );
             };
 
-            typedef map< string, entry* > map_t;
+            typedef std::map< std::string, entry* > map_t;
             typedef typename map_t::iterator map_it_t;
             typedef typename map_t::const_iterator map_cit_t;
             typedef typename map_t::value_type map_entry_t;

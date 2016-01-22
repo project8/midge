@@ -1,5 +1,11 @@
 #include "arguments.hh"
 
+using std::map;
+using std::pair;
+using std::set;
+using std::string;
+using std::stringstream;
+
 namespace midge
 {
     arguments::arguments() :

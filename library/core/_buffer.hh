@@ -91,7 +91,7 @@ namespace midge
             {
                 for( index_t t_index = 0; t_index < f_length; t_index++ )
                 {
-                    (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3, p_5 );
+                    (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3, p_4, p_5 );
                 }
                 return;
             }
@@ -183,12 +183,12 @@ namespace midge
                             f_next_index = 0;
                         }
 
-                        for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                        for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
                         }
 
-                        for( index_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
+                        for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_current_index ].unlock();
                         }

@@ -1,11 +1,16 @@
 #include "compiler.hh"
 #include "lexer.hh"
 #include "object_builder.hh"
-using namespace midge;
 
 #include <iostream>
+
+using namespace midge;
+
 using std::cout;
 using std::endl;
+
+using std::string;
+using std::vector;
 
 class child
 {

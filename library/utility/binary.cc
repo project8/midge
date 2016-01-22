@@ -3,6 +3,8 @@
 
 #include "message.hh"
 
+using std::string;
+
 namespace midge
 {
 

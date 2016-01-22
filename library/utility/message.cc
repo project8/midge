@@ -1,16 +1,23 @@
 #include "message.hh"
 
 #include <iomanip>
-#include <ostream>
-
 #include <cstdio>
 #include <cstdlib>
 #include <execinfo.h>
+#include <iostream>
+
+using std::set;
+using std::vector;
+using std::map;
+using std::ostream;
+using std::pair;
+using std::string;
+using std::stringstream;
+using std::setprecision;
+using std::fixed;
 
 namespace midge
 {
-    using std::cout;
-    using std::endl;
 
     std::mutex message::f_outer;
     std::mutex message::f_inner;
@@ -265,14 +272,14 @@ namespace midge
 
     messages::messages() :
             f_map(),
-            f_format( cout.flags() ),
-            f_precision( cout.precision() ),
+            f_format( std::cout.flags() ),
+            f_precision( std::cout.precision() ),
 #ifdef MIDGE_ENABLE_DEBUG_MESSAGES
             f_terminal_severity( s_debug ),
 #else
             f_terminal_severity( s_normal ),
 #endif
-            f_terminal_stream( &cout ),
+            f_terminal_stream( &std::cout ),
 #ifdef MIDGE_ENABLE_DEBUG_MESSAGES
             f_log_severity( s_debug ),
 #else

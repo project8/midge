@@ -4,13 +4,9 @@
 #include <stack>
 
 #include "processor.hh"
-using std::stack;
 
 #include <string>
-using std::string;
-
 #include <fstream>
-using std::ifstream;
 
 //personal comment:
 //
@@ -27,7 +23,7 @@ namespace midge
             lexer();
             virtual ~lexer();
 
-            void operator()( const string& p_file );
+            void operator()( const std::string& p_file );
 
             //*******
             //control
@@ -36,11 +32,11 @@ namespace midge
         private:
             void increment();
             bool at_end();
-            bool at_one_of( const string& aSet );
-            bool at_exactly( const string& aString );
+            bool at_one_of( const std::string& aSet );
+            bool at_exactly( const std::string& aString );
 
-            ifstream f_stream;
-            string f_file;
+            std::ifstream f_stream;
+            std::string f_file;
             int f_line;
             int f_column;
             char f_char;
@@ -74,39 +70,39 @@ namespace midge
 
             void lex_error( error p_error );
 
-            stack< void (lexer::*)() > f_states;
-            string f_buffer;
+            std::stack< void (lexer::*)() > f_states;
+            std::string f_buffer;
 
             //*******
             //lexicon
             //*******
 
         private:
-            static const string s_space;
-            static const string s_tab;
-            static const string s_new_line;
-            static const string s_carriage_return;
+            static const std::string s_space;
+            static const std::string s_tab;
+            static const std::string s_new_line;
+            static const std::string s_carriage_return;
 
-            static const string s_quote;
-            static const string s_colon;
-            static const string s_comma;
-            static const string s_minus;
-            static const string s_decimal;
-            static const string s_true;
-            static const string s_false;
-            static const string s_null;
-            static const string s_object_start;
-            static const string s_object_stop;
-            static const string s_array_start;
-            static const string s_array_stop;
+            static const std::string s_quote;
+            static const std::string s_colon;
+            static const std::string s_comma;
+            static const std::string s_minus;
+            static const std::string s_decimal;
+            static const std::string s_true;
+            static const std::string s_false;
+            static const std::string s_null;
+            static const std::string s_object_start;
+            static const std::string s_object_stop;
+            static const std::string s_array_start;
+            static const std::string s_array_stop;
 
-            static const string s_power_set;
-            static const string s_whitespace_set;
-            static const string s_uppercase_set;
-            static const string s_lowercase_set;
-            static const string s_numeral_set;
-            static const string s_symbol_set;
-            static const string s_string_set;
+            static const std::string s_power_set;
+            static const std::string s_whitespace_set;
+            static const std::string s_uppercase_set;
+            static const std::string s_lowercase_set;
+            static const std::string s_numeral_set;
+            static const std::string s_symbol_set;
+            static const std::string s_string_set;
     };
 
 }

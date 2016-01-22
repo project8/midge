@@ -15,20 +15,13 @@
 #include "mutex.hh"
 #include "singleton.hh"
 #include "types.hh"
-using std::stack;
 
 #include <vector>
-using std::vector;
-
 #include <map>
-using std::map;
-
 #include <utility>
-using std::pair;
 
 namespace midge
 {
-    using scarab::mutex;
 
     class plot :
         public scarab::singleton< plot >
@@ -38,9 +31,9 @@ namespace midge
             friend class scarab::destroyer< plot >;
 
         public:
-            typedef vector< real_t > values_t;
-            typedef vector< real_t >::iterator value_it;
-            typedef vector< real_t >::const_iterator value_cit;
+            typedef std::vector< real_t > values_t;
+            typedef std::vector< real_t >::iterator value_it;
+            typedef std::vector< real_t >::const_iterator value_cit;
 
         public:
             class ordinate
@@ -220,29 +213,29 @@ namespace midge
 
             graph2_stack f_graph2s;
 
-            typedef pair< TCanvas*, TH1* > plot_pair;
-            typedef map< string_t, pair< TCanvas*, TH1* > > plot_map;
+            typedef std::pair< TCanvas*, TH1* > plot_pair;
+            typedef std::map< string_t, std::pair< TCanvas*, TH1* > > plot_map;
             typedef plot_map::iterator plot_it;
             typedef plot_map::const_iterator plot_cit;
             typedef plot_map::value_type plot_entry;
 
             plot_map f_plots;
 
-            typedef map< string_t, TH1D* > th1_map;
+            typedef std::map< string_t, TH1D* > th1_map;
             typedef th1_map::iterator th1_it;
             typedef th1_map::const_iterator th1_cit;
             typedef th1_map::value_type th1_entry;
 
             th1_map f_th1s;
 
-            typedef map< string_t, TH2D* > th2_map;
+            typedef std::map< string_t, TH2D* > th2_map;
             typedef th2_map::iterator th2_it;
             typedef th2_map::const_iterator th2_cit;
             typedef th2_map::value_type th2_entry;
 
             th2_map f_th2s;
 
-            typedef map< string_t, TGraph* > graph_map;
+            typedef std::map< string_t, TGraph* > graph_map;
             typedef graph_map::iterator graph_it;
             typedef graph_map::const_iterator graph_cit;
             typedef graph_map::value_type graph_entry;

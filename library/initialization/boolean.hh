@@ -10,19 +10,19 @@ namespace midge
         public value
     {
         public:
-            boolean( const string& p_string );
+            boolean( const std::string& p_string );
             virtual ~boolean();
             boolean* clone() const;
 
         public:
-            string& str();
-            const string& str() const;
+            std::string& str();
+            const std::string& str() const;
 
             bool& get();
             const bool& get() const;
 
         private:
-            string f_string;
+            std::string f_string;
             bool f_value;
     };
 }

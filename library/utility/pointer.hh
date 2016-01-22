@@ -9,8 +9,6 @@
 
 namespace midge
 {
-    using scarab::mutex;
-
     template< typename x_type >
     class pointer
     {
