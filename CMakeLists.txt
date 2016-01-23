@@ -24,10 +24,12 @@ set_option( USE_CPP11 TRUE )
 
 
 option( MIDGE_ENABLE_DEBUG_MESSAGES "enable debug messages" FALSE )
-string( TOLOWER ${CMAKE_BUILD_TYPE} LC_BUILD_TYPE )
+if( NOT CMAKE_BUILD_TYPE STREQUAL "" )
+    string( TOLOWER ${CMAKE_BUILD_TYPE} LC_BUILD_TYPE )
+endif( NOT CMAKE_BUILD_TYPE STREQUAL "" )
 if( LC_BUILD_TYPE STREQUAL "debug" )
     set( MIDGE_ENABLE_DEBUG_MESSAGES FALSE CACHE INTERNAL "" FORCE )
-    add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
+    add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )    
 else( LC_BUILD_TYPE STREQUAL "debug" )
     set( MIDGE_ENABLE_DEBUG_MESSAGES TRUE CACHE INTERNAL "" FORCE )
     remove_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
@@ -38,18 +40,6 @@ endif( LC_BUILD_TYPE STREQUAL "debug" )
 ######################
 # midge dependencies #
 ######################
-
-######
-# Git
-######
-
-# if git is used, get the commit SHA1
-find_package( Git )
-if( GIT_FOUND )
-    execute_process( COMMAND ${GIT_EXECUTABLE} rev-parse -q HEAD  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE Mantis_GIT_COMMIT  OUTPUT_STRIP_TRAILING_WHITESPACE )
-    execute_process( COMMAND ${GIT_EXECUTABLE} describe --tags --long  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE Mantis_GIT_DESCRIBE  OUTPUT_STRIP_TRAILING_WHITESPACE )
-endif( GIT_FOUND )
-
 
 ########
 # Boost
