@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "cancelable.hh"
 #include "coremsg.hh"
 #include "node.hh"
 #include "thread.hh"
@@ -12,7 +13,7 @@
 namespace midge
 {
 
-    class midge
+    class midge : public cancelable
     {
         public:
             midge();
@@ -24,6 +25,9 @@ namespace midge
             void run( const std::string& p_string );
 
         private:
+            virtual void do_cancellation();
+            virtual void do_reset_cancellation();
+
             typedef std::map< std::string, node* > node_map_t;
             typedef node_map_t::iterator node_it_t;
             typedef node_map_t::const_iterator node_cit_t;

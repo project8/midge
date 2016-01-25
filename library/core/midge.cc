@@ -15,6 +15,7 @@ namespace midge
 {
 
     midge::midge() :
+            cancelable(),
             f_nodes()
     {
     }
@@ -228,6 +229,25 @@ namespace midge
 
         return;
     }
+
+    void midge::do_cancellation()
+    {
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_it->second->cancel();
+        }
+        return;
+    }
+
+    void midge::do_reset_cancellation()
+    {
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_it->second->reset_cancel();
+        }
+        return;
+    }
+
 
     const string_t midge::s_connector = string_t( ":" );
     const string_t midge::s_designator = string_t( "." );

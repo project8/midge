@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "cancelable.hh"
 #include "input.hh"
 #include "output.hh"
 
@@ -11,7 +12,7 @@
 namespace midge
 {
 
-    class node
+    class node : public cancelable
     {
         public:
             node();
