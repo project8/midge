@@ -1,11 +1,10 @@
-#include "midge.hh"
-
 #include "input.hh"
 
 #include <unistd.h>
 
 #include "midge_error.hh"
 #include "coremsg.hh"
+#include "diptera.hh"
 #include "input.hh"
 #include "output.hh"
 
@@ -14,12 +13,13 @@ using std::string;
 namespace midge
 {
 
-    midge::midge() :
+    diptera::diptera() :
             cancelable(),
-            f_nodes()
+            f_nodes(),
+            f_threads()
     {
     }
-    midge::~midge()
+    diptera::~diptera()
     {
         node* t_node;
         node_it_t t_it;
@@ -35,7 +35,7 @@ namespace midge
         }
     }
 
-    void midge::add( node* p_node )
+    void diptera::add( node* p_node )
     {
         string_t t_name = p_node->get_name();
         node_it_t t_it = f_nodes.find( t_name );
@@ -51,7 +51,7 @@ namespace midge
         }
         return;
     }
-    void midge::join( const string_t& p_string )
+    void diptera::join( const string_t& p_string )
     {
         string_t t_first_node_string( "" );
         node* t_first_node;
@@ -165,7 +165,7 @@ namespace midge
             return;
         }
     }
-    void midge::run( const string_t& p_string )
+    void diptera::run( const string_t& p_string )
     {
         size_t t_start_pos;
         size_t t_separator_pos;
@@ -177,6 +177,7 @@ namespace midge
 
         t_start_pos = 0;
         t_argument = p_string;
+
         while( true )
         {
             t_separator_pos = t_argument.find( s_separator, t_start_pos );
@@ -230,7 +231,12 @@ namespace midge
         return;
     }
 
-    void midge::do_cancellation()
+    void diptera::reset()
+    {
+
+    }
+
+    void diptera::do_cancellation()
     {
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
@@ -239,7 +245,7 @@ namespace midge
         return;
     }
 
-    void midge::do_reset_cancellation()
+    void diptera::do_reset_cancellation()
     {
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
@@ -249,8 +255,23 @@ namespace midge
     }
 
 
-    const string_t midge::s_connector = string_t( ":" );
-    const string_t midge::s_designator = string_t( "." );
-    const string_t midge::s_separator = string_t( ":" );
+    const string_t diptera::s_connector = string_t( ":" );
+    const string_t diptera::s_designator = string_t( "." );
+    const string_t diptera::s_separator = string_t( ":" );
+
+    const std::string& diptera::connector()
+    {
+        return s_connector;
+    }
+
+    const std::string& diptera::designator()
+    {
+        return s_designator;
+    }
+
+    const std::string& diptera::separator()
+    {
+        return s_separator;
+    }
 
 }

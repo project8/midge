@@ -3,6 +3,6 @@
 namespace midge
 {
     static const int s_midge =
-        midge_builder::lingual< std::string >( &midge::join, "join" ) +
-        midge_builder::lingual< std::string >( &midge::run, "run" );
+        midge_builder::lingual< std::string >( &diptera::join, "join" ) +
+        midge_builder::lingual< std::string >( &diptera::run, "run" );
 }

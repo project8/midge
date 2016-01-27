@@ -13,16 +13,22 @@
 namespace midge
 {
 
-    class midge : public cancelable
+    class diptera : public cancelable
     {
         public:
-            midge();
-            ~midge();
+            diptera();
+            ~diptera();
 
         public:
             void add( node* p_node );
             void join( const std::string& p_string );
             void run( const std::string& p_string );
+
+            void reset();
+
+            static const std::string& connector();
+            static const std::string& designator();
+            static const std::string& separator();
 
         private:
             virtual void do_cancellation();
@@ -40,6 +46,7 @@ namespace midge
             typedef thread_vector_t::const_iterator thread_cit_t;
 
             thread_vector_t f_threads;
+            std::mutex f_threads_mutex;
 
             static const std::string s_connector;
             static const std::string s_designator;

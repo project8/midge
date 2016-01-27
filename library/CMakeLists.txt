@@ -60,7 +60,7 @@ set( midge_headers ${midge_headers}
 	${core_dir}/producer.hh
 	${core_dir}/consumer.hh
 	${core_dir}/transformer.hh
-	${core_dir}/midge.hh
+	${core_dir}/diptera.hh
 )
 set( midge_sources ${midge_sources}
 	${core_dir}/coremsg.cc
@@ -71,7 +71,7 @@ set( midge_sources ${midge_sources}
 	${core_dir}/producer.cc
 	${core_dir}/consumer.cc
 	${core_dir}/transformer.cc
-	${core_dir}/midge.cc
+	${core_dir}/diptera.cc
 )
 
 
