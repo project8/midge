@@ -33,6 +33,7 @@ namespace midge
             virtual void do_cancellation();
             virtual void do_reset_cancellation();
 
+        protected:
             std::atomic< bool > f_canceled;
     };
 

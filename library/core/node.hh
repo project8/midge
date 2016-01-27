@@ -7,6 +7,8 @@
 #include "input.hh"
 #include "output.hh"
 
+#include "factory.hh"
+
 #include <string>
 
 namespace midge
@@ -51,5 +53,8 @@ namespace midge
     };
 
 }
+
+#define REGISTER_NODE( node_class, node_name ) \
+        static ::scarab::registrar< ::midge::node, node_class > s_node_##node_class##_registrar( node_name );
 
 #endif
