@@ -18,6 +18,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/binary.hh
 	#${util_dir}/plot.hh
 	${util_dir}/cancelable.hh
+	${util_dir}/shared_cancel.hh
 	${util_dir}/thread.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh

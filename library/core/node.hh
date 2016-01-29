@@ -1,14 +1,15 @@
 #ifndef _midge_node_hh_
 #define _midge_node_hh_
 
-#include <map>
-
 #include "cancelable.hh"
 #include "input.hh"
 #include "output.hh"
+#include "shared_cancel.hh"
 
 #include "factory.hh"
 
+#include <atomic>
+#include <map>
 #include <string>
 
 namespace midge
@@ -25,7 +26,7 @@ namespace midge
 
         public:
             virtual void initialize() = 0;
-            virtual void execute() = 0;
+            virtual void execute( shared_cancel_t ) = 0;
             virtual void finalize() = 0;
 
         public:

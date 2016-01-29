@@ -6,6 +6,7 @@ namespace midge
             f_thread(),
             f_thread_mutex(),
             f_state( e_ready ),
+            f_canceled( new std::atomic< bool >( false ) ),
             f_start( nullptr ),
             f_stop( nullptr )
     {
@@ -14,7 +15,7 @@ namespace midge
     {
         if( get_state() == e_executing )
         {
-            f_canceled.store( true );
+            f_canceled->store( true );
         }
     }
 
@@ -41,7 +42,7 @@ namespace midge
         if( f_state.load() == e_executing )
         {
             std::unique_lock< std::mutex >( f_thread_mutex );
-            f_canceled.store( true );
+            f_canceled->store( true );
         }
         return;
     }
