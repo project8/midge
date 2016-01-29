@@ -26,9 +26,15 @@ namespace midge
 
             void start();
 
+            // member function; shared cancel
             template< class x_type, class x_r, class... Arguments >
             void start( x_type* p_object, x_r(x_type::*p_member)( shared_cancel_t, Arguments... ), Arguments... params );
 
+            // member function; without shared cancel
+            template< class x_type, class x_r, class... Arguments >
+            void start( x_type* p_object, x_r(x_type::*p_member)( Arguments... ), Arguments... params );
+
+            // non-member function; shared cancel
             template< class x_r, class... Arguments >
             void start( x_r (*p_member)( shared_cancel_t, Arguments... ), Arguments... params );
 
@@ -57,6 +63,9 @@ namespace midge
             template< class x_type, class x_r, class... Arguments >
             class _callable;
 
+            template< class x_type, class x_r, class... Arguments >
+            class _callable_cancelable;
+
             void thread_start();
             void thread_stop();
 
@@ -81,9 +90,8 @@ namespace midge
     {
         public:
             _callable( x_type* p_object, x_r (x_type::*p_member)( shared_cancel_t, Arguments... ), shared_cancel_t a_canceled, Arguments... params ) :
-                        f_bound()
+                        f_bound( std::bind( p_member, p_object, a_canceled, params... ) )
             {
-                f_bound = std::bind( p_member, p_object, a_canceled, params... );
             }
             virtual ~_callable() noexcept
             {
@@ -96,17 +104,45 @@ namespace midge
             }
 
         private:
-            std::function< x_r ( Arguments... ) > f_bound;
+            std::function< x_r () > f_bound;
     };
     template< class x_type, class x_r, class... Arguments >
-    inline void thread::start( x_type* p_object, x_r(x_type::*p_member)( shared_cancel_t, Arguments... ), Arguments... params )
+    void thread::start( x_type* p_object, x_r(x_type::*p_member)( shared_cancel_t, Arguments... ), Arguments... params )
     {
         f_start = new _callable< x_type, x_r, Arguments... >( p_object, p_member, f_canceled, params... );
     }
     template< class x_type, class x_r, class... Arguments >
-    inline void thread::stop( x_type* p_object, x_r(x_type::*p_member)( Arguments... ), Arguments... params )
+    void thread::stop( x_type* p_object, x_r(x_type::*p_member)( Arguments... ), Arguments... params )
     {
         f_stop = new _callable< x_type, x_r, Arguments... >( p_object, p_member, params... );
+    }
+
+    template< class x_type, class x_r, class... Arguments >
+    class thread::_callable_cancelable :
+        public thread::callable
+    {
+        public:
+            _callable_cancelable( x_type* p_object, x_r (x_type::*p_member)( Arguments... ), Arguments... params ) :
+                        f_bound( std::bind( p_member, p_object, params... ) )
+            {
+            }
+            virtual ~_callable_cancelable() noexcept
+            {
+            }
+
+            void execute()
+            {
+                f_bound();
+                return;
+            }
+
+        private:
+            std::function< x_r () > f_bound;
+    };
+    template< class x_type, class x_r, class... Arguments >
+    void thread::start( x_type* p_object, x_r(x_type::*p_member)( Arguments... ), Arguments... params )
+    {
+        f_start = new _callable_cancelable< x_type, x_r, Arguments... >( p_object, p_member, params... );
     }
 
     template< class x_r, class... Arguments >
@@ -115,9 +151,8 @@ namespace midge
     {
         public:
             _callable( x_r (*p_function)( shared_cancel_t, Arguments... ), shared_cancel_t a_canceled, Arguments... params ) :
-                        f_bound()
+                        f_bound( std::bind( p_function, a_canceled, params... ) )
             {
-                f_bound = std::bind( p_function, a_canceled, params... );
             }
             virtual ~_callable()
             {
@@ -133,12 +168,12 @@ namespace midge
             std::function< x_r > f_bound;
     };
     template< class x_r, class... Arguments >
-    inline void thread::start( x_r (*p_function)( shared_cancel_t, Arguments... ), Arguments... params )
+    void thread::start( x_r (*p_function)( shared_cancel_t, Arguments... ), Arguments... params )
     {
         f_start = new _callable< _, x_r, Arguments... >( p_function, f_canceled, params... );
     }
     template< class x_r, class... Arguments >
-    inline void thread::stop( x_r (*p_function)( Arguments... ), Arguments... params )
+    void thread::stop( x_r (*p_function)( Arguments... ), Arguments... params )
     {
         f_stop = new _callable< _, x_r, Arguments... >( p_function, params... );
     }
