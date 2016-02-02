@@ -2,7 +2,8 @@
 
 #include <cmath>
 #include <unistd.h>
-#include "message.hh"
+
+#include "message_logger.hh"
 #include "thread.hh"
 #include "types.hh"
 

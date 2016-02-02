@@ -1,7 +1,7 @@
 #include <fstream>
 
 #include "ascii.hh"
-#include "message.hh"
+#include "message_logger.hh"
 
 #include <string>
 #include <vector>

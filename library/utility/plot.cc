@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "message.hh"
+#include "message_logger.hh"
 #include "midge_error.hh"
 
 using std::stack;

@@ -13,7 +13,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/macros.hh
 	${util_dir}/initializer.hh
 	${util_dir}/midge_error.hh
-	${util_dir}/message.hh
+	${util_dir}/message_logger.hh
 	${util_dir}/ascii.hh
 	${util_dir}/binary.hh
 	#${util_dir}/plot.hh
@@ -32,7 +32,7 @@ set( midge_headers ${midge_headers}
 )
 set( midge_sources ${midge_sources}
 	${util_dir}/midge_error.cc
-	${util_dir}/message.cc
+	${util_dir}/message_logger.cc
 	${util_dir}/ascii.cc
 	${util_dir}/binary.cc
 	#${util_dir}/plot.cc

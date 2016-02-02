@@ -1,4 +1,4 @@
-#include "message.hh"
+##include "message_logger.hh"
 
 message_declare( testmsg );
 message_define( testmsg, test, test )

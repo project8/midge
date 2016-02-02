@@ -1,7 +1,7 @@
-#include "message.hh"
 #include "binary.hh"
 
-#include "message.hh"
+#include "message_logger.hh"
+#include "message_logger.hh"
 
 using std::string;
 

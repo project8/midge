@@ -1,10 +1,9 @@
-#include "message.hh"
-
 #include <iomanip>
 #include <cstdio>
 #include <cstdlib>
 #include <execinfo.h>
 #include <iostream>
+#include "message_logger.hh"
 
 using std::set;
 using std::vector;

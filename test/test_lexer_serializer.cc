@@ -2,9 +2,8 @@
 #include "evaluator.hh"
 #include "lexer.hh"
 #include "serializer.hh"
-#include "message.hh"
-
 #include <iostream>
+#include "message_logger.hh"
 
 using namespace midge;
 

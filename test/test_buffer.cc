@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <mutex>
 
+#include "message_logger.hh"
 #include "midge_error.hh"
-#include "message.hh"
 #include "thread.hh"
 #include "types.hh"
 
