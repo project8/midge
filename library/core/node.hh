@@ -26,7 +26,7 @@ namespace midge
 
         public:
             virtual void initialize() = 0;
-            virtual void execute( shared_cancel_t ) = 0;
+            virtual void execute() = 0;
             virtual void finalize() = 0;
 
         public:

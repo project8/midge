@@ -18,6 +18,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/binary.hh
 	#${util_dir}/plot.hh
 	${util_dir}/cancelable.hh
+	${util_dir}/instructable.hh
 	${util_dir}/shared_cancel.hh
 	${util_dir}/thread.hh
 	${util_dir}/types.hh
@@ -37,6 +38,7 @@ set( midge_sources ${midge_sources}
 	${util_dir}/binary.cc
 	#${util_dir}/plot.cc
 	${util_dir}/cancelable.cc
+	${util_dir}/instructable.cc
 	${util_dir}/thread.cc
 )
 

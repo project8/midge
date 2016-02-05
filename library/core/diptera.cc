@@ -6,7 +6,10 @@
 #include "coremsg.hh"
 #include "diptera.hh"
 #include "input.hh"
+#include "node.hh"
 #include "output.hh"
+#include "thread.hh"
+
 
 using std::string;
 
@@ -16,6 +19,7 @@ namespace midge
     diptera::diptera() :
             cancelable(),
             f_nodes(),
+            f_instructables(),
             f_threads()
     {
     }
@@ -44,6 +48,12 @@ namespace midge
             p_node->initialize();
             f_nodes.insert( node_entry_t( t_name, p_node ) );
             msg_normal( coremsg, "added node <" << t_name << ">" << eom );
+
+            instructable* t_inst = dynamic_cast< instructable* >( p_node );
+            if( t_inst != nullptr )
+            {
+                f_instructables.insert( t_inst );
+            }
         }
         else
         {
@@ -51,6 +61,7 @@ namespace midge
         }
         return;
     }
+
     void diptera::join( const string_t& p_string )
     {
         string_t t_first_node_string( "" );
@@ -200,7 +211,7 @@ namespace midge
             msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
             t_node = t_node_it->second;
             t_thread = new thread();
-            t_thread->start( t_node, &node::execute );
+            t_thread->bind_start( t_node, &node::execute );
             f_threads.push_back( t_thread );
 
             if( t_separator_pos == string_t::npos )
@@ -234,6 +245,15 @@ namespace midge
     void diptera::reset()
     {
 
+    }
+
+    void diptera::instruct( instruction p_inst )
+    {
+        for( inst_it_t t_it = f_instructables.begin(); t_it != f_instructables.end(); ++t_it )
+        {
+            (*t_it)->instruct( p_inst );
+        }
+        return;
     }
 
     void diptera::do_cancellation()

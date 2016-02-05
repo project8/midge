@@ -1,17 +1,18 @@
 #ifndef _midge_midge_hh_
 #define _midge_midge_hh_
 
-#include <map>
-
 #include "cancelable.hh"
-#include "coremsg.hh"
-#include "node.hh"
-#include "thread.hh"
+#include "instructable.hh"
 
+#include <map>
+#include <set>
 #include <vector>
 
 namespace midge
 {
+    class node;
+    class producer;
+    class thread;
 
     class diptera : public cancelable
     {
@@ -25,6 +26,8 @@ namespace midge
             void run( const std::string& p_string );
 
             void reset();
+
+            void instruct( instruction p_inst );
 
             static const std::string& connector();
             static const std::string& designator();
@@ -40,6 +43,13 @@ namespace midge
             typedef node_map_t::value_type node_entry_t;
 
             node_map_t f_nodes;
+
+            typedef std::set< instructable* > inst_set_t;
+            typedef inst_set_t::iterator inst_it_t;
+            typedef inst_set_t::const_iterator inst_cit_t;
+            typedef inst_set_t::value_type inst_entry_t;
+
+            inst_set_t f_instructables;
 
             typedef std::vector< thread* > thread_vector_t;
             typedef thread_vector_t::iterator thread_it_t;

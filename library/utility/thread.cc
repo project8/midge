@@ -7,8 +7,8 @@ namespace midge
             f_thread_mutex(),
             f_state( e_ready ),
             f_canceled( new std::atomic< bool >( false ) ),
-            f_start( nullptr ),
-            f_stop( nullptr )
+            f_start( new callable() ),
+            f_stop( new callable() )
     {
     }
     thread::~thread()
@@ -30,49 +30,32 @@ namespace midge
     }
     void thread::join()
     {
-        if( f_state.load() == e_executing )
+        if( get_state() == e_executing )
         {
-            std::unique_lock< std::mutex >( f_thread_mutex );
             f_thread.join();
         }
         return;
     }
     void thread::stop()
     {
-        if( f_state.load() == e_executing )
+        if( get_state() == e_executing )
         {
             std::unique_lock< std::mutex >( f_thread_mutex );
+            f_state.store( e_cancelling );
+            f_stop->execute();
             f_canceled->store( true );
+            f_state.store( e_cancelled );
         }
         return;
-    }
-
-    thread::state thread::get_state()
-    {
-        return f_state.load();
     }
 
     void thread::thread_start()
     {
         f_state.store( e_executing );
-        if( f_start != nullptr )
-        {
-            f_start->execute();
-            thread_stop();
-        }
+        f_start->execute();
+        stop();
         f_state.store( e_executed );
        return;
-    }
-
-    void thread::thread_stop()
-    {
-        f_state.store( e_cancelling );
-        if( f_stop != nullptr )
-        {
-            f_stop->execute();
-        }
-        f_state.store( e_cancelled );
-        return;
     }
 
 }
