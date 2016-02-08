@@ -10,6 +10,8 @@
 #include "output.hh"
 #include "thread.hh"
 
+#include <chrono>
+
 
 using std::string;
 
@@ -225,6 +227,9 @@ namespace midge
         {
             (*t_it)->start();
         }
+
+        // delay to alow the threads to spin up
+        std::this_thread::sleep_for( std::chrono::duration< int >( 1 ) );
 
         msg_normal( coremsg, "joining threads..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
