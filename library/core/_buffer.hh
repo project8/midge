@@ -173,6 +173,8 @@ namespace midge
                     {
                         f_buffer.f_read_command[ f_current_index ] = p_command;
 
+                        //coremsg( s_debug ) << "OUT STREAM SET: command <" << p_command << "> set for index " << f_current_index << eom;
+
                         if( (++f_count % 1000) == 0 )
                         {
                             coremsg( s_normal ) << "write stream <" << this << "> processed <" << f_count << "> requests" << eom;
@@ -201,6 +203,11 @@ namespace midge
                     x_type* data()
                     {
                         return &(f_buffer.f_read_data[ f_current_index ]);
+                    }
+
+                    count_t get_current_index() const
+                    {
+                        return f_current_index;
                     }
 
                 private:
@@ -243,6 +250,8 @@ namespace midge
 
                         f_current_index = f_next_index;
 
+                        //coremsg( s_debug ) << "IN STREAM GET: command <" << f_buffer.f_read_command[ f_current_index ] << "> retrieved from index " << f_current_index << eom;
+
                         return f_buffer.f_read_command[ f_current_index ];
                     }
                     void set( enum_t p_command )
@@ -256,6 +265,11 @@ namespace midge
                     x_type* data()
                     {
                         return &(f_buffer.f_read_data[ f_current_index ]);
+                    }
+
+                    count_t get_current_index() const
+                    {
+                        return f_current_index;
                     }
 
                 private:

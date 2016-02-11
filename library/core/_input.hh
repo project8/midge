@@ -5,6 +5,8 @@
 #include "_stream.hh"
 #include "input.hh"
 
+#include "typename.hh"
+
 namespace midge
 {
 
@@ -29,7 +31,10 @@ namespace midge
                 _stream< x_type >* t_typed_stream = dynamic_cast< _stream< x_type >* >( t_stream );
                 if( t_typed_stream == NULL )
                 {
-                    throw error() << "input <" << get_name() << "> on node <" << f_node->get_name() << "> cannot cast stream down to specific type";
+                    throw error() << "input <" << get_name() << "> on node <" << f_node->get_name() << "> cannot cast the provided stream down to the expected specific type\n" <<
+                            "Look for a mismatch between the data types in:\n" <<
+                            "\tOutput: " << scarab::type( *p_stream ) << '\n' <<
+                            "\tInput: " << scarab::type( t_typed_stream );
                 }
 
                 (f_node->*f_member)( t_typed_stream );
