@@ -6,6 +6,7 @@
 
 #include <map>
 #include <set>
+#include <thread>
 #include <vector>
 
 namespace midge
@@ -51,7 +52,7 @@ namespace midge
 
             inst_set_t f_instructables;
 
-            typedef std::vector< thread* > thread_vector_t;
+            typedef std::vector< std::thread > thread_vector_t;
             typedef thread_vector_t::iterator thread_it_t;
             typedef thread_vector_t::const_iterator thread_cit_t;
 

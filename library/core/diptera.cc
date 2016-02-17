@@ -186,7 +186,6 @@ namespace midge
         string t_node_name;
         node_it_t t_node_it;
         node* t_node;
-        thread* t_thread;
 
         t_start_pos = 0;
         t_argument = p_string;
@@ -212,20 +211,12 @@ namespace midge
 
             msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
             t_node = t_node_it->second;
-            t_thread = new thread();
-            t_thread->bind_start( t_node, &node::execute );
-            f_threads.push_back( t_thread );
+            f_threads.push_back( std::thread( &node::execute, t_node ) );
 
             if( t_separator_pos == string_t::npos )
             {
                 break;
             }
-        }
-
-        msg_normal( coremsg, "starting threads..." << eom );
-        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
-        {
-            (*t_it)->start();
         }
 
         // delay to alow the threads to spin up
@@ -234,14 +225,10 @@ namespace midge
         msg_normal( coremsg, "waiting for threads to finish..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
         {
-            (*t_it)->join();
+            t_it->join();
         }
 
         msg_normal( coremsg, "...done" << eom );
-        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
-        {
-            delete (*t_it);
-        }
         f_threads.clear();
 
         return;
