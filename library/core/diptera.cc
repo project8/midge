@@ -8,10 +8,9 @@
 #include "input.hh"
 #include "node.hh"
 #include "output.hh"
-#include "thread.hh"
 
 #include <chrono>
-
+#include <thread>
 
 using std::string;
 

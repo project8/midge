@@ -20,7 +20,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/cancelable.hh
 	${util_dir}/instructable.hh
 	${util_dir}/shared_cancel.hh
-	${util_dir}/thread.hh
+	#${util_dir}/thread.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh
 	${util_dir}/typenode.hh
@@ -39,7 +39,7 @@ set( midge_sources ${midge_sources}
 	#${util_dir}/plot.cc
 	${util_dir}/cancelable.cc
 	${util_dir}/instructable.cc
-	${util_dir}/thread.cc
+	#${util_dir}/thread.cc
 )
 
 
