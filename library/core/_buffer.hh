@@ -192,7 +192,7 @@ namespace midge
 
                         if( (++f_count % 1000) == 0 )
                         {
-                            coremsg( s_normal ) << "write stream <" << this << "> processed <" << f_count << "> requests" << eom;
+                            msg_normal( coremsg, "write stream <" << this << "> processed <" << f_count << "> requests" << eom );
                         }
 
                         if( ++f_next_index == f_buffer.f_length )

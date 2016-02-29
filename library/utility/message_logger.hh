@@ -3,6 +3,8 @@
 
 #include "types.hh"
 
+#include "logger.hh"
+
 #include <iomanip>
 #include <map>
 #include <ostream>
@@ -20,9 +22,13 @@ namespace midge
     {
     };
 
+    inline std::ostream& operator<<( std::ostream& a_str, const message_line& ) {return a_str;}
+
     class message_end
     {
     };
+
+    inline std::ostream& operator<<( std::ostream& a_str, const message_end& ) {return a_str;}
 
     typedef std::ios_base::fmtflags message_format;
     typedef std::streamsize message_precision;
@@ -239,6 +245,8 @@ namespace midge
 #define message_declare( x_name )\
 namespace midge\
 {\
+    LOGGER( mmlog_##x_name, "x_name" );\
+    /* \
     class message_ ## x_name :\
         public message\
     {\
@@ -249,11 +257,13 @@ namespace midge\
 \
     extern message_ ## x_name& x_name;\
     static initializer< message_ ## x_name > x_name ## _initializer;\
+    */ \
 }
 
 #define message_define( x_name, x_key, x_label )\
 namespace midge\
 {\
+    /* \
     message_ ## x_name::message_ ## x_name() :\
         message( #x_key, #x_label, "", "" )\
     {\
@@ -263,11 +273,13 @@ namespace midge\
     }\
 \
     message_ ## x_name& x_name = *((message_ ## x_name*) (initializer< message_ ## x_name >::f_data));\
+    */ \
 }
 
 #define message_define_full( x_name, x_key, x_label, x_prefix, x_suffix )\
 namespace midge\
 {\
+    /* \
     message_ ## x_name::message_ ## x_name() :\
         message( #x_key, #x_label, #x_prefix, #x_suffix )\
     {\
@@ -277,16 +289,22 @@ namespace midge\
     }\
 \
     message_ ## x_name& x_name = *((message_ ## x_name*) (initializer< message_ ## x_name >::f_data));\
+    */ \
 }
 
-#ifdef MIDGE_ENABLE_DEBUG_MESSAGES
-#define msg_debug( x_name, x_content ) x_name( s_debug ) << x_content
+//#ifdef MIDGE_ENABLE_DEBUG_MESSAGES
+#ifndef NDEBUG
+//#define msg_debug( x_name, x_content ) x_name( s_debug ) << x_content
+#define msg_debug( x_name, x_content ) DEBUG( mmlog_##x_name, x_content );
 #else
 #define msg_debug( x_name, x_content )
 #endif
-#define msg_normal( x_name, x_content ) x_name( s_normal ) << x_content
-#define msg_warning( x_name, x_content ) x_name( s_warning ) << x_content
-#define msg_error( x_name, x_content ) x_name( s_error ) << x_content
+//#define msg_normal( x_name, x_content ) x_name( s_normal ) << x_content
+#define msg_normal( x_name, x_content ) INFO( mmlog_##x_name, x_content );
+//#define msg_warning( x_name, x_content ) x_name( s_warning ) << x_content
+#define msg_warning( x_name, x_content ) WARN( mmlog_##x_name, x_content );
+//#define msg_error( x_name, x_content ) x_name( s_error ) << x_content
+#define msg_error( x_name, x_content ) ERROR( mmlog_##x_name, x_content );
 
 message_declare( msg );
 
