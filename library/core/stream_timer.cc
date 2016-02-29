@@ -57,8 +57,8 @@ namespace midge
         if( f_state != state::starting )
         {
             t_timer_report << " * Stream advanced " << f_n_blocked_periods << " times\n";
-            t_timer_report << " * Total time spent working: " << f_total_work_time.count() << " s\n";
-            t_timer_report << " * Total time waiting to advance: " << f_total_blocked_time.count() << " s\n";
+            t_timer_report << " * Total time spent working: " << t_total_work_time_s.count() << " s\n";
+            t_timer_report << " * Total time waiting to advance: " << t_total_blocked_time_s.count() << " s\n";
             t_timer_report << " * Mean working period: " << t_work_period.count() << " s\n";
             t_timer_report << " * Mean blocked period: " << t_blocked_period.count() << " s\n";
             t_timer_report << " * Stream working rate: " << t_working_rate << " s^-1\n";

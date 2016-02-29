@@ -11,11 +11,8 @@
 #include <chrono>
 #include <string>
 
-#include "logger.hh"
-
 namespace midge
 {
-    LOGGER( plog_temp, "stream_timer.hh" );
     class node;
 
     class stream_timer
@@ -62,10 +59,9 @@ namespace midge
 
     inline void stream_timer::increment_begin()
     {
-        WARN( plog_temp, "Incrementing" );
         if( f_state == state::blocked || f_unpaused_state == state::blocked ) return;
         f_total_work_time += f_unpaused_buffer;
-        if( f_state == state::paused ) f_total_work_time += steady_clock_t::now() - f_timer_start;
+        if( f_state == state::working ) f_total_work_time += steady_clock_t::now() - f_timer_start;
         if( f_state != state::starting ) ++f_n_work_periods;
         f_unpaused_buffer = ns_t::zero();
         f_state = state::blocked;
@@ -77,7 +73,7 @@ namespace midge
     {
         if( f_state == state::working || f_unpaused_state == state::working ) return;
         f_total_blocked_time += f_unpaused_buffer;
-        if( f_state == state::paused ) f_total_blocked_time += steady_clock_t::now() - f_timer_start;
+        if( f_state == state::blocked ) f_total_blocked_time += steady_clock_t::now() - f_timer_start;
         if( f_state != state::starting ) ++f_n_blocked_periods;
         f_unpaused_buffer = ns_t::zero();
         f_state = state::working;
@@ -87,6 +83,7 @@ namespace midge
 
     inline void stream_timer::pause_timer()
     {
+        if( f_state == state::paused || f_state == state::starting ) return;
         f_unpaused_buffer += steady_clock_t::now() - f_timer_start;
         f_unpaused_state = f_state;
         f_state = state::paused;
@@ -95,6 +92,7 @@ namespace midge
 
     inline void stream_timer::resume_timer()
     {
+        if( f_state != state::paused ) return;
         f_state = f_unpaused_state;
         f_unpaused_state = state::paused;
         f_timer_start = std::chrono::steady_clock::now();
