@@ -37,6 +37,7 @@ namespace midge
                             "\tInput: " << scarab::type( t_typed_stream );
                 }
 
+                t_typed_stream->label() = f_node->get_name() + ":" + get_name();
                 (f_node->*f_member)( t_typed_stream );
                 return;
             }

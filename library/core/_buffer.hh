@@ -3,6 +3,7 @@
 
 #include "midge_error.hh"
 #include "_stream.hh"
+#include "node.hh"
 #include "macros.hh"
 #include "coremsg.hh"
 
@@ -15,8 +16,10 @@ namespace midge
     class _buffer
     {
         public:
-            _buffer() :
+            _buffer( node* a_out_node ) :
                     f_length( 0 ),
+                    f_out_node( a_out_node ),
+                    f_write_stream_name( "out_?" ),
                     f_write_command( stream::s_none ),
                     f_write_mutex(),
                     f_write_stream( NULL ),
@@ -32,12 +35,19 @@ namespace midge
             }
 
         public:
+            void set_write_stream_name( const std::string& a_name )
+            {
+                f_write_stream_name = a_name;
+                return;
+            }
+
             void initialize( const count_t& p_length )
             {
                 f_length = p_length;
                 f_read_command = new enum_t[ f_length ];
                 f_read_data = new x_type[ f_length ];
                 f_write_stream = new _write_stream( *this );
+                f_write_stream->label() = f_out_node->get_name() + ":" + f_write_stream_name;
 
                 return;
             }
@@ -97,6 +107,8 @@ namespace midge
             }
             void finalize()
             {
+                f_write_stream->timer_report();
+
                 delete f_write_stream;
 
                 delete[] f_read_command;
@@ -104,6 +116,8 @@ namespace midge
 
                 for( count_t t_read_index = 0; t_read_index < f_read_count; t_read_index++ )
                 {
+                    f_read_streams[ t_read_index ]->timer_report();
+
                     delete[] f_read_mutexes[ t_read_index ];
                     delete f_read_streams[ t_read_index ];
                 }
@@ -151,6 +165,7 @@ namespace midge
             {
                 public:
                     _write_stream( _buffer& p_buffer ) :
+                            _stream< x_type >(),
                             f_buffer( p_buffer ),
                             f_count( 0 ),
                             f_current_index( 0 ),
@@ -185,10 +200,14 @@ namespace midge
                             f_next_index = 0;
                         }
 
+                        this->f_timer.increment_begin();
+
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
                         }
+
+                        this->f_timer.increment_locked();
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
@@ -217,6 +236,8 @@ namespace midge
                     mutable count_t f_next_index;
             };
 
+            node* f_out_node;
+            std::string f_write_stream_name;
             enum_t f_write_command;
             std::mutex f_write_mutex;
             _write_stream* f_write_stream;
@@ -227,6 +248,7 @@ namespace midge
             {
                 public:
                     _read_stream( _buffer& p_buffer ) :
+                            _stream< x_type >(),
                             f_buffer( p_buffer ),
                             f_stream_index( f_buffer.f_read_count - 1 ),
                             f_current_index( f_buffer.f_length - 1 ),
@@ -244,7 +266,11 @@ namespace midge
                             f_next_index = 0;
                         }
 
+                        this->f_timer.increment_begin();
+
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].lock();
+
+                        this->f_timer.increment_locked();
 
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_current_index ].unlock();
 

@@ -72,7 +72,7 @@ namespace midge
         }
         else
         {
-            throw error() << "node already has in named <" << p_label << ">";
+            throw error() << "node already has out named <" << p_label << ">";
         }
         return;
     }

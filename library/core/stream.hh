@@ -23,6 +23,9 @@ namespace midge
             virtual enum_t get() = 0;
             virtual void set( enum_t p_command ) = 0;
             virtual count_t get_current_index() const = 0;
+
+            virtual void timer_report() const = 0;
+
     };
 
 }

@@ -20,11 +20,13 @@ namespace midge
     {
         public:
             _out() :
-                    f_buffer( new _buffer< x_type > )
+                    f_buffer( new _buffer< x_type >( this ) )
             {
-                std::stringstream t_name;
-                t_name << "out_" << x_index::result;
-                node::out( new _output< _out< x_type, x_index >, x_type >( this, &_out< x_type, x_index >::out ), t_name.str() );
+                std::stringstream t_name_str;
+                t_name_str << "out_" << x_index::result;
+                std::string t_name = t_name_str.str();
+                node::out( new _output< _out< x_type, x_index >, x_type >( this, &_out< x_type, x_index >::out ), t_name );
+                f_buffer->set_write_stream_name( t_name );
             }
             virtual ~_out()
             {

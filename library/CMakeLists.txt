@@ -51,6 +51,7 @@ set( midge_sources ${midge_sources}
 set( midge_headers ${midge_headers}
 	${core_dir}/coremsg.hh
 	${core_dir}/stream.hh
+	${core_dir}/stream_timer.hh
 	${core_dir}/_stream.hh
 	${core_dir}/input.hh
 	${core_dir}/_input.hh
@@ -68,6 +69,7 @@ set( midge_headers ${midge_headers}
 set( midge_sources ${midge_sources}
 	${core_dir}/coremsg.cc
 	${core_dir}/stream.cc
+    ${core_dir}/stream_timer.cc
 	${core_dir}/input.cc
 	${core_dir}/output.cc
 	${core_dir}/node.cc
