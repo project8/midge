@@ -31,7 +31,6 @@ namespace midge
                 {
                     throw error() << "output <" << get_name() << "> on node <" << f_node->get_name() << "> cannot cast stream up from specific type";
                 }
-                t_typed_stream->label() = f_node->get_name() + ":" + get_name() + "(out)";
 
                 return t_stream;
             }

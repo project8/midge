@@ -200,14 +200,14 @@ namespace midge
                             f_next_index = 0;
                         }
 
-                        this->f_timer.increment_begin();
+                        if( p_command == stream::s_run ) this->f_timer.increment_begin();
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
                         }
 
-                        this->f_timer.increment_locked();
+                        if( p_command == stream::s_run ) this->f_timer.increment_locked();
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
@@ -266,11 +266,11 @@ namespace midge
                             f_next_index = 0;
                         }
 
-                        this->f_timer.increment_begin();
+                        if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_begin();
 
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].lock();
 
-                        this->f_timer.increment_locked();
+                        if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_locked();
 
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_current_index ].unlock();
 
