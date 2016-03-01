@@ -4,7 +4,6 @@
 #include "stream.hh"
 
 #include "macros.hh"
-#include "stream_timer.hh"
 
 
 namespace midge
@@ -27,14 +26,13 @@ namespace midge
             referrable( std::string, label );
 
         protected:
-            stream_timer f_timer;
+            IF_STREAM_TIMING_ENABLED( stream_timer f_timer; )
 
     };
 
     template< class x_type >
     _stream< x_type >::_stream() :
-            stream(),
-            f_timer()
+            stream()
     {
     }
 
@@ -46,7 +44,7 @@ namespace midge
     template< class x_type >
     inline void _stream< x_type >::timer_report() const
     {
-        f_timer.report( f_label );
+            IF_STREAM_TIMING_ENABLED( f_timer.report( f_label ); )
         return;
     }
 

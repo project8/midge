@@ -7,6 +7,8 @@
 
 #include "stream_timer.hh"
 
+#ifdef ENABLE_STREAM_TIMING
+
 #include "node.hh"
 
 #include "logger.hh"
@@ -15,6 +17,7 @@
 
 namespace midge
 {
+
     LOGGER( mlog, "stream_timer" );
 
     stream_timer::stream_timer() :
@@ -85,3 +88,5 @@ namespace midge
 
 
 } /* namespace midge */
+
+#endif /* ENABLE_STREAM_TIMER */

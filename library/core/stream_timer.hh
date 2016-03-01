@@ -8,6 +8,7 @@
 #ifndef MIDGE_STREAM_TIMER_HH_
 #define MIDGE_STREAM_TIMER_HH_
 
+#ifdef ENABLE_STREAM_TIMING
 #include <chrono>
 #include <string>
 
@@ -100,5 +101,13 @@ namespace midge
     }
 
 } /* namespace midge */
+
+#endif /* ENABLE_STREAM_TIMING */
+
+#ifdef ENABLE_STREAM_TIMING
+#define IF_STREAM_TIMING_ENABLED( x_line ) x_line
+#else
+#define IF_STREAM_TIMING_ENABLED( x_line )
+#endif
 
 #endif /* MIDGE_STREAM_TIMER_HH_ */

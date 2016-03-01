@@ -1,6 +1,7 @@
 #ifndef _midge_stream_hh_
 #define _midge_stream_hh_
 
+#include "stream_timer.hh"
 #include "types.hh"
 
 namespace midge

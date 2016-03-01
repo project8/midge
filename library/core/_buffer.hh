@@ -107,7 +107,7 @@ namespace midge
             }
             void finalize()
             {
-                f_write_stream->timer_report();
+                IF_STREAM_TIMING_ENABLED( f_write_stream->timer_report(); )
 
                 delete f_write_stream;
 
@@ -116,7 +116,7 @@ namespace midge
 
                 for( count_t t_read_index = 0; t_read_index < f_read_count; t_read_index++ )
                 {
-                    f_read_streams[ t_read_index ]->timer_report();
+                    IF_STREAM_TIMING_ENABLED( f_read_streams[ t_read_index ]->timer_report(); )
 
                     delete[] f_read_mutexes[ t_read_index ];
                     delete f_read_streams[ t_read_index ];
@@ -200,14 +200,14 @@ namespace midge
                             f_next_index = 0;
                         }
 
-                        if( p_command == stream::s_run ) this->f_timer.increment_begin();
+                        IF_STREAM_TIMING_ENABLED( if( p_command == stream::s_run ) this->f_timer.increment_begin() );
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
                             f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
                         }
 
-                        if( p_command == stream::s_run ) this->f_timer.increment_locked();
+                        IF_STREAM_TIMING_ENABLED( if( p_command == stream::s_run ) this->f_timer.increment_locked() );
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
@@ -266,11 +266,11 @@ namespace midge
                             f_next_index = 0;
                         }
 
-                        if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_begin();
+                        IF_STREAM_TIMING_ENABLED( if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_begin(); )
 
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].lock();
 
-                        if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_locked();
+                        IF_STREAM_TIMING_ENABLED( if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_locked(); )
 
                         f_buffer.f_read_mutexes[ f_stream_index ][ f_current_index ].unlock();
 

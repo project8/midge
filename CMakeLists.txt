@@ -9,10 +9,12 @@ cmake_policy( SET CMP0048 NEW ) # version in project()
 project( Midge VERSION 3.3.1 )
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scarab/cmake )
-
 include( PackageBuilder )
 
 pbuilder_prepare_project()
+
+list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
+include( MidgeUtility )
 
 
 #################
@@ -22,19 +24,11 @@ pbuilder_prepare_project()
 # require C++11
 set_option( USE_CPP11 TRUE )
 
+option( Midge_ENABLE_STREAM_TIMING "Enable stream timing" FALSE )
 
 #option( MIDGE_ENABLE_DEBUG_MESSAGES "enable debug messages" FALSE )
-#if( NOT CMAKE_BUILD_TYPE STREQUAL "" )
-#    string( TOLOWER ${CMAKE_BUILD_TYPE} LC_BUILD_TYPE )
-#endif( NOT CMAKE_BUILD_TYPE STREQUAL "" )
-#if( LC_BUILD_TYPE STREQUAL "debug" )
-#    set( MIDGE_ENABLE_DEBUG_MESSAGES FALSE CACHE INTERNAL "" FORCE )
-#    add_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )    
-#else( LC_BUILD_TYPE STREQUAL "debug" )
-#    set( MIDGE_ENABLE_DEBUG_MESSAGES TRUE CACHE INTERNAL "" FORCE )
-#    remove_definitions( -DMIDGE_ENABLE_DEBUG_MESSAGES )
-#endif( LC_BUILD_TYPE STREQUAL "debug" )
 
+midge_process_options()
   
 
 ######################
