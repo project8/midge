@@ -296,16 +296,16 @@ namespace midge\
 //#ifdef MIDGE_ENABLE_DEBUG_MESSAGES
 #ifndef NDEBUG
 //#define msg_debug( x_name, x_content ) x_name( s_debug ) << x_content
-#define msg_debug( x_name, x_content ) DEBUG( mmlog_##x_name, x_content );
+#define msg_debug( x_name, x_content ) LDEBUG( mmlog_##x_name, x_content );
 #else
 #define msg_debug( x_name, x_content )
 #endif
 //#define msg_normal( x_name, x_content ) x_name( s_normal ) << x_content
-#define msg_normal( x_name, x_content ) INFO( mmlog_##x_name, x_content );
+#define msg_normal( x_name, x_content ) LINFO( mmlog_##x_name, x_content );
 //#define msg_warning( x_name, x_content ) x_name( s_warning ) << x_content
-#define msg_warning( x_name, x_content ) WARN( mmlog_##x_name, x_content );
+#define msg_warning( x_name, x_content ) LWARN( mmlog_##x_name, x_content );
 //#define msg_error( x_name, x_content ) x_name( s_error ) << x_content
-#define msg_error( x_name, x_content ) ERROR( mmlog_##x_name, x_content );
+#define msg_error( x_name, x_content ) LERROR( mmlog_##x_name, x_content );
 
 message_declare( msg );
 
