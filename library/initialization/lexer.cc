@@ -8,6 +8,8 @@ using std::cout;
 using std::endl;
 #endif
 
+using std::string;
+
 namespace midge
 {
 

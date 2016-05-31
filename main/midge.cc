@@ -4,9 +4,11 @@
 #include "compiler.hh"
 #include "evaluator.hh"
 #include "lexer.hh"
-using namespace midge;
 
 #include <iostream>
+
+using namespace midge;
+
 using std::cout;
 using std::endl;
 

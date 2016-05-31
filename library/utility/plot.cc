@@ -2,9 +2,16 @@
 
 #include <limits>
 
-#include "error.hh"
-#include "message.hh"
+#include "message_logger.hh"
+#include "midge_error.hh"
+
+using std::stack;
+using std::vector;
+using std::map;
+using std::pair;
 using std::numeric_limits;
+
+using scarab::mutex;
 
 namespace midge
 {

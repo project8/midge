@@ -1,19 +1,26 @@
-#include "message.hh"
-
 #include <iomanip>
-#include <ostream>
-using std::cout;
-using std::endl;
-
 #include <cstdio>
 #include <cstdlib>
 #include <execinfo.h>
+#include <iostream>
+#include "message_logger.hh"
+
+using std::set;
+using std::vector;
+using std::map;
+using std::ostream;
+using std::pair;
+using std::string;
+using std::stringstream;
+using std::setprecision;
+using std::fixed;
 
 namespace midge
 {
-    mutex message::f_outer = mutex();
-    mutex message::f_inner = mutex();
-    set< pthread_t > message::f_threads = set< pthread_t >();
+
+    std::mutex message::f_outer;
+    std::mutex message::f_inner;
+    set< std::thread::id > message::f_threads = set< std::thread::id >();
 
     message::message( const string& aKey, const string& aDescription, const string& aPrefix, const string& aSuffix ) :
             f_key( aKey ),
@@ -216,9 +223,9 @@ namespace midge
     {
         bool_t t_flag;
         f_outer.lock();
-        if( f_threads.find( pthread_self() ) == f_threads.end() )
+        if( f_threads.find( std::this_thread::get_id() ) == f_threads.end() )
         {
-            f_threads.insert( pthread_self() );
+            f_threads.insert( std::this_thread::get_id() );
             t_flag = true;
         }
         else
@@ -238,13 +245,13 @@ namespace midge
     {
         bool_t t_flag;
         f_outer.lock();
-        if( f_threads.find( pthread_self() ) == f_threads.end() )
+        if( f_threads.find( std::this_thread::get_id() ) == f_threads.end() )
         {
             t_flag = false;
         }
         else
         {
-            f_threads.erase( pthread_self() );
+            f_threads.erase( std::this_thread::get_id() );
             t_flag = true;
         }
         f_outer.unlock();
@@ -264,14 +271,14 @@ namespace midge
 
     messages::messages() :
             f_map(),
-            f_format( cout.flags() ),
-            f_precision( cout.precision() ),
+            f_format( std::cout.flags() ),
+            f_precision( std::cout.precision() ),
 #ifdef MIDGE_ENABLE_DEBUG_MESSAGES
             f_terminal_severity( s_debug ),
 #else
             f_terminal_severity( s_normal ),
 #endif
-            f_terminal_stream( &cout ),
+            f_terminal_stream( &std::cout ),
 #ifdef MIDGE_ENABLE_DEBUG_MESSAGES
             f_log_severity( s_debug ),
 #else

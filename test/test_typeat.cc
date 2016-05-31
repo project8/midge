@@ -1,8 +1,10 @@
 #include "typeat.hh"
 #include "typelist.hh"
-using namespace midge;
 
 #include <iostream>
+
+using namespace midge;
+
 using std::cout;
 using std::endl;
 

@@ -1,6 +1,9 @@
 #include "object.hh"
 
-#include "error.hh"
+#include "midge_error.hh"
+
+using std::pair;
+using std::string;
 
 namespace midge
 {

@@ -1,7 +1,9 @@
 #include "evaluator.hh"
 
 #include <stack>
+
 using std::stack;
+using std::string;
 
 namespace midge
 {

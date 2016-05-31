@@ -1,16 +1,15 @@
 #include <fstream>
 
 #include "ascii.hh"
-#include "message.hh"
-using std::fstream;
+#include "message_logger.hh"
 
 #include <string>
-using std::string;
-
 #include <vector>
-using std::vector;
-
 #include <map>
+
+using std::vector;
+using std::string;
+using std::fstream;
 using std::map;
 
 namespace midge

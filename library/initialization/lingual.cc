@@ -1,5 +1,7 @@
 #include "lingual.hh"
 
+using std::string;
+
 namespace midge
 {
 

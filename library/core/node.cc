@@ -1,11 +1,14 @@
 #include "node.hh"
 
-#include "error.hh"
+#include "midge_error.hh"
+
+using std::string;
 
 namespace midge
 {
 
     node::node() :
+            cancelable(),
             f_name( "(unnamed node)" ),
             f_input_map(),
             f_output_map()
@@ -69,7 +72,7 @@ namespace midge
         }
         else
         {
-            throw error() << "node already has in named <" << p_label << ">";
+            throw error() << "node already has out named <" << p_label << ">";
         }
         return;
     }

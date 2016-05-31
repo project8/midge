@@ -5,7 +5,6 @@
 
 #include "processor.hh"
 #include "value.hh"
-using std::stack;
 
 namespace midge
 {
@@ -21,10 +20,10 @@ namespace midge
             value* operator()();
 
         public:
-            virtual void process_key( string p_string );
-            virtual void process_lingual( string p_string );
-            virtual void process_numerical( string p_string );
-            virtual void process_boolean( string p_string );
+            virtual void process_key( std::string p_string );
+            virtual void process_lingual( std::string p_string );
+            virtual void process_numerical( std::string p_string );
+            virtual void process_boolean( std::string p_string );
             virtual void process_null();
             virtual void process_object_start();
             virtual void process_object_stop();
@@ -39,8 +38,8 @@ namespace midge
 
             value* f_result;
 
-            stack< value* > f_values;
-            string f_key;
+            std::stack< value* > f_values;
+            std::string f_key;
     };
 }
 

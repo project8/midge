@@ -1,21 +1,30 @@
-#include "midge.hh"
-
 #include "input.hh"
 
 #include <unistd.h>
+
+#include "midge_error.hh"
 #include "coremsg.hh"
+#include "diptera.hh"
 #include "input.hh"
+#include "node.hh"
 #include "output.hh"
-#include "error.hh"
+
+#include <chrono>
+#include <thread>
+
+using std::string;
 
 namespace midge
 {
 
-    midge::midge() :
-            f_nodes()
+    diptera::diptera() :
+            cancelable(),
+            f_nodes(),
+            f_instructables(),
+            f_threads()
     {
     }
-    midge::~midge()
+    diptera::~diptera()
     {
         node* t_node;
         node_it_t t_it;
@@ -31,7 +40,7 @@ namespace midge
         }
     }
 
-    void midge::add( node* p_node )
+    void diptera::add( node* p_node )
     {
         string_t t_name = p_node->get_name();
         node_it_t t_it = f_nodes.find( t_name );
@@ -40,6 +49,12 @@ namespace midge
             p_node->initialize();
             f_nodes.insert( node_entry_t( t_name, p_node ) );
             msg_normal( coremsg, "added node <" << t_name << ">" << eom );
+
+            instructable* t_inst = dynamic_cast< instructable* >( p_node );
+            if( t_inst != nullptr )
+            {
+                f_instructables.insert( t_inst );
+            }
         }
         else
         {
@@ -47,7 +62,8 @@ namespace midge
         }
         return;
     }
-    void midge::join( const string_t& p_string )
+
+    void diptera::join( const string_t& p_string )
     {
         string_t t_first_node_string( "" );
         node* t_first_node;
@@ -161,7 +177,7 @@ namespace midge
             return;
         }
     }
-    void midge::run( const string_t& p_string )
+    void diptera::run( const string_t& p_string )
     {
         size_t t_start_pos;
         size_t t_separator_pos;
@@ -169,10 +185,10 @@ namespace midge
         string t_node_name;
         node_it_t t_node_it;
         node* t_node;
-        thread* t_thread;
 
         t_start_pos = 0;
         t_argument = p_string;
+
         while( true )
         {
             t_separator_pos = t_argument.find( s_separator, t_start_pos );
@@ -194,9 +210,7 @@ namespace midge
 
             msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
             t_node = t_node_it->second;
-            t_thread = new thread();
-            t_thread->start( t_node, &node::execute );
-            f_threads.push_back( t_thread );
+            f_threads.push_back( std::thread( &node::execute, t_node ) );
 
             if( t_separator_pos == string_t::npos )
             {
@@ -204,30 +218,71 @@ namespace midge
             }
         }
 
-        msg_normal( coremsg, "starting threads..." << eom );
-        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
-        {
-            (*t_it)->start();
-        }
+        // delay to alow the threads to spin up
+        std::this_thread::sleep_for( std::chrono::duration< int >( 1 ) );
 
-        msg_normal( coremsg, "joining threads..." << eom );
+        msg_normal( coremsg, "waiting for threads to finish..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
         {
-            (*t_it)->join();
+            t_it->join();
         }
 
         msg_normal( coremsg, "...done" << eom );
-        for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
-        {
-            delete (*t_it);
-        }
         f_threads.clear();
 
         return;
     }
 
-    const string_t midge::s_connector = string_t( ":" );
-    const string_t midge::s_designator = string_t( "." );
-    const string_t midge::s_separator = string_t( ":" );
+    void diptera::reset()
+    {
+
+    }
+
+    void diptera::instruct( instruction p_inst )
+    {
+        for( inst_it_t t_it = f_instructables.begin(); t_it != f_instructables.end(); ++t_it )
+        {
+            (*t_it)->instruct( p_inst );
+        }
+        return;
+    }
+
+    void diptera::do_cancellation()
+    {
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_it->second->cancel();
+        }
+        return;
+    }
+
+    void diptera::do_reset_cancellation()
+    {
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_it->second->reset_cancel();
+        }
+        return;
+    }
+
+
+    const string_t diptera::s_connector = string_t( ":" );
+    const string_t diptera::s_designator = string_t( "." );
+    const string_t diptera::s_separator = string_t( ":" );
+
+    const std::string& diptera::connector()
+    {
+        return s_connector;
+    }
+
+    const std::string& diptera::designator()
+    {
+        return s_designator;
+    }
+
+    const std::string& diptera::separator()
+    {
+        return s_separator;
+    }
 
 }

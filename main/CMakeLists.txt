@@ -2,17 +2,17 @@
 # main #
 ########
 
-set( midge_main_dependencies
-    ${midge_library}
-)
+if( Midge_ENABLE_EXECUTABLES )
 
-set( midge_main_directory
-    main
-)
-set( midge_main_programs
-    midge
-)
+    set( lib_dependencies 
+        ${Midge_EXE_LIBRARIES}
+    )
+    message(STATUS "midge lib dep: ${lib_dependencies}" )
+    
+    set( programs
+        midge
+    )
+    
+    pbuilder_executables( programs lib_dependencies )
 
-midge_executables( main )
-
-
+endif( Midge_ENABLE_EXECUTABLES )

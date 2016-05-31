@@ -6,7 +6,6 @@
 #include "numerical.hh"
 #include "value.hh"
 #include "typelist.hh"
-using std::map;
 
 namespace midge
 {
@@ -41,7 +40,7 @@ namespace midge
             }
             void operator()( ::midge::numerical* p_numerical )
             {
-                stringstream t_stream;
+                std::stringstream t_stream;
                 (void) (t_stream << p_numerical->str());
                 (void) (t_stream >> (*f_type));
                 return;

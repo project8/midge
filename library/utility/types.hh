@@ -6,7 +6,6 @@
 #include <string>
 
 #include "typelist.hh"
-using std::string;
 
 namespace midge
 {
@@ -19,7 +18,7 @@ namespace midge
     typedef double real_t;
     typedef double complex_t[2];
 
-    typedef string string_t;
+    typedef std::string string_t;
 }
 
 #endif

@@ -5,11 +5,9 @@
 
 #include "mutex.hh"
 #include "pointer.hh"
-using std::stack;
 
 namespace midge
 {
-
     template< class x_type >
     class pool
     {
@@ -22,15 +20,15 @@ namespace midge
             static void free( x_type* p_pointer );
 
         private:
-            static mutex s_mutex;
-            static stack< x_type* > s_stack;
+            static scarab::mutex s_mutex;
+            static std::stack< x_type* > s_stack;
     };
 
     template< class x_type >
-    mutex pool< x_type >::s_mutex = mutex();
+    scarab::mutex pool< x_type >::s_mutex = mutex();
 
     template< class x_type >
-    stack< x_type* > pool< x_type >::s_stack = stack< x_type* >();
+    std::stack< x_type* > pool< x_type >::s_stack = std::stack< x_type* >();
 
     template< class x_type >
     void pool< x_type >::initialize( const count_t& p_size )

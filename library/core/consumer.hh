@@ -9,7 +9,6 @@
 #include "typeat.hh"
 #include "typechain.hh"
 #include "typelength.hh"
-using std::vector;
 
 namespace midge
 {

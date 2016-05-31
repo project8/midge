@@ -5,23 +5,26 @@
 
 #include "_out.hh"
 #include "coremsg.hh"
+#include "instructable.hh"
 #include "node.hh"
 #include "typeat.hh"
 #include "typechain.hh"
 #include "typelength.hh"
-using std::vector;
 
 namespace midge
 {
 
     class producer :
-        virtual public node
+        virtual public node,
+        public instructable
     {
         protected:
             producer();
 
         public:
             virtual ~producer();
+
+
     };
 
     template< class x_type, class x_out_list >

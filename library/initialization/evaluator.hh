@@ -15,14 +15,14 @@ namespace midge
             virtual ~evaluator();
 
         public:
-            virtual void process_lingual( string p_string );
+            virtual void process_lingual( std::string p_string );
 
         private:
-            string evaluate( const string& p_string );
+            std::string evaluate( const std::string& p_string );
 
             const arguments& f_arguments;
-            static const string s_start_bracket;
-            static const string s_end_bracket;
+            static const std::string s_start_bracket;
+            static const std::string s_end_bracket;
     };
 
 }
