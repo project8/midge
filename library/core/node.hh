@@ -1,11 +1,11 @@
 #ifndef _midge_node_hh_
 #define _midge_node_hh_
 
-#include "cancelable.hh"
 #include "input.hh"
 #include "output.hh"
 #include "shared_cancel.hh"
 
+#include "cancelable.hh"
 #include "factory.hh"
 
 #include <atomic>
@@ -15,7 +15,7 @@
 namespace midge
 {
 
-    class node : public cancelable
+    class node : public scarab::cancelable
     {
         public:
             node();

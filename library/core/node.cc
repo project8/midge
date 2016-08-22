@@ -8,7 +8,7 @@ namespace midge
 {
 
     node::node() :
-            cancelable(),
+            scarab::cancelable(),
             f_name( "(unnamed node)" ),
             f_input_map(),
             f_output_map()

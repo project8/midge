@@ -1,8 +1,9 @@
 #ifndef _midge_midge_hh_
 #define _midge_midge_hh_
 
-#include "cancelable.hh"
 #include "instructable.hh"
+
+#include "cancelable.hh"
 
 #include <map>
 #include <set>
@@ -15,7 +16,7 @@ namespace midge
     class producer;
     class thread;
 
-    class diptera : public cancelable
+    class diptera : public scarab::cancelable
     {
         public:
             diptera();

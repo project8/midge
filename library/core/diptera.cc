@@ -18,7 +18,7 @@ namespace midge
 {
 
     diptera::diptera() :
-            cancelable(),
+            scarab::cancelable(),
             f_nodes(),
             f_instructables(),
             f_threads()
