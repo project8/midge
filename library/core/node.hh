@@ -30,14 +30,24 @@ namespace midge
             virtual void finalize() = 0;
 
         public:
+            node* node_ptr( const std::string& p_label );
             input* in( const std::string& p_label );
             output* out( const std::string& p_label );
+
+            void node_ptr( node*, const std::string& p_label );
 
         protected:
             void in( input*, const std::string& p_label );
             void out( output*, const std::string& p_label );
 
         private:
+            typedef std::map< std::string, node* > node_map;
+            typedef node_map::iterator node_it;
+            typedef node_map::const_iterator node_cit;
+            typedef node_map::value_type node_entry;
+
+            node_map f_node_map;
+
             typedef std::map< std::string, input* > input_map;
             typedef input_map::iterator input_it;
             typedef input_map::const_iterator input_cit;

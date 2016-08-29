@@ -19,6 +19,7 @@ namespace midge
 
     diptera::diptera() :
             scarab::cancelable(),
+            f_is_initialized( false ),
             f_nodes(),
             f_instructables(),
             f_threads()
@@ -46,7 +47,6 @@ namespace midge
         node_it_t t_it = f_nodes.find( t_name );
         if( t_it == f_nodes.end() )
         {
-            p_node->initialize();
             f_nodes.insert( node_entry_t( t_name, p_node ) );
             msg_normal( coremsg, "added node <" << t_name << ">" << eom );
 
@@ -103,11 +103,6 @@ namespace midge
                         return;
                     }
                 }
-                else
-                {
-                    throw error() << "root join found no designators in first argument <" << t_first_argument << ">";
-                    return;
-                }
 
                 t_first_pos = t_second_argument.find( s_designator );
                 if( t_first_pos != string_t::npos )
@@ -124,9 +119,10 @@ namespace midge
                         return;
                     }
                 }
-                else
+
+                if( t_first_out_string.empty() != t_second_in_string.empty() )
                 {
-                    throw error() << "root join found no designators in second argument <" << t_second_argument << ">";
+                    throw error() << "root join must link either by stream or pointer";
                     return;
                 }
 
@@ -146,22 +142,33 @@ namespace midge
                 }
                 t_second_node = t_second_it->second;
 
-                t_first_out = t_first_node->out( t_first_out_string );
-                if( t_first_out == NULL )
+                if( t_first_out_string.empty() )
                 {
-                    throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
-                    return;
-                }
+                    // joining nodes by pointer
+                    t_first_node->node_ptr( t_second_node, t_second_node_string );
 
-                t_second_in = t_second_node->in( t_second_in_string );
-                if( t_second_in == NULL )
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "> with <" << t_second_node_string << ">" << eom );
+                }
+                else
                 {
-                    throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
-                    return;
-                }
-                t_second_in->set( t_first_out->get() );
 
-                msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+                    t_first_out = t_first_node->out( t_first_out_string );
+                    if( t_first_out == NULL )
+                    {
+                        throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
+                        return;
+                    }
+
+                    t_second_in = t_second_node->in( t_second_in_string );
+                    if( t_second_in == NULL )
+                    {
+                        throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
+                        return;
+                    }
+                    t_second_in->set( t_first_out->get() );
+
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+                }
 
                 return;
             }
@@ -189,6 +196,24 @@ namespace midge
         t_start_pos = 0;
         t_argument = p_string;
 
+        // initialize all nodes if not done already
+        if( ! f_is_initialized )
+        {
+            for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); ++t_it )
+            {
+                try
+                {
+                    t_it->second->initialize();
+                }
+                catch( std::exception& e )
+                {
+                    msg_error( coremsg, "exception caught while initializing node <" << t_it->first << ">" );
+                    throw( e );
+                }
+            }
+        }
+
+        // run nodes specified in the string
         while( true )
         {
             t_separator_pos = t_argument.find( s_separator, t_start_pos );
@@ -218,7 +243,7 @@ namespace midge
             }
         }
 
-        // delay to alow the threads to spin up
+        // delay to allow the threads to spin up
         std::this_thread::sleep_for( std::chrono::duration< int >( 1 ) );
 
         msg_normal( coremsg, "waiting for threads to finish..." << eom );

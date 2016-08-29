@@ -23,8 +23,21 @@ namespace midge
             ~diptera();
 
         public:
+            /// Add a node
             void add( node* p_node );
+            /// Join one node to another
+            /*!
+             * Option 1: Join by data stream
+             *   "my-producer.out_0:my-consumer.in_0"
+             *     Output 0 of my-producer will be connected to input 0 of my-consumer
+             *
+             * Option 2: Join by pointer
+             *   "my-consumer:my-producer"
+             *     my-consumer will get a pointer to my-producer stored in the f_node_links map
+             */
             void join( const std::string& p_string );
+            /// Run a set of nodes; only the nodes specified will be executed
+            ///   "my-consumer:my-producer"
             void run( const std::string& p_string );
 
             void reset();
@@ -38,6 +51,8 @@ namespace midge
         private:
             virtual void do_cancellation();
             virtual void do_reset_cancellation();
+
+            bool f_is_initialized;
 
             typedef std::map< std::string, node* > node_map_t;
             typedef node_map_t::iterator node_it_t;
