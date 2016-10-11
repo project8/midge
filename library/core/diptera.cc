@@ -207,7 +207,7 @@ namespace midge
                 }
                 catch( std::exception& e )
                 {
-                    msg_error( coremsg, "exception caught while initializing node <" << t_it->first << ">" );
+                    msg_error( coremsg, "exception caught while initializing node <" << t_it->first << ">: " << e.what() );
                     throw( e );
                 }
             }
