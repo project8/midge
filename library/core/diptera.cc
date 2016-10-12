@@ -19,7 +19,6 @@ namespace midge
 
     diptera::diptera() :
             scarab::cancelable(),
-            f_is_initialized( false ),
             f_nodes(),
             f_instructables(),
             f_threads()
@@ -47,6 +46,17 @@ namespace midge
         node_it_t t_it = f_nodes.find( t_name );
         if( t_it == f_nodes.end() )
         {
+            msg_normal( coremsg, "initializing node <" << t_name << ">" << eom );
+            try
+            {
+                p_node->initialize();
+            }
+            catch( std::exception& e )
+            {
+                msg_error( coremsg, "exception caught while initializing node <" << t_name << ">: " << e.what() );
+                throw( e );
+            }
+
             f_nodes.insert( node_entry_t( t_name, p_node ) );
             msg_normal( coremsg, "added node <" << t_name << ">" << eom );
 
@@ -195,23 +205,6 @@ namespace midge
 
         t_start_pos = 0;
         t_argument = p_string;
-
-        // initialize all nodes if not done already
-        if( ! f_is_initialized )
-        {
-            for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); ++t_it )
-            {
-                try
-                {
-                    t_it->second->initialize();
-                }
-                catch( std::exception& e )
-                {
-                    msg_error( coremsg, "exception caught while initializing node <" << t_it->first << ">: " << e.what() );
-                    throw( e );
-                }
-            }
-        }
 
         // run nodes specified in the string
         while( true )

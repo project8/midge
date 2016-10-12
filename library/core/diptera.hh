@@ -52,8 +52,6 @@ namespace midge
             virtual void do_cancellation();
             virtual void do_reset_cancellation();
 
-            bool f_is_initialized;
-
             typedef std::map< std::string, node* > node_map_t;
             typedef node_map_t::iterator node_it_t;
             typedef node_map_t::const_iterator node_cit_t;
