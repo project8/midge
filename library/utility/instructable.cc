@@ -12,7 +12,7 @@ namespace midge
 
     instructable::instructable() :
             f_mutex(),
-            f_instruction( instruction::carry_on ),
+            f_instruction( instruction::none ),
             f_have_instruction( false )
     {
     }
