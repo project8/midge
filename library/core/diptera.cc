@@ -237,7 +237,7 @@ namespace midge
         }
 
         // delay to allow the threads to spin up
-        std::this_thread::sleep_for( std::chrono::duration< int >( 1 ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
         msg_normal( coremsg, "waiting for threads to finish..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
