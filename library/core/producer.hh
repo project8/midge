@@ -5,7 +5,6 @@
 
 #include "_out.hh"
 #include "coremsg.hh"
-#include "instructable.hh"
 #include "node.hh"
 #include "typeat.hh"
 #include "typechain.hh"
@@ -15,8 +14,7 @@ namespace midge
 {
 
     class producer :
-        virtual public node,
-        public instructable
+        virtual public node
     {
         protected:
             producer();

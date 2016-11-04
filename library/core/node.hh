@@ -2,6 +2,7 @@
 #define _midge_node_hh_
 
 #include "input.hh"
+#include "instructable.hh"
 #include "output.hh"
 #include "shared_cancel.hh"
 
@@ -15,7 +16,7 @@
 namespace midge
 {
 
-    class node : public scarab::cancelable
+    class node : public scarab::cancelable,  public instructable
     {
         public:
             node();

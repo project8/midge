@@ -15,8 +15,7 @@ namespace midge
 {
 
     class bystander :
-            virtual public node,
-            public instructable
+            virtual public node
     {
         public:
             bystander();

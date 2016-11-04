@@ -11,8 +11,7 @@ namespace midge
 {
 
     bystander::bystander() :
-            node(),
-            instructable()
+            node()
     {
     }
 
