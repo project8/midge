@@ -228,7 +228,7 @@ namespace midge
 
             msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
             t_node = t_node_it->second;
-            f_threads.push_back( std::thread( &node::execute, t_node ) );
+            f_threads.push_back( std::thread( &node::execute, t_node, this ) );
 
             if( t_separator_pos == string_t::npos )
             {
@@ -250,6 +250,24 @@ namespace midge
 
         return;
     }
+
+    void diptera::throw_ex( std::exception_ptr e_ptr )
+    {
+        try
+        {
+            if( e_ptr )
+            {
+                std::rethrow_exception( e_ptr );
+            }
+        }
+        catch( const std::exception& e )
+        {
+            msg_error( coremsg, "exception thrown within midge: " << e.what() );
+            cancel();
+        }
+        return;
+    }
+
 
     void diptera::reset()
     {

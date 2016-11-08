@@ -40,6 +40,9 @@ namespace midge
             ///   "my-consumer:my-producer"
             void run( const std::string& p_string );
 
+            /// To be used by running nodes to throw an exception
+            void throw_ex( std::exception_ptr e_ptr );
+
             void reset();
 
             void instruct( instruction p_inst );

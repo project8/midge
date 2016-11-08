@@ -1,6 +1,7 @@
 #ifndef _midge_node_hh_
 #define _midge_node_hh_
 
+#include "diptera.hh"
 #include "input.hh"
 #include "instructable.hh"
 #include "output.hh"
@@ -27,7 +28,7 @@ namespace midge
 
         public:
             virtual void initialize() = 0;
-            virtual void execute() = 0;
+            virtual void execute( diptera* ) = 0;
             virtual void finalize() = 0;
 
         public:
