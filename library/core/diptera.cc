@@ -3,11 +3,15 @@
 #include <unistd.h>
 
 #include "midge_error.hh"
+#include "bystander.hh"
+#include "consumer.hh"
 #include "coremsg.hh"
 #include "diptera.hh"
 #include "input.hh"
 #include "node.hh"
 #include "output.hh"
+#include "producer.hh"
+#include "transformer.hh"
 
 #include <chrono>
 #include <thread>
@@ -285,9 +289,25 @@ namespace midge
 
     void diptera::do_cancellation()
     {
+        // cancel producers first
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
-            t_it->second->cancel();
+            if( dynamic_cast< producer* >( t_it->second ) != nullptr ) t_it->second->cancel();
+        }
+        // cancel transformers second
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            if( dynamic_cast< transformer* >( t_it->second ) != nullptr ) t_it->second->cancel();
+        }
+        // cancel consumers third
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            if( dynamic_cast< consumer* >( t_it->second ) != nullptr ) t_it->second->cancel();
+        }
+        // cancel bystanders fourth
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            if( dynamic_cast< bystander* >( t_it->second ) != nullptr ) t_it->second->cancel();
         }
         return;
     }
