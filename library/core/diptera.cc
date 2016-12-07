@@ -30,18 +30,7 @@ namespace midge
     }
     diptera::~diptera()
     {
-        node* t_node;
-        node_it_t t_it;
-        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
-        {
-            t_node = t_it->second;
-            t_node->finalize();
-        }
-        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
-        {
-            t_node = t_it->second;
-            delete (t_node);
-        }
+        reset();
     }
 
     void diptera::add( node* p_node )
@@ -249,7 +238,8 @@ namespace midge
             t_it->join();
         }
 
-        msg_normal( coremsg, "...done" << eom );
+        msg_normal( coremsg, "threads finished" << eom );
+
         f_threads.clear();
 
         return;
@@ -275,7 +265,20 @@ namespace midge
 
     void diptera::reset()
     {
-
+        node* t_node;
+        node_it_t t_it;
+        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_node = t_it->second;
+            t_node->finalize();
+        }
+        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_node = t_it->second;
+            delete (t_node);
+        }
+        f_nodes.clear();
+        return;
     }
 
     void diptera::instruct( instruction p_inst )
