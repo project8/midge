@@ -10,7 +10,6 @@
 #include "cancelable.hh"
 #include "factory.hh"
 
-#include <atomic>
 #include <map>
 #include <string>
 
@@ -63,6 +62,9 @@ namespace midge
             typedef output_map::value_type output_entry;
 
             output_map f_output_map;
+
+        protected:
+            void do_cancellation();
     };
 
 }

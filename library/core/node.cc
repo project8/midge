@@ -101,4 +101,14 @@ namespace midge
         return;
     }
 
+    void node::do_cancellation()
+    {
+        for( output_it t_it = f_output_map.begin(); t_it != f_output_map.end(); ++t_it )
+        {
+            t_it->second->get()->cancel();
+        }
+        return;
+    }
+
+
 }
