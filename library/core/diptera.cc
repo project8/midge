@@ -46,7 +46,7 @@ namespace midge
             }
             catch( std::exception& e )
             {
-                msg_error( coremsg, "exception caught while initializing node <" << t_name << ">: " << e.what() );
+                msg_error( coremsg, "exception caught while initializing node <" << t_name << ">: " << e.what() << eom );
                 throw( e );
             }
 
@@ -256,7 +256,7 @@ namespace midge
         }
         catch( const std::exception& e )
         {
-            msg_error( coremsg, "exception thrown within midge: " << e.what() );
+            msg_error( coremsg, "exception thrown within midge: " << e.what() << eom );
             cancel();
         }
         return;
@@ -293,24 +293,44 @@ namespace midge
     void diptera::do_cancellation()
     {
         // cancel producers first
+        msg_debug( coremsg, "Canceling nodes: producers" << eom );
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
-            if( dynamic_cast< producer* >( t_it->second ) != nullptr ) t_it->second->cancel();
+            if( dynamic_cast< producer* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
         }
         // cancel transformers second
+        msg_debug( coremsg, "Canceling nodes: transformers" << eom );
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
-            if( dynamic_cast< transformer* >( t_it->second ) != nullptr ) t_it->second->cancel();
+            if( dynamic_cast< transformer* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
         }
         // cancel consumers third
+        msg_debug( coremsg, "Canceling nodes: consumers" << eom );
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
-            if( dynamic_cast< consumer* >( t_it->second ) != nullptr ) t_it->second->cancel();
+            if( dynamic_cast< consumer* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
         }
         // cancel bystanders fourth
+        msg_debug( coremsg, "Canceling nodes: bystanders" << eom );
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
-            if( dynamic_cast< bystander* >( t_it->second ) != nullptr ) t_it->second->cancel();
+            if( dynamic_cast< bystander* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
         }
         return;
     }

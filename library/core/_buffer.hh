@@ -206,20 +206,6 @@ namespace midge
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
-                            //f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
-                            /*
-                            if( ! f_buffer.f_read_mutexes[ t_index ][ f_next_index ].try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
-                            {
-                                // undo all that's been done so far
-                                for( count_t t_undo_index = t_index - 1; t_index >= 0; t_index-- )
-                                {
-                                    f_buffer.f_read_mutexes[ t_undo_index ][ f_next_index ].unlock();
-                                }
-                                IF_STREAM_TIMING_ENABLED( if( p_command == stream::s_run ) this->f_timer.increment_locked() );
-                                f_next_index = f_last_next_index;
-                                return false;
-                            }
-                            */
                             while( ! f_buffer.f_read_mutexes[ t_index ][ f_next_index ].try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
                             {
                                 if( scarab::cancelable::is_canceled() ) return false;

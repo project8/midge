@@ -1,5 +1,6 @@
 #include "node.hh"
 
+#include "coremsg.hh"
 #include "midge_error.hh"
 
 using std::string;
@@ -105,6 +106,7 @@ namespace midge
     {
         for( output_it t_it = f_output_map.begin(); t_it != f_output_map.end(); ++t_it )
         {
+            msg_debug( coremsg, "Canceling stream <" << t_it->first << ">" << eom );
             t_it->second->get()->cancel();
         }
         return;
