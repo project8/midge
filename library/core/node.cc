@@ -104,6 +104,7 @@ namespace midge
 
     void node::do_cancellation()
     {
+        msg_debug( coremsg, "node::do_cancellation for <" << f_name << ">" << eom );
         for( output_it t_it = f_output_map.begin(); t_it != f_output_map.end(); ++t_it )
         {
             msg_debug( coremsg, "Canceling stream <" << t_it->first << ">" << eom );
