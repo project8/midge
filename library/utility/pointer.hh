@@ -9,7 +9,6 @@
 
 namespace midge
 {
-
     template< typename x_type >
     class pointer
     {

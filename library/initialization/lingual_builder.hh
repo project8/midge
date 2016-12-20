@@ -6,12 +6,11 @@
 #include "lingual.hh"
 #include "value.hh"
 #include "typelist.hh"
-using std::map;
 
 namespace midge
 {
 
-    typedef typelist_1( string )lingual_types;
+    typedef typelist_1( std::string )lingual_types;
 
     template< class x_type >
     class lingual_builder

@@ -1,3 +1,5 @@
+# CMakeLists.txt for midge/library
+
 set( core_dir core )
 set( bind_dir bindings )
 set( init_dir initialization )
@@ -10,14 +12,14 @@ set( util_dir utility )
 set( midge_headers ${midge_headers}
 	${util_dir}/macros.hh
 	${util_dir}/initializer.hh
-	${util_dir}/singleton.hh
-	${util_dir}/error.hh
-	${util_dir}/message.hh
+	${util_dir}/midge_error.hh
+	${util_dir}/message_logger.hh
 	${util_dir}/ascii.hh
 	${util_dir}/binary.hh
 	#${util_dir}/plot.hh
-	${util_dir}/mutex.hh
-	${util_dir}/thread.hh
+	${util_dir}/instructable.hh
+	${util_dir}/shared_cancel.hh
+	#${util_dir}/thread.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh
 	${util_dir}/typenode.hh
@@ -29,13 +31,13 @@ set( midge_headers ${midge_headers}
 	${util_dir}/typechain.hh
 )
 set( midge_sources ${midge_sources}
-	${util_dir}/error.cc
-	${util_dir}/message.cc
+	${util_dir}/midge_error.cc
+	${util_dir}/message_logger.cc
 	${util_dir}/ascii.cc
 	${util_dir}/binary.cc
 	#${util_dir}/plot.cc
-	${util_dir}/mutex.cc
-	${util_dir}/thread.cc
+	${util_dir}/instructable.cc
+	#${util_dir}/thread.cc
 )
 
 
@@ -47,6 +49,7 @@ set( midge_sources ${midge_sources}
 set( midge_headers ${midge_headers}
 	${core_dir}/coremsg.hh
 	${core_dir}/stream.hh
+	${core_dir}/stream_timer.hh
 	${core_dir}/_stream.hh
 	${core_dir}/input.hh
 	${core_dir}/_input.hh
@@ -56,21 +59,24 @@ set( midge_headers ${midge_headers}
 	${core_dir}/_buffer.hh
 	${core_dir}/_in.hh
 	${core_dir}/_out.hh
+	${core_dir}/bystander.hh
 	${core_dir}/producer.hh
 	${core_dir}/consumer.hh
 	${core_dir}/transformer.hh
-	${core_dir}/midge.hh
+	${core_dir}/diptera.hh
 )
 set( midge_sources ${midge_sources}
 	${core_dir}/coremsg.cc
 	${core_dir}/stream.cc
+    ${core_dir}/stream_timer.cc
 	${core_dir}/input.cc
 	${core_dir}/output.cc
 	${core_dir}/node.cc
+	${core_dir}/bystander.cc
 	${core_dir}/producer.cc
 	${core_dir}/consumer.cc
 	${core_dir}/transformer.cc
-	${core_dir}/midge.cc
+	${core_dir}/diptera.cc
 )
 
 
@@ -134,15 +140,5 @@ set( midge_sources ${midge_sources}
 # library #
 ###########
 
-set( midge_library "_${midge_project_name}" )
-
-add_library( ${midge_library} ${midge_sources} )
-target_link_libraries( ${midge_library} ${EXTERNAL_LIBRARIES} )
-
+pbuilder_library( Midge midge_sources "" )
 pbuilder_install_headers( ${midge_headers} )
-
-pbuilder_install_libraries( ${midge_library} )
-
-# bump the midge_library variable up to parent-scope
-set( midge_library ${midge_library} PARENT_SCOPE )
-

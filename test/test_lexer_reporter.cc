@@ -2,12 +2,14 @@
 #include "evaluator.hh"
 #include "lexer.hh"
 #include "reporter.hh"
-#include "message.hh"
+#include <iostream>
+#include "message_logger.hh"
+
 using namespace midge;
 
-#include <iostream>
 using std::cout;
 using std::endl;
+using std::string;
 
 int main( int p_count, char** p_values )
 {

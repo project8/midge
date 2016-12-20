@@ -3,9 +3,8 @@
 
 #include <string>
 
-#include "error.hh"
+#include "midge_error.hh"
 #include "types.hh"
-using std::string;
 
 namespace midge
 {

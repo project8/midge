@@ -10,19 +10,19 @@ namespace midge
         public value
     {
         public:
-            numerical( const string& p_string );
+            numerical( const std::string& p_string );
             virtual ~numerical();
             numerical* clone() const;
 
         public:
-            string& str();
-            const string& str() const;
+            std::string& str();
+            const std::string& str() const;
 
             real_t& get();
             const real_t& get() const;
 
         private:
-            string f_string;
+            std::string f_string;
             real_t f_value;
     };
 }

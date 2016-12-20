@@ -11,7 +11,6 @@
 #include "null.hh"
 #include "numerical.hh"
 #include "object.hh"
-using std::map;
 
 namespace midge
 {
@@ -32,9 +31,9 @@ namespace midge
             }
 
         public:
-            void operator()( string& p_string )
+            void operator()( std::string& p_string )
             {
-                stringstream t_stream;
+                std::stringstream t_stream;
                 t_stream << p_string;
                 t_stream >> (*f_type);
                 return;

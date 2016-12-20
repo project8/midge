@@ -6,7 +6,6 @@
 #include "null.hh"
 #include "value.hh"
 #include "typelist.hh"
-using std::map;
 
 namespace midge
 {

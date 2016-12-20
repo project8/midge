@@ -5,7 +5,6 @@
 
 #include "processor.hh"
 #include "value.hh"
-using std::stack;
 
 namespace midge
 {
@@ -24,10 +23,10 @@ namespace midge
             void dispatch( value* f_value );
 
         public:
-            virtual void process_key( string p_string );
-            virtual void process_lingual( string p_string );
-            virtual void process_numerical( string p_string );
-            virtual void process_boolean( string p_string );
+            virtual void process_key( std::string p_string );
+            virtual void process_lingual( std::string p_string );
+            virtual void process_numerical( std::string p_string );
+            virtual void process_boolean( std::string p_string );
             virtual void process_null();
             virtual void process_object_start();
             virtual void process_object_stop();
@@ -43,12 +42,12 @@ namespace midge
                     context();
                     ~context();
 
-                    string pad;
-                    string key;
-                    string comma;
+                    std::string pad;
+                    std::string key;
+                    std::string comma;
             };
 
-            stack< context > f_contexts;
+            std::stack< context > f_contexts;
     };
 }
 

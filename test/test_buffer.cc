@@ -2,9 +2,10 @@
 
 #include <cmath>
 #include <unistd.h>
-#include "error.hh"
-#include "message.hh"
-#include "mutex.hh"
+#include <mutex>
+
+#include "message_logger.hh"
+#include "midge_error.hh"
 #include "thread.hh"
 #include "types.hh"
 
@@ -137,8 +138,8 @@ namespace midge
                 {
                     count_t t_new_read_index = f_read_count;
                     count_t t_new_read_count = f_read_count + 1;
-                    mutex** t_new_read_state_mutexes = new mutex*[ t_new_read_count ];
-                    mutex** t_new_read_data_mutexes = new mutex*[ t_new_read_count ];
+                    std::mutex** t_new_read_state_mutexes = new std::mutex*[ t_new_read_count ];
+                    std::mutex** t_new_read_data_mutexes = new std::mutex*[ t_new_read_count ];
                     buffer_read_stream** t_new_read_streams = new buffer_read_stream*[ t_new_read_count ];
 
                     for( index_t t_index = 0; t_index < f_read_count; t_index++ )
@@ -152,12 +153,12 @@ namespace midge
 
                     delete[] f_read_state_mutexes;
                     f_read_state_mutexes = t_new_read_state_mutexes;
-                    f_read_state_mutexes[ t_new_read_index ] = new mutex[ f_length ];
+                    f_read_state_mutexes[ t_new_read_index ] = new std::mutex[ f_length ];
                     f_read_state_mutexes[ t_new_read_index ][ 0 ].lock();
 
                     delete[] f_read_data_mutexes;
                     f_read_data_mutexes = t_new_read_data_mutexes;
-                    f_read_data_mutexes[ t_new_read_index ] = new mutex[ f_length ];
+                    f_read_data_mutexes[ t_new_read_index ] = new std::mutex[ f_length ];
                     f_read_data_mutexes[ t_new_read_index ][ 0 ].lock();
 
                     delete[] f_read_streams;
@@ -254,7 +255,7 @@ namespace midge
                 };
 
                 enum_t f_write_state;
-                mutex f_write_state_mutex;
+                std::mutex f_write_state_mutex;
                 buffer_write_stream* f_write_stream;
 
             protected:
@@ -325,9 +326,9 @@ namespace midge
 
                 count_t f_read_count;
                 enum_t** f_read_state;
-                mutex** f_read_state_mutexes;
+                std::mutex** f_read_state_mutexes;
                 x_type** f_read_data;
-                mutex** f_read_data_mutexes;
+                std::mutex** f_read_data_mutexes;
                 buffer_read_stream** f_read_streams;
 
         };

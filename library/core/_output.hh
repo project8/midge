@@ -1,9 +1,9 @@
 #ifndef _midge__output_hh_
 #define _midge__output_hh_
 
+#include "midge_error.hh"
 #include "_stream.hh"
 #include "output.hh"
-#include "error.hh"
 
 namespace midge
 {

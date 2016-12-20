@@ -8,8 +8,9 @@
 #include "null.hh"
 #include "numerical.hh"
 #include "object.hh"
-using std::cout;
-using std::endl;
+
+using std::pair;
+using std::string;
 
 namespace midge
 {
@@ -38,7 +39,7 @@ namespace midge
             process_object_start();
 
             pair< string, value* > t_value;
-            for( index_t t_index = 0; t_index < t_object->size(); t_index++ )
+            for( count_t t_index = 0; t_index < t_object->size(); t_index++ )
             {
                 t_value = t_object->at( t_index );
                 process_key( t_value.first );
@@ -57,7 +58,7 @@ namespace midge
             process_array_start();
 
             value* t_value;
-            for( index_t t_index = 0; t_index < t_array->size(); t_index++ )
+            for( count_t t_index = 0; t_index < t_array->size(); t_index++ )
             {
                 t_value = t_array->at( t_index );
                 dispatch( t_value );
@@ -103,28 +104,28 @@ namespace midge
     }
     void reporter::process_lingual( string p_string )
     {
-        cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << "\"" << p_string << "\"";
+        std::cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << "\"" << p_string << "\"";
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
         return;
     }
     void reporter::process_numerical( string p_string )
     {
-        cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << p_string;
+        std::cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << p_string;
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
         return;
     }
     void reporter::process_boolean( string p_string )
     {
-        cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << (p_string[ 0 ] == '0' ? "false" : "true");
+        std::cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << (p_string[ 0 ] == '0' ? "false" : "true");
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
         return;
     }
     void reporter::process_null()
     {
-        cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << "null";
+        std::cout << f_contexts.top().comma << "\n" << f_contexts.top().pad << f_contexts.top().key << "null";
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
         return;
@@ -133,13 +134,13 @@ namespace midge
     {
         if( f_contexts.size() > 1 )
         {
-            cout << f_contexts.top().comma << "\n";
+            std::cout << f_contexts.top().comma << "\n";
         }
         if( f_contexts.top().key.size() != 0 )
         {
-            cout << f_contexts.top().pad << f_contexts.top().key << "\n";
+            std::cout << f_contexts.top().pad << f_contexts.top().key << "\n";
         }
-        cout << f_contexts.top().pad << "{";
+        std::cout << f_contexts.top().pad << "{";
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
 
@@ -150,7 +151,7 @@ namespace midge
     void reporter::process_object_stop()
     {
         f_contexts.pop();
-        cout << "\n" << f_contexts.top().pad << f_contexts.top().key << "}";
+        std::cout << "\n" << f_contexts.top().pad << f_contexts.top().key << "}";
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
         return;
@@ -159,13 +160,13 @@ namespace midge
     {
         if( f_contexts.size() > 1 )
         {
-            cout << f_contexts.top().comma << "\n";
+            std::cout << f_contexts.top().comma << "\n";
         }
         if( f_contexts.top().key.size() != 0 )
         {
-            cout << f_contexts.top().pad << f_contexts.top().key << "\n";
+            std::cout << f_contexts.top().pad << f_contexts.top().key << "\n";
         }
-        cout << f_contexts.top().pad << "[";
+        std::cout << f_contexts.top().pad << "[";
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
 
@@ -176,7 +177,7 @@ namespace midge
     void reporter::process_array_stop()
     {
         f_contexts.pop();
-        cout << "\n" << f_contexts.top().pad << f_contexts.top().key << "]";
+        std::cout << "\n" << f_contexts.top().pad << f_contexts.top().key << "]";
         f_contexts.top().key.assign( "" );
         f_contexts.top().comma.assign( "," );
         return;
@@ -189,7 +190,7 @@ namespace midge
     void reporter::process_stop()
     {
         f_contexts.pop();
-        cout << endl;
+        std::cout << std::endl;
         return;
     }
 

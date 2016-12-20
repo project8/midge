@@ -1,35 +1,20 @@
 #ifndef _midge_message_hh_
 #define _midge_message_hh_
 
-#include <pthread.h>
-
-#include <set>
-
-#include "mutex.hh"
 #include "types.hh"
-using std::set;
 
-#include <vector>
-using std::vector;
-
-#include <map>
-using std::map;
-
-#include <utility>
-using std::pair;
-
-#include <string>
-using std::string;
-
-#include <sstream>
-using std::stringstream;
-
-#include <ostream>
-using std::ostream;
+#include "logger.hh"
 
 #include <iomanip>
-using std::setprecision;
-using std::fixed;
+#include <map>
+#include <mutex>
+#include <ostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <thread>
+#include <vector>
 
 namespace midge
 {
@@ -38,9 +23,13 @@ namespace midge
     {
     };
 
+    inline std::ostream& operator<<( std::ostream& a_str, const message_line& ) {return a_str;}
+
     class message_end
     {
     };
+
+    inline std::ostream& operator<<( std::ostream& a_str, const message_end& ) {return a_str;}
 
     typedef std::ios_base::fmtflags message_format;
     typedef std::streamsize message_precision;
@@ -55,7 +44,7 @@ namespace midge
     class message
     {
         public:
-            message( const string& aKey, const string& aDescription, const string& aPrefix, const string& aSuffix );
+            message( const std::string& aKey, const std::string& aDescription, const std::string& aPrefix, const std::string& aSuffix );
             virtual ~message();
 
         private:
@@ -67,11 +56,11 @@ namespace midge
             //**************
 
         public:
-            void set_key( const string& aKey );
-            const string& get_key() const;
+            void set_key( const std::string& aKey );
+            const std::string& get_key() const;
 
         protected:
-            string f_key;
+            std::string f_key;
 
             //*********
             //interface
@@ -91,39 +80,39 @@ namespace midge
             void shutdown();
 
         protected:
-            string f_system_description;
-            string f_system_prefix;
-            string f_system_suffix;
+            std::string f_system_description;
+            std::string f_system_prefix;
+            std::string f_system_suffix;
 
-            string f_error_color_prefix;
-            string f_error_color_suffix;
-            string f_error_description;
+            std::string f_error_color_prefix;
+            std::string f_error_color_suffix;
+            std::string f_error_description;
 
-            string f_warning_color_prefix;
-            string f_warning_color_suffix;
-            string f_warning_description;
+            std::string f_warning_color_prefix;
+            std::string f_warning_color_suffix;
+            std::string f_warning_description;
 
-            string f_normal_color_prefix;
-            string f_normal_color_suffix;
-            string f_normal_description;
+            std::string f_normal_color_prefix;
+            std::string f_normal_color_suffix;
+            std::string f_normal_description;
 
-            string f_debug_color_prefix;
-            string f_debug_color_suffix;
-            string f_debug_description;
+            std::string f_debug_color_prefix;
+            std::string f_debug_color_suffix;
+            std::string f_debug_description;
 
-            string f_default_color_prefix;
-            string f_default_color_suffix;
-            string f_default_description;
+            std::string f_default_color_prefix;
+            std::string f_default_color_suffix;
+            std::string f_default_description;
 
         private:
             message_severity f_severity;
 
-            string message::*f_color_prefix;
-            string message::*f_description;
-            string message::*f_color_suffix;
+            std::string message::*f_color_prefix;
+            std::string message::*f_description;
+            std::string message::*f_color_suffix;
 
-            stringstream f_message_line;
-            vector< string > f_message_lines;
+            std::stringstream f_message_line;
+            std::vector< std::string > f_message_lines;
 
             //********
             //settings
@@ -133,21 +122,21 @@ namespace midge
             void set_format( const message_format& aFormat );
             void set_precision( const message_precision& aPrecision );
             void set_terminal_severity( const message_severity& aVerbosity );
-            void set_terminal_stream( ostream* aTerminalStream );
+            void set_terminal_stream( std::ostream* aTerminalStream );
             void set_log_severity( const message_severity& aVerbosity );
-            void set_log_stream( ostream* aLogStream );
+            void set_log_stream( std::ostream* aLogStream );
 
         private:
             message_severity f_terminal_severity;
-            ostream* f_terminal_stream;
+            std::ostream* f_terminal_stream;
             message_severity f_log_severity;
-            ostream* f_log_stream;
+            std::ostream* f_log_stream;
 
             static void acquire();
             static void release();
-            static mutex f_outer;
-            static mutex f_inner;
-            static set< pthread_t > f_threads;
+            static std::mutex f_outer;
+            static std::mutex f_inner;
+            static std::set< std::thread::id > f_threads;
     };
 
     inline message& message::operator()( const message_severity& aSeverity )
@@ -200,11 +189,12 @@ namespace midge
 {
 
     class messages :
-        public singleton< messages >
+        public scarab::singleton< messages >
     {
 
         public:
-            friend class singleton< messages > ;
+            friend class scarab::singleton< messages >;
+            friend class scarab::destroyer< messages >;
 
         private:
             messages();
@@ -212,7 +202,7 @@ namespace midge
 
         public:
             void add( message* aMessage );
-            message* get( const string& aKey );
+            message* get( const std::string& aKey );
             void remove( message* aMessage );
 
             void set_format( const message_format& aFormat );
@@ -224,17 +214,17 @@ namespace midge
             void set_terminal_severity( const message_severity& aVerbosity );
             const message_severity& get_terminal_severity();
 
-            void set_terminal_stream( ostream* aTerminalStream );
-            ostream* get_terminal_stream();
+            void set_terminal_stream( std::ostream* aTerminalStream );
+            std::ostream* get_terminal_stream();
 
             void set_log_severity( const message_severity& aVerbosity );
             const message_severity& get_log_severity();
 
-            void set_log_stream( ostream* aLogStream );
-            ostream* get_log_stream();
+            void set_log_stream( std::ostream* aLogStream );
+            std::ostream* get_log_stream();
 
         private:
-            typedef map< string, message* > map_t;
+            typedef std::map< std::string, message* > map_t;
             typedef map_t::value_type entry_t;
             typedef map_t::iterator it_t;
             typedef map_t::const_iterator cit_t;
@@ -244,9 +234,9 @@ namespace midge
             message_format f_format;
             message_precision f_precision;
             message_severity f_terminal_severity;
-            ostream* f_terminal_stream;
+            std::ostream* f_terminal_stream;
             message_severity f_log_severity;
-            ostream* f_log_stream;
+            std::ostream* f_log_stream;
     };
 
 }
@@ -256,6 +246,8 @@ namespace midge
 #define message_declare( x_name )\
 namespace midge\
 {\
+    LOGGER( mmlog_##x_name, "x_name" );\
+    /* \
     class message_ ## x_name :\
         public message\
     {\
@@ -266,11 +258,13 @@ namespace midge\
 \
     extern message_ ## x_name& x_name;\
     static initializer< message_ ## x_name > x_name ## _initializer;\
+    */ \
 }
 
 #define message_define( x_name, x_key, x_label )\
 namespace midge\
 {\
+    /* \
     message_ ## x_name::message_ ## x_name() :\
         message( #x_key, #x_label, "", "" )\
     {\
@@ -280,11 +274,13 @@ namespace midge\
     }\
 \
     message_ ## x_name& x_name = *((message_ ## x_name*) (initializer< message_ ## x_name >::f_data));\
+    */ \
 }
 
 #define message_define_full( x_name, x_key, x_label, x_prefix, x_suffix )\
 namespace midge\
 {\
+    /* \
     message_ ## x_name::message_ ## x_name() :\
         message( #x_key, #x_label, #x_prefix, #x_suffix )\
     {\
@@ -294,16 +290,22 @@ namespace midge\
     }\
 \
     message_ ## x_name& x_name = *((message_ ## x_name*) (initializer< message_ ## x_name >::f_data));\
+    */ \
 }
 
-#ifdef MIDGE_ENABLE_DEBUG_MESSAGES
-#define msg_debug( x_name, x_content ) x_name( s_debug ) << x_content
+//#ifdef MIDGE_ENABLE_DEBUG_MESSAGES
+#ifndef NDEBUG
+//#define msg_debug( x_name, x_content ) x_name( s_debug ) << x_content
+#define msg_debug( x_name, x_content ) LDEBUG( mmlog_##x_name, x_content );
 #else
 #define msg_debug( x_name, x_content )
 #endif
-#define msg_normal( x_name, x_content ) x_name( s_normal ) << x_content
-#define msg_warning( x_name, x_content ) x_name( s_warning ) << x_content
-#define msg_error( x_name, x_content ) x_name( s_error ) << x_content
+//#define msg_normal( x_name, x_content ) x_name( s_normal ) << x_content
+#define msg_normal( x_name, x_content ) LINFO( mmlog_##x_name, x_content );
+//#define msg_warning( x_name, x_content ) x_name( s_warning ) << x_content
+#define msg_warning( x_name, x_content ) LWARN( mmlog_##x_name, x_content );
+//#define msg_error( x_name, x_content ) x_name( s_error ) << x_content
+#define msg_error( x_name, x_content ) LERROR( mmlog_##x_name, x_content );
 
 message_declare( msg );
 

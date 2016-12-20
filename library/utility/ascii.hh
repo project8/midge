@@ -4,22 +4,12 @@
 #include <fstream>
 
 #include "types.hh"
-using std::fstream;
 
 #include <string>
-using std::string;
-
 #include <vector>
-using std::vector;
-
 #include <list>
-using std::list;
-
 #include <map>
-using std::map;
-
 #include <utility>
-using std::pair;
 
 namespace midge
 {
@@ -31,8 +21,8 @@ namespace midge
             virtual ~ascii();
 
         public:
-            void read( const string& p_file );
-            void write( const string& p_file );
+            void read( const std::string& p_file );
+            void write( const std::string& p_file );
             void close();
             bool end();
 
@@ -105,30 +95,30 @@ namespace midge
             };
 
             template< class x_value >
-            class pull< vector< x_value > >
+            class pull< std::vector< x_value > >
             {
                 public:
-                    pull( ascii& p_stream, vector< x_value >& p_vector )
+                    pull( ascii& p_stream, std::vector< x_value >& p_vector )
                     {
                         count_t t_size;
                         p_stream >> t_size;
                         p_vector.resize( t_size );
-                        for( typename vector< x_value >::iterator t_it = p_vector.begin(); t_it != p_vector.end(); t_it++ )
+                        for( typename std::vector< x_value >::iterator t_it = p_vector.begin(); t_it != p_vector.end(); t_it++ )
                         {
                             p_stream >> (*t_it);
                         }
                     }
             };
             template< class x_value >
-            class push< vector< x_value > >
+            class push< std::vector< x_value > >
             {
                 public:
-                    push( ascii& p_stream, const vector< x_value >& p_vector )
+                    push( ascii& p_stream, const std::vector< x_value >& p_vector )
                     {
                         const count_t t_size = p_vector.size();
                         p_stream << t_size << "\n";
 
-                        typename vector< x_value >::const_iterator t_it = p_vector.begin();
+                        typename std::vector< x_value >::const_iterator t_it = p_vector.begin();
                         if( t_it != p_vector.end() )
                         {
                             p_stream << (*t_it);
@@ -144,30 +134,30 @@ namespace midge
             };
 
             template< class x_value >
-            class pull< list< x_value > >
+            class pull< std::list< x_value > >
             {
                 public:
-                    pull( ascii& p_stream, list< x_value >& p_list )
+                    pull( ascii& p_stream, std::list< x_value >& p_list )
                     {
                         count_t t_size;
                         p_stream >> t_size;
                         p_list.resize( t_size );
-                        for( typename list< x_value >::iterator t_it = p_list.begin(); t_it != p_list.end(); t_it++ )
+                        for( typename std::list< x_value >::iterator t_it = p_list.begin(); t_it != p_list.end(); t_it++ )
                         {
                             p_stream >> (*t_it);
                         }
                     }
             };
             template< class x_value >
-            class push< list< x_value > >
+            class push< std::list< x_value > >
             {
                 public:
-                    push( ascii& p_stream, const list< x_value >& p_list )
+                    push( ascii& p_stream, const std::list< x_value >& p_list )
                     {
                         const count_t t_size = p_list.size();
                         p_stream << t_size << "\n";
 
-                        typename list< x_value >::const_iterator t_it = p_list.begin();
+                        typename std::list< x_value >::const_iterator t_it = p_list.begin();
                         if( t_it != p_list.end() )
                         {
                             p_stream << (*t_it);
@@ -183,10 +173,10 @@ namespace midge
             };
 
             template< class x_key, class x_value >
-            class pull< map< x_key, x_value > >
+            class pull< std::map< x_key, x_value > >
             {
                 public:
-                    pull( ascii& p_stream, map< x_key, x_value >& p_map )
+                    pull( ascii& p_stream, std::map< x_key, x_value >& p_map )
                     {
                         count_t t_size;
                         p_stream >> t_size;
@@ -197,20 +187,20 @@ namespace midge
                         {
                             p_stream >> t_key;
                             p_stream >> t_value;
-                            p_map.insert( pair< x_key, x_value >( t_key, t_value ) );
+                            p_map.insert( std::pair< x_key, x_value >( t_key, t_value ) );
                         }
                     }
             };
             template< class x_key, class x_value >
-            class push< map< x_key, x_value > >
+            class push< std::map< x_key, x_value > >
             {
                 public:
-                    push( ascii& p_stream, const map< x_key, x_value >& p_map )
+                    push( ascii& p_stream, const std::map< x_key, x_value >& p_map )
                     {
                         const count_t t_size = p_map.size();
                         p_stream << t_size << "\n";
 
-                        typename map< x_key, x_value >::const_iterator t_it = p_map.begin();
+                        typename std::map< x_key, x_value >::const_iterator t_it = p_map.begin();
                         if( t_it != p_map.end() )
                         {
                             p_stream << t_it->first << " " << t_it->second;
@@ -236,7 +226,7 @@ namespace midge
             };
 
         private:
-            fstream f_fstream;
+            std::fstream f_fstream;
     };
 
 }

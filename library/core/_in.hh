@@ -7,10 +7,8 @@
 #include "_stream.hh"
 #include "node.hh"
 #include "typenull.hh"
-using std::stringstream;
 
 #include <vector>
-using std::vector;
 
 namespace midge
 {
@@ -23,7 +21,7 @@ namespace midge
             _in() :
                     f_in( NULL )
             {
-                stringstream t_name;
+                std::stringstream t_name;
                 t_name << "in_" << x_index::result;
                 node::in( new _input< _in< x_type, x_index >, x_type >( this, &_in< x_type, x_index >::in ), t_name.str() );
             }

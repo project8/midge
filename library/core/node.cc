@@ -1,12 +1,17 @@
 #include "node.hh"
 
-#include "error.hh"
+#include "coremsg.hh"
+#include "midge_error.hh"
+
+using std::string;
 
 namespace midge
 {
 
     node::node() :
+            scarab::cancelable(),
             f_name( "(unnamed node)" ),
+            f_node_map(),
             f_input_map(),
             f_output_map()
     {
@@ -24,10 +29,20 @@ namespace midge
         }
     }
 
+    node* node::node_ptr( const string& p_label )
+    {
+        node_it t_it = f_node_map.find( p_label );
+        if( t_it == f_node_map.end() )
+        {
+            throw error() << "node named <" << get_name() << "> has no pointer to node named <" << p_label << ">";
+            return NULL;
+        }
+        return t_it->second;
+    }
     input* node::in( const string& p_label )
     {
         input_it t_it = f_input_map.find( p_label );
-        if( f_input_map.find( p_label ) == f_input_map.end() )
+        if( t_it == f_input_map.end() )
         {
             throw error() << "node named <" << get_name() << "> has no input named <" << p_label << ">";
             return NULL;
@@ -37,7 +52,7 @@ namespace midge
     output* node::out( const string& p_label )
     {
         output_it t_it = f_output_map.find( p_label );
-        if( f_output_map.find( p_label ) == f_output_map.end() )
+        if( t_it == f_output_map.end() )
         {
             throw error() << "node named <" << get_name() << "> has no out named <" << p_label << ">";
             return NULL;
@@ -45,6 +60,19 @@ namespace midge
         return t_it->second;
     }
 
+    void node::node_ptr( node* p_node, const string& p_label )
+    {
+        node_it t_it = f_node_map.find( p_label );
+        if( t_it == f_node_map.end() )
+        {
+            f_node_map.insert( node_entry( p_label, p_node ) );
+        }
+        else
+        {
+            throw error() << "node already has a node pointer named <" << p_label << ">";
+        }
+        return;
+    }
     void node::in( input* p_input, const string& p_label )
     {
         input_it t_it = f_input_map.find( p_label );
@@ -69,9 +97,21 @@ namespace midge
         }
         else
         {
-            throw error() << "node already has in named <" << p_label << ">";
+            throw error() << "node already has out named <" << p_label << ">";
         }
         return;
     }
+
+    void node::do_cancellation()
+    {
+        msg_debug( coremsg, "node::do_cancellation for <" << f_name << ">" << eom );
+        for( output_it t_it = f_output_map.begin(); t_it != f_output_map.end(); ++t_it )
+        {
+            msg_debug( coremsg, "Canceling stream <" << t_it->first << ">" << eom );
+            t_it->second->get()->cancel();
+        }
+        return;
+    }
+
 
 }

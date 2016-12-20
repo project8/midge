@@ -10,11 +10,8 @@
 #include "typeat.hh"
 #include "typechain.hh"
 #include "typelength.hh"
-using std::vector;
 
 #include <iostream>
-using std::cout;
-using std::endl;
 
 namespace midge
 {

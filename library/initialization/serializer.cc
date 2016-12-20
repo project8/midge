@@ -8,6 +8,9 @@
 #include "numerical.hh"
 #include "object.hh"
 
+using std::pair;
+using std::string;
+
 namespace midge
 {
 
@@ -37,7 +40,7 @@ namespace midge
             process_object_start();
 
             pair< string, value* > t_value;
-            for( index_t t_index = 0; t_index < t_object->size(); t_index++ )
+            for( count_t t_index = 0; t_index < t_object->size(); t_index++ )
             {
                 t_value = t_object->at( t_index );
                 process_key( t_value.first );
@@ -56,7 +59,7 @@ namespace midge
             process_array_start();
 
             value* t_value;
-            for( index_t t_index = 0; t_index < t_array->size(); t_index++ )
+            for( count_t t_index = 0; t_index < t_array->size(); t_index++ )
             {
                 t_value = t_array->at( t_index );
                 dispatch( t_value );

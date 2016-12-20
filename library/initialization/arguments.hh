@@ -3,20 +3,12 @@
 
 #include <string>
 
-#include "error.hh"
-using std::string;
+#include "midge_error.hh"
 
 #include <sstream>
-using std::stringstream;
-
 #include <set>
-using std::set;
-
 #include <map>
-using std::map;
-
 #include <utility>
-using std::pair;
 
 namespace midge
 {
@@ -28,40 +20,40 @@ namespace midge
             ~arguments();
 
         public:
-            void required( const string& p_key );
-            void optional( const string& p_key, const string& p_default );
+            void required( const std::string& p_key );
+            void optional( const std::string& p_key, const std::string& p_default );
             void start( int p_count, char** p_values );
             void stop();
 
-            string value() const;
+            std::string value() const;
 
             template< class x_type >
-            x_type value( const string& p_key ) const;
+            x_type value( const std::string& p_key ) const;
 
         private:
-            string f_value;
-            set< string > f_required_values;
-            map< string, string > f_optional_values;
-            mutable map< string, string > f_unused_values;
-            mutable map< string, string > f_used_values;
+            std::string f_value;
+            std::set< std::string > f_required_values;
+            std::map< std::string, std::string > f_optional_values;
+            mutable std::map< std::string, std::string > f_unused_values;
+            mutable std::map< std::string, std::string > f_used_values;
     };
 
-    inline string arguments::value() const
+    inline std::string arguments::value() const
     {
         return f_value;
     }
 
     template< class x_type >
-    inline x_type arguments::value( const string& p_key ) const
+    inline x_type arguments::value( const std::string& p_key ) const
     {
         x_type t_value;
 
-        map< string, string >::const_iterator t_it;
+        std::map< std::string, std::string >::const_iterator t_it;
 
         t_it = f_used_values.find( p_key );
         if( t_it != f_used_values.end() )
         {
-            stringstream t_converter;
+            std::stringstream t_converter;
             t_converter << t_it->second;
             t_converter >> t_value;
             return t_value;
@@ -70,16 +62,16 @@ namespace midge
         t_it = f_unused_values.find( p_key );
         if( t_it != f_unused_values.end() )
         {
-            stringstream t_converter;
+            std::stringstream t_converter;
             t_converter << t_it->second;
             t_converter >> t_value;
-            f_used_values.insert( pair< string, string >( t_it->first, t_it->second ) );
+            f_used_values.insert( std::pair< std::string, std::string >( t_it->first, t_it->second ) );
             f_unused_values.erase( t_it );
             return t_value;
         }
 
         throw error() << "requested argument <" << p_key << "> not found";
-        stringstream t_converter;
+        std::stringstream t_converter;
         t_converter << t_it->second;
         t_converter >> t_value;
         return t_value;

@@ -1,5 +1,7 @@
 #include "ascii.hh"
 
+using std::string;
+
 namespace midge
 {
 
