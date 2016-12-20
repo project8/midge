@@ -18,7 +18,8 @@ namespace midge
     {
         carry_on,
         pause,
-        resume
+        resume,
+        none
     };
 
     class instructable

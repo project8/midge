@@ -1,8 +1,9 @@
 #ifndef _midge_midge_hh_
 #define _midge_midge_hh_
 
-#include "cancelable.hh"
 #include "instructable.hh"
+
+#include "cancelable.hh"
 
 #include <map>
 #include <set>
@@ -15,16 +16,32 @@ namespace midge
     class producer;
     class thread;
 
-    class diptera : public cancelable
+    class diptera : public scarab::cancelable
     {
         public:
             diptera();
             ~diptera();
 
         public:
+            /// Add a node
             void add( node* p_node );
+            /// Join one node to another
+            /*!
+             * Option 1: Join by data stream
+             *   "my-producer.out_0:my-consumer.in_0"
+             *     Output 0 of my-producer will be connected to input 0 of my-consumer
+             *
+             * Option 2: Join by pointer
+             *   "my-consumer:my-producer"
+             *     my-consumer will get a pointer to my-producer stored in the f_node_links map
+             */
             void join( const std::string& p_string );
+            /// Run a set of nodes; only the nodes specified will be executed
+            ///   "my-consumer:my-producer"
             void run( const std::string& p_string );
+
+            /// To be used by running nodes to throw an exception
+            void throw_ex( std::exception_ptr e_ptr );
 
             void reset();
 

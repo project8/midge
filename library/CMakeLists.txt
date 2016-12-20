@@ -17,7 +17,6 @@ set( midge_headers ${midge_headers}
 	${util_dir}/ascii.hh
 	${util_dir}/binary.hh
 	#${util_dir}/plot.hh
-	${util_dir}/cancelable.hh
 	${util_dir}/instructable.hh
 	${util_dir}/shared_cancel.hh
 	#${util_dir}/thread.hh
@@ -37,7 +36,6 @@ set( midge_sources ${midge_sources}
 	${util_dir}/ascii.cc
 	${util_dir}/binary.cc
 	#${util_dir}/plot.cc
-	${util_dir}/cancelable.cc
 	${util_dir}/instructable.cc
 	#${util_dir}/thread.cc
 )
@@ -61,6 +59,7 @@ set( midge_headers ${midge_headers}
 	${core_dir}/_buffer.hh
 	${core_dir}/_in.hh
 	${core_dir}/_out.hh
+	${core_dir}/bystander.hh
 	${core_dir}/producer.hh
 	${core_dir}/consumer.hh
 	${core_dir}/transformer.hh
@@ -73,6 +72,7 @@ set( midge_sources ${midge_sources}
 	${core_dir}/input.cc
 	${core_dir}/output.cc
 	${core_dir}/node.cc
+	${core_dir}/bystander.cc
 	${core_dir}/producer.cc
 	${core_dir}/consumer.cc
 	${core_dir}/transformer.cc

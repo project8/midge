@@ -3,11 +3,15 @@
 #include <unistd.h>
 
 #include "midge_error.hh"
+#include "bystander.hh"
+#include "consumer.hh"
 #include "coremsg.hh"
 #include "diptera.hh"
 #include "input.hh"
 #include "node.hh"
 #include "output.hh"
+#include "producer.hh"
+#include "transformer.hh"
 
 #include <chrono>
 #include <thread>
@@ -18,7 +22,7 @@ namespace midge
 {
 
     diptera::diptera() :
-            cancelable(),
+            scarab::cancelable(),
             f_nodes(),
             f_instructables(),
             f_threads()
@@ -26,18 +30,7 @@ namespace midge
     }
     diptera::~diptera()
     {
-        node* t_node;
-        node_it_t t_it;
-        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
-        {
-            t_node = t_it->second;
-            t_node->finalize();
-        }
-        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
-        {
-            t_node = t_it->second;
-            delete (t_node);
-        }
+        reset();
     }
 
     void diptera::add( node* p_node )
@@ -46,7 +39,17 @@ namespace midge
         node_it_t t_it = f_nodes.find( t_name );
         if( t_it == f_nodes.end() )
         {
-            p_node->initialize();
+            msg_normal( coremsg, "initializing node <" << t_name << ">" << eom );
+            try
+            {
+                p_node->initialize();
+            }
+            catch( std::exception& e )
+            {
+                msg_error( coremsg, "exception caught while initializing node <" << t_name << ">: " << e.what() << eom );
+                throw( e );
+            }
+
             f_nodes.insert( node_entry_t( t_name, p_node ) );
             msg_normal( coremsg, "added node <" << t_name << ">" << eom );
 
@@ -103,11 +106,6 @@ namespace midge
                         return;
                     }
                 }
-                else
-                {
-                    throw error() << "root join found no designators in first argument <" << t_first_argument << ">";
-                    return;
-                }
 
                 t_first_pos = t_second_argument.find( s_designator );
                 if( t_first_pos != string_t::npos )
@@ -124,9 +122,10 @@ namespace midge
                         return;
                     }
                 }
-                else
+
+                if( t_first_out_string.empty() != t_second_in_string.empty() )
                 {
-                    throw error() << "root join found no designators in second argument <" << t_second_argument << ">";
+                    throw error() << "root join must link either by stream or pointer";
                     return;
                 }
 
@@ -146,22 +145,33 @@ namespace midge
                 }
                 t_second_node = t_second_it->second;
 
-                t_first_out = t_first_node->out( t_first_out_string );
-                if( t_first_out == NULL )
+                if( t_first_out_string.empty() )
                 {
-                    throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
-                    return;
-                }
+                    // joining nodes by pointer
+                    t_first_node->node_ptr( t_second_node, t_second_node_string );
 
-                t_second_in = t_second_node->in( t_second_in_string );
-                if( t_second_in == NULL )
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "> with <" << t_second_node_string << ">" << eom );
+                }
+                else
                 {
-                    throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
-                    return;
-                }
-                t_second_in->set( t_first_out->get() );
 
-                msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+                    t_first_out = t_first_node->out( t_first_out_string );
+                    if( t_first_out == NULL )
+                    {
+                        throw error() << "root join found no first out with name <" << t_first_out_string << "> in node with name <" << t_first_node_string << ">";
+                        return;
+                    }
+
+                    t_second_in = t_second_node->in( t_second_in_string );
+                    if( t_second_in == NULL )
+                    {
+                        throw error() << "root join found no second in with name <" << t_second_in_string << "> in node with name <" << t_second_node_string << ">";
+                        return;
+                    }
+                    t_second_in->set( t_first_out->get() );
+
+                    msg_normal( coremsg, "joined <" << t_first_node_string << "." << t_first_out_string << "> with <" << t_second_node_string << "." << t_second_in_string << ">" << eom );
+                }
 
                 return;
             }
@@ -189,6 +199,7 @@ namespace midge
         t_start_pos = 0;
         t_argument = p_string;
 
+        // run nodes specified in the string
         while( true )
         {
             t_separator_pos = t_argument.find( s_separator, t_start_pos );
@@ -210,7 +221,7 @@ namespace midge
 
             msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
             t_node = t_node_it->second;
-            f_threads.push_back( std::thread( &node::execute, t_node ) );
+            f_threads.push_back( std::thread( &node::execute, t_node, this ) );
 
             if( t_separator_pos == string_t::npos )
             {
@@ -218,8 +229,8 @@ namespace midge
             }
         }
 
-        // delay to alow the threads to spin up
-        std::this_thread::sleep_for( std::chrono::duration< int >( 1 ) );
+        // delay to allow the threads to spin up
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
         msg_normal( coremsg, "waiting for threads to finish..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
@@ -227,15 +238,47 @@ namespace midge
             t_it->join();
         }
 
-        msg_normal( coremsg, "...done" << eom );
+        msg_normal( coremsg, "threads finished" << eom );
+
         f_threads.clear();
 
         return;
     }
 
+    void diptera::throw_ex( std::exception_ptr e_ptr )
+    {
+        try
+        {
+            if( e_ptr )
+            {
+                std::rethrow_exception( e_ptr );
+            }
+        }
+        catch( const std::exception& e )
+        {
+            msg_error( coremsg, "exception thrown within midge: " << e.what() << eom );
+            cancel();
+        }
+        return;
+    }
+
+
     void diptera::reset()
     {
-
+        node* t_node;
+        node_it_t t_it;
+        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_node = t_it->second;
+            t_node->finalize();
+        }
+        for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            t_node = t_it->second;
+            delete (t_node);
+        }
+        f_nodes.clear();
+        return;
     }
 
     void diptera::instruct( instruction p_inst )
@@ -249,9 +292,50 @@ namespace midge
 
     void diptera::do_cancellation()
     {
+        // cancel producers first
+        msg_debug( coremsg, "Canceling nodes: producers" << eom );
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
-            t_it->second->cancel();
+            if( dynamic_cast< producer* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
+        }
+
+        // This delay is added to give the producers a chance to stop the chain(s) of nodes.
+        // Without this, shutting down midge is somewhat unstable and has resulted in deadlocked threads.
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+
+        // cancel transformers second
+        msg_debug( coremsg, "Canceling nodes: transformers" << eom );
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            if( dynamic_cast< transformer* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
+        }
+        // cancel consumers third
+        msg_debug( coremsg, "Canceling nodes: consumers" << eom );
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            if( dynamic_cast< consumer* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
+        }
+        // cancel bystanders fourth
+        msg_debug( coremsg, "Canceling nodes: bystanders" << eom );
+        for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
+        {
+            if( dynamic_cast< bystander* >( t_it->second ) != nullptr )
+            {
+                msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
+                t_it->second->cancel();
+            }
         }
         return;
     }

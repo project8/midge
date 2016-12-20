@@ -27,6 +27,7 @@ namespace midge
                     f_read_data( NULL ),
                     f_read_command( NULL ),
                     f_read_mutexes( NULL ),
+                    f_mutex_wait_msec( 500 ),
                     f_read_streams( NULL )
             {
             }
@@ -133,7 +134,7 @@ namespace midge
             {
                 count_t t_new_read_index = f_read_count;
                 count_t t_new_read_count = f_read_count + 1;
-                std::mutex** t_new_read_mutexes = new std::mutex*[ t_new_read_count ];
+                std::timed_mutex** t_new_read_mutexes = new std::timed_mutex*[ t_new_read_count ];
                 _read_stream** t_new_read_streams = new _read_stream*[ t_new_read_count ];
 
                 for( count_t t_read_index = 0; t_read_index < f_read_count; t_read_index++ )
@@ -146,7 +147,7 @@ namespace midge
 
                 delete[] f_read_mutexes;
                 f_read_mutexes = t_new_read_mutexes;
-                f_read_mutexes[ t_new_read_index ] = new std::mutex[ f_length ];
+                f_read_mutexes[ t_new_read_index ] = new std::timed_mutex[ f_length ];
                 f_read_mutexes[ t_new_read_index ][ 0 ].lock();
                 f_read_mutexes[ t_new_read_index ][ f_length - 1 ].lock();
 
@@ -179,22 +180,23 @@ namespace midge
                     enum_t get()
                     {
                         enum_t t_command;
-                        f_buffer.f_write_mutex.lock();
+                        while( ! f_buffer.f_write_mutex.try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
+                        {
+                            if( scarab::cancelable::is_canceled() ) return stream::s_error;
+                        }
                         t_command = f_buffer.f_write_command;
                         f_buffer.f_write_mutex.unlock();
                         return t_command;
                     }
-                    void set( enum_t p_command )
+                    bool set( enum_t p_command )
                     {
+                        if( scarab::cancelable::is_canceled() ) return false;
+
                         f_buffer.f_read_command[ f_current_index ] = p_command;
 
                         //coremsg( s_debug ) << "OUT STREAM SET: command <" << p_command << "> set for index " << f_current_index << eom;
 
-                        if( (++f_count % 1000) == 0 )
-                        {
-                            msg_normal( coremsg, "write stream <" << this << "> processed <" << f_count << "> requests" << eom );
-                        }
-
+                        //count_t t_last_next_index = f_next_index;
                         if( ++f_next_index == f_buffer.f_length )
                         {
                             f_next_index = 0;
@@ -204,7 +206,10 @@ namespace midge
 
                         for( count_t t_index = 0; t_index < f_buffer.f_read_count; t_index++ )
                         {
-                            f_buffer.f_read_mutexes[ t_index ][ f_next_index ].lock();
+                            while( ! f_buffer.f_read_mutexes[ t_index ][ f_next_index ].try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
+                            {
+                                if( scarab::cancelable::is_canceled() ) return false;
+                            }
                         }
 
                         IF_STREAM_TIMING_ENABLED( if( p_command == stream::s_run ) this->f_timer.increment_locked() );
@@ -216,7 +221,12 @@ namespace midge
 
                         f_current_index = f_next_index;
 
-                        return;
+                        if( (++f_count % 1000) == 0 )
+                        {
+                            msg_normal( coremsg, "write stream <" << this << "> processed <" << f_count << "> requests" << eom );
+                        }
+
+                        return true;
                     }
 
                     x_type* data()
@@ -239,7 +249,7 @@ namespace midge
             node* f_out_node;
             std::string f_write_stream_name;
             enum_t f_write_command;
-            std::mutex f_write_mutex;
+            std::timed_mutex f_write_mutex;
             _write_stream* f_write_stream;
 
         protected:
@@ -261,6 +271,8 @@ namespace midge
 
                     enum_t get()
                     {
+                        if( scarab::cancelable::is_canceled() ) return s_error;
+
                         if( ++f_next_index == f_buffer.f_length )
                         {
                             f_next_index = 0;
@@ -268,7 +280,11 @@ namespace midge
 
                         IF_STREAM_TIMING_ENABLED( if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_begin(); )
 
-                        f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].lock();
+                        //f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].lock();
+                        while( ! f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
+                        {
+                            if( scarab::cancelable::is_canceled() ) return stream::s_error;
+                        }
 
                         IF_STREAM_TIMING_ENABLED( if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_locked(); )
 
@@ -280,12 +296,15 @@ namespace midge
 
                         return f_buffer.f_read_command[ f_current_index ];
                     }
-                    void set( enum_t p_command )
+                    bool set( enum_t p_command )
                     {
-                        f_buffer.f_write_mutex.lock();
+                        while( ! f_buffer.f_write_mutex.try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
+                        {
+                            if( scarab::cancelable::is_canceled() ) return false;
+                        }
                         f_buffer.f_write_command = p_command;
                         f_buffer.f_write_mutex.unlock();
-                        return;
+                        return true;
                     }
 
                     x_type* data()
@@ -308,7 +327,8 @@ namespace midge
             count_t f_read_count;
             x_type* f_read_data;
             enum_t* f_read_command;
-            std::mutex** f_read_mutexes;
+            std::timed_mutex** f_read_mutexes;
+            count_t f_mutex_wait_msec;
             _read_stream** f_read_streams;
 
     };
