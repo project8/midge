@@ -221,7 +221,7 @@ namespace midge
 
                         f_current_index = f_next_index;
 
-                        if( (++f_count % 1000) == 0 )
+                        if( (++f_count % 100000) == 0 )
                         {
                             msg_normal( coremsg, "write stream <" << this << "> processed <" << f_count << "> requests" << eom );
                         }
