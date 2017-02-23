@@ -305,7 +305,7 @@ namespace midge
 
         // This delay is added to give the producers a chance to stop the chain(s) of nodes.
         // Without this, shutting down midge is somewhat unstable and has resulted in deadlocked threads.
-        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 
         // cancel transformers second
         msg_debug( coremsg, "Canceling nodes: transformers" << eom );
