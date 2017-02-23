@@ -16,7 +16,6 @@ namespace midge
             static const enum_t s_start;
             static const enum_t s_run;
             static const enum_t s_stop;
-            static const enum_t s_skip;
             static const enum_t s_exit;
             static const enum_t s_error;
 
