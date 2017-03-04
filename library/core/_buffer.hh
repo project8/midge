@@ -182,7 +182,8 @@ namespace midge
                         enum_t t_command;
                         while( ! f_buffer.f_write_mutex.try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
                         {
-                            if( scarab::cancelable::is_canceled() ) return stream::s_error;
+                            if( scarab::cancelable::is_canceled() || (f_buffer.f_out_node != nullptr && f_buffer.f_out_node->is_canceled()) ) return stream::s_error;
+                            //return stream::s_none;
                         }
                         t_command = f_buffer.f_write_command;
                         f_buffer.f_write_mutex.unlock();
@@ -271,7 +272,7 @@ namespace midge
 
                     enum_t get()
                     {
-                        if( scarab::cancelable::is_canceled() ) return s_error;
+                        if( scarab::cancelable::is_canceled() || (f_buffer.f_out_node != nullptr && f_buffer.f_out_node->is_canceled()) ) return s_error;
 
                         if( ++f_next_index == f_buffer.f_length )
                         {
@@ -283,7 +284,8 @@ namespace midge
                         //f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].lock();
                         while( ! f_buffer.f_read_mutexes[ f_stream_index ][ f_next_index ].try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
                         {
-                            if( scarab::cancelable::is_canceled() ) return stream::s_error;
+                            if( scarab::cancelable::is_canceled() || (f_buffer.f_out_node != nullptr && f_buffer.f_out_node->is_canceled()) ) return stream::s_error;
+                            //return stream::s_none;
                         }
 
                         IF_STREAM_TIMING_ENABLED( if( f_buffer.f_read_command[ f_current_index ] == stream::s_run ) this->f_timer.increment_locked(); )
@@ -300,7 +302,7 @@ namespace midge
                     {
                         while( ! f_buffer.f_write_mutex.try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
                         {
-                            if( scarab::cancelable::is_canceled() ) return false;
+                            if( scarab::cancelable::is_canceled() || (f_buffer.f_out_node != nullptr && f_buffer.f_out_node->is_canceled()) ) return false;
                         }
                         f_buffer.f_write_command = p_command;
                         f_buffer.f_write_mutex.unlock();
