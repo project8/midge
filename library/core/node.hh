@@ -64,7 +64,7 @@ namespace midge
             output_map f_output_map;
 
         protected:
-            void do_cancellation();
+            void do_cancellation() override;
     };
 
 }

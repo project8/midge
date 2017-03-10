@@ -27,7 +27,7 @@ namespace midge
                     f_read_data( NULL ),
                     f_read_command( NULL ),
                     f_read_mutexes( NULL ),
-                    f_mutex_wait_msec( 500 ),
+                    f_mutex_wait_msec( 200 ),
                     f_read_streams( NULL )
             {
             }
@@ -191,7 +191,7 @@ namespace midge
                     }
                     bool set( enum_t p_command )
                     {
-                        if( scarab::cancelable::is_canceled() ) return false;
+                        if( scarab::cancelable::is_canceled() || (f_buffer.f_out_node != nullptr && f_buffer.f_out_node->is_canceled()) ) return false;
 
                         f_buffer.f_read_command[ f_current_index ] = p_command;
 
@@ -209,7 +209,7 @@ namespace midge
                         {
                             while( ! f_buffer.f_read_mutexes[ t_index ][ f_next_index ].try_lock_for( std::chrono::milliseconds(f_buffer.f_mutex_wait_msec) ) )
                             {
-                                if( scarab::cancelable::is_canceled() ) return false;
+                                if( scarab::cancelable::is_canceled() || (f_buffer.f_out_node != nullptr && f_buffer.f_out_node->is_canceled()) ) return false;
                             }
                         }
 
