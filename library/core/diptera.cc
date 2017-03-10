@@ -260,6 +260,9 @@ namespace midge
 
         f_threads.clear();
 
+        // clear instructables set
+        f_instructables.clear();
+
         return;
     }
 
@@ -366,8 +369,6 @@ namespace midge
                 t_it->second->cancel();
             }
         }
-        // clear instructables set
-        f_instructables.clear();
         return;
     }
 
