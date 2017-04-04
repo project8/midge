@@ -25,7 +25,8 @@ namespace midge
             scarab::cancelable(),
             f_nodes(),
             f_instructables(),
-            f_threads()
+            f_threads(),
+            f_threads_mutex()
     {
     }
     diptera::~diptera()
@@ -187,6 +188,7 @@ namespace midge
             return;
         }
     }
+
     void diptera::run( const string_t& p_string )
     {
         size_t t_start_pos;
@@ -198,6 +200,18 @@ namespace midge
 
         t_start_pos = 0;
         t_argument = p_string;
+
+        std::unique_lock< std::mutex >t_threads_lock( f_threads_mutex );
+
+        // add nodes to the instructables map
+        for( node_cit_t t_it = f_nodes.begin(); t_it != f_nodes.end(); ++t_it )
+        {
+            instructable* t_inst = dynamic_cast< instructable* >( t_it->second );
+            if( t_inst != nullptr )
+            {
+                f_instructables.insert( t_inst );
+            }
+        }
 
         // run nodes specified in the string
         while( true )
@@ -232,15 +246,22 @@ namespace midge
         // delay to allow the threads to spin up
         std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
+        t_threads_lock.unlock();
+
         msg_normal( coremsg, "waiting for threads to finish..." << eom );
         for( thread_it_t t_it = f_threads.begin(); t_it != f_threads.end(); t_it++ )
         {
             t_it->join();
         }
 
+        t_threads_lock.lock();
+
         msg_normal( coremsg, "threads finished" << eom );
 
         f_threads.clear();
+
+        // clear instructables set
+        f_instructables.clear();
 
         return;
     }
@@ -265,6 +286,8 @@ namespace midge
 
     void diptera::reset()
     {
+        std::unique_lock< std::mutex >t_threads_lock( f_threads_mutex );
+
         node* t_node;
         node_it_t t_it;
         for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
@@ -272,26 +295,35 @@ namespace midge
             t_node = t_it->second;
             t_node->finalize();
         }
+
         for( t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
             t_node = t_it->second;
             delete (t_node);
         }
         f_nodes.clear();
+
+        f_instructables.clear();
+
         return;
     }
 
     void diptera::instruct( instruction p_inst )
     {
+        std::unique_lock< std::mutex >t_threads_lock( f_threads_mutex );
+
         for( inst_it_t t_it = f_instructables.begin(); t_it != f_instructables.end(); ++t_it )
         {
             (*t_it)->instruct( p_inst );
         }
+
         return;
     }
 
     void diptera::do_cancellation()
     {
+        std::unique_lock< std::mutex >t_threads_lock( f_threads_mutex );
+
         // cancel producers first
         msg_debug( coremsg, "Canceling nodes: producers" << eom );
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
@@ -305,7 +337,7 @@ namespace midge
 
         // This delay is added to give the producers a chance to stop the chain(s) of nodes.
         // Without this, shutting down midge is somewhat unstable and has resulted in deadlocked threads.
-        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 
         // cancel transformers second
         msg_debug( coremsg, "Canceling nodes: transformers" << eom );
@@ -342,10 +374,13 @@ namespace midge
 
     void diptera::do_reset_cancellation()
     {
+        std::unique_lock< std::mutex >t_threads_lock( f_threads_mutex );
+
         for( node_it_t t_it = f_nodes.begin(); t_it != f_nodes.end(); t_it++ )
         {
             t_it->second->reset_cancel();
         }
+
         return;
     }
 
