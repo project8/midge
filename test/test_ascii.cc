@@ -12,6 +12,9 @@ using std::string;
 using std::fstream;
 using std::map;
 
+message_declare( testmsg )
+message_define( testmsg, test, test )
+
 namespace midge
 {
     namespace test
@@ -41,7 +44,7 @@ namespace midge
 
                 void print()
                 {
-                    msg( s_normal );
+                    std::stringstream msg;
                     msg << "block:" << ret;
                     msg << "  name: " << f_name << ret;
                     msg << "  value[ 0 ][ 0 ]: " << f_values[ 0 ][ 0 ] << ret;
@@ -59,7 +62,8 @@ namespace midge
                             msg << "  parameter[ " << t_outer << " ][ " << t_inner << " ]: " << f_parameters[ t_outer ][ t_inner ] << ret;
                         }
                     }
-                    msg << "  flag: " << (f_flag == true ? "true" : "false") << eom;
+                    msg << "  flag: " << (f_flag == true ? "true" : "false");
+                    msg_normal( testmsg, msg.str() );
 
                     return;
                 }
@@ -139,22 +143,22 @@ int main()
 
     if( t_ascii.end() == true )
     {
-        msg( s_warning ) << "ascii file at end." << eom;
+        msg_warning( testmsg, "ascii file at end." );
     }
     else
     {
-        msg( s_normal ) << "ascii file not at end." << eom;
+        msg_normal( testmsg, "ascii file not at end." );
     }
 
     t_ascii >> t_readable;
 
     if( t_ascii.end() == true )
     {
-        msg( s_normal ) << "ascii file at end." << eom;
+        msg_normal( testmsg, "ascii file at end." );
     }
     else
     {
-        msg( s_warning ) << "ascii file not at end." << eom;
+        msg_warning( testmsg, "ascii file not at end." );
     }
 
     t_ascii.close();
