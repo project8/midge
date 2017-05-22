@@ -3,10 +3,11 @@
 #include <cmath>
 #include <unistd.h>
 #include <mutex>
+#include <thread>
 
 #include "message_logger.hh"
 #include "midge_error.hh"
-#include "thread.hh"
+//#include "thread.hh"
 #include "types.hh"
 
 message_declare( testmsg )
@@ -357,16 +358,16 @@ namespace midge
                     while( true )
                     {
                         f_stream > t_state;
-                        testmsg( s_normal ) << "writer <" << f_seed << "> pulling a state of <" << t_state << "> at <" << t_count << ">" << eom;
+                        msg_normal( testmsg, "writer <" << f_seed << "> pulling a state of <" << t_state << "> at <" << t_count << ">" );
                         if( t_state == stream::s_stopped )
                         {
-                            testmsg( s_normal ) << "writer <" << f_seed << "> stopping" << eom;
+                            msg_normal( testmsg, "writer <" << f_seed << "> stopping" );
                             f_stream < stream::s_stopped;
                             break;
                         }
                         if( t_dist_uniform_0_20( f_rng ) < 1. )
                         {
-                            testmsg( s_normal ) << "writer <" << f_seed << "> initiates stop" << eom;
+                            msg_normal( testmsg, "writer <" << f_seed << "> initiates stop" );
                             f_stream < stream::s_stopped;
                             break;
                         }
@@ -374,7 +375,7 @@ namespace midge
 
                         f_stream >> t_value;
                         (*t_value) = t_dist_uniform_0_10( f_rng );
-                        testmsg( s_normal ) << "writer <" << f_seed << "> pushing a value of <" << *t_value << "> at <" << t_count << ">" << eom;
+                        msg_normal( testmsg, "writer <" << f_seed << "> pushing a value of <" << *t_value << "> at <" << t_count << ">" );
                         f_stream << t_value;
                         t_sleep = (count_t) (round(t_dist_uniform_50k_150k( f_rng )));
                         usleep( t_sleep );
@@ -412,24 +413,24 @@ namespace midge
                     {
 
                         f_stream > t_state;
-                        testmsg( s_normal ) << "  reader <" << f_seed << "> pulling a state of <" << t_state << "> at <" << t_count << ">" << eom;
+                        msg_normal( testmsg, "  reader <" << f_seed << "> pulling a state of <" << t_state << "> at <" << t_count << ">" );
                         if( t_state == stream::s_stopped )
                         {
-                            testmsg( s_normal ) << "  reader <" << f_seed << "> stopping" << eom;
+                            msg_normal( testmsg, "  reader <" << f_seed << "> stopping" );
                             f_stream < stream::s_stopped;
                             break;
                         }
 
                         if( t_dist_uniform_0_20( f_rng ) < 1. )
                         {
-                            testmsg( s_normal ) << "  reader <" << f_seed << "> initiates stop" << eom;
+                            msg_normal( testmsg, "  reader <" << f_seed << "> initiates stop" );
                             f_stream < stream::s_stopped;
                             break;
                         }
                         //f_stream < stream::s_started;
 
                         f_stream >> t_value;
-                        testmsg( s_normal ) << "  reader <" << f_seed << "> pulling a value of <" << *t_value << "> at <" << t_count << ">" << eom;
+                        msg_normal( testmsg, "  reader <" << f_seed << "> pulling a value of <" << *t_value << "> at <" << t_count << ">" );
                         f_stream << t_value;
                         t_sleep = (count_t) (round(t_dist_uniform_200k_600k( f_rng )));
                         usleep( t_sleep );
@@ -473,18 +474,11 @@ int main()
     reader t_susanne_reader( &t_buffer, 53083 );
     reader t_rose_reader( &t_buffer, 31387 );
 
-    thread t_dan_thread, t_katie_thread, t_erin_thread, t_susanne_thread, t_rose_thread;
-    t_dan_thread.start( &t_dan_writer, &writer::execute );
-    t_katie_thread.start( &t_katie_reader, &reader::execute );
-    t_erin_thread.start( &t_erin_reader, &reader::execute );
-    t_susanne_thread.start( &t_susanne_reader, &reader::execute );
-    t_rose_thread.start( &t_rose_reader, &reader::execute );
-
-    t_dan_thread.start();
-    t_katie_thread.start();
-    t_erin_thread.start();
-    t_susanne_thread.start();
-    t_rose_thread.start();
+    std::thread t_dan_thread( [&](){ t_dan_writer.execute(); } );
+    std::thread t_katie_thread( [&](){ t_katie_reader.execute(); } );
+    std::thread t_erin_thread( [&](){ t_erin_reader.execute(); } );
+    std::thread t_susanne_thread( [&](){ t_susanne_reader.execute(); } );
+    std::thread t_rose_thread( [&](){ t_rose_reader.execute(); } );
 
     t_dan_thread.join();
     t_katie_thread.join();

@@ -1,20 +1,37 @@
-# Mac file
-*.DS_Store
-
-# Eclipse files
-*.project
-*.cproject
-
 # Compiled Object files
 *.slo
 *.lo
 *.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
 
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
+
+# Fortran module files
+*.mod
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Eclipse
+.project
+.cproject
+.settings/
+
+# Build directories
+build*/
+
