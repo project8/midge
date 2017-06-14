@@ -12,6 +12,8 @@ using std::vector;
 using std::map;
 using std::string;
 
+message_declare( testmsg )
+message_define( testmsg, test, test )
 
 namespace midge
 {
@@ -41,7 +43,7 @@ namespace midge
 
                 void print()
                 {
-                    msg( s_normal );
+                    std::stringstream msg;
                     msg << "block:" << ret;
                     msg << "  name: " << f_name << ret;
                     msg << "  value[ 0 ][ 0 ]: " << f_values[ 0 ][ 0 ] << ret;
@@ -59,7 +61,8 @@ namespace midge
                             msg << "  parameter[ " << t_outer << " ][ " << t_inner << " ]: " << f_parameters[ t_outer ][ t_inner ] << ret;
                         }
                     }
-                    msg << "  flag: " << (f_flag == true ? "true" : "false") << eom;
+                    msg << "  flag: " << (f_flag == true ? "true" : "false");// << eom;
+                    msg_normal( testmsg, msg.str() );
 
                     return;
                 }
@@ -141,22 +144,22 @@ int main()
 
     if( t_binary.end() == true )
     {
-        msg( s_warning ) << "binary file at end." << eom;
+        msg_warning( testmsg, "binary file at end." );
     }
     else
     {
-        msg( s_normal ) << "binary file not at end." << eom;
+        msg_normal( testmsg, "binary file not at end." );
     }
 
     t_binary >> t_readable;
 
     if( t_binary.end() == true )
     {
-        msg( s_normal ) << "binary file at end." << eom;
+        msg_normal( testmsg, "binary file at end." );
     }
     else
     {
-        msg( s_warning ) << "binary file not at end." << eom;
+        msg_warning( testmsg, "binary file not at end." );
     }
 
     t_binary.close();

@@ -15,7 +15,7 @@ if( Midge_ENABLE_TESTING )
         test_message
         test_ascii
         test_binary
-        test_thread
+        #test_thread
         test_buffer
         test_lexer_reporter
         test_lexer_serializer
