@@ -38,7 +38,7 @@ namespace midge
             void join( const std::string& p_string );
             /// Run a set of nodes; only the nodes specified will be executed
             ///   "my-consumer:my-producer"
-            void run( const std::string& p_string );
+            std::exception_ptr run( const std::string& p_string );
 
             /// To be used by running nodes to throw an exception
             void throw_ex( std::exception_ptr e_ptr );
@@ -75,6 +75,8 @@ namespace midge
 
             thread_vector_t f_threads;
             std::mutex f_threads_mutex;
+
+            std::exception_ptr f_run_e_ptr;
 
             static const std::string s_connector;
             static const std::string s_designator;
