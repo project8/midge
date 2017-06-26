@@ -59,9 +59,9 @@ pbuilder_add_submodule( Scarab scarab/library )
 ###############
 
 include_directories( BEFORE 
-    ${PROJECT_SOURCE_DIR}/library/bindings
+    #${PROJECT_SOURCE_DIR}/library/bindings
     ${PROJECT_SOURCE_DIR}/library/core
-    ${PROJECT_SOURCE_DIR}/library/initialization
+    #${PROJECT_SOURCE_DIR}/library/initialization
     ${PROJECT_SOURCE_DIR}/library/utility
 )
 
