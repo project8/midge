@@ -26,7 +26,8 @@ namespace midge
             f_nodes(),
             f_instructables(),
             f_threads(),
-            f_threads_mutex()
+            f_threads_mutex(),
+            f_run_e_ptr()
     {
     }
     diptera::~diptera()
@@ -189,7 +190,7 @@ namespace midge
         }
     }
 
-    void diptera::run( const string_t& p_string )
+    std::exception_ptr diptera::run( const string_t& p_string )
     {
         size_t t_start_pos;
         size_t t_separator_pos;
@@ -223,14 +224,13 @@ namespace midge
 
             if( t_node_name.size() == 0 )
             {
-                throw error() << "root run found node name with length zero in argument <" << p_string << ">";
-                return;
+                return std::make_exception_ptr( error() << "root run found node name with length zero in argument <" << p_string << ">" );
             }
 
             t_node_it = f_nodes.find( t_node_name );
             if( t_node_it == f_nodes.end() )
             {
-                throw error() << "root run found no node with name <" << t_node_name << ">";
+                return std::make_exception_ptr( error() << "root run found no node with name <" << t_node_name << ">" );
             }
 
             msg_normal( coremsg, "creating thread for node <" << t_node_name << ">" << eom );
@@ -263,7 +263,7 @@ namespace midge
         // clear instructables set
         f_instructables.clear();
 
-        return;
+        return f_run_e_ptr;
     }
 
     void diptera::throw_ex( std::exception_ptr e_ptr )
@@ -275,11 +275,25 @@ namespace midge
                 std::rethrow_exception( e_ptr );
             }
         }
+        catch( const midge::error& e )
+        {
+            msg_error( coremsg, "midge error thrown: " << e.what() << eom );
+        }
+        catch( const midge::node_fatal_error& e )
+        {
+            msg_error( coremsg, "fatal error thrown: " << e.what() << eom );
+        }
+        catch( const midge::node_nonfatal_error& e )
+        {
+            msg_error( coremsg, "non-fatal error thrown: " << e.what() << eom );
+        }
         catch( const std::exception& e )
         {
-            msg_error( coremsg, "exception thrown within midge: " << e.what() << eom );
-            cancel();
+            msg_error( coremsg, "non-node exception thrown: " << e.what() << eom );
         }
+        msg_debug( coremsg, "canceling run and setting exception pointer" << eom );
+        cancel();
+        f_run_e_ptr = e_ptr;
         return;
     }
 
