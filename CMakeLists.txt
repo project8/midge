@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 #########
 
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project( Midge VERSION 3.4.6 )
+project( Midge VERSION 3.4.7 )
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scarab/cmake )
 include( PackageBuilder )
@@ -59,9 +59,9 @@ pbuilder_add_submodule( Scarab scarab/library )
 ###############
 
 include_directories( BEFORE 
-    ${PROJECT_SOURCE_DIR}/library/bindings
+    #${PROJECT_SOURCE_DIR}/library/bindings
     ${PROJECT_SOURCE_DIR}/library/core
-    ${PROJECT_SOURCE_DIR}/library/initialization
+    #${PROJECT_SOURCE_DIR}/library/initialization
     ${PROJECT_SOURCE_DIR}/library/utility
 )
 

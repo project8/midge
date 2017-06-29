@@ -85,55 +85,55 @@ set( midge_sources ${midge_sources}
 # initialization #
 ##################
 
-set( midge_headers ${midge_headers}
-	${init_dir}/value.hh
-	${init_dir}/object.hh
-	${init_dir}/array.hh
-	${init_dir}/lingual.hh
-	${init_dir}/numerical.hh
-	${init_dir}/boolean.hh
-	${init_dir}/null.hh
-	${init_dir}/processor.hh
-	${init_dir}/arguments.hh
-	${init_dir}/lexer.hh
-	${init_dir}/reporter.hh
-	${init_dir}/serializer.hh
-	${init_dir}/evaluator.hh
-	${init_dir}/compiler.hh
-	${init_dir}/object_builder.hh
-	${init_dir}/lingual_builder.hh
-	${init_dir}/numerical_builder.hh
-	${init_dir}/boolean_builder.hh
-	${init_dir}/null_builder.hh
-)
-set( midge_sources ${midge_sources}
-	${init_dir}/value.cc
-	${init_dir}/object.cc
-	${init_dir}/array.cc
-	${init_dir}/lingual.cc
-	${init_dir}/numerical.cc
-	${init_dir}/boolean.cc
-	${init_dir}/null.cc
-	${init_dir}/processor.cc
-	${init_dir}/arguments.cc
-	${init_dir}/lexer.cc
-	${init_dir}/reporter.cc
-	${init_dir}/serializer.cc
-	${init_dir}/compiler.cc
-	${init_dir}/evaluator.cc
-)
+#set( midge_headers ${midge_headers}
+#	${init_dir}/value.hh
+#	${init_dir}/object.hh
+#	${init_dir}/array.hh
+#	${init_dir}/lingual.hh
+#	${init_dir}/numerical.hh
+#	${init_dir}/boolean.hh
+#	${init_dir}/null.hh
+#	${init_dir}/processor.hh
+#	${init_dir}/arguments.hh
+#	${init_dir}/lexer.hh
+#	${init_dir}/reporter.hh
+#	${init_dir}/serializer.hh
+#	${init_dir}/evaluator.hh
+#	${init_dir}/compiler.hh
+#	${init_dir}/object_builder.hh
+#	${init_dir}/lingual_builder.hh
+#	${init_dir}/numerical_builder.hh
+#	${init_dir}/boolean_builder.hh
+#	${init_dir}/null_builder.hh
+#)
+#set( midge_sources ${midge_sources}
+#	${init_dir}/value.cc
+#	${init_dir}/object.cc
+#	${init_dir}/array.cc
+#	${init_dir}/lingual.cc
+#	${init_dir}/numerical.cc
+#	${init_dir}/boolean.cc
+#	${init_dir}/null.cc
+#	${init_dir}/processor.cc
+#	${init_dir}/arguments.cc
+#	${init_dir}/lexer.cc
+#	${init_dir}/reporter.cc
+#	${init_dir}/serializer.cc
+#	${init_dir}/compiler.cc
+#	${init_dir}/evaluator.cc
+#)
 
 
 ############
 # bindings #
 ############
 
-set( midge_headers ${midge_headers}
-	${bind_dir}/midge_builder.hh
-)
-set( midge_sources ${midge_sources}
-	${bind_dir}/midge_builder.cc
-)
+#set( midge_headers ${midge_headers}
+#	${bind_dir}/midge_builder.hh
+#)
+#set( midge_sources ${midge_sources}
+#	${bind_dir}/midge_builder.cc
+#)
 
 
 ###########
