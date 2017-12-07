@@ -3,7 +3,7 @@
 
 #include "stream.hh"
 
-#include "macros.hh"
+#include "member_variables.hh"
 
 
 namespace midge
@@ -23,7 +23,7 @@ namespace midge
 
             virtual void timer_report() const;
 
-            referrable( std::string, label );
+            mv_referrable( std::string, label );
 
         protected:
             IF_STREAM_TIMING_ENABLED( stream_timer f_timer; )

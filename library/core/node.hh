@@ -23,7 +23,7 @@ namespace midge
             virtual ~node();
 
         public:
-            accessible( string_t, name );
+            mv_accessible( string_t, name );
 
         public:
             virtual void initialize() = 0;

@@ -4,7 +4,6 @@
 #include "midge_error.hh"
 #include "_stream.hh"
 #include "node.hh"
-#include "macros.hh"
 #include "coremsg.hh"
 
 #include <mutex>

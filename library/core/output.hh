@@ -2,7 +2,7 @@
 #define midge_output_hh_
 
 #include "stream.hh"
-#include "macros.hh"
+#include "member_variables.hh"
 
 namespace midge
 {
@@ -16,7 +16,7 @@ namespace midge
             virtual ~output();
 
         public:
-            accessible( string_t, name )
+            mv_accessible( string_t, name )
 
         public:
             virtual stream* get() = 0;
