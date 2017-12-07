@@ -2,7 +2,7 @@
 #define _midge_input_hh_
 
 #include "stream.hh"
-#include "macros.hh"
+#include "member_variables.hh"
 
 namespace midge
 {
@@ -16,7 +16,7 @@ namespace midge
             virtual ~input();
 
         public:
-            accessible( string_t, name )
+            mv_accessible( string_t, name )
 
         public:
             virtual void set( stream* p_stream ) = 0;

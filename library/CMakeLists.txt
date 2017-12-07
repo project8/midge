@@ -10,7 +10,6 @@ set( util_dir utility )
 ###########
 
 set( midge_headers ${midge_headers}
-	${util_dir}/macros.hh
 	${util_dir}/initializer.hh
 	${util_dir}/midge_error.hh
 	${util_dir}/message_logger.hh
