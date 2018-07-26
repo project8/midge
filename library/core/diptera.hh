@@ -88,8 +88,13 @@ namespace midge
             static const std::string s_designator;
             static const std::string s_separator;
     };
+
+    inline void diptera::set_running_callback( std::function< void() > a_callback )
+    {
+        f_running_callback = a_callback;
+        return;
+    }
+
 }
-
-
 
 #endif
