@@ -27,7 +27,8 @@ namespace midge
             f_instructables(),
             f_threads(),
             f_threads_mutex(),
-            f_run_e_ptr()
+            f_run_e_ptr(),
+            f_running_callback( [](){ return; } )
     {
     }
     diptera::~diptera()
@@ -245,6 +246,8 @@ namespace midge
 
         // delay to allow the threads to spin up
         std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+
+        f_running_callback();
 
         t_threads_lock.unlock();
 

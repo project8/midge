@@ -25,6 +25,7 @@ namespace midge
         public:
             /// Add a node
             void add( node* p_node );
+
             /// Join one node to another
             /*!
              * Option 1: Join by data stream
@@ -36,6 +37,7 @@ namespace midge
              *     my-consumer will get a pointer to my-producer stored in the f_node_links map
              */
             void join( const std::string& p_string );
+
             /// Run a set of nodes; only the nodes specified will be executed
             ///   "my-consumer:my-producer"
             std::exception_ptr run( const std::string& p_string );
@@ -46,6 +48,8 @@ namespace midge
             void reset();
 
             void instruct( instruction p_inst );
+
+            void set_running_callback( std::function< void() > a_callback );
 
             static const std::string& connector();
             static const std::string& designator();
@@ -78,12 +82,19 @@ namespace midge
 
             std::exception_ptr f_run_e_ptr;
 
+            std::function< void() > f_running_callback;
+
             static const std::string s_connector;
             static const std::string s_designator;
             static const std::string s_separator;
     };
+
+    inline void diptera::set_running_callback( std::function< void() > a_callback )
+    {
+        f_running_callback = a_callback;
+        return;
+    }
+
 }
-
-
 
 #endif
