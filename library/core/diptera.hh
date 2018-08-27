@@ -5,6 +5,7 @@
 
 #include "cancelable.hh"
 
+#include <functional>
 #include <map>
 #include <set>
 #include <thread>
