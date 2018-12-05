@@ -54,7 +54,7 @@ namespace midge
             template< class x_r >
             void call( x_r (x_type::*p_member)() )
             {
-                for( index_t t_index = 0; t_index < f_length; t_index++ )
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)();
                 }
@@ -63,7 +63,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1 >
             void call( x_r (x_type::*p_member)( x_a1 ), x_p1 p_1 )
             {
-                for( index_t t_index = 0; t_index < f_length; t_index++ )
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1 );
                 }
@@ -72,7 +72,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2 ), x_p1 p_1, x_p2 p_2 )
             {
-                for( index_t t_index = 0; t_index < f_length; t_index++ )
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2 );
                 }
@@ -81,7 +81,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2, class x_a3, class x_p3 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2, x_a3 ), x_p1 p_1, x_p2 p_2, x_p3 p_3 )
             {
-                for( index_t t_index = 0; t_index < f_length; t_index++ )
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3 );
                 }
@@ -90,7 +90,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2, class x_a3, class x_p3, class x_a4, class x_p4 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2, x_a3, x_a4 ), x_p1 p_1, x_p2 p_2, x_p3 p_3, x_p4 p_4 )
             {
-                for( index_t t_index = 0; t_index < f_length; t_index++ )
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3, p_4 );
                 }
@@ -99,7 +99,7 @@ namespace midge
             template< class x_r, class x_a1, class x_p1, class x_a2, class x_p2, class x_a3, class x_p3, class x_a4, class x_p4, class x_a5, class x_p5 >
             void call( x_r (x_type::*p_member)( x_a1, x_a2, x_a3, x_a4, x_a5 ), x_p1 p_1, x_p2 p_2, x_p3 p_3, x_p4 p_4, x_p5 p_5 )
             {
-                for( index_t t_index = 0; t_index < f_length; t_index++ )
+                for( count_t t_index = 0; t_index < f_length; t_index++ )
                 {
                     (f_read_data[ t_index ].*p_member)( p_1, p_2, p_3, p_4, p_5 );
                 }
