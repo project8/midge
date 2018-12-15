@@ -1,9 +1,0 @@
-{
-    "name" : "object",
-    "value" :
-    {
-        "name" : "inner",
-        "content_one" : "<one>",
-        "content_two" : "<two>"
-    }
-}

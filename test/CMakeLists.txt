@@ -13,15 +13,7 @@ if( Midge_ENABLE_TESTING )
         test_typeat
         test_typechain
         test_message
-        test_ascii
-        test_binary
-        #test_thread
         test_buffer
-        #test_lexer_reporter
-        #test_lexer_serializer
-        #test_lexer_compiler_reporter
-        #test_lexer_compiler_serializer
-        #test_builder
     )
     
     pbuilder_executables( programs lib_dependencies )
@@ -35,7 +27,6 @@ if( Midge_ENABLE_TESTING )
         config/test_types.json
         config/test_arrays.json
         config/test_objects.json
-        #config/test_builder.json
         config/test_comparison.json
     )
     
