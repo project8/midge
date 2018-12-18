@@ -1,14 +1,10 @@
 #ifndef _midge_producer_hh_
 #define _midge_producer_hh_
 
-#include <vector>
-
 #include "_out.hh"
-#include "coremsg.hh"
 #include "node.hh"
 #include "typeat.hh"
 #include "typechain.hh"
-#include "typelength.hh"
 
 namespace midge
 {
@@ -26,9 +22,12 @@ namespace midge
     };
 
     template< class x_type, class x_out_list >
-    class _producer :
+    class _producer;
+
+    template< class x_type, template<class...> class x_out_list, class... x_out_types >
+    class _producer< x_type, x_out_list<x_out_types...> > :
         public producer,
-        public typechain< _out< _1, _index >, x_out_list >
+        public type_start_chain< _out< _type, _index >, x_out_types... >
     {
         public:
             using node::out;
@@ -39,26 +38,26 @@ namespace midge
 
         protected:
             template< int x_index >
-            _stream< typename typeat< x_out_list, x_index >::result >& out_stream()
+            _stream< type_at< x_index, x_out_types... > >& out_stream()
             {
-                return this->_out< typename typeat< x_out_list, x_index >::result, typeint< x_index > >::get_stream();
+                return this->_out< type_at< x_index, x_out_types... >, type_int< x_index > >::get_stream();
             }
 
             template< int x_index >
-            _buffer< typename typeat< x_out_list, x_index >::result >& out_buffer()
+            _buffer< type_at< x_index, x_out_types... > >& out_buffer()
             {
-                return this->_out< typename typeat< x_out_list, x_index >::result, typeint< x_index > >::get_buffer();
+                return this->_out< type_at< x_index, x_out_types... >, type_int< x_index > >::get_buffer();
             }
     };
 
-    template< class x_type, class x_out_list >
-    _producer< x_type, x_out_list >::_producer() :
+    template< class x_type, template<class...> class x_out_list, class... x_out_types >
+    _producer< x_type, x_out_list<x_out_types...> >::_producer() :
             producer(),
-            typechain< _out< _1, _index >, x_out_list >()
+            type_start_chain< _out< _type, _index >, x_out_types... >()
     {
     }
-    template< class x_type, class x_out_list >
-    _producer< x_type, x_out_list >::~_producer()
+    template< class x_type, template<class...> class x_out_list, class... x_out_types >
+    _producer< x_type, x_out_list<x_out_types...> >::~_producer()
     {
     }
 

@@ -17,13 +17,12 @@ set( midge_headers ${midge_headers}
 	${util_dir}/shared_cancel.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh
-	${util_dir}/typenode.hh
 	${util_dir}/typelist.hh
 	${util_dir}/typelength.hh
 	${util_dir}/typeat.hh
-	${util_dir}/typein.hh
-	${util_dir}/typeif.hh
 	${util_dir}/typechain.hh
+	${util_dir}/typerename.hh
+	${util_dir}/typereplace.hh
 )
 set( midge_sources ${midge_sources}
 	${util_dir}/midge_error.cc
