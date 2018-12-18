@@ -21,11 +21,11 @@ namespace midge
 
     };
 
-    template< class x_type, class x_out_list >
+    template< class x_out_list >
     class _producer;
 
-    template< class x_type, template<class...> class x_out_list, class... x_out_types >
-    class _producer< x_type, x_out_list<x_out_types...> > :
+    template< template<class...> class x_out_list, class... x_out_types >
+    class _producer< x_out_list<x_out_types...> > :
         public producer,
         public type_start_chain< _out< _type, _index >, x_out_types... >
     {
@@ -50,14 +50,14 @@ namespace midge
             }
     };
 
-    template< class x_type, template<class...> class x_out_list, class... x_out_types >
-    _producer< x_type, x_out_list<x_out_types...> >::_producer() :
+    template< template<class...> class x_out_list, class... x_out_types >
+    _producer< x_out_list<x_out_types...> >::_producer() :
             producer(),
             type_start_chain< _out< _type, _index >, x_out_types... >()
     {
     }
-    template< class x_type, template<class...> class x_out_list, class... x_out_types >
-    _producer< x_type, x_out_list<x_out_types...> >::~_producer()
+    template< template<class...> class x_out_list, class... x_out_types >
+    _producer< x_out_list<x_out_types...> >::~_producer()
     {
     }
 

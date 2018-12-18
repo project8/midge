@@ -29,7 +29,7 @@ namespace midge
                 int f_value;
         };
 
-        class int_producer : public midge::_producer< int_producer, type_list< int_data > >
+        class int_producer : public midge::_producer< type_list< int_data > >
         {
             public:
                 int_producer() : f_length( 10 ) {}

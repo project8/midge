@@ -20,11 +20,11 @@ namespace midge
             virtual ~transformer();
     };
 
-    template< class x_type, class x_in_list, class x_out_list >
+    template< class x_in_list, class x_out_list >
     class _transformer;
 
-    template< class x_type, template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
-    class _transformer< x_type, x_in_list<x_in_types...>, x_out_list<x_out_types...> > :
+    template< template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
+    class _transformer< x_in_list<x_in_types...>, x_out_list<x_out_types...> > :
         public transformer,
         public type_start_chain< _in< _type, _index >, x_in_types... >,
         public type_start_chain< _out< _type, _index >, x_out_types... >
@@ -57,15 +57,15 @@ namespace midge
             }
     };
 
-    template< class x_type, template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
-    _transformer< x_type, x_in_list<x_in_types...>, x_out_list<x_out_types...> >::_transformer() :
+    template< template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
+    _transformer< x_in_list<x_in_types...>, x_out_list<x_out_types...> >::_transformer() :
             node(),
             type_start_chain< _in< _type, _index >, x_in_types... >(),
             type_start_chain< _out< _type, _index >, x_out_types... >()
     {
     }
-    template< class x_type, template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
-    _transformer< x_type, x_in_list<x_in_types...>, x_out_list<x_out_types...> >::~_transformer()
+    template< template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
+    _transformer< x_in_list<x_in_types...>, x_out_list<x_out_types...> >::~_transformer()
     {
     }
 

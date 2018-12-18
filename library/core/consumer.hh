@@ -19,11 +19,11 @@ namespace midge
             virtual ~consumer();
     };
 
-    template< class x_type, class x_in_list >
+    template< class x_in_list >
     class _consumer;
 
-    template< class x_type, template<class...> class x_in_list, class... x_in_types >
-    class _consumer< x_type, x_in_list<x_in_types...> > :
+    template< template<class...> class x_in_list, class... x_in_types >
+    class _consumer< x_in_list<x_in_types...> > :
         public consumer,
         public type_start_chain< _in< _type, _index >, x_in_types... >
     {
@@ -42,15 +42,15 @@ namespace midge
             }
     };
 
-    template< class x_type, template<class...> class x_in_list, class... x_in_types >
-    _consumer< x_type, x_in_list<x_in_types...> >::_consumer() :
+    template< template<class...> class x_in_list, class... x_in_types >
+    _consumer< x_in_list<x_in_types...> >::_consumer() :
             consumer(),
             type_start_chain< _in< _type, _index >, x_in_types... >()
     {
     }
 
-    template< class x_type, template<class...> class x_in_list, class... x_in_types >
-    _consumer< x_type, x_in_list<x_in_types...> >::~_consumer()
+    template< template<class...> class x_in_list, class... x_in_types >
+    _consumer< x_in_list<x_in_types...> >::~_consumer()
     {
     }
 
