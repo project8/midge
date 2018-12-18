@@ -1,34 +1,17 @@
 #ifndef _midge_typelength_hh_
 #define _midge_typelength_hh_
 
-#include "typenode.hh"
-#include "typenull.hh"
+#include "typerename.hh"
+
+#include <type_traits>
 
 namespace midge
 {
+    /// Calculates the number of types in template pack x_types; returns it as type_length::value
+    template< class... x_types > using type_length = std::integral_constant< std::size_t, sizeof...(x_types) >;
 
-    template< class x_node >
-    class typelength;
-
-    template< class x_head, class x_tail >
-    class typelength< typenode< x_head, x_tail > >
-    {
-        public:
-            enum
-            {
-                result = typelength< x_tail >::result + 1
-            };
-    };
-
-    template< >
-    class typelength< _ >
-    {
-        public:
-            enum
-            {
-                result = 0
-            };
-    };
+    /// Calculates the number of types in type list x_list; returns it as type_size::value
+    template< class x_list > using type_size = type_rename< x_list, type_length >;
 
 }
 
