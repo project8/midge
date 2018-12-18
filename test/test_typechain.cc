@@ -1,8 +1,9 @@
 #include <iostream>
 
 #include "typechain.hh"
-#include "typelist.hh"
-#include "types.hh"
+
+#include "typename.hh"
+
 using std::cout;
 using std::endl;
 
@@ -14,9 +15,9 @@ namespace midge
         class socket
         {
             public:
-                socket( const string_t& p_name )
+                socket( const std::string& p_name )
                 {
-                    cout << "<" << p_name << ">: creating socket for <" << typeid(x_type).name() << "> at index <" << x_index::result << ">" << endl;
+                    cout << "<" << p_name << ">: creating socket for <" << scarab::demangle(typeid(x_type).name()) << "> at index <" << x_index::value << ">" << endl;
                 }
                 ~socket()
                 {
@@ -24,19 +25,20 @@ namespace midge
 
         };
 
-        template< class x_list >
+        template< class... x_types >
         class parent :
-            public typechain< socket< _1, _index >, x_list >
+            public type_chain< socket< _type, _index >, 0, x_types... >
         {
             public:
                 parent() :
-                    typechain< socket< _1, _index >, x_list >( "parent" )
+                    type_chain< socket< _type, _index >, 0, x_types... >( "parent_2" )
                 {
                 }
                 ~parent()
                 {
                 }
         };
+
     }
 }
 
@@ -46,11 +48,9 @@ using namespace midge::test;
 int main()
 {
 
-    typedef typelist_3( char, short, int ) list_one;
-    parent< list_one > t_parent_one;
+    parent< char, short, int > t_parent_one;
 
-    typedef typelist_10( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double ) list_two;
-    parent< list_two > t_parent_two;
+    parent< unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double > t_parent_two;
 
     return 0;
 
