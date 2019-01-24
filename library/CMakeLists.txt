@@ -14,6 +14,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/midge_error.hh
 	${util_dir}/message_logger.hh
 	${util_dir}/instructable.hh
+    ${util_dir}/m_signal.hh
 	${util_dir}/shared_cancel.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh

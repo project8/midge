@@ -4,6 +4,7 @@
 #include "diptera.hh"
 #include "input.hh"
 #include "instructable.hh"
+#include "m_signal.hh"
 #include "output.hh"
 #include "shared_cancel.hh"
 
@@ -34,12 +35,13 @@ namespace midge
             node* node_ptr( const std::string& p_label );
             input* in( const std::string& p_label );
             output* out( const std::string& p_label );
-
-            void node_ptr( node*, const std::string& p_label );
+            signal* signal( const std::string& p_label );
 
         protected:
+            void node_ptr( node*, const std::string& p_label );
             void in( input*, const std::string& p_label );
             void out( output*, const std::string& p_label );
+            void signal( signal*, const std::string& p_label );
 
         private:
             typedef std::map< std::string, node* > node_map;
@@ -62,6 +64,13 @@ namespace midge
             typedef output_map::value_type output_entry;
 
             output_map f_output_map;
+
+            typedef std::map< std::string, m_signal* > signal_map;
+            typedef signal_map::iterator signal_it;
+            typedef signal_map::const_iterator signal_cit;
+            typedef signal_map::value_type signal_entry;
+
+            signal_map f_signal_map;
 
         protected:
             void do_cancellation() override;

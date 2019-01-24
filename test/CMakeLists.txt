@@ -10,6 +10,7 @@ if( Midge_ENABLE_TESTING )
     
     set( programs
         test_buffer
+        test_m_signal
         test_message
         test_producer
         test_typelength
