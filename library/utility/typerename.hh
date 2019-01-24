@@ -11,17 +11,17 @@
 namespace midge
 {
 
-    template< class A, template<class...> class B > struct type_rename_impl;
+    template< class x_a, template<class...> class x_b > struct type_rename_impl;
 
-    template< template<class...> class A, class... T, template<class...> class B >
-        struct type_rename_impl< A< T... >, B >
+    template< template<class...> class x_a, class... x_types, template<class...> class x_b >
+        struct type_rename_impl< x_a< x_types... >, x_b >
     {
-        using type = B< T... >;
+        using type = x_b< x_types... >;
     };
 
     /// Replaces type A with type B; e.g. type_rename<type_list<int, float>, std::pair> --> std::pair<int, float>
-    template< class A, template<class...> class B >
-    using type_rename = typename type_rename_impl< A, B >::type;
+    template< class x_a, template<class...> class x_b >
+    using type_rename = typename type_rename_impl< x_a, x_b >::type;
 
 }
 
