@@ -70,7 +70,7 @@ namespace midge
         {
             t_timer_report << "Timer was unused\n";
         }
-        INFO( mlog, t_timer_report.str() );
+        LINFO( mlog, t_timer_report.str() );
     }
 
     void stream_timer::reset()
