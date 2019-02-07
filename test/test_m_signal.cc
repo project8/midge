@@ -17,7 +17,7 @@ using namespace midge;
 int main()
 {
     // create new signal
-    m_signal< std::string, int > signal;
+    m_signal< std::string, int > signal( "" );
 
     // attach a slot
     signal.connect( [](std::string arg1, int arg2) {

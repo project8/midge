@@ -18,10 +18,12 @@
 
 namespace midge
 {
+    class node;
+
     class signal
     {
         protected:
-            signal();
+            signal( const std::string& name, node* owner = nullptr );
 
         public:
             virtual ~signal();
@@ -37,7 +39,7 @@ namespace midge
     class m_signal : public signal
     {
         public:
-            m_signal();
+            m_signal( const std::string& name, node* owner = nullptr );
             m_signal( const m_signal& ) = delete;
             m_signal( m_signal&& ) = delete;
 
@@ -72,8 +74,8 @@ namespace midge
     };
 
     template< typename... x_args >
-    m_signal< x_args... >::m_signal() :
-            signal(),
+    m_signal< x_args... >::m_signal( const std::string& name, node* owner ) :
+            signal( name, owner ),
             f_slots(),
             f_current_id( 0 )
     {}
