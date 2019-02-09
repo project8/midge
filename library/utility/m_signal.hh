@@ -39,6 +39,9 @@ namespace midge
     class m_signal : public signal
     {
         public:
+            using signature = void( x_args... );
+
+        public:
             m_signal( const std::string& name, node* owner = nullptr );
             m_signal( const m_signal& ) = delete;
             m_signal( m_signal&& ) = delete;
@@ -53,7 +56,7 @@ namespace midge
 
             // connects a std::function to the m_signal. The returned
             // value can be used to disconnect the function again
-            int connect( std::function< void(x_args...) > const& slot ) const;
+            int connect( const std::function< signature > & slot ) const;
 
             // disconnects a previously connected function
             void disconnect( int id ) const;
@@ -68,7 +71,7 @@ namespace midge
             m_signal& operator=( m_signal const& other );
 
         private:
-            typedef std::map< unsigned, std::function< void(x_args...) > > slot_map; // to get around the problem of having a comma inside a macro function argument
+            typedef std::map< unsigned, std::function< signature > > slot_map; // to get around the problem of having a comma inside a macro function argument
             mv_referrable_mutable_const( slot_map, slots );
             mv_accessible_mutable_noset( unsigned, current_id );
     };
@@ -105,7 +108,7 @@ namespace midge
     // connects a std::function to the m_signal. The returned
     // value can be used to disconnect the function again
     template< typename... x_args >
-    int m_signal< x_args... >::connect( std::function< void(x_args...) > const& slot ) const
+    int m_signal< x_args... >::connect( std::function< signature > const& slot ) const
     {
         f_slots.insert( std::make_pair( ++f_current_id, slot ) );
         return f_current_id;
