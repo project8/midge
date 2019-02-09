@@ -16,6 +16,7 @@ set( midge_headers ${midge_headers}
 	${util_dir}/message_logger.hh
     ${util_dir}/m_signal.hh
 	${util_dir}/shared_cancel.hh
+	${util_dir}/signal_slot_impl.hh
 	${util_dir}/slot.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh

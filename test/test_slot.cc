@@ -5,7 +5,7 @@
  *      Author: N.S. Oblath
  */
 
-#include "m_signal.hh"
+#include "signal_slot_impl.hh"
 #include "slot.hh"
 
 #include <iostream>
@@ -41,14 +41,14 @@ int main()
     m_slot< std::string, int > const_member( "", &the_tester, &tester::const_func );
 
     // create new signal
-    m_signal< std::string, int > signal( "" );
+    m_signal< std::string, int > the_signal( "" );
 
     // attach a slot
-    signal.connect( lambda.function() );
-    signal.connect( member.function() );
-    signal.connect( const_member.function() );
+    the_signal.connect( &lambda );
+    the_signal.connect( &member );
+    the_signal.connect( &const_member );
 
-    signal.emit("The answer:", 42);
+    the_signal.emit("The answer:", 42);
 
     return 0;
 }

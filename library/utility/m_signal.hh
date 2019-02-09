@@ -11,6 +11,10 @@
 #ifndef MIDGE_SIGNAL_HH_
 #define MIDGE_SIGNAL_HH_
 
+#include "coremsg.hh"
+#include "midge_error.hh"
+#include "types.hh"
+
 #include "member_variables.hh"
 
 #include <functional>
@@ -19,14 +23,17 @@
 namespace midge
 {
     class node;
+    class slot;
 
     class signal
     {
-        protected:
-            signal( const std::string& name, node* owner = nullptr );
-
         public:
+            signal( const string_t& name, node* owner = nullptr );
             virtual ~signal();
+
+            virtual int connect( slot* p_slot ) = 0;
+
+            mv_referrable( string_t, name );
     };
 
     /// A m_signal object may call multiple slots with the
@@ -42,21 +49,24 @@ namespace midge
             using signature = void( x_args... );
 
         public:
-            m_signal( const std::string& name, node* owner = nullptr );
+            m_signal( const string_t& name, node* owner = nullptr );
             m_signal( const m_signal& ) = delete;
             m_signal( m_signal&& ) = delete;
+            virtual ~m_signal();
+
+            virtual int connect( slot* p_slot );
 
             // connects a member function to this Signal
             template< typename T >
-            int connect_member( T *inst, void (T::*func)( x_args... ) );
+            int connect_function( T *inst, void (T::*func)( x_args... ) );
 
             // connects a const member function to this Signal
             template< typename T >
-            int connect_member( T *inst, void (T::*func)( x_args... ) const );
+            int connect_function( T *inst, void (T::*func)( x_args... ) const );
 
             // connects a std::function to the m_signal. The returned
             // value can be used to disconnect the function again
-            int connect( const std::function< signature > & slot ) const;
+            int connect_function( const std::function< signature > & slot ) const;
 
             // disconnects a previously connected function
             void disconnect( int id ) const;
@@ -77,16 +87,22 @@ namespace midge
     };
 
     template< typename... x_args >
-    m_signal< x_args... >::m_signal( const std::string& name, node* owner ) :
+    m_signal< x_args... >::m_signal( const string_t& name, node* owner ) :
             signal( name, owner ),
             f_slots(),
             f_current_id( 0 )
     {}
 
+    template< typename... x_args >
+    m_signal< x_args... >::~m_signal()
+    {
+        disconnect_all();
+    }
+
     // connects a member function to this Signal
     template< typename... x_args >
     template< typename T >
-    int m_signal< x_args... >::connect_member( T *inst, void (T::*func)( x_args... ) )
+    int m_signal< x_args... >::connect_function( T *inst, void (T::*func)( x_args... ) )
     {
         return connect( [=]( x_args... args )
         {
@@ -97,7 +113,7 @@ namespace midge
     // connects a const member function to this Signal
     template< typename... x_args >
     template< typename T >
-    int m_signal< x_args... >::connect_member( T *inst, void (T::*func)( x_args... ) const )
+    int m_signal< x_args... >::connect_function( T *inst, void (T::*func)( x_args... ) const )
     {
         return connect( [=]( x_args... args )
         {
@@ -108,7 +124,7 @@ namespace midge
     // connects a std::function to the m_signal. The returned
     // value can be used to disconnect the function again
     template< typename... x_args >
-    int m_signal< x_args... >::connect( std::function< signature > const& slot ) const
+    int m_signal< x_args... >::connect_function( std::function< signature > const& slot ) const
     {
         f_slots.insert( std::make_pair( ++f_current_id, slot ) );
         return f_current_id;

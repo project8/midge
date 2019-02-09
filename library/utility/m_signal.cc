@@ -11,7 +11,8 @@
 
 namespace midge
 {
-    signal::signal( const std::string& name, node* owner )
+    signal::signal( const string_t& name, node* owner ) :
+            f_name( name )
     {
         if( owner ) owner->signal_ptr( this, name );
     }

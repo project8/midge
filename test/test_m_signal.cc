@@ -8,7 +8,7 @@
  *      URL: http://simmesimme.github.io/tutorials/2015/09/20/signal-slot
  */
 
-#include "m_signal.hh"
+#include "signal_slot_impl.hh"
 
 #include <iostream>
 
@@ -20,7 +20,7 @@ int main()
     m_signal< std::string, int > signal( "" );
 
     // attach a slot
-    signal.connect( [](std::string arg1, int arg2) {
+    signal.connect_function( [](std::string arg1, int arg2) {
         std::cout << arg1 << " " << arg2 << std::endl;
     });
 

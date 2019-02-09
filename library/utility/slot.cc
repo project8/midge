@@ -12,7 +12,8 @@
 namespace midge
 {
 
-    slot::slot( const std::string& name, node* owner )
+    slot::slot( const string_t& name, node* owner ) :
+            f_name( name )
     {
         if( owner ) owner->slot_ptr( this, name );
     }
