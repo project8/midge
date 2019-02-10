@@ -7,16 +7,11 @@
 
 #include "slot.hh"
 
-#include "node.hh"
-
 namespace midge
 {
-
-    slot::slot( const string_t& name, node* owner ) :
-            f_name( name )
-    {
-        if( owner ) owner->slot_ptr( this, name );
-    }
+    slot::slot( const string_t& p_name ) :
+            f_name( p_name )
+    {}
 
     slot::~slot()
     {}

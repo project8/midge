@@ -22,13 +22,14 @@
 
 namespace midge
 {
-    class node;
     class slot;
 
     class signal
     {
         public:
-            signal( const string_t& name, node* owner = nullptr );
+            signal( const string_t& p_name );
+            template< typename x_owner >
+            signal( const string_t& p_name, x_owner* p_owner );
             virtual ~signal();
 
             virtual int connect( slot* p_slot ) = 0;
@@ -49,7 +50,9 @@ namespace midge
             using signature = void( x_args... );
 
         public:
-            m_signal( const string_t& name, node* owner = nullptr );
+            m_signal( const string_t& p_name );
+            template< typename x_owner = void >
+            m_signal( const string_t& p_name, x_owner* p_owner );
             m_signal( const m_signal& ) = delete;
             m_signal( m_signal&& ) = delete;
             virtual ~m_signal();
@@ -86,8 +89,25 @@ namespace midge
             mv_accessible_mutable_noset( unsigned, current_id );
     };
 
+
+    template< typename x_owner >
+    signal::signal( const string_t& p_name, x_owner* p_owner ) :
+            f_name( p_name )
+    {
+        if( p_owner ) p_owner->signal_ptr( this, p_name );
+    }
+
+
     template< typename... x_args >
-    m_signal< x_args... >::m_signal( const string_t& name, node* owner ) :
+    m_signal< x_args... >::m_signal( const string_t& name ) :
+            signal( name ),
+            f_slots(),
+            f_current_id( 0 )
+    {}
+
+    template< typename... x_args >
+    template< typename x_owner >
+    m_signal< x_args... >::m_signal( const string_t& name, x_owner* owner ) :
             signal( name, owner ),
             f_slots(),
             f_current_id( 0 )
@@ -139,7 +159,7 @@ namespace midge
 
     // disconnects all previously connected functions
     template< typename... x_args >
-    void m_signal< x_args... >::disconnect_all() const
+    void m_signal<  x_args... >::disconnect_all() const
     {
         f_slots.clear();
     }

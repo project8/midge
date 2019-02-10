@@ -31,8 +31,8 @@ set( midge_sources ${midge_sources}
     ${util_dir}/instructable.cc
 	${util_dir}/midge_error.cc
 	${util_dir}/message_logger.cc
-	${util_dir}/signal.cc
-	${util_dir}/slot.cc
+    ${util_dir}/signal.cc
+    ${util_dir}/slot.cc
 )
 
 
