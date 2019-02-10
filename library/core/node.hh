@@ -4,10 +4,9 @@
 #include "diptera.hh"
 #include "input.hh"
 #include "instructable.hh"
-#include "m_signal.hh"
 #include "output.hh"
 #include "shared_cancel.hh"
-#include "slot.hh"
+#include "signal_slot.hh"
 
 #include "cancelable.hh"
 #include "factory.hh"

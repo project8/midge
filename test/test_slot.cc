@@ -5,8 +5,7 @@
  *      Author: N.S. Oblath
  */
 
-#include "signal_slot_impl.hh"
-#include "slot.hh"
+#include "signal_slot.hh"
 
 #include <iostream>
 

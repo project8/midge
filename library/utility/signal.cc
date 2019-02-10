@@ -5,9 +5,8 @@
  *      Author: obla999
  */
 
-#include "m_signal.hh"
-
 #include "node.hh"
+#include "signal.hh"
 
 namespace midge
 {

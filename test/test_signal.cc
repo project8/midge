@@ -8,7 +8,7 @@
  *      URL: http://simmesimme.github.io/tutorials/2015/09/20/signal-slot
  */
 
-#include "signal_slot_impl.hh"
+#include "signal_slot.hh"
 
 #include <iostream>
 

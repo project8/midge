@@ -11,7 +11,7 @@
 #ifndef MIDGE_SIGNAL_SLOT_IMPL_HH_
 #define MIDGE_SIGNAL_SLOT_IMPL_HH_
 
-#include "m_signal.hh"
+#include "signal.hh"
 #include "slot.hh"
 
 namespace midge

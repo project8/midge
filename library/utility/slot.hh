@@ -8,16 +8,19 @@
 #ifndef MIDGE_UTILITY_SLOT_HH_
 #define MIDGE_UTILITY_SLOT_HH_
 
-#include "m_signal.hh"
 #include "types.hh"
 
 #include "member_variables.hh"
 
 #include <functional>
+#include <set>
 
 namespace midge
 {
     class node;
+
+    template< typename... x_args >
+    class m_signal;
 
     class slot
     {

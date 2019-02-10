@@ -14,9 +14,9 @@ set( midge_headers ${midge_headers}
     ${util_dir}/instructable.hh
 	${util_dir}/midge_error.hh
 	${util_dir}/message_logger.hh
-    ${util_dir}/m_signal.hh
 	${util_dir}/shared_cancel.hh
-	${util_dir}/signal_slot_impl.hh
+	${util_dir}/signal_slot.hh
+    ${util_dir}/signal.hh
 	${util_dir}/slot.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh
@@ -31,7 +31,7 @@ set( midge_sources ${midge_sources}
     ${util_dir}/instructable.cc
 	${util_dir}/midge_error.cc
 	${util_dir}/message_logger.cc
-	${util_dir}/m_signal.cc
+	${util_dir}/signal.cc
 	${util_dir}/slot.cc
 )
 
