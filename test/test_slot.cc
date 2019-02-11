@@ -43,11 +43,24 @@ int main()
     m_signal< std::string, int > the_signal( "" );
 
     // attach a slot
-    the_signal.connect( &lambda );
-    the_signal.connect( &member );
-    the_signal.connect( &const_member );
+    int lambda_conn = the_signal.connect( &lambda );
+    int member_conn = the_signal.connect( &member );
+    int const_member_conn = the_signal.connect( &const_member );
 
-    the_signal.emit("The answer:", 42);
+    std::cout << "All slots attached:" << std::endl;
+    the_signal.emit( "The answer:", 42 );
+
+    std::cout << "Disconnecting the lambda slot using signal::disconnect()" << std::endl;
+    the_signal.disconnect( lambda_conn );
+    the_signal.emit( "The answer:", 43 );
+
+    std::cout << "Disconnecting the member slot using slot::disconnect_all()" << std::endl;
+    member.disconnect_all();
+    the_signal.emit( "The answer:", 44 );
+
+    std::cout << "Disconnecting remaining member slots using signal::disconnect_all()" << std::endl;
+    the_signal.disconnect_all();
+    the_signal.emit( "The answer:", 45 );
 
     return 0;
 }
