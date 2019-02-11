@@ -58,7 +58,7 @@ namespace midge
 
             mv_referrable( std::function< signature >, function );
 
-            typedef std::set< std::pair< int, m_signal< x_args... >* > > signal_connections; // to get around the problem of having a comma inside a macro function argument
+            typedef std::set< std::pair< unsigned, m_signal< x_args... >* > > signal_connections; // to get around the problem of having a comma inside a macro function argument
             mv_referrable( signal_connections, connections );
 
     };

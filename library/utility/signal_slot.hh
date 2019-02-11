@@ -21,7 +21,7 @@ namespace midge
     //********************
 
     template< typename... x_args >
-    int m_signal< x_args... >::connect( slot* p_slot )
+    unsigned m_signal< x_args... >::connect( slot* p_slot )
     {
         // ensure that the slot is of the correct type
         m_slot< x_args... >* derived_slot = dynamic_cast< m_slot< x_args... >* >( p_slot );
