@@ -79,6 +79,7 @@ namespace midge
 
             // calls all connected functions
             void emit( x_args... args );
+            void operator()( x_args... args );
 
             // assignment creates new Signal
             m_signal& operator=( m_signal const& other );
@@ -172,6 +173,12 @@ namespace midge
         {
             it.second( args... );
         }
+    }
+
+    template< typename... x_args >
+    void m_signal< x_args... >::operator()( x_args... args )
+    {
+        emit( args... );
     }
 
 }
