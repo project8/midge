@@ -51,7 +51,7 @@ namespace midge
 
         public:
             m_signal( const string_t& p_name );
-            template< typename x_owner = void >
+            template< typename x_owner >
             m_signal( const string_t& p_name, x_owner* p_owner );
             m_signal( const m_signal& ) = delete;
             m_signal( m_signal&& ) = delete;

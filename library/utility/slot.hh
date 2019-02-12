@@ -44,11 +44,11 @@ namespace midge
             m_slot( const string_t& name,  T *inst, void (T::*func)( x_args... ) );
             template< typename T >
             m_slot( const string_t& name,  T *inst, void (T::*func)( x_args... ) const );
-            template< typename x_owner =  void >
+            template< typename x_owner >
             m_slot( const string_t& name, const std::function< signature >& sig, x_owner* owner );
-            template< typename T, typename x_owner = void >
+            template< typename T, typename x_owner >
             m_slot( const string_t& name,  T *inst, void (T::*func)( x_args... ), x_owner* owner );
-            template< typename T, typename x_owner = void >
+            template< typename T, typename x_owner >
             m_slot( const string_t& name,  T *inst, void (T::*func)( x_args... ) const, x_owner* owner );
             m_slot( const m_slot& ) = delete;
             m_slot( m_slot&& ) = delete;
