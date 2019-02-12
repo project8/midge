@@ -27,6 +27,9 @@ namespace midge
             /// Add a node
             void add( node* p_node );
 
+            ///  Connect a signal to a slot: signal_node.signal:slot_node.slot
+            void connect( const std::string& p_string );
+
             /// Join one node to another
             /*!
              * Option 1: Join by data stream
