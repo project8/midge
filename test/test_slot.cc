@@ -29,7 +29,7 @@ using namespace midge;
 
 int main()
 {
-    // create new signal
+    // create new slots
     m_slot< std::string, int > lambda( "", [](std::string arg1, int arg2) {
         std::cout << "(lambda) " << arg1 << " " << arg2 << std::endl;
     } );
