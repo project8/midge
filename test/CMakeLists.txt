@@ -12,6 +12,8 @@ if( Midge_ENABLE_TESTING )
         test_buffer
         test_message
         test_producer
+        test_signal
+        test_slot
         test_typelength
         test_typeat
         test_typechain

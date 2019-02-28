@@ -11,10 +11,13 @@ set( util_dir utility )
 
 set( midge_headers ${midge_headers}
 	${util_dir}/initializer.hh
+    ${util_dir}/instructable.hh
 	${util_dir}/midge_error.hh
 	${util_dir}/message_logger.hh
-	${util_dir}/instructable.hh
 	${util_dir}/shared_cancel.hh
+	${util_dir}/signal_slot.hh
+    ${util_dir}/signal.hh
+	${util_dir}/slot.hh
 	${util_dir}/types.hh
 	${util_dir}/typenull.hh
 	${util_dir}/typelist.hh
@@ -25,9 +28,11 @@ set( midge_headers ${midge_headers}
 	${util_dir}/typereplace.hh
 )
 set( midge_sources ${midge_sources}
+    ${util_dir}/instructable.cc
 	${util_dir}/midge_error.cc
 	${util_dir}/message_logger.cc
-	${util_dir}/instructable.cc
+    ${util_dir}/signal.cc
+    ${util_dir}/slot.cc
 )
 
 
