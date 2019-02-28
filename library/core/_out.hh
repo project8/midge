@@ -1,15 +1,10 @@
 #ifndef _midge_out_hh_
 #define _midge_out_hh_
 
-#include <sstream>
-
 #include "_buffer.hh"
 #include "_output.hh"
 #include "_stream.hh"
 #include "node.hh"
-#include "typenull.hh"
-
-#include <vector>
 
 namespace midge
 {
@@ -22,9 +17,7 @@ namespace midge
             _out() :
                     f_buffer( new _buffer< x_type >( this ) )
             {
-                std::stringstream t_name_str;
-                t_name_str << "out_" << x_index::result;
-                std::string t_name = t_name_str.str();
+                std::string t_name( "out_"+std::to_string(x_index::value) );
                 node::out( new _output< _out< x_type, x_index >, x_type >( this, &_out< x_type, x_index >::out ), t_name );
                 f_buffer->set_write_stream_name( t_name );
             }

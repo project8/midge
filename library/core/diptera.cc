@@ -69,15 +69,90 @@ namespace midge
         return;
     }
 
+    void diptera::connect( const std::string& p_string )
+    {
+        size_t t_pos = p_string.find( s_connector );
+        if( t_pos <= 1 ||
+                t_pos >= p_string.length()-2 ||
+            p_string.find( s_connector, t_pos + s_connector.length() ) != string_t::npos )
+        {
+            throw error() << "connection specification <" << p_string << "> was not formatted correctly: signal_node.signal:slot_node.slot";
+            return;
+        }
+
+        string_t t_signal_argument = p_string.substr( 0, t_pos );
+        string_t t_slot_argument = p_string.substr( t_pos + s_connector.length(), string_t::npos );
+
+        t_pos = t_signal_argument.find( s_designator );
+        if( t_pos == 0 ||
+            t_pos == string::npos ||
+            t_signal_argument.find( s_designator, t_pos + s_designator.length() ) != string_t::npos )
+        {
+            throw error() << "signal specification <" << t_signal_argument << "> is not formatted correctly: signal_node.signal";
+            return;
+        }
+
+        string_t t_signal_node_string = t_signal_argument.substr( 0, t_pos );
+        string_t t_signal_string = t_signal_argument.substr( t_pos + s_designator.length(), string_t::npos );
+
+        t_pos = t_slot_argument.find( s_designator );
+        if( t_pos == 0 ||
+            t_pos == string::npos ||
+            t_slot_argument.find( s_designator, t_pos + s_designator.length() ) != string_t::npos )
+        {
+            throw error() << "slot specification <" << t_slot_argument << "> is not formatted correctly: slot_node.slot";
+            return;
+        }
+
+        string_t t_slot_node_string = t_slot_argument.substr( 0, t_pos );
+        string_t t_slot_string = t_slot_argument.substr( t_pos + s_designator.length(), string_t::npos );
+
+        node_it_t t_node_it = f_nodes.find( t_signal_node_string );
+        if( t_node_it == f_nodes.end() )
+        {
+            throw error() << "signal node was not found <" << t_signal_node_string << ">";
+            return;
+        }
+        node* t_signal_node = t_node_it->second;
+
+        t_node_it = f_nodes.find( t_slot_node_string );
+        if( t_node_it == f_nodes.end() )
+        {
+            throw error() << "slot node was not found <" << t_slot_node_string << ">";
+            return;
+        }
+        node* t_slot_node = t_node_it->second;
+
+        signal* t_signal = t_signal_node->signal_ptr( t_signal_string );
+        if( t_signal == NULL )
+        {
+            throw error() << "signal <" << t_signal_string << "> was not found for node <" << t_signal_node << ">";
+            return;
+        }
+
+        slot* t_slot = t_slot_node->slot_ptr( t_slot_string );
+        if( t_slot == NULL )
+        {
+            throw error() << "slot <" << t_slot_string << "> was not found for node <" << t_slot_node_string << ">";
+            return;
+        }
+
+        t_signal->connect( t_slot );
+
+        msg_normal( coremsg, "connected signal --> slot: " << t_signal_node_string << "." << t_signal_string << " --> " << t_slot_node_string << "." << t_slot_string << eom );
+
+        return;
+    }
+
     void diptera::join( const string_t& p_string )
     {
-        string_t t_first_node_string( "" );
+        string_t t_first_node_string;
         node* t_first_node;
-        string_t t_first_out_string( "" );
+        string_t t_first_out_string;
         output* t_first_out;
-        string_t t_second_node_string( "" );
+        string_t t_second_node_string;
         node* t_second_node;
-        string_t t_second_in_string( "" );
+        string_t t_second_in_string;
         input* t_second_in;
 
         size_t t_first_pos;

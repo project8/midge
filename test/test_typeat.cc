@@ -1,5 +1,4 @@
 #include "typeat.hh"
-#include "typelist.hh"
 
 #include <iostream>
 
@@ -10,17 +9,9 @@ using std::endl;
 
 int main()
 {
+    cout << "in an variadic template, type at position 1 of <char, short, int> should be <short>, and is: " << typeid(type_at< 1, char, short, int >).name() << endl;
 
-    typedef typelist_3( char, short, int ) list_one;
-
-    cout << "type at position <1> of list_one should be <short> and is <" << typeid(typeat< list_one, 2 >::result).name() << ">" << endl;
-    cout << "type at position <5> of list_one should be <typenull> and is <" << typeid(typeat< list_one, 5 >::result).name() << ">" << endl;
-
-    typedef typelist_10( unsigned char, char, unsigned short, short, unsigned int, int, unsigned long, long, float, double ) list_two;
-
-    cout << "type at position <6> of list_one should be <unsigned long> and is <" << typeid(typeat< list_two, 6 >::result).name() << ">" << endl;
-    cout << "type at position <0> of list_one should be <unsigned char> and is <" << typeid(typeat< list_two, 0 >::result).name() << ">" << endl;
-    cout << "type at position <9> of list_one should be <real_t> and is <" << typeid(typeat< list_two, 9 >::result).name() << ">" << endl;
+    //cout << "in an type_list, type at position 1 of <char, short, int> should be <short>, and is: " << typeid(type_at< 1, type_list<char, short, int> >).name() << endl;
 
     return 0;
 

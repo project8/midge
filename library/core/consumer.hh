@@ -1,14 +1,10 @@
 #ifndef _midge_consumer_hh_
 #define _midge_consumer_hh_
 
-#include <vector>
-
 #include "_in.hh"
-#include "coremsg.hh"
 #include "node.hh"
 #include "typeat.hh"
 #include "typechain.hh"
-#include "typelength.hh"
 
 namespace midge
 {
@@ -23,10 +19,13 @@ namespace midge
             virtual ~consumer();
     };
 
-    template< class x_type, class x_in_list >
-    class _consumer :
+    template< class x_in_list >
+    class _consumer;
+
+    template< template<class...> class x_in_list, class... x_in_types >
+    class _consumer< x_in_list<x_in_types...> > :
         public consumer,
-        public typechain< _in< _1, _index >, x_in_list >
+        public type_start_chain< _in< _type, _index >, x_in_types... >
     {
         public:
             using node::in;
@@ -37,20 +36,21 @@ namespace midge
 
         protected:
             template< int x_index >
-            _stream< typename typeat< x_in_list, x_index >::result >& in_stream()
+            _stream< type_at< x_index, x_in_types... > >& in_stream()
             {
-                return this->_in< typename typeat< x_in_list, x_index >::result, typeint< x_index > >::get_stream();
+                return this->_in< type_at< x_index, x_in_types... >, type_int< x_index > >::get_stream();
             }
     };
 
-    template< class x_type, class x_in_list >
-    _consumer< x_type, x_in_list >::_consumer() :
+    template< template<class...> class x_in_list, class... x_in_types >
+    _consumer< x_in_list<x_in_types...> >::_consumer() :
             consumer(),
-            typechain< _in< _1, _index >, x_in_list >()
+            type_start_chain< _in< _type, _index >, x_in_types... >()
     {
     }
-    template< class x_type, class x_in_list >
-    _consumer< x_type, x_in_list >::~_consumer()
+
+    template< template<class...> class x_in_list, class... x_in_types >
+    _consumer< x_in_list<x_in_types...> >::~_consumer()
     {
     }
 

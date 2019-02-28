@@ -59,6 +59,26 @@ namespace midge
         }
         return t_it->second;
     }
+    signal* node::signal_ptr( const string& p_label )
+    {
+        signal_it t_it = f_signal_map.find( p_label );
+        if( t_it == f_signal_map.end() )
+        {
+            throw error() << "node named <" << get_name() << "> has no signal named <" << p_label << ">";
+            return NULL;
+        }
+        return t_it->second;
+    }
+    slot* node::slot_ptr( const string& p_label )
+    {
+        slot_it t_it = f_slot_map.find( p_label );
+        if( t_it == f_slot_map.end() )
+        {
+            throw error() << "node named <" << get_name() << "> has no slot named <" << p_label << ">";
+            return NULL;
+        }
+        return t_it->second;
+    }
 
     void node::node_ptr( node* p_node, const string& p_label )
     {
@@ -98,6 +118,32 @@ namespace midge
         else
         {
             throw error() << "node already has out named <" << p_label << ">";
+        }
+        return;
+    }
+    void node::signal_ptr( signal* p_signal, const string& p_label )
+    {
+        signal_it t_it = f_signal_map.find( p_label );
+        if( t_it == f_signal_map.end() )
+        {
+            f_signal_map.insert( signal_entry( p_label, p_signal ) );
+        }
+        else
+        {
+            throw error() << "node already has a signal named <" << p_label << ">";
+        }
+        return;
+    }
+    void node::slot_ptr( slot* p_slot, const string& p_label )
+    {
+        slot_it t_it = f_slot_map.find( p_label );
+        if( t_it == f_slot_map.end() )
+        {
+            f_slot_map.insert( slot_entry( p_label, p_slot ) );
+        }
+        else
+        {
+            throw error() << "node already has a slot named <" << p_label << ">";
         }
         return;
     }

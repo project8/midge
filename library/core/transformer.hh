@@ -1,17 +1,11 @@
 #ifndef _midge_transformer_hh_
 #define _midge_transformer_hh_
 
-#include <vector>
-
 #include "_in.hh"
 #include "_out.hh"
-#include "coremsg.hh"
 #include "node.hh"
 #include "typeat.hh"
 #include "typechain.hh"
-#include "typelength.hh"
-
-#include <iostream>
 
 namespace midge
 {
@@ -26,11 +20,14 @@ namespace midge
             virtual ~transformer();
     };
 
-    template< class x_type, class x_in_list, class x_out_list >
-    class _transformer :
+    template< class x_in_list, class x_out_list >
+    class _transformer;
+
+    template< template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
+    class _transformer< x_in_list<x_in_types...>, x_out_list<x_out_types...> > :
         public transformer,
-        public typechain< _in< _1, _index >, x_in_list >,
-        public typechain< _out< _1, _index >, x_out_list >
+        public type_start_chain< _in< _type, _index >, x_in_types... >,
+        public type_start_chain< _out< _type, _index >, x_out_types... >
     {
         public:
             using node::in;
@@ -42,33 +39,33 @@ namespace midge
 
         protected:
             template< int x_index >
-            _stream< typename typeat< x_in_list, x_index >::result >& in_stream()
+            _stream< type_at< x_index, x_in_types... > >& in_stream()
             {
-                return this->_in< typename typeat< x_in_list, x_index >::result, typeint< x_index > >::get_stream();
+                return this->_in< type_at< x_index, x_in_types... >, type_int< x_index > >::get_stream();
             }
 
             template< int x_index >
-            _stream< typename typeat< x_out_list, x_index >::result >& out_stream()
+            _stream< type_at< x_index, x_out_types... > >& out_stream()
             {
-                return this->_out< typename typeat< x_out_list, x_index >::result, typeint< x_index > >::get_stream();
+                return this->_out< type_at< x_index, x_out_types... >, type_int< x_index > >::get_stream();
             }
 
             template< int x_index >
-            _buffer< typename typeat< x_out_list, x_index >::result >& out_buffer()
+            _buffer< type_at< x_index, x_out_types... > >& out_buffer()
             {
-                return this->_out< typename typeat< x_out_list, x_index >::result, typeint< x_index > >::get_buffer();
+                return this->_out< type_at< x_index, x_out_types... >, type_int< x_index > >::get_buffer();
             }
     };
 
-    template< class x_type, class x_in_list, class x_out_list >
-    _transformer< x_type, x_in_list, x_out_list >::_transformer() :
+    template< template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
+    _transformer< x_in_list<x_in_types...>, x_out_list<x_out_types...> >::_transformer() :
             node(),
-            typechain< _in< _1, _index >, x_in_list >(),
-            typechain< _out< _1, _index >, x_out_list >()
+            type_start_chain< _in< _type, _index >, x_in_types... >(),
+            type_start_chain< _out< _type, _index >, x_out_types... >()
     {
     }
-    template< class x_type, class x_in_list, class x_out_list >
-    _transformer< x_type, x_in_list, x_out_list >::~_transformer()
+    template< template<class...> class x_in_list, template<class...> class x_out_list, class... x_in_types, class... x_out_types >
+    _transformer< x_in_list<x_in_types...>, x_out_list<x_out_types...> >::~_transformer()
     {
     }
 
