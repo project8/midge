@@ -60,7 +60,7 @@ namespace midge
             static const std::string& separator();
 
         private:
-            virtual void do_cancellation();
+            virtual void do_cancellation( int a_code );
             virtual void do_reset_cancellation();
 
             typedef std::map< std::string, node* > node_map_t;

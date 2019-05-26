@@ -86,7 +86,7 @@ namespace midge
             slot_map f_slot_map;
 
         protected:
-            void do_cancellation() override;
+            void do_cancellation( int a_node ) override;
     };
 
 }
