@@ -412,7 +412,7 @@ namespace midge
         return;
     }
 
-    void diptera::do_cancellation()
+    void diptera::do_cancellation( int a_code )
     {
         std::unique_lock< std::mutex >t_threads_lock( f_threads_mutex );
 
@@ -423,7 +423,7 @@ namespace midge
             if( dynamic_cast< producer* >( t_it->second ) != nullptr )
             {
                 msg_debug( coremsg, "Canceling " << t_it->second->get_name() << eom );
-                t_it->second->cancel();
+                t_it->second->cancel( a_code );
             }
         }
 
