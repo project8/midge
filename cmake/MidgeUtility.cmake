@@ -1,7 +1,7 @@
 # Include the build script
 # Main directory for midge
 
-set( Midge_EXE_LIBRARIES )
+set( Midge_EXE_LIBRARIES "" CACHE INTERNAL "List of libraries to link with the Midge executable" FORCE )
 set( Midge_LIB_FULL_NAME )
 
 function( midge_process_options )
@@ -28,16 +28,18 @@ endfunction()
 function( midge_build_executables )
     #message(STATUS "midge source dir (from build_executables called from ${CMAKE_CURRENT_LIST_DIR}): ${Midge_SOURCE_DIR}")
     if( Midge_ENABLE_EXECUTABLES )
+        set( Midge_AS_SUBMODULE TRUE )
         set( Midge_EXE_LIBRARIES ${Midge_EXE_LIBRARIES} ${Midge_LIBRARIES} )
         add_subdirectory( ${Midge_SOURCE_DIR}/main )
     endif( Midge_ENABLE_EXECUTABLES )
-endfunction( midge_build_executables )
+endfunction()
 
 function( midge_use_libraries )
     message( STATUS "Midge will use libraries ${ARGN}" )
+    set( Midge_EXE_LIBRARIES ${ARGN} ${Midge_EXE_LIBRARIES} CACHE INTERNAL "List of libraries to link with the Midge executable" FORCE )
 endfunction( midge_use_libraries )
 
 function( midge_library LIB_BASENAME SOURCES PROJECT_LIBRARIES )
     pbuilder_library( ${LIB_BASENAME} ${SOURCES} ${PROJECT_LIBRARIES} )
     set( Midge_EXE_LIBRARIES ${Midge_EXE_LIBRARIES} ${FULL_LIB_NAME} PARENT_SCOPE )
-endfunction( midge_library LIB_BASENAME SOURCES PROJECT_LIBRARIES )
+endfunction()

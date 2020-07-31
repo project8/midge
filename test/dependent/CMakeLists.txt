@@ -89,6 +89,6 @@ midge_build_executables()
 # Config
 ########
 
-configure_file( ${PROJECT_SOURCE_DIR}/PBTestConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/PBTestConfig.cmake @ONLY )
+configure_file( ${PROJECT_SOURCE_DIR}/MidgeDependentConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/MidgeDependentConfig.cmake @ONLY )
 
 pbuilder_do_package_config()
