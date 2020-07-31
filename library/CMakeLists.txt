@@ -1,9 +1,13 @@
 # CMakeLists.txt for midge/library
 
 set( core_dir core )
-set( bind_dir bindings )
-set( init_dir initialization )
 set( util_dir utility )
+
+include_directories( BEFORE 
+    ${PROJECT_SOURCE_DIR}/library/core
+    ${PROJECT_SOURCE_DIR}/library/utility
+)
+
 
 ###########
 # utility #
@@ -34,8 +38,6 @@ set( midge_sources ${midge_sources}
     ${util_dir}/signal.cc
     ${util_dir}/slot.cc
 )
-
-
 
 ########
 # core #
@@ -78,5 +80,14 @@ set( midge_sources ${midge_sources}
 # library #
 ###########
 
-pbuilder_library( Midge midge_sources "" )
+pbuilder_library( 
+    TARGET Midge 
+    SOURCES ${midge_sources}
+)
+
+pbuilder_component_install_and_export( 
+    COMPONENT Library
+    LIBTARGETS Midge
+)
+
 pbuilder_install_headers( ${midge_headers} )

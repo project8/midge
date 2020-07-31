@@ -1,0 +1,4 @@
+#! /bin/bash
+
+echo "Copying Midge"
+rsync -a --exclude-from='@CMAKE_CURRENT_SOURCE_DIR@/../../.gitignore' @CMAKE_CURRENT_SOURCE_DIR@/../.. @CMAKE_CURRENT_SOURCE_DIR@/midge

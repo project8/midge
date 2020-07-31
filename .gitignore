@@ -35,3 +35,5 @@
 # Build directories
 build*/
 
+# MidgeDependent test submodule
+test/dependent/midge

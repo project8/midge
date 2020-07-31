@@ -2,25 +2,30 @@
 # test #
 ########
 
-if( Midge_ENABLE_TESTING )
+set( lib_dependencies
+    Midge
+)
 
-    set( lib_dependencies
-        Midge
-    )
-    
-    set( programs
-        test_buffer
-        test_message
-        test_producer
-        test_signal
-        test_slot
-        test_typelength
-        test_typeat
-        test_typechain
-        test_typereplace
-    )
-    
-    pbuilder_executables( programs lib_dependencies )
-    
-endif( Midge_ENABLE_TESTING )
-    
+set( sources
+    test_buffer.cc
+    test_message.cc
+    test_producer.cc
+    test_signal.cc
+    test_slot.cc
+    test_typelength.cc
+    test_typeat.cc
+    test_typechain.cc
+    test_typereplace.cc
+)
+
+set( programs )
+pbuilder_executables( 
+    SOURCES ${sources}
+    TARGETS_VAR programs
+    PROJECT_LIBRARIES ${lib_dependencies}
+)
+
+pbuilder_component_install_and_export( 
+    COMPONENT Test
+    EXETARGETS ${programs}
+)
