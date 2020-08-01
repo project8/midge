@@ -38,8 +38,3 @@ function( midge_use_libraries )
     message( STATUS "Midge will use libraries ${ARGN}" )
     set( Midge_EXE_LIBRARIES ${ARGN} ${Midge_EXE_LIBRARIES} CACHE INTERNAL "List of libraries to link with the Midge executable" FORCE )
 endfunction( midge_use_libraries )
-
-function( midge_library LIB_BASENAME SOURCES PROJECT_LIBRARIES )
-    pbuilder_library( ${LIB_BASENAME} ${SOURCES} ${PROJECT_LIBRARIES} )
-    set( Midge_EXE_LIBRARIES ${Midge_EXE_LIBRARIES} ${FULL_LIB_NAME} PARENT_SCOPE )
-endfunction()
