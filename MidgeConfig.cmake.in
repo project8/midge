@@ -1,0 +1,16 @@
+# MidgeConfig.cmake
+
+get_filename_component( Midge_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH )
+
+# Find the dependencies
+include( CMakeFindDependencyMacro )
+find_dependency( Scarab REQUIRED PATHS ${Midge_CMAKE_DIR}/Scarab @Scarab_BINARY_LOCATION@ )
+
+# Import library targets if they're not already present
+if( NOT TARGET Midge::@Midge_FULL_PROJECT_NAME@ )
+    if( TARGET @Midge_FULL_PROJECT_NAME@ )
+        add_library( Midge::@Midge_FULL_PROJECT_NAME@ ALIAS @Midge_FULL_PROJECT_NAME@ )
+    else()
+        include("${Midge_CMAKE_DIR}/Midge_Library_Targets.cmake")
+    endif()
+endif()

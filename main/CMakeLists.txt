@@ -2,17 +2,30 @@
 # main #
 ########
 
-if( Midge_ENABLE_EXECUTABLES )
+message( "Building Midge main executable" )
+message(STATUS "Midge external dependencies: ${Midge_EXE_LIBRARIES}" )
 
-    set( lib_dependencies 
-        ${Midge_EXE_LIBRARIES}
+if( NOT Midge_AS_SUBMODULE )
+    set( Midge_package_libs
+        Midge
     )
-    message(STATUS "midge lib dep: ${lib_dependencies}" )
-    
-    set( programs
-        midge
-    )
-    
-    pbuilder_executables( programs lib_dependencies )
+endif()
 
-endif( Midge_ENABLE_EXECUTABLES )
+set( Midge_sources
+    midge.cc
+)
+
+set( Midge_programs )
+pbuilder_executables( 
+    SOURCES ${Midge_sources}
+    TARGETS_VAR Midge_programs
+    PROJECT_LIBRARIES ${Midge_package_libs}
+    PUBLIC_EXTERNAL_LIBRARIES ${Midge_EXE_LIBRARIES}
+#        PRIVATE_EXTERNAL_LIBRARIES ${PRIVATE_EXT_LIBS}
+)
+
+pbuilder_component_install_and_export( 
+    COMPONENT Executables
+    EXETARGETS ${Midge_programs}
+)
+

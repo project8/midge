@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 #########
 
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project( Midge VERSION 3.7.5 )
+project( Midge VERSION 3.8.0 )
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scarab/cmake )
 include( PackageBuilder )
@@ -36,38 +36,30 @@ midge_process_options()
 ######################
 
 ########
-# Boost
-########
-
-# Boost (1.46 required for filesystem version 3)
-#find_package( Boost 1.46.0 REQUIRED COMPONENTS filesystem date_time )
-# make sure dynamic linking is assumed for all boost libraries
-#add_definitions( -DBOOST_ALL_DYN_LINK )
-#include_directories( ${Boost_INCLUDE_DIRS} )
-#pbuilder_add_ext_libraries( ${Boost_LIBRARIES} )
-
-
-########
 # Scarab
 ########
 
-pbuilder_add_submodule( Scarab scarab/library )
+pbuilder_add_submodule( Scarab scarab )
+
+# all parts of midge use Scarab, so include it here
+pbuilder_use_sm_library( Scarab Scarab )
 
 
 ###############
 # Build Midge #
 ###############
 
-include_directories( BEFORE 
-    #${PROJECT_SOURCE_DIR}/library/bindings
-    ${PROJECT_SOURCE_DIR}/library/core
-    #${PROJECT_SOURCE_DIR}/library/initialization
-    ${PROJECT_SOURCE_DIR}/library/utility
-)
-
 add_subdirectory( library )
 
-add_subdirectory( test )
+if( Midge_ENABLE_TESTING )
+    add_subdirectory( test )
+endif( Midge_ENABLE_TESTING )
 
 
-pbuilder_variables_for_parent()
+##########
+# Config #
+##########
+
+configure_file( ${PROJECT_SOURCE_DIR}/MidgeConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/MidgeConfig.cmake @ONLY )
+
+pbuilder_do_package_config()
