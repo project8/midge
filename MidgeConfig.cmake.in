@@ -7,9 +7,9 @@ include( CMakeFindDependencyMacro )
 find_dependency( Scarab REQUIRED PATHS ${Midge_CMAKE_DIR}/Scarab @Scarab_BINARY_LOCATION@ )
 
 # Import library targets if they're not already present
-if( NOT TARGET Midge::@Midge_FULL_PROJECT_NAME@ )
-    if( TARGET @Midge_FULL_PROJECT_NAME@ )
-        add_library( Midge::@Midge_FULL_PROJECT_NAME@ ALIAS @Midge_FULL_PROJECT_NAME@ )
+if( NOT TARGET Midge::@Midge_FULL_TARGET_NAME@ )
+    if( TARGET @Midge_FULL_TARGET_NAME@ )
+        add_library( Midge::@Midge_FULL_TARGET_NAME@ ALIAS @Midge_FULL_TARGET_NAME@ )
     else()
         include("${Midge_CMAKE_DIR}/Midge_Library_Targets.cmake")
     endif()
