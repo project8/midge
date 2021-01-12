@@ -11,8 +11,6 @@ project( Midge VERSION 3.9.0 )
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scarab/cmake )
 include( PackageBuilder )
 
-pbuilder_prepare_project()
-
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
 include( MidgeUtility )
 
@@ -34,6 +32,13 @@ midge_process_options()
 ######################
 # midge dependencies #
 ######################
+
+#####################
+# Prepare for build #
+#####################
+
+pbuilder_prepare_project()
+
 
 ########
 # Scarab
