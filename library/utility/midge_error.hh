@@ -6,7 +6,7 @@
 namespace midge
 {
 
-    class error : public scarab::base_exception< error >
+    class error : public scarab::typed_exception< error >
     {
         public:
             error();
@@ -16,7 +16,7 @@ namespace midge
     };
 
     // midge should exit and not be restarted
-    class node_fatal_error : public  scarab::base_exception< error >
+    class node_fatal_error : public  scarab::typed_exception< error >
     {
         public:
             node_fatal_error();
@@ -26,7 +26,7 @@ namespace midge
     };
 
     // midge should exit but could be restarted
-    class node_nonfatal_error : public scarab::base_exception< error >
+    class node_nonfatal_error : public scarab::typed_exception< error >
     {
         public:
             node_nonfatal_error();
