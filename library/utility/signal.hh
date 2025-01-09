@@ -11,7 +11,6 @@
 #ifndef MIDGE_SIGNAL_HH_
 #define MIDGE_SIGNAL_HH_
 
-#include "coremsg.hh"
 #include "midge_error.hh"
 #include "types.hh"
 
