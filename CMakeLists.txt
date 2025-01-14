@@ -19,8 +19,8 @@ include( MidgeUtility )
 # midge options #
 #################
 
-# require C++11
-set_option( USE_CPP11 TRUE )
+# require C++17
+set_to_max( CMAKE_CXX_STANDARD 17 )
 
 option( Midge_ENABLE_STREAM_TIMING "Enable stream timing" FALSE )
 
