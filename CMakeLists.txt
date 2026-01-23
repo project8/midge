@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.12)
 #########
 
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project( Midge VERSION 3.9.6 )
+project( Midge VERSION 3.9.7 )
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scarab/cmake )
 include( PackageBuilder )
