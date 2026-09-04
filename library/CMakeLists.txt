@@ -2,10 +2,12 @@
 
 set( core_dir core )
 set( util_dir utility )
+set( test_dir testing )
 
-include_directories( BEFORE 
+include_directories( BEFORE
     ${PROJECT_SOURCE_DIR}/library/core
     ${PROJECT_SOURCE_DIR}/library/utility
+    ${PROJECT_SOURCE_DIR}/library/testing
 )
 
 
@@ -88,6 +90,11 @@ pbuilder_library(
 pbuilder_component_install_and_export( 
     COMPONENT Library
     LIBTARGETS Midge
+)
+
+set( midge_headers ${midge_headers}
+    ${test_dir}/midge_test_nodes.hh
+    ${test_dir}/midge_test_harness.hh
 )
 
 pbuilder_install_headers( ${midge_headers} )
