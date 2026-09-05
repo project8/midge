@@ -8,6 +8,7 @@ set( lib_dependencies
 
 set( sources
     test_buffer.cc
+    test_harness_smoke.cc
     test_message.cc
     test_producer.cc
     test_signal.cc
