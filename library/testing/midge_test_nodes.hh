@@ -175,6 +175,11 @@ namespace midge
                                 const x_type* t_rec = this->template in_stream< 0 >().data();
                                 f_extract( t_rec, f_n_received.load() );
                                 ++f_n_received;
+                                // If we have enough records, cancel the run immediately.
+                                // Producers that never self-terminate (e.g. data_producer)
+                                // only send s_stop after being canceled, so waiting for a
+                                // terminal command would deadlock.
+                                if( done() && a_midge ) { a_midge->cancel(); break; }
                                 continue;
                             }
 

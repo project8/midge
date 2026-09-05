@@ -77,9 +77,11 @@ Most production nodes loop on `while( ! is_canceled() )` and never break on `s_s
 `s_exit`. Once the producer exits, these nodes spin forever waiting for the next buffer slot,
 and `diptera::run()` blocks in `thread::join()`.
 
-`test_consumer` drives shutdown: after receiving `expect_records` records *and* a terminal
-command (`s_stop`, `s_exit`, `s_error`), it calls `diptera::cancel()`. `diptera` then
-cancels producers → transformers → consumers, exactly as production does.
+`test_consumer` drives shutdown: once it has received `expect_records` records (during `s_run`
+handling), it calls `diptera::cancel()` immediately without waiting for a terminal command.
+This is necessary because producers that loop on `while(!is_canceled())` (e.g. `data_producer`)
+never send `s_stop` until they are canceled — waiting for `s_stop` first would deadlock.
+`diptera` then cancels producers → transformers → consumers, exactly as production does.
 
 ### 5. A watchdog is mandatory in tests
 
